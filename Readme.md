@@ -1,9 +1,3 @@
-# NativeBase Expo Template
+# Conch Bay
 
-The official NativeBase template for [Expo](https://docs.expo.io/)
-
-## Usage
-
-```sh
-expo init my-app --template @native-base/expo-template
-```
+Conch Bay is a cross-platform schedule and battle statistic client for Splatoon 3.
