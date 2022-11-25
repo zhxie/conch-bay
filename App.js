@@ -1,4 +1,3 @@
-import React, { useCallback, useEffect, useState } from "react";
 import {
   extendTheme,
   HStack,
@@ -7,7 +6,9 @@ import {
   useToast,
   VStack,
 } from "native-base";
+import React, { useCallback, useEffect, useState } from "react";
 import { ScheduleBox } from "./components";
+import t from "./i18n";
 import { fetchSchedules } from "./utils/Api";
 import Color from "./utils/Color";
 
@@ -101,7 +102,7 @@ const App = () => {
             {regularShift !== null && (
               <ScheduleBox
                 color="salmon"
-                title="salmon_run"
+                title={t("salmon_run")}
                 coopSetting={regularShift?.["setting"]}
               />
             )}

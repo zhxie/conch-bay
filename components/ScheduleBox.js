@@ -1,4 +1,5 @@
 import { Box, CircleIcon, HStack, Skeleton, Text, VStack } from "native-base";
+import t from "../i18n";
 
 const ScheduleBox = (props) => {
   const {
@@ -33,7 +34,7 @@ const ScheduleBox = (props) => {
             <Text bold fontSize="md" color={color} noOfLines={1}>
               {(() => {
                 if (matchSetting) {
-                  return title ?? matchSetting?.["vsRule"]["id"] ?? "";
+                  return title ?? t(matchSetting["vsRule"]["id"]) ?? "";
                 }
                 return title;
               })()}
@@ -54,13 +55,13 @@ const ScheduleBox = (props) => {
                       lineHeight="sm"
                       noOfLines={1}
                     >
-                      {stage["id"]}
+                      {t(stage["id"])}
                     </Text>
                   ));
               } else if (coopSetting) {
                 return (
                   <Text fontSize="sm" lineHeight="sm" noOfLines={1}>
-                    {coopSetting["coopStage"]["id"]}
+                    {t(coopSetting["coopStage"]["id"])}
                   </Text>
                 );
               }
