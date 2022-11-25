@@ -7,7 +7,7 @@ import {
   useToast,
   VStack,
 } from "native-base";
-import ScheduleBox from "./components/ScheduleBox";
+import { ScheduleBox } from "./components";
 import { fetchSchedules } from "./utils/Api";
 import Color from "./utils/Color";
 
