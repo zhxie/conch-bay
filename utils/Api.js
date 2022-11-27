@@ -19,6 +19,31 @@ const fetchSchedules = async () => {
   return json;
 };
 
+const fetchFriends = async (bulletToken) => {
+  const res = await fetch(
+    "https://api.lp1.av5ja.srv.nintendo.net/api/graphql",
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${bulletToken}`,
+        "Content-Type": "application/json",
+        "X-Web-View-Ver": WEB_VIEW_VERSION,
+      },
+      body: JSON.stringify({
+        extensions: {
+          persistedQuery: {
+            sha256Hash: "7a0e05c28c7d3f7e5a06def87ab8cd2d",
+            version: 1,
+          },
+        },
+        variables: {},
+      }),
+    }
+  );
+  const json = await res.json();
+  return json;
+};
+
 const getNsoappVersion = async () => {
   const res = await fetch(
     "https://apps.apple.com/us/app/nintendo-switch-online/id1234806557"
@@ -221,6 +246,7 @@ const getBulletToken = async (webServiceToken, country) => {
 
 export {
   fetchSchedules,
+  fetchFriends,
   getNsoappVersion,
   getWebViewVersion,
   generateLogIn,

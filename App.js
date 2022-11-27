@@ -18,6 +18,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { ScheduleBox } from "./components";
 import t from "./i18n";
 import {
+  fetchFriends,
   fetchSchedules,
   generateLogIn,
   getBulletToken,
@@ -44,6 +45,7 @@ const App = () => {
   const [grade, setGrade] = useState("");
 
   const [schedules, setSchedules] = useState(undefined);
+  const [friends, setFriends] = useState(undefined);
 
   useEffect(() => {
     loadPersistence().catch((e) => toast.show({ description: e.message }));
@@ -117,6 +119,30 @@ const App = () => {
   );
   const regularShift = shift("regularSchedules");
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const friends = await fetchFriends(bulletToken);
+        setFriends(friends);
+      } catch (e) {
+        toast.show({ description: e.message });
+      }
+    };
+    fetchData();
+  }, [bulletToken]);
+  const friendMark = (onlineState) => {
+    switch (onlineState) {
+      case "COOP_MODE_FIGHTING":
+        return "salmon";
+      case "VS_MODE_FIGHTING":
+        return "anarchy";
+      case "ONLINE":
+        return "teal.300";
+      default:
+        return "white";
+    }
+  };
+
   return (
     <NativeBaseProvider theme={theme}>
       <VStack flex={1} _dark={{ bg: "gray.900" }} _light={{ bg: "gray.50" }}>
@@ -145,7 +171,7 @@ const App = () => {
             )}
             <ScrollView
               horizontal
-              w={96}
+              w="100%"
               flexGrow="unset"
               showsHorizontalScrollIndicator="false"
             >
@@ -177,6 +203,34 @@ const App = () => {
                 )}
               </HStack>
             </ScrollView>
+            {friends && (
+              <ScrollView
+                horizontal
+                w="100%"
+                flexGrow="unset"
+                showsHorizontalScrollIndicator="false"
+              >
+                <HStack space={2} px={4}>
+                  {friends["data"]["friends"]["nodes"].map((friend) => {
+                    return (
+                      <Avatar
+                        key={friend["id"]}
+                        size="md"
+                        _dark={{ bg: "gray.700" }}
+                        _light={{ bg: "gray.100" }}
+                        source={{
+                          uri: friend["userIcon"]["url"],
+                        }}
+                        borderColor={friendMark(friend["onlineState"])}
+                        borderWidth={
+                          friend["onlineState"] !== "OFFLINE" ? 2 : 0
+                        }
+                      />
+                    );
+                  })}
+                </HStack>
+              </ScrollView>
+            )}
           </VStack>
         </ScrollView>
       </VStack>
