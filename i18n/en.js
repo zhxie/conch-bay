@@ -1,4 +1,14 @@
 const en = {
+  // UI.
+  log_in: "Log In",
+  log_in_notice:
+    "Conch Bay requires acquiring tokens to access SplatNet 3. The process involves making a secure request to non-Nintendo imink with minimal, non-identifying information, and this information will not be logged or stored. See the imink Privacy Policy for more information.",
+  imink_privacy_policy: "imink Privacy Policy",
+  log_in_continue: "I have read and understand",
+  logging_in: "Acquiring tokens",
+  log_out_notice: "Logging out will remove all stored data from Conch Bay!",
+  log_out_continue: "Log Out",
+  logging_out: "Logging out",
   // Modes.
   regular_battle: "Regular Battle",
   anarchy_battle: "Anarchy Battle",

@@ -1,4 +1,15 @@
 const ja = {
+  // UI.
+  log_in: "ログイン",
+  log_in_notice:
+    "Conch Bay requires acquiring tokens to access SplatNet 3. The process involves making a secure request to non-Nintendo imink with minimal, non-identifying information, and this information will not be logged or stored. See the imink Privacy Policy for more information.",
+  imink_privacy_policy: "imink プライバシーポリシー",
+  log_in_continue: "読んで理解しました",
+  logging_in: "トークン取得中",
+  log_out_notice:
+    "ログアウトすると、コンクベイに保存されているすべてのデータが削除されます。",
+  log_out_continue: "ログアウト",
+  logging_out: "ログアウト中",
   // Modes.
   regular_battle: "レギュラーマッチ",
   anarchy_battle: "バンカラマッチ",
