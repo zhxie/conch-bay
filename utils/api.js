@@ -19,31 +19,6 @@ const fetchSchedules = async () => {
   return json;
 };
 
-const fetchFriends = async (bulletToken) => {
-  const res = await fetch(
-    "https://api.lp1.av5ja.srv.nintendo.net/api/graphql",
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${bulletToken}`,
-        "Content-Type": "application/json",
-        "X-Web-View-Ver": WEB_VIEW_VERSION,
-      },
-      body: JSON.stringify({
-        extensions: {
-          persistedQuery: {
-            sha256Hash: "7a0e05c28c7d3f7e5a06def87ab8cd2d",
-            version: 1,
-          },
-        },
-        variables: {},
-      }),
-    }
-  );
-  const json = await res.json();
-  return json;
-};
-
 const getNsoappVersion = async () => {
   const res = await fetch(
     "https://apps.apple.com/us/app/nintendo-switch-online/id1234806557"
@@ -226,14 +201,15 @@ const getWebServiceToken = async (sessionToken) => {
   );
   const json6 = await res6.json();
   const webServiceToken = json6["result"]["accessToken"];
-  return { webServiceToken, country };
+  return { webServiceToken, country, language };
 };
-const getBulletToken = async (webServiceToken, country) => {
+const getBulletToken = async (webServiceToken, country, language) => {
   const res = await fetch(
     "https://api.lp1.av5ja.srv.nintendo.net/api/bullet_tokens",
     {
       method: "POST",
       headers: {
+        "Accept-Language": language ?? "*",
         Cookie: `_gtoken=${webServiceToken}`,
         "X-NACOUNTRY": country,
         "X-Web-View-Ver": WEB_VIEW_VERSION,
@@ -244,13 +220,56 @@ const getBulletToken = async (webServiceToken, country) => {
   return json["bulletToken"];
 };
 
+const fetchGraphQl = async (bulletToken, hash, language) => {
+  const res = await fetch(
+    "https://api.lp1.av5ja.srv.nintendo.net/api/graphql",
+    {
+      method: "POST",
+      headers: {
+        "Accept-Language": language ?? "*",
+        Authorization: `Bearer ${bulletToken}`,
+        "Content-Type": "application/json",
+        "X-Web-View-Ver": WEB_VIEW_VERSION,
+      },
+      body: JSON.stringify({
+        extensions: {
+          persistedQuery: {
+            sha256Hash: hash,
+            version: 1,
+          },
+        },
+        variables: {},
+      }),
+    }
+  );
+  return res;
+};
+const checkBulletToken = async (bulletToken, language) => {
+  const res = await fetchGraphQl(
+    bulletToken,
+    "dba47124d5ec3090c97ba17db5d2f4b3",
+    language
+  );
+  return res.ok;
+};
+const fetchFriends = async (bulletToken, language) => {
+  const res = await fetchGraphQl(
+    bulletToken,
+    "7a0e05c28c7d3f7e5a06def87ab8cd2d",
+    language
+  );
+  const json = await res.json();
+  return json;
+};
+
 export {
   fetchSchedules,
-  fetchFriends,
   getNsoappVersion,
   getWebViewVersion,
   generateLogIn,
   getSessionToken,
   getWebServiceToken,
   getBulletToken,
+  checkBulletToken,
+  fetchFriends,
 };

@@ -37,7 +37,6 @@ const App = () => {
   const [loggingOut, setLoggingOut] = useState(false);
 
   const [sessionToken, setSessionToken] = useState("");
-  const [webServiceToken, setWebServiceToken] = useState("");
   const [bulletToken, setBulletToken] = useState("");
   const [icon, setIcon] = useState("");
   const [level, setLevel] = useState("");
@@ -52,7 +51,6 @@ const App = () => {
   }, [loadPersistence]);
   const loadPersistence = async () => {
     setSessionToken((await AsyncStorage.getItem("sessionToken")) ?? "");
-    setWebServiceToken((await AsyncStorage.getItem("webServiceToken")) ?? "");
     setBulletToken((await AsyncStorage.getItem("bulletToken")) ?? "");
     setIcon((await AsyncStorage.getItem("icon")) ?? "");
     setLevel((await AsyncStorage.getItem("level")) ?? "");
@@ -62,7 +60,6 @@ const App = () => {
   const savePersistence = async (persistence) => {
     for (let key of [
       "sessionToken",
-      "webServiceToken",
       "bulletToken",
       "icon",
       "level",
@@ -121,15 +118,32 @@ const App = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      if (!bulletToken) {
+        return;
+      }
+
       try {
         const friends = await fetchFriends(bulletToken);
         setFriends(friends);
       } catch (e) {
         toast.show({ description: e.message });
+        regenerateBulletToken(sessionToken);
       }
     };
     fetchData();
   }, [bulletToken]);
+  const regenerateBulletToken = async (sessionToken) => {
+    try {
+      const res = await getWebServiceToken(sessionToken);
+      const res2 = await getBulletToken(res.webServiceToken, res.country);
+      setBulletToken(res2);
+      await savePersistence({
+        bulletToken: res2,
+      });
+    } catch (e) {
+      toast.show({ description: e.message });
+    }
+  };
   const friendMark = (onlineState) => {
     switch (onlineState) {
       case "COOP_MODE_FIGHTING":
@@ -142,6 +156,62 @@ const App = () => {
         return "white";
     }
   };
+
+  const onLogInClose = useCallback(() => {
+    if (!loggingIn) {
+      setLogIn(false);
+    }
+  }, [loggingIn]);
+  const onPrivacyPolicyPress = useCallback(() => {
+    WebBrowser.openBrowserAsync(
+      "https://github.com/JoneWang/imink/wiki/Privacy-Policy"
+    );
+  }, []);
+  const onLogInPress = useCallback(async () => {
+    try {
+      setLoggingIn(true);
+      const res = await generateLogIn();
+      WebBrowser.maybeCompleteAuthSession();
+      const res2 = await WebBrowser.openAuthSessionAsync(
+        res.url,
+        "npf71b963c1b7b6d119://"
+      );
+      if (res2.type !== "success") {
+        setLoggingIn(false);
+        return;
+      }
+
+      const res3 = await getSessionToken(res2.url, res.cv);
+      setSessionToken(res3);
+      await savePersistence({ sessionToken: res3 });
+
+      await regenerateBulletToken(res3);
+
+      setLoggingIn(false);
+      setLogIn(false);
+    } catch (e) {
+      toast.show({ description: e.message });
+      setLoggingIn(false);
+    }
+  });
+  const onLogOutClose = useCallback(() => {
+    if (!loggingOut) {
+      setLogOut(false);
+    }
+  }, [loggingOut]);
+  const onLogOutPress = useCallback(async () => {
+    try {
+      setLoggingOut(true);
+      await clearPersistence();
+      await loadPersistence();
+      setFriends(undefined);
+      setLoggingOut(false);
+      setLogOut(false);
+    } catch (e) {
+      toast.show({ description: e.message });
+      setLoggingOut(false);
+    }
+  }, []);
 
   return (
     <NativeBaseProvider theme={theme}>
@@ -236,11 +306,7 @@ const App = () => {
       </VStack>
       <Modal
         isOpen={logIn}
-        onClose={() => {
-          if (!loggingIn) {
-            setLogIn(false);
-          }
-        }}
+        onClose={onLogInClose}
         avoidKeyboard
         justifyContent="flex-end"
         safeArea
@@ -255,11 +321,7 @@ const App = () => {
                 <Button
                   colorScheme={colorScheme}
                   variant="subtle"
-                  onPress={() =>
-                    WebBrowser.openBrowserAsync(
-                      "https://github.com/JoneWang/imink/wiki/Privacy-Policy"
-                    )
-                  }
+                  onPress={onPrivacyPolicyPress}
                 >
                   {t("imink_privacy_policy")}
                 </Button>
@@ -267,43 +329,7 @@ const App = () => {
                   colorScheme={colorScheme}
                   isLoading={loggingIn}
                   isLoadingText={t("logging_in")}
-                  onPress={async () => {
-                    try {
-                      setLoggingIn(true);
-                      const res = await generateLogIn();
-                      WebBrowser.maybeCompleteAuthSession();
-                      const res2 = await WebBrowser.openAuthSessionAsync(
-                        res.url,
-                        "npf71b963c1b7b6d119://"
-                      );
-                      if (res2.type !== "success") {
-                        setLoggingIn(false);
-                        return;
-                      }
-
-                      const res3 = await getSessionToken(res2.url, res.cv);
-                      setSessionToken(res3);
-                      await savePersistence({ sessionToken: res3 });
-
-                      const res4 = await getWebServiceToken(res3);
-                      setWebServiceToken(res4.webServiceToken);
-                      const res5 = await getBulletToken(
-                        res4.webServiceToken,
-                        res4.country
-                      );
-                      setBulletToken(res5);
-                      await savePersistence({
-                        webServiceToken: res4.webServiceToken,
-                        bulletToken: res5,
-                      });
-
-                      setLoggingIn(false);
-                      setLogIn(false);
-                    } catch (e) {
-                      toast.show({ description: e.message });
-                      setLoggingIn(false);
-                    }
-                  }}
+                  onPress={onLogInPress}
                 >
                   {t("log_in_continue")}
                 </Button>
@@ -314,11 +340,7 @@ const App = () => {
       </Modal>
       <Modal
         isOpen={logOut}
-        onClose={() => {
-          if (!loggingOut) {
-            setLogOut(false);
-          }
-        }}
+        onClose={onLogOutClose}
         avoidKeyboard
         justifyContent="flex-end"
         safeArea
@@ -334,18 +356,7 @@ const App = () => {
                   colorScheme={colorScheme}
                   isLoading={loggingOut}
                   isLoadingText={t("logging_out")}
-                  onPress={async () => {
-                    try {
-                      setLoggingOut(true);
-                      await clearPersistence();
-                      await loadPersistence();
-                      setLoggingOut(false);
-                      setLogOut(false);
-                    } catch (e) {
-                      toast.show({ description: e.message });
-                      setLoggingOut(false);
-                    }
-                  }}
+                  onPress={onLogOutPress}
                 >
                   {t("log_out_continue")}
                 </Button>
