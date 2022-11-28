@@ -261,6 +261,15 @@ const fetchFriends = async (bulletToken, language) => {
   const json = await res.json();
   return json;
 };
+const fetchSummary = async (bulletToken, language) => {
+  const res = await fetchGraphQl(
+    bulletToken,
+    "9d4ef9fba3f84d6933bb1f6f436f7200",
+    language
+  );
+  const json = await res.json();
+  return json;
+};
 
 export {
   fetchSchedules,
@@ -272,4 +281,5 @@ export {
   getBulletToken,
   checkBulletToken,
   fetchFriends,
+  fetchSummary,
 };

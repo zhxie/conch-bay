@@ -2,12 +2,14 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as WebBrowser from "expo-web-browser";
 import {
   Avatar,
+  Badge,
   Button,
   HStack,
   Modal,
   NativeBaseProvider,
   Pressable,
   ScrollView,
+  Skeleton,
   Text,
   useColorModeValue,
   useToast,
@@ -20,6 +22,7 @@ import t from "./i18n";
 import {
   fetchFriends,
   fetchSchedules,
+  fetchSummary,
   generateLogIn,
   getBulletToken,
   getSessionToken,
@@ -141,21 +144,40 @@ const App = () => {
   useEffect(() => {
     onRefresh();
   }, [bulletToken]);
+  const onRefreshCount = useRef(0);
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
+    onRefreshCount.current += 1;
 
     try {
       const schedules = await fetchSchedules();
       setSchedules(schedules);
       if (bulletToken) {
-        const friends = await fetchFriends(bulletToken);
+        const [friends, summary] = await Promise.all([
+          fetchFriends(bulletToken),
+          fetchSummary(bulletToken),
+        ]);
         setFriends(friends);
+        const icon = summary["data"]["currentPlayer"]["userIcon"]["url"];
+        const level = summary["data"]["playHistory"]["rank"];
+        const rank = summary["data"]["playHistory"]["udemae"];
+        setIcon(icon);
+        setLevel(String(level));
+        setRank(rank);
+        savePersistence({
+          icon: icon,
+          level: String(level),
+          rank: rank,
+        });
       }
-      setRefreshing(false);
+      if (onRefreshCount.current === 1) {
+        setRefreshing(false);
+      }
     } catch (e) {
       toast.show({ description: e.message });
       await regenerateBulletToken(sessionToken);
     }
+    onRefreshCount.current -= 1;
   });
 
   const onLogInClose = useCallback(() => {
@@ -238,12 +260,28 @@ const App = () => {
             {sessionToken.length > 0 && (
               <VStack px={4} space={2} alignItems="center">
                 <Pressable onPress={() => setLogOut(true)}>
-                  <Avatar
-                    size="lg"
-                    _dark={{ bg: "gray.700" }}
-                    _light={{ bg: "gray.100" }}
-                  />
+                  <Skeleton size={16} rounded="full" isLoaded={icon}>
+                    <Avatar
+                      size="lg"
+                      _dark={{ bg: "gray.700" }}
+                      _light={{ bg: "gray.100" }}
+                      source={{
+                        uri: icon,
+                      }}
+                    />
+                  </Skeleton>
                 </Pressable>
+                <HStack space={2} alignSelf="center">
+                  {level.length > 0 && (
+                    <Badge colorScheme="green">{level}</Badge>
+                  )}
+                  {rank.length > 0 && (
+                    <Badge colorScheme="orange">{rank}</Badge>
+                  )}
+                  {grade.length > 0 && (
+                    <Badge colorScheme="amber">{grade}</Badge>
+                  )}
+                </HStack>
               </VStack>
             )}
             <ScrollView
