@@ -14,8 +14,8 @@ import {
   VStack,
   WarningIcon,
 } from "native-base";
-import React, { useCallback, useEffect, useState } from "react";
-import { ScheduleBox } from "./components";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { SafeAreaRefreshControl, ScheduleBox } from "./components";
 import t from "./i18n";
 import {
   fetchFriends,
@@ -35,6 +35,7 @@ const App = () => {
   const [loggingIn, setLoggingIn] = useState(false);
   const [logOut, setLogOut] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
+  const [refreshing, setRefreshing] = useState(true);
 
   const [sessionToken, setSessionToken] = useState("");
   const [bulletToken, setBulletToken] = useState("");
@@ -75,17 +76,6 @@ const App = () => {
     await AsyncStorage.clear();
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const schedules = await fetchSchedules();
-        setSchedules(schedules);
-      } catch (e) {
-        toast.show({ description: e.message });
-      }
-    };
-    fetchData();
-  }, [setSchedules]);
   const schedule = useCallback(
     (mode) => {
       if (schedules === undefined) {
@@ -116,34 +106,6 @@ const App = () => {
   );
   const regularShift = shift("regularSchedules");
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (!bulletToken) {
-        return;
-      }
-
-      try {
-        const friends = await fetchFriends(bulletToken);
-        setFriends(friends);
-      } catch (e) {
-        toast.show({ description: e.message });
-        regenerateBulletToken(sessionToken);
-      }
-    };
-    fetchData();
-  }, [bulletToken]);
-  const regenerateBulletToken = async (sessionToken) => {
-    try {
-      const res = await getWebServiceToken(sessionToken);
-      const res2 = await getBulletToken(res.webServiceToken, res.country);
-      setBulletToken(res2);
-      await savePersistence({
-        bulletToken: res2,
-      });
-    } catch (e) {
-      toast.show({ description: e.message });
-    }
-  };
   const friendMark = (onlineState) => {
     switch (onlineState) {
       case "COOP_MODE_FIGHTING":
@@ -156,6 +118,45 @@ const App = () => {
         return "white";
     }
   };
+
+  const regeneratingBulletToken = useRef(false);
+  const regenerateBulletToken = async (sessionToken) => {
+    if (!sessionToken || regeneratingBulletToken.current) {
+      return;
+    }
+    regeneratingBulletToken.current = true;
+
+    try {
+      const res = await getWebServiceToken(sessionToken);
+      const res2 = await getBulletToken(res.webServiceToken, res.country);
+      setBulletToken(res2);
+      await savePersistence({
+        bulletToken: res2,
+      });
+    } catch (e) {
+      toast.show({ description: e.message });
+    }
+    regeneratingBulletToken.current = false;
+  };
+  useEffect(() => {
+    onRefresh();
+  }, [bulletToken]);
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+
+    try {
+      const schedules = await fetchSchedules();
+      setSchedules(schedules);
+      if (bulletToken) {
+        const friends = await fetchFriends(bulletToken);
+        setFriends(friends);
+      }
+      setRefreshing(false);
+    } catch (e) {
+      toast.show({ description: e.message });
+      await regenerateBulletToken(sessionToken);
+    }
+  });
 
   const onLogInClose = useCallback(() => {
     if (!loggingIn) {
@@ -180,7 +181,6 @@ const App = () => {
         setLoggingIn(false);
         return;
       }
-
       const res3 = await getSessionToken(res2.url, res.cv);
       setSessionToken(res3);
       await savePersistence({ sessionToken: res3 });
@@ -216,7 +216,14 @@ const App = () => {
   return (
     <NativeBaseProvider theme={theme}>
       <VStack flex={1} _dark={{ bg: "gray.900" }} _light={{ bg: "gray.50" }}>
-        <ScrollView>
+        <ScrollView
+          refreshControl={
+            <SafeAreaRefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+            />
+          }
+        >
           <VStack space={4} alignItems="center" safeArea>
             {!sessionToken && (
               <VStack px={4} space={2} alignItems="center">

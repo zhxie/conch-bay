@@ -9,6 +9,8 @@ const en = {
   log_out_notice: "Logging out will remove all stored data from Conch Bay!",
   log_out_continue: "Log Out",
   logging_out: "Logging out",
+  pull_to_refresh: "Pull to REFRESH",
+  release_to_refresh: "Release to REFRESH",
   // Modes.
   regular_battle: "Regular Battle",
   anarchy_battle: "Anarchy Battle",
