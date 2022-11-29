@@ -270,16 +270,38 @@ const MainView = (props) => {
           {sessionToken.length > 0 && (
             <VStack px={4} space={2} alignItems="center">
               <Pressable onPress={() => setLogOut(true)}>
-                <Skeleton size={16} rounded="full" isLoaded={icon}>
-                  <Avatar
-                    size="lg"
-                    _dark={{ bg: "gray.700" }}
-                    _light={{ bg: "gray.100" }}
-                    source={{
-                      uri: icon,
-                    }}
-                  />
-                </Skeleton>
+                {({ isPressed }) => {
+                  return (
+                    <Skeleton
+                      size={16}
+                      rounded="full"
+                      isLoaded={icon}
+                      style={{
+                        transform: [
+                          {
+                            scale: isPressed ? 0.96 : 1,
+                          },
+                        ],
+                      }}
+                    >
+                      <Avatar
+                        size="lg"
+                        _dark={{ bg: "gray.700" }}
+                        _light={{ bg: "gray.100" }}
+                        source={{
+                          uri: icon,
+                        }}
+                        style={{
+                          transform: [
+                            {
+                              scale: isPressed ? 0.96 : 1,
+                            },
+                          ],
+                        }}
+                      />
+                    </Skeleton>
+                  );
+                }}
               </Pressable>
               <HStack space={2} alignSelf="center">
                 {level.length > 0 && <Badge colorScheme="green">{level}</Badge>}
@@ -348,17 +370,31 @@ const MainView = (props) => {
               <HStack space={2} px={4}>
                 {friends["data"]["friends"]["nodes"].map((friend) => {
                   return (
-                    <Avatar
-                      key={friend["id"]}
-                      size="md"
-                      _dark={{ bg: "gray.700" }}
-                      _light={{ bg: "gray.100" }}
-                      source={{
-                        uri: friend["userIcon"]["url"],
+                    <Pressable key={friend["id"]}>
+                      {({ isPressed }) => {
+                        return (
+                          <Avatar
+                            size="md"
+                            _dark={{ bg: "gray.700" }}
+                            _light={{ bg: "gray.100" }}
+                            source={{
+                              uri: friend["userIcon"]["url"],
+                            }}
+                            borderColor={friendMark(friend["onlineState"])}
+                            borderWidth={
+                              friend["onlineState"] !== "OFFLINE" ? 2 : 0
+                            }
+                            style={{
+                              transform: [
+                                {
+                                  scale: isPressed ? 0.96 : 1,
+                                },
+                              ],
+                            }}
+                          />
+                        );
                       }}
-                      borderColor={friendMark(friend["onlineState"])}
-                      borderWidth={friend["onlineState"] !== "OFFLINE" ? 2 : 0}
-                    />
+                    </Pressable>
                   );
                 })}
               </HStack>
