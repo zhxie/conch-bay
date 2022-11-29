@@ -1,8 +1,7 @@
 import { Box, CircleIcon, HStack, Skeleton, Text, VStack } from "native-base";
-import t from "../i18n";
 
 const ScheduleBox = (props) => {
-  const { color, valid, title, matchSetting, coopSetting } = props;
+  const { t, color, valid, title, matchSetting, coopSetting } = props;
 
   return (
     <Box
