@@ -5,18 +5,11 @@ import React from "react";
 import { en, ja, zh } from "./i18n";
 import MainView from "./views/MainView";
 
-// Color.
-const Color = {
-  regular: "#19d719",
-  anarchy: "#f54910",
-  salmon: "#ff5600",
-};
-
 // Use system color mode.
 const config = {
   useSystemColorMode: true,
 };
-const theme = extendTheme({ config: config, colors: Color });
+const theme = extendTheme({ config: config });
 
 // Localization.
 const i18n = new I18n();

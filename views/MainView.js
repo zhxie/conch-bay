@@ -109,6 +109,7 @@ const MainView = (props) => {
     },
     [schedules]
   );
+  const xSchedule = schedule("xSchedules");
   const regularShift = shift("regularSchedules");
   const validateSchedule = (schedule) => {
     if (!schedule) {
@@ -124,9 +125,9 @@ const MainView = (props) => {
   const friendMark = (onlineState) => {
     switch (onlineState) {
       case "COOP_MODE_FIGHTING":
-        return "salmon";
+        return "orange.500";
       case "VS_MODE_FIGHTING":
-        return "anarchy";
+        return "orange.600";
       case "ONLINE":
         return "teal.300";
       default:
@@ -297,7 +298,7 @@ const MainView = (props) => {
               {regularSchedule !== null && (
                 <ScheduleBox
                   t={t}
-                  color="regular"
+                  color="green.500"
                   valid={validateSchedule(regularSchedule)}
                   matchSetting={regularSchedule?.["regularMatchSetting"]}
                 />
@@ -305,7 +306,7 @@ const MainView = (props) => {
               {anarchySchedule !== null && (
                 <ScheduleBox
                   t={t}
-                  color="anarchy"
+                  color="orange.600"
                   valid={validateSchedule(anarchySchedule)}
                   matchSetting={anarchySchedule?.["bankaraMatchSettings"][0]}
                 />
@@ -313,15 +314,23 @@ const MainView = (props) => {
               {anarchySchedule !== null && (
                 <ScheduleBox
                   t={t}
-                  color="anarchy"
+                  color="orange.600"
                   valid={validateSchedule(anarchySchedule)}
                   matchSetting={anarchySchedule?.["bankaraMatchSettings"][1]}
+                />
+              )}
+              {xSchedule !== null && (
+                <ScheduleBox
+                  t={t}
+                  color="emerald.400"
+                  valid={validateSchedule(xSchedule)}
+                  matchSetting={xSchedule?.["xMatchSetting"]}
                 />
               )}
               {regularShift !== null && (
                 <ScheduleBox
                   t={t}
-                  color="salmon"
+                  color="orange.500"
                   valid={validateSchedule(regularShift)}
                   title={t("salmon_run")}
                   coopSetting={regularShift?.["setting"]}
