@@ -108,6 +108,16 @@ const App = () => {
     [schedules]
   );
   const regularShift = shift("regularSchedules");
+  const validateSchedule = (schedule) => {
+    if (!schedule) {
+      return false;
+    }
+
+    const now = new Date().getTime();
+    const date = new Date(schedule["startTime"]);
+    const timestamp = date.getTime();
+    return timestamp < now;
+  };
 
   const friendMark = (onlineState) => {
     switch (onlineState) {
@@ -294,24 +304,28 @@ const App = () => {
                 {regularSchedule !== null && (
                   <ScheduleBox
                     color="regular"
+                    valid={validateSchedule(regularSchedule)}
                     matchSetting={regularSchedule?.["regularMatchSetting"]}
                   />
                 )}
                 {anarchySchedule !== null && (
                   <ScheduleBox
                     color="anarchy"
+                    valid={validateSchedule(anarchySchedule)}
                     matchSetting={anarchySchedule?.["bankaraMatchSettings"][0]}
                   />
                 )}
                 {anarchySchedule !== null && (
                   <ScheduleBox
                     color="anarchy"
+                    valid={validateSchedule(anarchySchedule)}
                     matchSetting={anarchySchedule?.["bankaraMatchSettings"][1]}
                   />
                 )}
                 {regularShift !== null && (
                   <ScheduleBox
                     color="salmon"
+                    valid={validateSchedule(regularShift)}
                     title={t("salmon_run")}
                     coopSetting={regularShift?.["setting"]}
                   />

@@ -2,12 +2,7 @@ import { Box, CircleIcon, HStack, Skeleton, Text, VStack } from "native-base";
 import t from "../i18n";
 
 const ScheduleBox = (props) => {
-  const {
-    color = "black",
-    title = undefined,
-    matchSetting = null,
-    coopSetting = null,
-  } = props;
+  const { color, valid, title, matchSetting, coopSetting } = props;
 
   return (
     <Box
@@ -24,14 +19,19 @@ const ScheduleBox = (props) => {
             rounded="full"
             isLoaded={matchSetting || coopSetting}
           >
-            <CircleIcon size={3} color={color} />
+            <CircleIcon size={3} color={valid ? color : "gray.400"} />
           </Skeleton>
           <Skeleton.Text
             flex={1}
             lines={1}
             isLoaded={matchSetting || coopSetting}
           >
-            <Text bold fontSize="md" color={color} noOfLines={1}>
+            <Text
+              bold
+              fontSize="md"
+              color={valid ? color : "gray.400"}
+              noOfLines={1}
+            >
               {(() => {
                 if (matchSetting) {
                   return title ?? t(matchSetting["vsRule"]["id"]) ?? "";
