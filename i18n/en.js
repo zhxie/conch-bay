@@ -35,6 +35,8 @@ const en = {
   VnNTdGFnZS0z: "Hagglefish Market",
   VnNTdGFnZS00: "Undertow Spillway",
   VnNTdGFnZS02: "Mincemeat Metalworks",
+  VnNTdGFnZS03: "Brinewater Springs",
+  VnNTdGFnZS05: "Flounder Heights",
   "VnNTdGFnZS0xMA==": "Hammerhead Bridge",
   "VnNTdGFnZS0xMQ==": "Museum d'Alfonsino",
   "VnNTdGFnZS0xMg==": "Mahi-Mahi Resort",
@@ -45,6 +47,7 @@ const en = {
   // Coop stages.
   "Q29vcFN0YWdlLTE=": "Spawning Grounds",
   "Q29vcFN0YWdlLTI=": "Sockeye Station",
+  "Q29vcFN0YWdlLTY=": "Marooner's Bay",
   "Q29vcFN0YWdlLTc=": "Gone Fission Hydroplant",
 };
 

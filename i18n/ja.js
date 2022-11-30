@@ -36,6 +36,8 @@ const ja = {
   VnNTdGFnZS0z: "ヤガラ市場",
   VnNTdGFnZS00: "マテガイ放水路",
   VnNTdGFnZS02: "ナメロウ金属",
+  VnNTdGFnZS03: "クサヤ温泉",
+  VnNTdGFnZS05: "ヒラメが丘団地",
   "VnNTdGFnZS0xMA==": "マサバ海峡大橋",
   "VnNTdGFnZS0xMQ==": "キンメダイ美術館",
   "VnNTdGFnZS0xMg==": "マヒマヒリゾート＆スパ",
@@ -46,6 +48,7 @@ const ja = {
   // Coop stages.
   "Q29vcFN0YWdlLTE=": "シェケナダム",
   "Q29vcFN0YWdlLTI=": "アラマキ砦",
+  "Q29vcFN0YWdlLTY=": "難破船ドン・ブラコ",
   "Q29vcFN0YWdlLTc=": "ムニ・エール海洋発電所",
 };
 

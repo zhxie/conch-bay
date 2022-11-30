@@ -35,6 +35,8 @@ const zh = {
   VnNTdGFnZS0z: "烟管鱼市场",
   VnNTdGFnZS00: "竹蛏疏洪道",
   VnNTdGFnZS02: "鱼肉碎金属",
+  VnNTdGFnZS03: "臭鱼干温泉",
+  VnNTdGFnZS05: "比目鱼住宅区",
   "VnNTdGFnZS0xMA==": "真鲭跨海大桥",
   "VnNTdGFnZS0xMQ==": "金眼鲷美术馆",
   "VnNTdGFnZS0xMg==": "鬼头刀SPA度假区",
@@ -45,6 +47,7 @@ const zh = {
   // Coop stages.
   "Q29vcFN0YWdlLTE=": "鲑坝",
   "Q29vcFN0YWdlLTI=": "新卷堡",
+  "Q29vcFN0YWdlLTY=": "漂浮落难船",
   "Q29vcFN0YWdlLTc=": "麦年海洋发电所",
 };
 
