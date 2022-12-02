@@ -1,5 +1,5 @@
 import { HStack, ScrollView } from "native-base";
-import { ScheduleBox } from "../components";
+import { ScheduleBox, TransformPressable } from "../components";
 
 const ScheduleView = (props) => {
   const { t, accentColor, schedules } = props;
@@ -69,49 +69,59 @@ const ScheduleView = (props) => {
     <ScrollView horizontal w="100%" flexGrow="unset" showsHorizontalScrollIndicator="false">
       <HStack space={2} px={4}>
         {firstSplatfestSchedule !== undefined && (
-          <ScheduleBox
-            color={accentColor}
-            isLoaded={firstSplatfestSchedule}
-            valid={isStarted(firstSplatfestSchedule)}
-            title={getRule(firstSplatfestSchedule, "festMatchSetting")}
-            stages={getStages(firstSplatfestSchedule, "festMatchSetting")}
-          />
+          <TransformPressable>
+            <ScheduleBox
+              color={accentColor}
+              isLoaded={firstSplatfestSchedule}
+              valid={isStarted(firstSplatfestSchedule)}
+              title={getRule(firstSplatfestSchedule, "festMatchSetting")}
+              stages={getStages(firstSplatfestSchedule, "festMatchSetting")}
+            />
+          </TransformPressable>
         )}
         {firstRegularSchedule !== undefined && (
-          <ScheduleBox
-            color="green.500"
-            isLoaded={firstRegularSchedule}
-            valid={isStarted(firstRegularSchedule)}
-            title={getRule(firstRegularSchedule, "regularMatchSetting")}
-            stages={getStages(firstRegularSchedule, "regularMatchSetting")}
-          />
+          <TransformPressable>
+            <ScheduleBox
+              color="green.500"
+              isLoaded={firstRegularSchedule}
+              valid={isStarted(firstRegularSchedule)}
+              title={getRule(firstRegularSchedule, "regularMatchSetting")}
+              stages={getStages(firstRegularSchedule, "regularMatchSetting")}
+            />
+          </TransformPressable>
         )}
         {firstAnarchySchedule !== undefined && (
-          <ScheduleBox
-            color="orange.600"
-            isLoaded={firstAnarchySchedule}
-            valid={isStarted(firstAnarchySchedule)}
-            title={getRule(firstAnarchySchedule, "bankaraMatchSettings", 0)}
-            stages={getStages(firstAnarchySchedule, "bankaraMatchSettings", 0)}
-          />
+          <TransformPressable>
+            <ScheduleBox
+              color="orange.600"
+              isLoaded={firstAnarchySchedule}
+              valid={isStarted(firstAnarchySchedule)}
+              title={getRule(firstAnarchySchedule, "bankaraMatchSettings", 0)}
+              stages={getStages(firstAnarchySchedule, "bankaraMatchSettings", 0)}
+            />
+          </TransformPressable>
         )}
         {firstAnarchySchedule !== undefined && (
-          <ScheduleBox
-            color="orange.600"
-            isLoaded={firstAnarchySchedule}
-            valid={isStarted(firstAnarchySchedule)}
-            title={getRule(firstAnarchySchedule, "bankaraMatchSettings", 1)}
-            stages={getStages(firstAnarchySchedule, "bankaraMatchSettings", 1)}
-          />
+          <TransformPressable>
+            <ScheduleBox
+              color="orange.600"
+              isLoaded={firstAnarchySchedule}
+              valid={isStarted(firstAnarchySchedule)}
+              title={getRule(firstAnarchySchedule, "bankaraMatchSettings", 1)}
+              stages={getStages(firstAnarchySchedule, "bankaraMatchSettings", 1)}
+            />
+          </TransformPressable>
         )}
         {firstXSchedule !== undefined && (
-          <ScheduleBox
-            color="emerald.400"
-            isLoaded={firstXSchedule}
-            valid={isStarted(firstXSchedule)}
-            title={getRule(firstXSchedule, "xMatchSetting")}
-            stages={getStages(firstXSchedule, "xMatchSetting")}
-          />
+          <TransformPressable>
+            <ScheduleBox
+              color="emerald.400"
+              isLoaded={firstXSchedule}
+              valid={isStarted(firstXSchedule)}
+              title={getRule(firstXSchedule, "xMatchSetting")}
+              stages={getStages(firstXSchedule, "xMatchSetting")}
+            />
+          </TransformPressable>
         )}
       </HStack>
     </ScrollView>
