@@ -6,7 +6,6 @@ import {
   Button,
   HStack,
   Modal,
-  Pressable,
   ScrollView,
   Skeleton,
   Text,
@@ -18,6 +17,7 @@ import {
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { RefreshControl } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { TransformPressable } from "../components";
 import {
   fetchFriends,
   fetchSchedules,
@@ -29,6 +29,7 @@ import {
   updateNsoappVersion,
   updateWebViewVersion,
 } from "../utils/api";
+import FriendView from "./FriendView";
 import ScheduleView from "./ScheduleView";
 
 const MainView = (props) => {
@@ -53,7 +54,7 @@ const MainView = (props) => {
   const [rank, setRank] = useState("");
   const [grade, setGrade] = useState("");
 
-  const [schedules, setSchedules] = useState(null);
+  const [schedules, setSchedules] = useState(undefined);
   const [friends, setFriends] = useState(undefined);
 
   useEffect(() => {
@@ -76,19 +77,6 @@ const MainView = (props) => {
   };
   const clearPersistence = async () => {
     await AsyncStorage.clear();
-  };
-
-  const friendMark = (onlineState) => {
-    switch (onlineState) {
-      case "COOP_MODE_FIGHTING":
-        return "orange.500";
-      case "VS_MODE_FIGHTING":
-        return "orange.600";
-      case "ONLINE":
-        return "teal.300";
-      default:
-        return "white";
-    }
   };
 
   const regeneratingBulletToken = useRef(false);
@@ -151,6 +139,9 @@ const MainView = (props) => {
     onRefreshCount.current -= 1;
   });
 
+  const onLogInPress = useCallback(() => {
+    setLogIn(true);
+  });
   const onLogInClose = useCallback(() => {
     if (!loggingIn) {
       setLogIn(false);
@@ -159,7 +150,7 @@ const MainView = (props) => {
   const onPrivacyPolicyPress = useCallback(() => {
     WebBrowser.openBrowserAsync("https://github.com/JoneWang/imink/wiki/Privacy-Policy");
   }, []);
-  const onLogInPress = useCallback(async () => {
+  const onLogInContinuePress = useCallback(async () => {
     try {
       setLoggingIn(true);
       const res = await generateLogIn();
@@ -182,12 +173,15 @@ const MainView = (props) => {
       setLoggingIn(false);
     }
   });
+  const onLogOutPress = useCallback(() => {
+    setLogOut(true);
+  });
   const onLogOutClose = useCallback(() => {
     if (!loggingOut) {
       setLogOut(false);
     }
   }, [loggingOut]);
-  const onLogOutPress = useCallback(async () => {
+  const onLogOutContinuePress = useCallback(async () => {
     try {
       setLoggingOut(true);
       await clearPersistence();
@@ -215,47 +209,32 @@ const MainView = (props) => {
         <VStack space={4} alignItems="center" safeArea>
           {!sessionToken && (
             <VStack px={4} space={2} alignItems="center">
-              <Button colorScheme={accentColorScheme} onPress={() => setLogIn(true)}>
+              <Button colorScheme={accentColorScheme} onPress={onLogInPress}>
                 {t("log_in")}
               </Button>
             </VStack>
           )}
           {sessionToken.length > 0 && (
             <VStack px={4} space={2} alignItems="center">
-              <Pressable onPress={() => setLogOut(true)}>
-                {({ isPressed }) => {
-                  return (
-                    <Skeleton
-                      size={16}
-                      rounded="full"
-                      isLoaded={icon}
-                      style={{
-                        transform: [
-                          {
-                            scale: isPressed ? 0.96 : 1,
-                          },
-                        ],
-                      }}
-                    >
-                      <Avatar
-                        size="lg"
-                        _dark={{ bg: "gray.700" }}
-                        _light={{ bg: "gray.100" }}
-                        source={{
-                          uri: icon,
-                        }}
-                        style={{
-                          transform: [
-                            {
-                              scale: isPressed ? 0.96 : 1,
-                            },
-                          ],
-                        }}
-                      />
-                    </Skeleton>
-                  );
-                }}
-              </Pressable>
+              <TransformPressable onPress={onLogOutPress}>
+                <Skeleton size={16} rounded="full" isLoaded={icon}>
+                  <Avatar
+                    size="lg"
+                    _dark={{ bg: "gray.700" }}
+                    _light={{ bg: "gray.100" }}
+                    source={{
+                      uri: icon,
+                    }}
+                    style={{
+                      transform: [
+                        {
+                          scale: isPressed ? 0.96 : 1,
+                        },
+                      ],
+                    }}
+                  />
+                </Skeleton>
+              </TransformPressable>
               <HStack space={2} alignSelf="center">
                 {level.length > 0 && <Badge colorScheme="green">{level}</Badge>}
                 {rank.length > 0 && <Badge colorScheme="orange">{rank}</Badge>}
@@ -264,39 +243,7 @@ const MainView = (props) => {
             </VStack>
           )}
           <ScheduleView t={t} accentColor={accentColor} schedules={schedules} />
-          {friends && (
-            <ScrollView horizontal w="100%" flexGrow="unset" showsHorizontalScrollIndicator="false">
-              <HStack space={2} px={4}>
-                {friends["data"]["friends"]["nodes"].map((friend) => {
-                  return (
-                    <Pressable key={friend["id"]}>
-                      {({ isPressed }) => {
-                        return (
-                          <Avatar
-                            size="md"
-                            _dark={{ bg: "gray.700" }}
-                            _light={{ bg: "gray.100" }}
-                            source={{
-                              uri: friend["userIcon"]["url"],
-                            }}
-                            borderColor={friendMark(friend["onlineState"])}
-                            borderWidth={friend["onlineState"] !== "OFFLINE" ? 2 : 0}
-                            style={{
-                              transform: [
-                                {
-                                  scale: isPressed ? 0.96 : 1,
-                                },
-                              ],
-                            }}
-                          />
-                        );
-                      }}
-                    </Pressable>
-                  );
-                })}
-              </HStack>
-            </ScrollView>
-          )}
+          {sessionToken.length > 0 && <FriendView accentColor={accentColor} friends={friends} />}
         </VStack>
       </ScrollView>
       <Modal
@@ -324,7 +271,7 @@ const MainView = (props) => {
                   colorScheme={accentColorScheme}
                   isLoading={loggingIn}
                   isLoadingText={t("logging_in")}
-                  onPress={onLogInPress}
+                  onPress={onLogInContinuePress}
                 >
                   {t("log_in_continue")}
                 </Button>
@@ -351,7 +298,7 @@ const MainView = (props) => {
                   colorScheme={accentColorScheme}
                   isLoading={loggingOut}
                   isLoadingText={t("logging_out")}
-                  onPress={onLogOutPress}
+                  onPress={onLogOutContinuePress}
                 >
                   {t("log_out_continue")}
                 </Button>

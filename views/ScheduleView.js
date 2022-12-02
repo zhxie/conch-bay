@@ -19,6 +19,7 @@ const ScheduleView = (props) => {
       }
       return schedule;
     }
+    return null;
   };
   const firstRegularSchedule = getFirstSchedule(regularSchedules, "regularMatchSetting");
   const firstAnarchySchedule = getFirstSchedule(anarchySchedules, "bankaraMatchSettings");
@@ -68,7 +69,7 @@ const ScheduleView = (props) => {
   return (
     <ScrollView horizontal w="100%" flexGrow="unset" showsHorizontalScrollIndicator="false">
       <HStack space={2} px={4}>
-        {firstSplatfestSchedule !== undefined && (
+        {firstSplatfestSchedule !== null && (
           <TransformPressable>
             <ScheduleBox
               color={accentColor}
@@ -79,7 +80,7 @@ const ScheduleView = (props) => {
             />
           </TransformPressable>
         )}
-        {firstRegularSchedule !== undefined && (
+        {firstRegularSchedule !== null && (
           <TransformPressable>
             <ScheduleBox
               color="green.500"
@@ -90,7 +91,7 @@ const ScheduleView = (props) => {
             />
           </TransformPressable>
         )}
-        {firstAnarchySchedule !== undefined && (
+        {firstAnarchySchedule !== null && (
           <TransformPressable>
             <ScheduleBox
               color="orange.600"
@@ -101,7 +102,7 @@ const ScheduleView = (props) => {
             />
           </TransformPressable>
         )}
-        {firstAnarchySchedule !== undefined && (
+        {firstAnarchySchedule !== null && (
           <TransformPressable>
             <ScheduleBox
               color="orange.600"
@@ -112,7 +113,7 @@ const ScheduleView = (props) => {
             />
           </TransformPressable>
         )}
-        {firstXSchedule !== undefined && (
+        {firstXSchedule !== null && (
           <TransformPressable>
             <ScheduleBox
               color="emerald.400"

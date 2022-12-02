@@ -6,8 +6,7 @@ const ja = {
   imink_privacy_policy: "imink プライバシーポリシー",
   log_in_continue: "読んで理解しました",
   logging_in: "トークン取得中",
-  log_out_notice:
-    "ログアウトすると、コンクベイに保存されているすべてのデータが削除されます。",
+  log_out_notice: "ログアウトすると、コンクベイに保存されているすべてのデータが削除されます。",
   log_out_continue: "ログアウト",
   logging_out: "ログアウト中",
   pull_to_refresh: "下に引っ張って更新",
@@ -19,6 +18,7 @@ const ja = {
   anarchy_battle_open: "バンカラマッチ (オープン)",
   "VnNNb2RlLTE=": "レギュラーマッチ",
   "VnNNb2RlLTI=": "バンカラマッチ",
+  "VnNNb2RlLTM=": "Xマッチ",
   "VnNNb2RlLTY=": "フェスマッチ",
   CHALLENGE: "チャレンジ",
   OPEN: "オープン",

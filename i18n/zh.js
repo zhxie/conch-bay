@@ -18,6 +18,7 @@ const zh = {
   anarchy_battle_open: "蛮颓比赛 (开放)",
   "VnNNb2RlLTE=": "一般比赛",
   "VnNNb2RlLTI=": "蛮颓比赛",
+  "VnNNb2RlLTM=": "X比赛",
   "VnNNb2RlLTY=": "祭典比赛",
   CHALLENGE: "挑战",
   OPEN: "开放",

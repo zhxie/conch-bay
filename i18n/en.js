@@ -18,6 +18,7 @@ const en = {
   anarchy_battle_open: "Anarchy Battle (Open)",
   "VnNNb2RlLTE=": "Regular Battle",
   "VnNNb2RlLTI=": "Anarchy Battle",
+  "VnNNb2RlLTM=": "X Battle",
   "VnNNb2RlLTY=": "Splatfest Battle",
   CHALLENGE: "Series",
   OPEN: "Open",
