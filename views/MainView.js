@@ -18,7 +18,6 @@ import {
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { RefreshControl } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { ScheduleBox } from "../components";
 import {
   fetchFriends,
   fetchSchedules,
@@ -28,11 +27,14 @@ import {
   getSessionToken,
   getWebServiceToken,
 } from "../utils/api";
+import ScheduleView from "./ScheduleView";
 
 const MainView = (props) => {
   const { t } = props;
 
-  const colorScheme = useColorModeValue("blue", "yellow");
+  const accentColorScheme = useColorModeValue("blue", "yellow");
+  const accentColor = useColorModeValue("blue.500", "yellow.500");
+
   const insets = useSafeAreaInsets();
   const toast = useToast();
 
@@ -49,7 +51,7 @@ const MainView = (props) => {
   const [rank, setRank] = useState("");
   const [grade, setGrade] = useState("");
 
-  const [schedules, setSchedules] = useState(undefined);
+  const [schedules, setSchedules] = useState(null);
   const [friends, setFriends] = useState(undefined);
 
   useEffect(() => {
@@ -64,14 +66,7 @@ const MainView = (props) => {
     setGrade((await AsyncStorage.getItem("grade")) ?? "");
   };
   const savePersistence = async (persistence) => {
-    for (let key of [
-      "sessionToken",
-      "bulletToken",
-      "icon",
-      "level",
-      "rank",
-      "grade",
-    ]) {
+    for (let key of ["sessionToken", "bulletToken", "icon", "level", "rank", "grade"]) {
       if (persistence[key]) {
         await AsyncStorage.setItem(key, persistence[key]);
       }
@@ -79,47 +74,6 @@ const MainView = (props) => {
   };
   const clearPersistence = async () => {
     await AsyncStorage.clear();
-  };
-
-  const schedule = useCallback(
-    (mode) => {
-      if (schedules === undefined) {
-        return undefined;
-      }
-      const nodes = schedules["data"][mode]["nodes"];
-      if (nodes.length === 0) {
-        return null;
-      }
-      return nodes[0];
-    },
-    [schedules]
-  );
-  const regularSchedule = schedule("regularSchedules");
-  const anarchySchedule = schedule("bankaraSchedules");
-  const shift = useCallback(
-    (mode) => {
-      if (schedules === undefined) {
-        return undefined;
-      }
-      const nodes = schedules["data"]["coopGroupingSchedule"][mode]["nodes"];
-      if (nodes.length === 0) {
-        return null;
-      }
-      return nodes[0];
-    },
-    [schedules]
-  );
-  const xSchedule = schedule("xSchedules");
-  const regularShift = shift("regularSchedules");
-  const validateSchedule = (schedule) => {
-    if (!schedule) {
-      return false;
-    }
-
-    const now = new Date().getTime();
-    const date = new Date(schedule["startTime"]);
-    const timestamp = date.getTime();
-    return timestamp < now;
   };
 
   const friendMark = (onlineState) => {
@@ -199,19 +153,14 @@ const MainView = (props) => {
     }
   }, [loggingIn]);
   const onPrivacyPolicyPress = useCallback(() => {
-    WebBrowser.openBrowserAsync(
-      "https://github.com/JoneWang/imink/wiki/Privacy-Policy"
-    );
+    WebBrowser.openBrowserAsync("https://github.com/JoneWang/imink/wiki/Privacy-Policy");
   }, []);
   const onLogInPress = useCallback(async () => {
     try {
       setLoggingIn(true);
       const res = await generateLogIn();
       WebBrowser.maybeCompleteAuthSession();
-      const res2 = await WebBrowser.openAuthSessionAsync(
-        res.url,
-        "npf71b963c1b7b6d119://"
-      );
+      const res2 = await WebBrowser.openAuthSessionAsync(res.url, "npf71b963c1b7b6d119://");
       if (res2.type !== "success") {
         setLoggingIn(false);
         return;
@@ -262,7 +211,7 @@ const MainView = (props) => {
         <VStack space={4} alignItems="center" safeArea>
           {!sessionToken && (
             <VStack px={4} space={2} alignItems="center">
-              <Button colorScheme={colorScheme} onPress={() => setLogIn(true)}>
+              <Button colorScheme={accentColorScheme} onPress={() => setLogIn(true)}>
                 {t("log_in")}
               </Button>
             </VStack>
@@ -310,63 +259,9 @@ const MainView = (props) => {
               </HStack>
             </VStack>
           )}
-          <ScrollView
-            horizontal
-            w="100%"
-            flexGrow="unset"
-            showsHorizontalScrollIndicator="false"
-          >
-            <HStack space={2} px={4}>
-              {regularSchedule !== null && (
-                <ScheduleBox
-                  t={t}
-                  color="green.500"
-                  valid={validateSchedule(regularSchedule)}
-                  matchSetting={regularSchedule?.["regularMatchSetting"]}
-                />
-              )}
-              {anarchySchedule !== null && (
-                <ScheduleBox
-                  t={t}
-                  color="orange.600"
-                  valid={validateSchedule(anarchySchedule)}
-                  matchSetting={anarchySchedule?.["bankaraMatchSettings"][0]}
-                />
-              )}
-              {anarchySchedule !== null && (
-                <ScheduleBox
-                  t={t}
-                  color="orange.600"
-                  valid={validateSchedule(anarchySchedule)}
-                  matchSetting={anarchySchedule?.["bankaraMatchSettings"][1]}
-                />
-              )}
-              {xSchedule !== null && (
-                <ScheduleBox
-                  t={t}
-                  color="emerald.400"
-                  valid={validateSchedule(xSchedule)}
-                  matchSetting={xSchedule?.["xMatchSetting"]}
-                />
-              )}
-              {regularShift !== null && (
-                <ScheduleBox
-                  t={t}
-                  color="orange.500"
-                  valid={validateSchedule(regularShift)}
-                  title={t("salmon_run")}
-                  coopSetting={regularShift?.["setting"]}
-                />
-              )}
-            </HStack>
-          </ScrollView>
+          <ScheduleView t={t} accentColor={accentColor} schedules={schedules} />
           {friends && (
-            <ScrollView
-              horizontal
-              w="100%"
-              flexGrow="unset"
-              showsHorizontalScrollIndicator="false"
-            >
+            <ScrollView horizontal w="100%" flexGrow="unset" showsHorizontalScrollIndicator="false">
               <HStack space={2} px={4}>
                 {friends["data"]["friends"]["nodes"].map((friend) => {
                   return (
@@ -381,9 +276,7 @@ const MainView = (props) => {
                               uri: friend["userIcon"]["url"],
                             }}
                             borderColor={friendMark(friend["onlineState"])}
-                            borderWidth={
-                              friend["onlineState"] !== "OFFLINE" ? 2 : 0
-                            }
+                            borderWidth={friend["onlineState"] !== "OFFLINE" ? 2 : 0}
                             style={{
                               transform: [
                                 {
@@ -417,14 +310,14 @@ const MainView = (props) => {
               <Text lineHeight="sm">{t("log_in_notice")}</Text>
               <VStack space={2} alignItems="center">
                 <Button
-                  colorScheme={colorScheme}
+                  colorScheme={accentColorScheme}
                   variant="subtle"
                   onPress={onPrivacyPolicyPress}
                 >
                   {t("imink_privacy_policy")}
                 </Button>
                 <Button
-                  colorScheme={colorScheme}
+                  colorScheme={accentColorScheme}
                   isLoading={loggingIn}
                   isLoadingText={t("logging_in")}
                   onPress={onLogInPress}
@@ -451,7 +344,7 @@ const MainView = (props) => {
               <Text lineHeight="sm">{t("log_out_notice")}</Text>
               <VStack space={2} alignItems="center">
                 <Button
-                  colorScheme={colorScheme}
+                  colorScheme={accentColorScheme}
                   isLoading={loggingOut}
                   isLoadingText={t("logging_out")}
                   onPress={onLogOutPress}
