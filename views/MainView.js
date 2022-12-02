@@ -26,6 +26,8 @@ import {
   getBulletToken,
   getSessionToken,
   getWebServiceToken,
+  updateNsoappVersion,
+  updateWebViewVersion,
 } from "../utils/api";
 import ScheduleView from "./ScheduleView";
 
@@ -97,6 +99,8 @@ const MainView = (props) => {
     regeneratingBulletToken.current = true;
 
     try {
+      await updateNsoappVersion();
+      await updateWebViewVersion();
       const res = await getWebServiceToken(sessionToken);
       const res2 = await getBulletToken(res.webServiceToken, res.country);
       setBulletToken(res2);
@@ -119,7 +123,7 @@ const MainView = (props) => {
     try {
       const schedules = await fetchSchedules();
       setSchedules(schedules);
-      if (bulletToken) {
+      if (sessionToken) {
         const [friends, summary] = await Promise.all([
           fetchFriends(bulletToken),
           fetchSummary(bulletToken),
