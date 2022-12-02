@@ -218,8 +218,12 @@ const fetchGraphQl = async (bulletToken, hash, language) => {
   return res;
 };
 const checkBulletToken = async (bulletToken, language) => {
-  const res = await fetchGraphQl(bulletToken, "dba47124d5ec3090c97ba17db5d2f4b3", language);
-  return res.ok;
+  try {
+    const res = await fetchGraphQl(bulletToken, "dba47124d5ec3090c97ba17db5d2f4b3", language);
+    return res.ok;
+  } catch {
+    return false;
+  }
 };
 const fetchFriends = async (bulletToken, language) => {
   const res = await fetchGraphQl(bulletToken, "7a0e05c28c7d3f7e5a06def87ab8cd2d", language);

@@ -14,11 +14,12 @@ import {
   VStack,
   WarningIcon,
 } from "native-base";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { RefreshControl } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { TransformPressable } from "../components";
 import {
+  checkBulletToken,
   fetchFriends,
   fetchSchedules,
   fetchSummary,
@@ -45,7 +46,7 @@ const MainView = (props) => {
   const [loggingIn, setLoggingIn] = useState(false);
   const [logOut, setLogOut] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
-  const [refreshing, setRefreshing] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
   const [sessionToken, setSessionToken] = useState("");
   const [bulletToken, setBulletToken] = useState("");
@@ -58,15 +59,31 @@ const MainView = (props) => {
   const [friends, setFriends] = useState(undefined);
 
   useEffect(() => {
-    loadPersistence().catch((e) => toast.show({ description: e.message }));
-  }, [loadPersistence]);
+    fetchData = async () => {
+      try {
+        const { sessionToken, bulletToken } = await loadPersistence();
+        await refresh(sessionToken, bulletToken);
+      } catch (e) {
+        toast.show({ description: e.message });
+      }
+    };
+    fetchData();
+  }, []);
   const loadPersistence = async () => {
-    setSessionToken((await AsyncStorage.getItem("sessionToken")) ?? "");
-    setBulletToken((await AsyncStorage.getItem("bulletToken")) ?? "");
+    const sessionToken = await AsyncStorage.getItem("sessionToken");
+    const bulletToken = await AsyncStorage.getItem("bulletToken");
+
+    setSessionToken(sessionToken ?? "");
+    setBulletToken(bulletToken ?? "");
     setIcon((await AsyncStorage.getItem("icon")) ?? "");
     setLevel((await AsyncStorage.getItem("level")) ?? "");
     setRank((await AsyncStorage.getItem("rank")) ?? "");
     setGrade((await AsyncStorage.getItem("grade")) ?? "");
+
+    return {
+      sessionToken,
+      bulletToken,
+    };
   };
   const savePersistence = async (persistence) => {
     for (let key of ["sessionToken", "bulletToken", "icon", "level", "rank", "grade"]) {
@@ -79,42 +96,31 @@ const MainView = (props) => {
     await AsyncStorage.clear();
   };
 
-  const regeneratingBulletToken = useRef(false);
-  const regenerateBulletToken = async (sessionToken) => {
-    if (!sessionToken || regeneratingBulletToken.current) {
-      return;
-    }
-    regeneratingBulletToken.current = true;
-
-    try {
-      await updateNsoappVersion();
-      await updateWebViewVersion();
-      const res = await getWebServiceToken(sessionToken);
-      const res2 = await getBulletToken(res.webServiceToken, res.country);
-      setBulletToken(res2);
-      await savePersistence({
-        bulletToken: res2,
-      });
-    } catch (e) {
-      toast.show({ description: e.message });
-    }
-    regeneratingBulletToken.current = false;
-  };
-  useEffect(() => {
-    onRefresh();
-  }, [bulletToken]);
-  const onRefreshCount = useRef(0);
-  const onRefresh = useCallback(async () => {
+  const refresh = async (sessionToken, bulletToken) => {
     setRefreshing(true);
-    onRefreshCount.current += 1;
-
     try {
       const schedules = await fetchSchedules();
       setSchedules(schedules);
       if (sessionToken) {
+        let newBulletToken;
+        if (bulletToken.length > 0 && (await checkBulletToken(bulletToken))) {
+          newBulletToken = bulletToken;
+        }
+        if (!newBulletToken) {
+          await updateNsoappVersion();
+          await updateWebViewVersion();
+          const res = await getWebServiceToken(sessionToken);
+          newBulletToken = await getBulletToken(res.webServiceToken, res.country);
+
+          setBulletToken(newBulletToken);
+          savePersistence({
+            bulletToken: bulletToken,
+          });
+        }
+
         const [friends, summary] = await Promise.all([
-          fetchFriends(bulletToken),
-          fetchSummary(bulletToken),
+          fetchFriends(newBulletToken),
+          fetchSummary(newBulletToken),
         ]);
         setFriends(friends);
         const icon = summary["data"]["currentPlayer"]["userIcon"]["url"];
@@ -129,28 +135,27 @@ const MainView = (props) => {
           rank: rank,
         });
       }
-      if (onRefreshCount.current === 1) {
-        setRefreshing(false);
-      }
     } catch (e) {
       toast.show({ description: e.message });
-      await regenerateBulletToken(sessionToken);
     }
-    onRefreshCount.current -= 1;
-  });
+    setRefreshing(false);
+  };
+  const onRefresh = async () => {
+    await refresh(sessionToken, bulletToken);
+  };
 
-  const onLogInPress = useCallback(() => {
+  const onLogInPress = () => {
     setLogIn(true);
-  });
-  const onLogInClose = useCallback(() => {
+  };
+  const onLogInClose = () => {
     if (!loggingIn) {
       setLogIn(false);
     }
-  }, [loggingIn]);
-  const onPrivacyPolicyPress = useCallback(() => {
+  };
+  const onPrivacyPolicyPress = () => {
     WebBrowser.openBrowserAsync("https://github.com/JoneWang/imink/wiki/Privacy-Policy");
-  }, []);
-  const onLogInContinuePress = useCallback(async () => {
+  };
+  const onLogInContinuePress = async () => {
     try {
       setLoggingIn(true);
       const res = await generateLogIn();
@@ -164,7 +169,7 @@ const MainView = (props) => {
       setSessionToken(res3);
       await savePersistence({ sessionToken: res3 });
 
-      await regenerateBulletToken(res3);
+      await onRefresh(res3);
 
       setLoggingIn(false);
       setLogIn(false);
@@ -172,16 +177,16 @@ const MainView = (props) => {
       toast.show({ description: e.message });
       setLoggingIn(false);
     }
-  });
-  const onLogOutPress = useCallback(() => {
+  };
+  const onLogOutPress = () => {
     setLogOut(true);
-  });
-  const onLogOutClose = useCallback(() => {
+  };
+  const onLogOutClose = () => {
     if (!loggingOut) {
       setLogOut(false);
     }
-  }, [loggingOut]);
-  const onLogOutContinuePress = useCallback(async () => {
+  };
+  const onLogOutContinuePress = async () => {
     try {
       setLoggingOut(true);
       await clearPersistence();
@@ -193,7 +198,7 @@ const MainView = (props) => {
       toast.show({ description: e.message });
       setLoggingOut(false);
     }
-  }, []);
+  };
 
   return (
     <VStack flex={1} _dark={{ bg: "gray.900" }} _light={{ bg: "gray.50" }}>
@@ -224,13 +229,6 @@ const MainView = (props) => {
                     _light={{ bg: "gray.100" }}
                     source={{
                       uri: icon,
-                    }}
-                    style={{
-                      transform: [
-                        {
-                          scale: isPressed ? 0.96 : 1,
-                        },
-                      ],
                     }}
                   />
                 </Skeleton>
