@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import { CircleIcon, HStack, Modal, ScrollView, Text, VStack } from "native-base";
 import { useState } from "react";
-import { ScheduleBox, ScheduleButton } from "../components";
+import { ScheduleBox, ScheduleButton, ShiftBox } from "../components";
 
 const ScheduleView = (props) => {
   const { t, accentColor, schedules } = props;
@@ -9,11 +9,14 @@ const ScheduleView = (props) => {
   const [display, setDisplay] = useState(undefined);
   const [displayCurrentSplatfest, setDisplayCurrentSplatfest] = useState(false);
   const [displaySchedules, setDisplaySchedules] = useState(false);
+  const [displayShifts, setDisplayShifts] = useState(false);
 
+  const currentSplatfest = schedules?.["data"]["currentFest"];
+  const festSchedules = schedules?.["data"]["festSchedules"]["nodes"];
   const regularSchedules = schedules?.["data"]["regularSchedules"]["nodes"];
   const anarchySchedules = schedules?.["data"]["bankaraSchedules"]["nodes"];
   const xSchedules = schedules?.["data"]["xSchedules"]["nodes"];
-  const festSchedules = schedules?.["data"]["festSchedules"]["nodes"];
+  const regularShifts = schedules?.["data"]["coopGroupingSchedule"]["regularSchedules"]["nodes"];
   const getFirstSchedule = (schedules, matchSetting) => {
     if (!schedules) {
       return schedules;
@@ -27,10 +30,11 @@ const ScheduleView = (props) => {
     }
     return null;
   };
+  const firstSplatfestSchedule = getFirstSchedule(festSchedules, "festMatchSetting");
   const firstRegularSchedule = getFirstSchedule(regularSchedules, "regularMatchSetting");
   const firstAnarchySchedule = getFirstSchedule(anarchySchedules, "bankaraMatchSettings");
   const firstXSchedule = getFirstSchedule(xSchedules, "xMatchSetting");
-  const firstSplatfestSchedule = getFirstSchedule(festSchedules, "festMatchSetting");
+  const firstRegularShift = getFirstSchedule(regularShifts, "setting");
   const isStarted = (schedule) => {
     if (!schedule) {
       return false;
@@ -56,6 +60,9 @@ const ScheduleView = (props) => {
     const setting = getMatchSetting(schedule, select);
     return t(setting["vsRule"]["id"]);
   };
+  const currentSplatfestStage = currentSplatfest
+    ? [t(currentSplatfest["tricolorStage"]["id"])]
+    : [];
   const getStages = (schedule, select) => {
     if (!schedule) {
       return [];
@@ -72,10 +79,26 @@ const ScheduleView = (props) => {
     }
     return result;
   };
-  const currentSplatfest = schedules?.["data"]["currentFest"];
-  const currentSplatfestStage = currentSplatfest
-    ? [t(currentSplatfest["tricolorStage"]["id"])]
-    : [];
+  const getCoopStage = (shift, select) => {
+    if (!shift) {
+      return [];
+    }
+
+    const setting = getMatchSetting(shift, select);
+    return setting["coopStage"];
+  };
+  const getCoopStageTitle = (shift, select) => {
+    const stage = getCoopStage(shift, select);
+    return t(stage["id"]);
+  };
+  const getWeapons = (shift, select) => {
+    if (!shift) {
+      return [];
+    }
+
+    const setting = getMatchSetting(shift, select);
+    return setting["weapons"];
+  };
   const getTimeRange = (schedule, withDate) => {
     let format = "HH:mm";
     if (withDate) {
@@ -92,6 +115,9 @@ const ScheduleView = (props) => {
       title: t(stage["id"]),
       image: stage["image"]["url"],
     };
+  };
+  const formatWeapon = (weapon) => {
+    return weapon["image"]["url"];
   };
 
   const onCurrentSplatfestPress = () => {
@@ -158,11 +184,25 @@ const ScheduleView = (props) => {
       setDisplaySchedules(true);
     }
   };
+  const onRegularShiftPress = () => {
+    if (firstRegularShift) {
+      setDisplay({
+        title: t("salmon_run"),
+        color: "orange.500",
+        shifts: regularShifts,
+        select: ["setting"],
+      });
+      setDisplayShifts(true);
+    }
+  };
   const onDisplayCurrentSplatfestClose = () => {
     setDisplayCurrentSplatfest(false);
   };
   const onDisplaySchedulesClose = () => {
     setDisplaySchedules(false);
+  };
+  const onDisplayShiftsClose = () => {
+    setDisplayShifts(false);
   };
 
   return (
@@ -228,6 +268,16 @@ const ScheduleView = (props) => {
             onPress={onXSchedulePress}
           />
         )}
+        {firstRegularShift !== null && (
+          <ScheduleButton
+            color="orange.500"
+            isLoaded={firstRegularShift}
+            valid={isStarted(firstRegularShift)}
+            title={t("salmon_run")}
+            stages={[getCoopStageTitle(firstRegularShift, ["setting"])]}
+            onPress={onRegularShiftPress}
+          />
+        )}
       </HStack>
       <Modal
         isOpen={displayCurrentSplatfest}
@@ -286,6 +336,42 @@ const ScheduleView = (props) => {
                         rule={getRule(schedule, display.select)}
                         time={getTimeRange(schedule)}
                         stages={getStages(schedule, display.select).map(formatStage)}
+                      />
+                    ))}
+                </VStack>
+              )}
+            </VStack>
+          </Modal.Body>
+        </Modal.Content>
+      </Modal>
+      <Modal
+        isOpen={displayShifts}
+        onClose={onDisplayShiftsClose}
+        avoidKeyboard
+        justifyContent="flex-end"
+        safeArea
+        size="xl"
+      >
+        <Modal.Content maxH="xl">
+          <Modal.Body>
+            <VStack space={4} alignItems="center">
+              <HStack space={2} alignItems="center">
+                <CircleIcon size={3} color={display?.color} />
+                <Text bold fontSize="md" color={display?.color} noOfLines={1}>
+                  {display?.title}
+                </Text>
+              </HStack>
+              {display?.shifts && (
+                <VStack flex={1} space={2} alignItems="center">
+                  {display.shifts
+                    .filter((shift) => getMatchSetting(shift, display.select))
+                    .map((shift, i) => (
+                      <ShiftBox
+                        key={i}
+                        rule={t("salmon_run")}
+                        time={getTimeRange(shift, true)}
+                        stage={formatStage(getCoopStage(shift, display.select))}
+                        weapons={getWeapons(shift, display.select).map(formatWeapon)}
                       />
                     ))}
                 </VStack>
