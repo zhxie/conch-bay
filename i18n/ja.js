@@ -9,8 +9,7 @@ const ja = {
   log_out_notice: "ログアウトすると、コンクベイに保存されているすべてのデータが削除されます。",
   log_out_continue: "ログアウト",
   logging_out: "ログアウト中",
-  pull_to_refresh: "下に引っ張って更新",
-  release_to_refresh: "指の離して更新",
+  reacquiring_tokens: "トークン再取得中",
   // Modes.
   regular_battle: "レギュラーマッチ",
   anarchy_battle: "バンカラマッチ",

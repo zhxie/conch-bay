@@ -102,13 +102,18 @@ const MainView = (props) => {
       const schedules = await fetchSchedules();
       setSchedules(schedules);
       if (sessionToken) {
+        await updateNsoappVersion();
+        await updateWebViewVersion();
+
         let newBulletToken;
         if (bulletToken.length > 0 && (await checkBulletToken(bulletToken))) {
           newBulletToken = bulletToken;
         }
         if (!newBulletToken) {
-          await updateNsoappVersion();
-          await updateWebViewVersion();
+          if (bulletToken.length > 0) {
+            toast.show({ description: t("reacquiring_tokens") });
+          }
+
           const res = await getWebServiceToken(sessionToken);
           newBulletToken = await getBulletToken(res.webServiceToken, res.country);
 

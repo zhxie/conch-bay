@@ -9,8 +9,7 @@ const zh = {
   log_out_notice: "登出将清除贝壳湾所有存储的数据！",
   log_out_continue: "登出",
   logging_out: "登出中",
-  pull_to_refresh: "下拉以刷新",
-  release_to_refresh: "松开以刷新",
+  reacquiring_tokens: "重新获取令牌中",
   // Modes.
   regular_battle: "一般比赛",
   anarchy_battle: "蛮颓比赛",
