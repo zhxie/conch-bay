@@ -1,11 +1,11 @@
-import { Box, CircleIcon, HStack, Skeleton, Text, VStack } from "native-base";
+import { Button, CircleIcon, HStack, Skeleton, Text, VStack } from "native-base";
 
-const ScheduleBox = (props) => {
-  const { color, isLoaded, valid, title, stages } = props;
+const ScheduleButton = (props) => {
+  const { color, isLoaded, valid, title, stages, onPress } = props;
 
   return (
-    <Box w={40} h={20} rounded="lg" _dark={{ bg: "gray.700" }} _light={{ bg: "gray.100" }}>
-      <VStack p={2} flex={1}>
+    <Button p={0} rounded="lg" colorScheme="gray" variant="default" onPress={onPress}>
+      <VStack w={40} h={20} p={2}>
         <HStack space={2} alignItems="center">
           <Skeleton size={3} rounded="full" isLoaded={isLoaded}>
             <CircleIcon size={3} color={valid ? color : "gray.400"} />
@@ -29,8 +29,8 @@ const ScheduleBox = (props) => {
           </Skeleton.Text>
         </VStack>
       </VStack>
-    </Box>
+    </Button>
   );
 };
 
-export default ScheduleBox;
+export default ScheduleButton;

@@ -9,7 +9,54 @@ import MainView from "./views/MainView";
 const config = {
   useSystemColorMode: true,
 };
-const theme = extendTheme({ config: config });
+const theme = extendTheme({
+  config: config,
+  components: {
+    Button: {
+      variants: {
+        default: ({ colorScheme }) => {
+          return {
+            _text: {
+              color: `${colorScheme}.900`,
+            },
+            _icon: {
+              color: `${colorScheme}.900`,
+            },
+            _spinner: {
+              color: `${colorScheme}.900`,
+            },
+            bg: `${colorScheme}.100`,
+            _hover: {
+              bg: `${colorScheme}.200`,
+            },
+            _pressed: {
+              bg: `${colorScheme}.300`,
+            },
+
+            _dark: {
+              _text: {
+                color: `${colorScheme}.300`,
+              },
+              _icon: {
+                color: `${colorScheme}.300`,
+              },
+              _spinner: {
+                color: `${colorScheme}.300`,
+              },
+              bg: `${colorScheme}.700`,
+              _hover: {
+                bg: `${colorScheme}.600`,
+              },
+              _pressed: {
+                bg: `${colorScheme}.500`,
+              },
+            },
+          };
+        },
+      },
+    },
+  },
+});
 
 // Localization.
 const i18n = new I18n();

@@ -1,5 +1,5 @@
 import { HStack, ScrollView } from "native-base";
-import { ScheduleBox, TransformPressable } from "../components";
+import { ScheduleButton, TransformPressable } from "../components";
 
 const ScheduleView = (props) => {
   const { t, accentColor, schedules } = props;
@@ -71,7 +71,7 @@ const ScheduleView = (props) => {
       <HStack space={2} px={4}>
         {firstSplatfestSchedule !== null && (
           <TransformPressable>
-            <ScheduleBox
+            <ScheduleButton
               color={accentColor}
               isLoaded={firstSplatfestSchedule}
               valid={isStarted(firstSplatfestSchedule)}
@@ -82,7 +82,7 @@ const ScheduleView = (props) => {
         )}
         {firstRegularSchedule !== null && (
           <TransformPressable>
-            <ScheduleBox
+            <ScheduleButton
               color="green.500"
               isLoaded={firstRegularSchedule}
               valid={isStarted(firstRegularSchedule)}
@@ -93,7 +93,7 @@ const ScheduleView = (props) => {
         )}
         {firstAnarchySchedule !== null && (
           <TransformPressable>
-            <ScheduleBox
+            <ScheduleButton
               color="orange.600"
               isLoaded={firstAnarchySchedule}
               valid={isStarted(firstAnarchySchedule)}
@@ -104,7 +104,7 @@ const ScheduleView = (props) => {
         )}
         {firstAnarchySchedule !== null && (
           <TransformPressable>
-            <ScheduleBox
+            <ScheduleButton
               color="orange.600"
               isLoaded={firstAnarchySchedule}
               valid={isStarted(firstAnarchySchedule)}
@@ -115,7 +115,7 @@ const ScheduleView = (props) => {
         )}
         {firstXSchedule !== null && (
           <TransformPressable>
-            <ScheduleBox
+            <ScheduleButton
               color="emerald.400"
               isLoaded={firstXSchedule}
               valid={isStarted(firstXSchedule)}
