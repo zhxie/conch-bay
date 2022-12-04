@@ -25,6 +25,7 @@ const zh = {
   CHALLENGE: "挑战",
   OPEN: "开放",
   salmon_run: "鲑鱼跑",
+  big_run: "大型跑",
   // Rules.
   "VnNSdWxlLTA=": "占地对战",
   "VnNSdWxlLTE=": "真格区域",
@@ -52,6 +53,7 @@ const zh = {
   "Q29vcFN0YWdlLTI=": "新卷堡",
   "Q29vcFN0YWdlLTY=": "漂浮落难船",
   "Q29vcFN0YWdlLTc=": "麦年海洋发电所",
+  "Q29vcFN0YWdlLTEwMA==": "醋饭海洋世界",
 };
 
 export default zh;

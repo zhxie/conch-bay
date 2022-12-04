@@ -25,6 +25,7 @@ const ja = {
   CHALLENGE: "チャレンジ",
   OPEN: "オープン",
   salmon_run: "サーモンラン",
+  big_run: "ビッグラン",
   // Rules.
   "VnNSdWxlLTA=": "ナワバリバトル",
   "VnNSdWxlLTE=": "ガチエリア",
@@ -52,6 +53,7 @@ const ja = {
   "Q29vcFN0YWdlLTI=": "アラマキ砦",
   "Q29vcFN0YWdlLTY=": "難破船ドン・ブラコ",
   "Q29vcFN0YWdlLTc=": "ムニ・エール海洋発電所",
+  "Q29vcFN0YWdlLTEwMA==": "スメーシーワールド",
 };
 
 export default ja;

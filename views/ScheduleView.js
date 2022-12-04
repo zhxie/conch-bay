@@ -16,6 +16,7 @@ const ScheduleView = (props) => {
   const regularSchedules = schedules?.["data"]["regularSchedules"]["nodes"];
   const anarchySchedules = schedules?.["data"]["bankaraSchedules"]["nodes"];
   const xSchedules = schedules?.["data"]["xSchedules"]["nodes"];
+  const bigRunShifts = schedules?.["data"]["coopGroupingSchedule"]["bigRunSchedules"]["nodes"];
   const regularShifts = schedules?.["data"]["coopGroupingSchedule"]["regularSchedules"]["nodes"];
   const getFirstSchedule = (schedules, matchSetting) => {
     if (!schedules) {
@@ -34,6 +35,7 @@ const ScheduleView = (props) => {
   const firstRegularSchedule = getFirstSchedule(regularSchedules, "regularMatchSetting");
   const firstAnarchySchedule = getFirstSchedule(anarchySchedules, "bankaraMatchSettings");
   const firstXSchedule = getFirstSchedule(xSchedules, "xMatchSetting");
+  const firstBigRunShift = getFirstSchedule(bigRunShifts, "setting");
   const firstRegularShift = getFirstSchedule(regularShifts, "setting");
   const isStarted = (schedule) => {
     if (!schedule) {
@@ -184,6 +186,17 @@ const ScheduleView = (props) => {
       setDisplaySchedules(true);
     }
   };
+  const onBigRunShiftPress = () => {
+    if (firstBigRunShift) {
+      setDisplay({
+        title: t("big_run"),
+        color: "purple.600",
+        shifts: bigRunShifts,
+        select: ["setting"],
+      });
+      setDisplayShifts(true);
+    }
+  };
   const onRegularShiftPress = () => {
     if (firstRegularShift) {
       setDisplay({
@@ -266,6 +279,16 @@ const ScheduleView = (props) => {
             title={getRule(firstXSchedule, ["xMatchSetting"])}
             stages={getStageTitles(firstXSchedule, ["xMatchSetting"])}
             onPress={onXSchedulePress}
+          />
+        )}
+        {firstBigRunShift !== null && (
+          <ScheduleButton
+            color="purple.600"
+            isLoaded={firstBigRunShift}
+            valid={isStarted(firstBigRunShift)}
+            title={t("big_run")}
+            stages={[getCoopStageTitle(firstBigRunShift, ["setting"])]}
+            onPress={onBigRunShiftPress}
           />
         )}
         {firstRegularShift !== null && (
@@ -368,7 +391,7 @@ const ScheduleView = (props) => {
                     .map((shift, i) => (
                       <ShiftBox
                         key={i}
-                        rule={t("salmon_run")}
+                        rule={display.title}
                         time={getTimeRange(shift, true)}
                         stage={formatStage(getCoopStage(shift, display.select))}
                         weapons={getWeapons(shift, display.select).map(formatWeapon)}

@@ -25,6 +25,7 @@ const en = {
   CHALLENGE: "Series",
   OPEN: "Open",
   salmon_run: "Salmon Run",
+  big_run: "Big Run",
   // Rules.
   "VnNSdWxlLTA=": "Turf War",
   "VnNSdWxlLTE=": "Splat Zones",
@@ -52,6 +53,7 @@ const en = {
   "Q29vcFN0YWdlLTI=": "Sockeye Station",
   "Q29vcFN0YWdlLTY=": "Marooner's Bay",
   "Q29vcFN0YWdlLTc=": "Gone Fission Hydroplant",
+  "Q29vcFN0YWdlLTEwMA==": "Wahoo World",
 };
 
 export default en;
