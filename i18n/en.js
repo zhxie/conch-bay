@@ -21,6 +21,7 @@ const en = {
   "VnNNb2RlLTE=": "Regular Battle",
   "VnNNb2RlLTI=": "Anarchy Battle",
   "VnNNb2RlLTM=": "X Battle",
+  "VnNNb2RlLTU=": "Private Battle",
   "VnNNb2RlLTY=": "Splatfest Battle",
   CHALLENGE: "Series",
   OPEN: "Open",

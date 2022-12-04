@@ -21,6 +21,7 @@ const ja = {
   "VnNNb2RlLTE=": "レギュラーマッチ",
   "VnNNb2RlLTI=": "バンカラマッチ",
   "VnNNb2RlLTM=": "Xマッチ",
+  "VnNNb2RlLTU=": "プライベートマッチ",
   "VnNNb2RlLTY=": "フェスマッチ",
   CHALLENGE: "チャレンジ",
   OPEN: "オープン",

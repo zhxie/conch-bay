@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import { CircleIcon, HStack, Modal, ScrollView, Text, VStack } from "native-base";
 import { useState } from "react";
+import { Color } from "../models";
 import { ScheduleBox, ScheduleButton, ShiftBox } from "../components";
 
 const ScheduleView = (props) => {
@@ -146,7 +147,7 @@ const ScheduleView = (props) => {
     if (firstRegularSchedule) {
       setDisplay({
         title: t("regular_battle"),
-        color: "green.500",
+        color: Color.RegularBattle,
         schedules: regularSchedules,
         select: ["regularMatchSetting"],
       });
@@ -157,7 +158,7 @@ const ScheduleView = (props) => {
     if (firstAnarchySchedule) {
       setDisplay({
         title: t("anarchy_battle_series"),
-        color: "orange.600",
+        color: Color.AnarchyBattle,
         schedules: anarchySchedules,
         select: ["bankaraMatchSettings", 0],
       });
@@ -168,7 +169,7 @@ const ScheduleView = (props) => {
     if (firstAnarchySchedule) {
       setDisplay({
         title: t("anarchy_battle_open"),
-        color: "orange.600",
+        color: Color.AnarchyBattle,
         schedules: anarchySchedules,
         select: ["bankaraMatchSettings", 1],
       });
@@ -179,7 +180,7 @@ const ScheduleView = (props) => {
     if (firstXSchedule) {
       setDisplay({
         title: t("x_battle"),
-        color: "emerald.400",
+        color: Color.XBattle,
         schedules: xSchedules,
         select: ["xMatchSetting"],
       });
@@ -190,7 +191,7 @@ const ScheduleView = (props) => {
     if (firstBigRunShift) {
       setDisplay({
         title: t("big_run"),
-        color: "purple.600",
+        color: Color.BigRun,
         shifts: bigRunShifts,
         select: ["setting"],
       });
@@ -201,7 +202,7 @@ const ScheduleView = (props) => {
     if (firstRegularShift) {
       setDisplay({
         title: t("salmon_run"),
-        color: "orange.500",
+        color: Color.SalmonRun,
         shifts: regularShifts,
         select: ["setting"],
       });
@@ -243,7 +244,7 @@ const ScheduleView = (props) => {
         )}
         {firstRegularSchedule !== null && (
           <ScheduleButton
-            color="green.500"
+            color={Color.RegularBattle}
             isLoaded={firstRegularSchedule}
             valid={isStarted(firstRegularSchedule)}
             title={getRule(firstRegularSchedule, ["regularMatchSetting"])}
@@ -253,7 +254,7 @@ const ScheduleView = (props) => {
         )}
         {firstAnarchySchedule !== null && (
           <ScheduleButton
-            color="orange.600"
+            color={Color.AnarchyBattle}
             isLoaded={firstAnarchySchedule}
             valid={isStarted(firstAnarchySchedule)}
             title={getRule(firstAnarchySchedule, ["bankaraMatchSettings", 0])}
@@ -263,7 +264,7 @@ const ScheduleView = (props) => {
         )}
         {firstAnarchySchedule !== null && (
           <ScheduleButton
-            color="orange.600"
+            color={Color.AnarchyBattle}
             isLoaded={firstAnarchySchedule}
             valid={isStarted(firstAnarchySchedule)}
             title={getRule(firstAnarchySchedule, ["bankaraMatchSettings", 1])}
@@ -273,7 +274,7 @@ const ScheduleView = (props) => {
         )}
         {firstXSchedule !== null && (
           <ScheduleButton
-            color="emerald.400"
+            color={Color.XBattle}
             isLoaded={firstXSchedule}
             valid={isStarted(firstXSchedule)}
             title={getRule(firstXSchedule, ["xMatchSetting"])}
@@ -283,7 +284,7 @@ const ScheduleView = (props) => {
         )}
         {firstBigRunShift !== null && (
           <ScheduleButton
-            color="purple.600"
+            color={Color.BigRun}
             isLoaded={firstBigRunShift}
             valid={isStarted(firstBigRunShift)}
             title={t("big_run")}
@@ -293,7 +294,7 @@ const ScheduleView = (props) => {
         )}
         {firstRegularShift !== null && (
           <ScheduleButton
-            color="orange.500"
+            color={Color.SalmonRun}
             isLoaded={firstRegularShift}
             valid={isStarted(firstRegularShift)}
             title={t("salmon_run")}

@@ -1,29 +1,37 @@
 import { Avatar, HStack, ScrollView, Skeleton } from "native-base";
+import { Color } from "../models";
 import { TransformPressable } from "../components";
 
 const FriendView = (props) => {
   const { accentColor, friends } = props;
 
-  const getBorderColor = (onlineState, vsMode) => {
+  const getBorderColor = (onlineState, vsMode, coopRule) => {
     switch (onlineState) {
       case "VS_MODE_FIGHTING":
       case "VS_MODE_MATCHING":
-        if (vsMode) {
-          switch (vsMode) {
-            case "VnNNb2RlLTE=":
-              return "green.500";
-            case "VnNNb2RlLTI=":
-              return "orange.600";
-            case "VnNNb2RlLTM=":
-              return "emerald.400";
-            case "VnNNb2RlLTY=":
-              return accentColor;
-          }
+        switch (vsMode["id"]) {
+          case "VnNNb2RlLTE=":
+            return Color.RegularBattle;
+          case "VnNNb2RlLTI=":
+            return Color.AnarchyBattle;
+          case "VnNNb2RlLTM=":
+            return Color.XBattle;
+          case "VnNNb2RlLTU=":
+            return Color.PrivateBattle;
+          case "VnNNb2RlLTY=":
+            return accentColor;
         }
-        return "orange.600";
+        return "teal.300";
       case "COOP_MODE_FIGHTING":
       case "COOP_MODE_MATCHING":
-        return "orange.500";
+        switch (coopRule) {
+          case "REGULAR":
+            return Color.SalmonRun;
+          // TODO: have not been checked.
+          case "BIG_RUN":
+            return Color.BigRun;
+        }
+        return "teal.300";
       case "ONLINE":
         return "teal.300";
       default:
@@ -33,9 +41,9 @@ const FriendView = (props) => {
   const getBorderWidth = (onlineState) => {
     switch (onlineState) {
       case "VS_MODE_FIGHTING":
-      case "VS_MODE_MATCHING":
-        return 3;
       case "COOP_MODE_FIGHTING":
+        return 3;
+      case "VS_MODE_MATCHING":
       case "COOP_MODE_MATCHING":
       case "ONLINE":
         return 2;
@@ -58,7 +66,11 @@ const FriendView = (props) => {
                   source={{
                     uri: friend["userIcon"]["url"],
                   }}
-                  borderColor={getBorderColor(friend["onlineState"], friend["vsMode"])}
+                  borderColor={getBorderColor(
+                    friend["onlineState"],
+                    friend["vsMode"],
+                    friend["coopRule"]
+                  )}
                   borderWidth={getBorderWidth(friend["onlineState"])}
                 />
               </TransformPressable>

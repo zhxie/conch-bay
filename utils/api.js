@@ -226,7 +226,7 @@ const checkBulletToken = async (bulletToken, language) => {
   }
 };
 const fetchFriends = async (bulletToken, language) => {
-  const res = await fetchGraphQl(bulletToken, "7a0e05c28c7d3f7e5a06def87ab8cd2d", language);
+  const res = await fetchGraphQl(bulletToken, "aa2c979ad21a1100170ddf6afea3e2db", language);
   const json = await res.json();
   return json;
 };
