@@ -1,6 +1,13 @@
 import { AspectRatio, HStack, Image, Spacer, Text, VStack } from "native-base";
 
-const ShiftBox = (props) => {
+interface ScheduleBoxProps {
+  rule: string;
+  time: string;
+  stage: { title: string; image: string };
+  weapons: string[];
+}
+
+const ShiftBox = (props: ScheduleBoxProps) => {
   const { rule, time, stage, weapons } = props;
 
   return (

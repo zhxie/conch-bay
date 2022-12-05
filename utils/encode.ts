@@ -1,6 +1,5 @@
-const base64 = (bytes) => {
-  const encodings =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+const base64 = (bytes: Uint8Array) => {
+  const encodings = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
   let base64 = "";
   let byteLength = bytes.byteLength;
@@ -40,7 +39,7 @@ const base64 = (bytes) => {
 
   return base64;
 };
-const base64url = (base64) => {
+const base64url = (base64: string) => {
   return base64.replaceAll("+", "-").replaceAll("/", "_").replaceAll("=", "");
 };
 

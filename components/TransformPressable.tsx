@@ -1,6 +1,11 @@
 import { Box, Pressable } from "native-base";
 
-const TransformPressable = (props) => {
+interface TransformPressableProps {
+  onPress: () => void;
+  children?: JSX.Element;
+}
+
+const TransformPressable = (props: TransformPressableProps) => {
   const { onPress, children } = props;
 
   return (

@@ -14,7 +14,7 @@ const theme = extendTheme({
   components: {
     Button: {
       variants: {
-        default: ({ colorScheme }) => {
+        default: ({ colorScheme }: Record<string, any>) => {
           return {
             _text: {
               color: `${colorScheme}.900`,
@@ -66,8 +66,8 @@ i18n.defaultLocale = "en";
 i18n.locale = Localization.locale;
 
 const App = () => {
-  const t = (scope, options) => {
-    return i18n.t(scope, options);
+  const t = (str: string) => {
+    return i18n.t(str);
   };
 
   return (

@@ -226,7 +226,7 @@ const ScheduleView = (props) => {
           <ScheduleButton
             color={accentColor}
             isLoaded={currentSplatfest}
-            valid={isStarted(currentSplatfest)}
+            isValid={isStarted(currentSplatfest)}
             title={t("VnNSdWxlLTU=")}
             stages={currentSplatfestStage}
             onPress={onCurrentSplatfestPress}
@@ -236,7 +236,7 @@ const ScheduleView = (props) => {
           <ScheduleButton
             color={accentColor}
             isLoaded={firstSplatfestSchedule}
-            valid={isStarted(firstSplatfestSchedule)}
+            isValid={isStarted(firstSplatfestSchedule)}
             title={getRule(firstSplatfestSchedule, ["festMatchSetting"])}
             stages={getStageTitles(firstSplatfestSchedule, ["festMatchSetting"])}
             onPress={onSplatfestSchedulePress}
@@ -246,7 +246,7 @@ const ScheduleView = (props) => {
           <ScheduleButton
             color={Color.RegularBattle}
             isLoaded={firstRegularSchedule}
-            valid={isStarted(firstRegularSchedule)}
+            isValid={isStarted(firstRegularSchedule)}
             title={getRule(firstRegularSchedule, ["regularMatchSetting"])}
             stages={getStageTitles(firstRegularSchedule, ["regularMatchSetting"])}
             onPress={onRegularSchedulePress}
@@ -256,7 +256,7 @@ const ScheduleView = (props) => {
           <ScheduleButton
             color={Color.AnarchyBattle}
             isLoaded={firstAnarchySchedule}
-            valid={isStarted(firstAnarchySchedule)}
+            isValid={isStarted(firstAnarchySchedule)}
             title={getRule(firstAnarchySchedule, ["bankaraMatchSettings", 0])}
             stages={getStageTitles(firstAnarchySchedule, ["bankaraMatchSettings", 0])}
             onPress={onAnarchySeriesSchedulePress}
@@ -266,7 +266,7 @@ const ScheduleView = (props) => {
           <ScheduleButton
             color={Color.AnarchyBattle}
             isLoaded={firstAnarchySchedule}
-            valid={isStarted(firstAnarchySchedule)}
+            isValid={isStarted(firstAnarchySchedule)}
             title={getRule(firstAnarchySchedule, ["bankaraMatchSettings", 1])}
             stages={getStageTitles(firstAnarchySchedule, ["bankaraMatchSettings", 1])}
             onPress={onAnarchyOpenSchedulePress}
@@ -276,7 +276,7 @@ const ScheduleView = (props) => {
           <ScheduleButton
             color={Color.XBattle}
             isLoaded={firstXSchedule}
-            valid={isStarted(firstXSchedule)}
+            isValid={isStarted(firstXSchedule)}
             title={getRule(firstXSchedule, ["xMatchSetting"])}
             stages={getStageTitles(firstXSchedule, ["xMatchSetting"])}
             onPress={onXSchedulePress}
@@ -286,7 +286,7 @@ const ScheduleView = (props) => {
           <ScheduleButton
             color={Color.BigRun}
             isLoaded={firstBigRunShift}
-            valid={isStarted(firstBigRunShift)}
+            isValid={isStarted(firstBigRunShift)}
             title={t("big_run")}
             stages={[getCoopStageTitle(firstBigRunShift, ["setting"])]}
             onPress={onBigRunShiftPress}
@@ -296,7 +296,7 @@ const ScheduleView = (props) => {
           <ScheduleButton
             color={Color.SalmonRun}
             isLoaded={firstRegularShift}
-            valid={isStarted(firstRegularShift)}
+            isValid={isStarted(firstRegularShift)}
             title={t("salmon_run")}
             stages={[getCoopStageTitle(firstRegularShift, ["setting"])]}
             onPress={onRegularShiftPress}
