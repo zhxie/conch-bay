@@ -240,7 +240,7 @@ const MainView = (props: MainViewProps) => {
           {sessionToken.length > 0 && (
             <VStack px={4} space={2} alignItems="center">
               <TransformPressable onPress={onLogOutPress}>
-                <Skeleton size={16} rounded="full" isLoaded={!!icon}>
+                <Skeleton w={16} h={16} rounded="full" isLoaded={!!icon}>
                   <Avatar
                     size="lg"
                     _dark={{ bg: "gray.700" }}

@@ -15,7 +15,7 @@ const ScheduleButton = (props: ScheduleButtonProps) => {
     <Button p={0} rounded="lg" colorScheme="gray" variant="default" onPress={props.onPress}>
       <VStack w={40} h={20} p={2}>
         <HStack space={2} alignItems="center">
-          <Skeleton size={3} rounded="full" isLoaded={props.isLoaded}>
+          <Skeleton w={3} h={3} rounded="full" isLoaded={props.isLoaded}>
             <CircleIcon size={3} color={props.isValid ? props.color : "gray.400"} />
           </Skeleton>
           <Skeleton.Text flex={1} lines={1} isLoaded={props.isLoaded}>

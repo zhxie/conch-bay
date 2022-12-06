@@ -1,4 +1,4 @@
-import { Avatar, HStack, ScrollView, Skeleton } from "native-base";
+import { Avatar, Center, HStack, ScrollView, Skeleton } from "native-base";
 import { ColorType } from "native-base/lib/typescript/components/types";
 import { Color } from "../models";
 import { TransformPressable } from "../components";
@@ -79,7 +79,7 @@ const FriendView = (props: FriendViewProps) => {
           } else {
             return new Array(100).fill(0).map((_, i) => (
               <TransformPressable key={i}>
-                <Skeleton size={12} rounded="full" />
+                <Skeleton w={12} h={12} rounded="full" />
               </TransformPressable>
             ));
           }
