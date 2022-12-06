@@ -1,7 +1,7 @@
 import * as Crypto from "expo-crypto";
 import * as Random from "expo-random";
 import JSSoup from "jssoup";
-import { Friends, GraphQlResponse, Schedules, Summary } from "../models/types";
+import { Friends, GraphQlResponse, Schedules, Summary } from "../models";
 import { base64, base64url } from "./encode";
 import { formUrlEncoded, getParam } from "./url";
 

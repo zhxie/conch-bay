@@ -18,7 +18,7 @@ import React, { useEffect, useState } from "react";
 import { RefreshControl } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { TransformPressable } from "../components";
-import { Friends, GraphQlResponse, Schedules } from "../models/types";
+import { Friends, GraphQlResponse, Schedules } from "../models";
 import {
   checkBulletToken,
   fetchFriends,
@@ -98,7 +98,7 @@ const MainView = (props: MainViewProps) => {
       bulletToken,
     };
   };
-  const savePersistence = async (persistence) => {
+  const savePersistence = async (persistence: Record<string, string>) => {
     for (let key of ["sessionToken", "bulletToken", "icon", "level", "rank", "grade"]) {
       if (persistence[key]) {
         await AsyncStorage.setItem(key, persistence[key]);
@@ -109,7 +109,7 @@ const MainView = (props: MainViewProps) => {
     await AsyncStorage.clear();
   };
 
-  const refresh = async (sessionToken?: string, bulletToken?: string) => {
+  const refresh = async (sessionToken: string, bulletToken?: string) => {
     setRefreshing(true);
     try {
       const schedules = await fetchSchedules();
@@ -118,7 +118,7 @@ const MainView = (props: MainViewProps) => {
         await updateNsoappVersion();
         await updateWebViewVersion();
 
-        let newBulletToken;
+        let newBulletToken = "";
         if (bulletToken && bulletToken.length > 0 && (await checkBulletToken(bulletToken))) {
           newBulletToken = bulletToken;
         }
@@ -132,7 +132,7 @@ const MainView = (props: MainViewProps) => {
 
           setBulletToken(newBulletToken);
           savePersistence({
-            bulletToken: bulletToken,
+            bulletToken: newBulletToken,
           });
         }
 

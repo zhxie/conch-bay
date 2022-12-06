@@ -2,10 +2,10 @@ import dayjs from "dayjs";
 import { CircleIcon, HStack, Modal, ScrollView, Text, VStack } from "native-base";
 import { ColorType } from "native-base/lib/typescript/components/types";
 import { useState } from "react";
-import { Color } from "../models";
 import { ScheduleBox, ScheduleButton, ShiftBox } from "../components";
 import {
   AnarchyMatchSetting,
+  Color,
   CoopWeapon,
   Splatfest,
   GraphQlResponse,
@@ -16,7 +16,7 @@ import {
   SplatfestMatchSetting,
   VsStage,
   XMatchSetting,
-} from "../models/types";
+} from "../models";
 
 interface ScheduleViewProps {
   t: (str: string) => string;

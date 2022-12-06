@@ -1,8 +1,7 @@
-import { Avatar, Center, HStack, ScrollView, Skeleton } from "native-base";
+import { Avatar, HStack, ScrollView, Skeleton } from "native-base";
 import { ColorType } from "native-base/lib/typescript/components/types";
-import { Color } from "../models";
 import { TransformPressable } from "../components";
-import { Friend, Friends, GraphQlResponse } from "../models/types";
+import { Color, Friend, Friends, GraphQlResponse } from "../models";
 
 interface FriendViewProps {
   accentColor: ColorType;
