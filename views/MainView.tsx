@@ -18,6 +18,7 @@ import React, { useEffect, useState } from "react";
 import { RefreshControl } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { TransformPressable } from "../components";
+import { Friends, GraphQlResponse, Schedules } from "../models/types";
 import {
   checkBulletToken,
   fetchFriends,
@@ -33,7 +34,11 @@ import {
 import FriendView from "./FriendView";
 import ScheduleView from "./ScheduleView";
 
-const MainView = (props) => {
+interface MainViewProps {
+  t: (str: string) => string;
+}
+
+const MainView = (props: MainViewProps) => {
   const { t } = props;
 
   const accentColorScheme = useColorModeValue("blue", "yellow");
@@ -55,26 +60,34 @@ const MainView = (props) => {
   const [rank, setRank] = useState("");
   const [grade, setGrade] = useState("");
 
-  const [schedules, setSchedules] = useState(undefined);
-  const [friends, setFriends] = useState(undefined);
+  const [schedules, setSchedules] = useState<GraphQlResponse<Schedules> | undefined>(undefined);
+  const [friends, setFriends] = useState<GraphQlResponse<Friends> | undefined>(undefined);
+
+  const showError = (e: any) => {
+    if (e instanceof Error) {
+      toast.show({ description: e.message });
+    } else if (typeof e === "string") {
+      toast.show({ description: e });
+    }
+  };
 
   useEffect(() => {
-    fetchData = async () => {
+    const fetchData = async () => {
       try {
         const { sessionToken, bulletToken } = await loadPersistence();
         await refresh(sessionToken, bulletToken);
       } catch (e) {
-        toast.show({ description: e.message });
+        showError(e);
       }
     };
     fetchData();
   }, []);
   const loadPersistence = async () => {
-    const sessionToken = await AsyncStorage.getItem("sessionToken");
-    const bulletToken = await AsyncStorage.getItem("bulletToken");
+    const sessionToken = (await AsyncStorage.getItem("sessionToken")) ?? "";
+    const bulletToken = (await AsyncStorage.getItem("bulletToken")) ?? "";
 
-    setSessionToken(sessionToken ?? "");
-    setBulletToken(bulletToken ?? "");
+    setSessionToken(sessionToken);
+    setBulletToken(bulletToken);
     setIcon((await AsyncStorage.getItem("icon")) ?? "");
     setLevel((await AsyncStorage.getItem("level")) ?? "");
     setRank((await AsyncStorage.getItem("rank")) ?? "");
@@ -96,7 +109,7 @@ const MainView = (props) => {
     await AsyncStorage.clear();
   };
 
-  const refresh = async (sessionToken, bulletToken) => {
+  const refresh = async (sessionToken?: string, bulletToken?: string) => {
     setRefreshing(true);
     try {
       const schedules = await fetchSchedules();
@@ -106,11 +119,11 @@ const MainView = (props) => {
         await updateWebViewVersion();
 
         let newBulletToken;
-        if (bulletToken.length > 0 && (await checkBulletToken(bulletToken))) {
+        if (bulletToken && bulletToken.length > 0 && (await checkBulletToken(bulletToken))) {
           newBulletToken = bulletToken;
         }
         if (!newBulletToken) {
-          if (bulletToken.length > 0) {
+          if (bulletToken && bulletToken.length > 0) {
             toast.show({ description: t("reacquiring_tokens") });
           }
 
@@ -141,7 +154,7 @@ const MainView = (props) => {
         });
       }
     } catch (e) {
-      toast.show({ description: e.message });
+      showError(e);
     }
     setRefreshing(false);
   };
@@ -174,12 +187,12 @@ const MainView = (props) => {
       setSessionToken(res3);
       await savePersistence({ sessionToken: res3 });
 
-      await onRefresh(res3);
+      await refresh(res3);
 
       setLoggingIn(false);
       setLogIn(false);
     } catch (e) {
-      toast.show({ description: e.message });
+      showError(e);
       setLoggingIn(false);
     }
   };
@@ -200,7 +213,7 @@ const MainView = (props) => {
       setLoggingOut(false);
       setLogOut(false);
     } catch (e) {
-      toast.show({ description: e.message });
+      showError(e);
       setLoggingOut(false);
     }
   };
@@ -227,7 +240,7 @@ const MainView = (props) => {
           {sessionToken.length > 0 && (
             <VStack px={4} space={2} alignItems="center">
               <TransformPressable onPress={onLogOutPress}>
-                <Skeleton size={16} rounded="full" isLoaded={icon}>
+                <Skeleton size={16} rounded="full" isLoaded={!!icon}>
                   <Avatar
                     size="lg"
                     _dark={{ bg: "gray.700" }}

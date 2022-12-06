@@ -1,15 +1,20 @@
 import { Avatar, HStack, ScrollView, Skeleton } from "native-base";
+import { ColorType } from "native-base/lib/typescript/components/types";
 import { Color } from "../models";
 import { TransformPressable } from "../components";
+import { Friend, Friends, GraphQlResponse } from "../models/types";
 
-const FriendView = (props) => {
-  const { accentColor, friends } = props;
+interface FriendViewProps {
+  accentColor: ColorType;
+  friends?: GraphQlResponse<Friends>;
+}
 
-  const getBorderColor = (onlineState, vsMode, coopRule) => {
-    switch (onlineState) {
+const FriendView = (props: FriendViewProps) => {
+  const getBorderColor = (friend: Friend) => {
+    switch (friend.onlineState) {
       case "VS_MODE_FIGHTING":
       case "VS_MODE_MATCHING":
-        switch (vsMode["id"]) {
+        switch (friend.vsMode!.id) {
           case "VnNNb2RlLTE=":
             return Color.RegularBattle;
           case "VnNNb2RlLTI=":
@@ -19,12 +24,12 @@ const FriendView = (props) => {
           case "VnNNb2RlLTU=":
             return Color.PrivateBattle;
           case "VnNNb2RlLTY=":
-            return accentColor;
+            return props.accentColor;
         }
         return "teal.300";
       case "COOP_MODE_FIGHTING":
       case "COOP_MODE_MATCHING":
-        switch (coopRule) {
+        switch (friend.coopRule!) {
           case "REGULAR":
             return Color.SalmonRun;
           // TODO: have not been checked.
@@ -38,8 +43,8 @@ const FriendView = (props) => {
         return undefined;
     }
   };
-  const getBorderWidth = (onlineState) => {
-    switch (onlineState) {
+  const getBorderWidth = (friend: Friend) => {
+    switch (friend.onlineState) {
       case "VS_MODE_FIGHTING":
       case "COOP_MODE_FIGHTING":
         return 3;
@@ -53,32 +58,28 @@ const FriendView = (props) => {
   };
 
   return (
-    <ScrollView horizontal w="100%" flexGrow="unset" showsHorizontalScrollIndicator="false">
+    <ScrollView horizontal w="100%" flexGrow="unset" showsHorizontalScrollIndicator={false}>
       <HStack space={2} px={4}>
         {(() => {
-          if (friends) {
-            return friends["data"]["friends"]["nodes"].map((friend) => (
-              <TransformPressable key={friend["id"]}>
+          if (props.friends) {
+            return props.friends.data.friends.nodes.map((friend) => (
+              <TransformPressable key={friend.id}>
                 <Avatar
                   size="md"
                   _dark={{ bg: "gray.700" }}
                   _light={{ bg: "gray.100" }}
                   source={{
-                    uri: friend["userIcon"]["url"],
+                    uri: friend.userIcon.url,
                   }}
-                  borderColor={getBorderColor(
-                    friend["onlineState"],
-                    friend["vsMode"],
-                    friend["coopRule"]
-                  )}
-                  borderWidth={getBorderWidth(friend["onlineState"])}
+                  borderColor={getBorderColor(friend)}
+                  borderWidth={getBorderWidth(friend)}
                 />
               </TransformPressable>
             ));
           } else {
             return new Array(100).fill(0).map((_, i) => (
               <TransformPressable key={i}>
-                <Skeleton size="12" rounded="full" />
+                <Skeleton size={12} rounded="full" />
               </TransformPressable>
             ));
           }

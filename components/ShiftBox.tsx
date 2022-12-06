@@ -1,9 +1,13 @@
 import { AspectRatio, HStack, Image, Spacer, Text, VStack } from "native-base";
 
+interface StageProps {
+  title: string;
+  image: string;
+}
 interface ScheduleBoxProps {
   rule: string;
   time: string;
-  stage: { title: string; image: string };
+  stage: StageProps;
   weapons: string[];
 }
 

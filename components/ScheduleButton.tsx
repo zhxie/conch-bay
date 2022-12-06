@@ -1,12 +1,13 @@
 import { Button, CircleIcon, HStack, Skeleton, Text, VStack } from "native-base";
+import { ColorType } from "native-base/lib/typescript/components/types";
 
 interface ScheduleButtonProps {
-  color: string;
+  color: ColorType;
   isLoaded: boolean;
   isValid: boolean;
   title: string;
   stages: string[];
-  onPress?: () => void | undefined;
+  onPress?: () => void;
 }
 
 const ScheduleButton = (props: ScheduleButtonProps) => {

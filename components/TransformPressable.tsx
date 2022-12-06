@@ -1,7 +1,7 @@
 import { Box, Pressable } from "native-base";
 
 interface TransformPressableProps {
-  onPress: () => void;
+  onPress?: () => void;
   children?: JSX.Element;
 }
 

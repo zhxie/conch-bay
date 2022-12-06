@@ -1,6 +1,7 @@
 import * as Crypto from "expo-crypto";
 import * as Random from "expo-random";
 import JSSoup from "jssoup";
+import { Friends, GraphQlResponse, Schedules, Summary } from "../models/types";
 import { base64, base64url } from "./encode";
 import { formUrlEncoded, getParam } from "./url";
 
@@ -16,7 +17,7 @@ const fetchSchedules = async () => {
     },
   });
   const json = await res.json();
-  return json;
+  return json as GraphQlResponse<Schedules>;
 };
 
 const updateNsoappVersion = async () => {
@@ -45,10 +46,10 @@ const updateWebViewVersion = async () => {
   const text2 = await res2.text();
 
   const regex = /([0-9a-f]{40}).*?revision_info_not_set.*?=`(.*?)-/;
-  const match = regex.exec(text2);
+  const match = regex.exec(text2)!;
   WEB_VIEW_VERSION = `${match[2]}-${match[1].substring(0, 8)}`;
 };
-const callIminkFApi = async (idToken, step) => {
+const callIminkFApi = async (idToken: string, step: number) => {
   const res = await fetch("https://api.imink.app/f", {
     method: "POST",
     headers: {
@@ -61,7 +62,7 @@ const callIminkFApi = async (idToken, step) => {
     }),
   });
   const json = await res.json();
-  return json;
+  return json as { f: string; request_id: string; timestamp: string };
 };
 const generateLogIn = async () => {
   const state = base64url(base64(Random.getRandomBytes(36)));
@@ -87,7 +88,7 @@ const generateLogIn = async () => {
     cv,
   };
 };
-const getSessionToken = async (url, cv) => {
+const getSessionToken = async (url: string, cv: string) => {
   const sessionTokenCode = getParam(url.replace("#", "?"), "session_token_code");
   const res = await fetch("https://accounts.nintendo.com/connect/1.0.0/api/session_token", {
     method: "POST",
@@ -102,9 +103,9 @@ const getSessionToken = async (url, cv) => {
     }),
   });
   const json = await res.json();
-  return json["session_token"];
+  return json["session_token"] as string;
 };
-const getWebServiceToken = async (sessionToken) => {
+const getWebServiceToken = async (sessionToken: string) => {
   // Get tokens.
   const res = await fetch("https://accounts.nintendo.com/connect/1.0.0/api/token", {
     method: "POST",
@@ -182,7 +183,7 @@ const getWebServiceToken = async (sessionToken) => {
   const webServiceToken = json6["result"]["accessToken"];
   return { webServiceToken, country, language };
 };
-const getBulletToken = async (webServiceToken, country, language) => {
+const getBulletToken = async (webServiceToken: string, country: string, language?: string) => {
   const res = await fetch("https://api.lp1.av5ja.srv.nintendo.net/api/bullet_tokens", {
     method: "POST",
     headers: {
@@ -193,10 +194,10 @@ const getBulletToken = async (webServiceToken, country, language) => {
     },
   });
   const json = await res.json();
-  return json["bulletToken"];
+  return json["bulletToken"] as string;
 };
 
-const fetchGraphQl = async (bulletToken, hash, language) => {
+const fetchGraphQl = async (bulletToken: string, hash: string, language?: string) => {
   const res = await fetch("https://api.lp1.av5ja.srv.nintendo.net/api/graphql", {
     method: "POST",
     headers: {
@@ -217,7 +218,7 @@ const fetchGraphQl = async (bulletToken, hash, language) => {
   });
   return res;
 };
-const checkBulletToken = async (bulletToken, language) => {
+const checkBulletToken = async (bulletToken: string, language?: string) => {
   try {
     const res = await fetchGraphQl(bulletToken, "dba47124d5ec3090c97ba17db5d2f4b3", language);
     return res.ok;
@@ -225,15 +226,15 @@ const checkBulletToken = async (bulletToken, language) => {
     return false;
   }
 };
-const fetchFriends = async (bulletToken, language) => {
+const fetchFriends = async (bulletToken: string, language?: string) => {
   const res = await fetchGraphQl(bulletToken, "aa2c979ad21a1100170ddf6afea3e2db", language);
   const json = await res.json();
-  return json;
+  return json as GraphQlResponse<Friends>;
 };
-const fetchSummary = async (bulletToken, language) => {
+const fetchSummary = async (bulletToken: string, language?: string) => {
   const res = await fetchGraphQl(bulletToken, "9d4ef9fba3f84d6933bb1f6f436f7200", language);
   const json = await res.json();
-  return json;
+  return json as Summary;
 };
 
 export {

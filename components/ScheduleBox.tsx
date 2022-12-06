@@ -1,9 +1,13 @@
 import { AspectRatio, HStack, Image, Spacer, Text, VStack } from "native-base";
 
+interface StageProps {
+  title: string;
+  image: string;
+}
 interface ScheduleBoxProps {
   rule: string;
   time: string;
-  stages: { title: string; image: string }[];
+  stages: StageProps[];
 }
 
 const ScheduleBox = (props: ScheduleBoxProps) => {
