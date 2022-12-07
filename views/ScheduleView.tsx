@@ -232,7 +232,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
                 color="primary"
                 isLoaded={false}
                 isValid={false}
-                title=""
+                rule=""
                 stages={[]}
               />
             );
@@ -242,7 +242,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
             color={props.accentColor}
             isLoaded={!!currentSplatfest}
             isValid={isStarted(currentSplatfest)}
-            title={t("VnNSdWxlLTU=")}
+            rule={t("VnNSdWxlLTU=")}
             stages={[getSplatfestStageTitle(currentSplatfest)]}
             onPress={onCurrentSplatfestPress}
           />
@@ -252,7 +252,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
             color={props.accentColor}
             isLoaded={!!splatfestSchedules[0]}
             isValid={isStarted(splatfestSchedules[0])}
-            title={getRule(splatfestSchedules[0])}
+            rule={getRule(splatfestSchedules[0])}
             stages={getStageTitles(splatfestSchedules[0])}
             onPress={onSplatfestSchedulePress}
           />
@@ -262,7 +262,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
             color={Color.RegularBattle}
             isLoaded={!!regularSchedules[0]}
             isValid={isStarted(regularSchedules[0])}
-            title={getRule(regularSchedules[0])}
+            rule={getRule(regularSchedules[0])}
             stages={getStageTitles(regularSchedules[0])}
             onPress={onRegularSchedulePress}
           />
@@ -272,7 +272,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
             color={Color.AnarchyBattle}
             isLoaded={!!anarchySchedules[0]}
             isValid={isStarted(anarchySchedules[0])}
-            title={getRule(anarchySchedules[0], 0)}
+            rule={getRule(anarchySchedules[0], 0)}
             stages={getStageTitles(anarchySchedules[0], 1)}
             onPress={onAnarchySeriesSchedulePress}
           />
@@ -282,7 +282,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
             color={Color.AnarchyBattle}
             isLoaded={!!anarchySchedules[0]}
             isValid={isStarted(anarchySchedules[0])}
-            title={getRule(anarchySchedules[0], 1)}
+            rule={getRule(anarchySchedules[0], 1)}
             stages={getStageTitles(anarchySchedules[0], 1)}
             onPress={onAnarchyOpenSchedulePress}
           />
@@ -292,7 +292,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
             color={Color.XBattle}
             isLoaded={!!xSchedules[0]}
             isValid={isStarted(xSchedules[0])}
-            title={getRule(xSchedules[0])}
+            rule={getRule(xSchedules[0])}
             stages={getStageTitles(xSchedules[0])}
             onPress={onXSchedulePress}
           />
@@ -302,7 +302,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
             color={Color.BigRun}
             isLoaded={!!bigRunShifts[0]}
             isValid={isStarted(bigRunShifts[0])}
-            title={t("big_run")}
+            rule={t("big_run")}
             stages={[getCoopStageTitle(bigRunShifts[0])]}
             onPress={onBigRunShiftPress}
           />
@@ -312,7 +312,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
             color={Color.SalmonRun}
             isLoaded={!!regularShifts[0]}
             isValid={isStarted(regularShifts[0])}
-            title={t("salmon_run")}
+            rule={t("salmon_run")}
             stages={[getCoopStageTitle(regularShifts[0])]}
             onPress={onRegularShiftPress}
           />

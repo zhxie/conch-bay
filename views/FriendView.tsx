@@ -65,8 +65,8 @@ const FriendView = (props: FriendViewProps) => {
               <TransformPressable key={friend.id}>
                 <Avatar
                   size="md"
+                  bg="gray.100"
                   _dark={{ bg: "gray.700" }}
-                  _light={{ bg: "gray.100" }}
                   source={{
                     uri: friend.userIcon.url,
                   }}

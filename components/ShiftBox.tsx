@@ -29,8 +29,8 @@ const ShiftBox = (props: ScheduleBoxProps) => {
                 uri: stage.image,
               }}
               alt={stage.title}
+              bg="gray.100"
               _dark={{ bg: "gray.700" }}
-              _light={{ bg: "gray.100" }}
               rounded="lg"
             />
           </AspectRatio>

@@ -219,7 +219,7 @@ const MainView = (props: MainViewProps) => {
   };
 
   return (
-    <VStack flex={1} _dark={{ bg: "gray.900" }} _light={{ bg: "gray.50" }}>
+    <VStack flex={1} bg="gray.50" _dark={{ bg: "gray.900" }}>
       <ScrollView
         refreshControl={
           <RefreshControl
@@ -243,8 +243,8 @@ const MainView = (props: MainViewProps) => {
                 <Skeleton w={16} h={16} rounded="full" isLoaded={!!icon}>
                   <Avatar
                     size="lg"
+                    bg="gray.100"
                     _dark={{ bg: "gray.700" }}
-                    _light={{ bg: "gray.100" }}
                     source={{
                       uri: icon,
                     }}

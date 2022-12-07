@@ -5,7 +5,7 @@ interface ScheduleButtonProps {
   color: ColorType;
   isLoaded: boolean;
   isValid: boolean;
-  title: string;
+  rule: string;
   stages: string[];
   onPress?: () => void;
 }
@@ -20,7 +20,7 @@ const ScheduleButton = (props: ScheduleButtonProps) => {
           </Skeleton>
           <Skeleton.Text flex={1} lines={1} isLoaded={props.isLoaded}>
             <Text bold fontSize="md" color={props.isValid ? props.color : "gray.400"} noOfLines={1}>
-              {props.title}
+              {props.rule}
             </Text>
           </Skeleton.Text>
         </HStack>
