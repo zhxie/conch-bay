@@ -23,6 +23,8 @@ const zh = {
   "VnNNb2RlLTM=": "X比赛",
   "VnNNb2RlLTU=": "私人比赛",
   "VnNNb2RlLTY=": "祭典比赛",
+  "VnNNb2RlLTc=": "祭典比赛",
+  "VnNNb2RlLTg=": "祭典比赛",
   CHALLENGE: "挑战",
   OPEN: "开放",
   salmon_run: "鲑鱼跑",

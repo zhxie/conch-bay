@@ -23,6 +23,8 @@ const ja = {
   "VnNNb2RlLTM=": "Xマッチ",
   "VnNNb2RlLTU=": "プライベートマッチ",
   "VnNNb2RlLTY=": "フェスマッチ",
+  "VnNNb2RlLTc=": "フェスマッチ",
+  "VnNNb2RlLTg=": "フェスマッチ",
   CHALLENGE: "チャレンジ",
   OPEN: "オープン",
   salmon_run: "サーモンラン",

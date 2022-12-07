@@ -23,6 +23,8 @@ const FriendView = (props: FriendViewProps) => {
           case "VnNNb2RlLTU=":
             return Color.PrivateBattle;
           case "VnNNb2RlLTY=":
+          case "VnNNb2RlLTc=":
+          case "VnNNb2RlLTg=":
             return props.accentColor;
         }
         return "teal.300";

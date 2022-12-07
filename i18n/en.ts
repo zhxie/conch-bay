@@ -23,6 +23,8 @@ const en = {
   "VnNNb2RlLTM=": "X Battle",
   "VnNNb2RlLTU=": "Private Battle",
   "VnNNb2RlLTY=": "Splatfest Battle",
+  "VnNNb2RlLTc=": "Splatfest Battle",
+  "VnNNb2RlLTg=": "Splatfest Battle",
   CHALLENGE: "Series",
   OPEN: "Open",
   salmon_run: "Salmon Run",
