@@ -18,12 +18,14 @@ import React, { useEffect, useState } from "react";
 import { RefreshControl } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { TransformPressable } from "../components";
-import { Friends, Schedules } from "../models";
+import { BattleHistoryGroup, Friends, Schedules, VsHistoryDetail } from "../models";
 import {
   checkBulletToken,
+  fetchBattleHistories,
   fetchFriends,
   fetchSchedules,
   fetchSummary,
+  fetchVsHistoryDetail,
   generateLogIn,
   getBulletToken,
   getSessionToken,
@@ -31,8 +33,10 @@ import {
   updateNsoappVersion,
   updateWebViewVersion,
 } from "../utils/api";
+import ResultView from "./ResultView";
 import FriendView from "./FriendView";
 import ScheduleView from "./ScheduleView";
+import * as Database from "../utils/database";
 
 interface MainViewProps {
   t: (str: string) => string;
@@ -62,6 +66,7 @@ const MainView = (props: MainViewProps) => {
 
   const [schedules, setSchedules] = useState<Schedules | undefined>(undefined);
   const [friends, setFriends] = useState<Friends | undefined>(undefined);
+  const [battles, setBattles] = useState<VsHistoryDetail[] | undefined>(undefined);
 
   const showError = (e: any) => {
     if (e instanceof Error) {
@@ -111,13 +116,25 @@ const MainView = (props: MainViewProps) => {
 
   const refresh = async (sessionToken: string, bulletToken?: string) => {
     setRefreshing(true);
+    // Query stored latest 50 results.
+    const connection = await Database.open();
+    await Database.clear(connection);
+    const details = (await Database.query(connection, 0, 50)).map(
+      (record) => JSON.parse(record.detail) as VsHistoryDetail
+    );
+    if (details.length > 0) {
+      setBattles(details);
+    }
     try {
+      // Fetch schedules.
       const schedules = await fetchSchedules();
       setSchedules(schedules);
       if (sessionToken) {
+        // Update versions.
         await updateNsoappVersion();
         await updateWebViewVersion();
 
+        // Regenerate bullet token if necessary.
         let newBulletToken = "";
         if (bulletToken && bulletToken.length > 0 && (await checkBulletToken(bulletToken))) {
           newBulletToken = bulletToken;
@@ -136,6 +153,7 @@ const MainView = (props: MainViewProps) => {
           });
         }
 
+        // Fetch friends and summary.
         const [friends, summary] = await Promise.all([
           fetchFriends(newBulletToken),
           fetchSummary(newBulletToken),
@@ -152,10 +170,74 @@ const MainView = (props: MainViewProps) => {
           level: String(level),
           rank: rank,
         });
+
+        // Fetch battle results.
+        const [battleHistories] = await Promise.all([fetchBattleHistories(newBulletToken)]);
+        let battles: {
+          id: string;
+          historyGroup: BattleHistoryGroup;
+        }[] = [];
+        battleHistories.regular.regularBattleHistories.historyGroups.nodes.forEach((historyGroup) =>
+          historyGroup.historyDetails.nodes.forEach((historyDetail) =>
+            battles.push({ id: historyDetail.id, historyGroup: historyGroup })
+          )
+        );
+        battleHistories.anarchy.bankaraBattleHistories.historyGroups.nodes.forEach((historyGroup) =>
+          historyGroup.historyDetails.nodes.forEach((historyDetail) =>
+            battles.push({ id: historyDetail.id, historyGroup: historyGroup })
+          )
+        );
+        battleHistories.x.xBattleHistories.historyGroups.nodes.forEach((historyGroup) =>
+          historyGroup.historyDetails.nodes.forEach((historyDetail) =>
+            battles.push({ id: historyDetail.id, historyGroup: historyGroup })
+          )
+        );
+        battleHistories.private.privateBattleHistories.historyGroups.nodes.forEach((historyGroup) =>
+          historyGroup.historyDetails.nodes.forEach((historyDetail) =>
+            battles.push({ id: historyDetail.id, historyGroup: historyGroup })
+          )
+        );
+        const existed = await Promise.all(
+          battles.map((battle) => Database.isExist(connection, battle.id))
+        );
+        const newBattles = battles.filter((_, i) => !existed[i]);
+        if (newBattles.length > 0) {
+          const details = await Promise.all(
+            newBattles.map((battle) => fetchVsHistoryDetail(battle.id, newBulletToken))
+          );
+          const skipOverviews: string[] = [];
+          for (let i = 0; i < newBattles.length; i++) {
+            let overview = "";
+            if (!skipOverviews.find((id) => id === newBattles[i].id)) {
+              overview = JSON.stringify(newBattles[i].historyGroup);
+            }
+            newBattles[i].historyGroup.historyDetails.nodes.forEach((detail) => {
+              skipOverviews.push(detail.id);
+            });
+            await Database.add(
+              connection,
+              details[i].vsHistoryDetail.id,
+              new Date(details[i].vsHistoryDetail.playedTime).valueOf(),
+              details[i].vsHistoryDetail.vsMode.id,
+              details[i].vsHistoryDetail.vsRule.id,
+              overview,
+              JSON.stringify(details[i])
+            );
+          }
+        }
+
+        // Query stored latest 50 results if updated.
+        if (newBattles.length > 0) {
+          const details = (await Database.query(connection, 0, 50)).map(
+            (record) => JSON.parse(record.detail) as VsHistoryDetail
+          );
+          setBattles(details);
+        }
       }
     } catch (e) {
       showError(e);
     }
+    Database.close(connection);
     setRefreshing(false);
   };
   const onRefresh = async () => {
@@ -260,6 +342,9 @@ const MainView = (props: MainViewProps) => {
           )}
           <ScheduleView t={t} accentColor={accentColor} schedules={schedules} />
           {sessionToken.length > 0 && <FriendView accentColor={accentColor} friends={friends} />}
+          {sessionToken.length > 0 && (
+            <ResultView t={t} accentColor={accentColor} battles={battles} />
+          )}
         </VStack>
       </ScrollView>
       <Modal

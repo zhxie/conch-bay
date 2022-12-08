@@ -3,6 +3,9 @@ export interface GraphQlResponse<T> {
   errors?: { message: string }[];
 }
 
+export interface VsMode {
+  id: string;
+}
 export interface VsRule {
   id: string;
 }
@@ -101,4 +104,75 @@ export interface PlayHistory {
 export interface Summary {
   currentPlayer: Player;
   playHistory: PlayHistory;
+}
+
+export interface BattleHistoryDetail {
+  id: string;
+}
+export interface BattleHistoryGroup {
+  historyDetails: {
+    nodes: BattleHistoryDetail[];
+  };
+}
+export interface RegularBattleHistories {
+  regularBattleHistories: {
+    historyGroups: {
+      nodes: BattleHistoryGroup[];
+    };
+  };
+}
+export interface AnarchyBattleHistories {
+  bankaraBattleHistories: {
+    historyGroups: {
+      nodes: BattleHistoryGroup[];
+    };
+  };
+}
+export interface XBattleHistories {
+  xBattleHistories: {
+    historyGroups: {
+      nodes: BattleHistoryGroup[];
+    };
+  };
+}
+export interface PrivateBattleHistories {
+  privateBattleHistories: {
+    historyGroups: {
+      nodes: BattleHistoryGroup[];
+    };
+  };
+}
+
+export interface Weapon {
+  image: {
+    url: string;
+  };
+  id: string;
+}
+export interface VsPlayer {
+  id: string;
+  isMyself: boolean;
+  weapon: Weapon;
+  paint: number;
+  result: {
+    kill: number;
+    death: number;
+    assist: number;
+    special: number;
+  } | null;
+}
+export interface VsTeam {
+  players: VsPlayer[];
+}
+export interface VsHistoryDetail {
+  vsHistoryDetail: {
+    id: string;
+    vsRule: VsRule;
+    vsMode: VsMode;
+    judgement: "WIN" | "LOSE" | "DEEMED_LOSE" | "EXEMPTED_LOSE" | "DRAW";
+    myTeam: VsTeam;
+    vsStage: VsStage;
+    otherTeams: VsTeam;
+    playedTime: string;
+  };
 }

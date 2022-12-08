@@ -1,7 +1,17 @@
 import * as Crypto from "expo-crypto";
 import * as Random from "expo-random";
 import JSSoup from "jssoup";
-import { Friends, GraphQlResponse, Schedules, Summary } from "../models";
+import {
+  AnarchyBattleHistories,
+  Friends,
+  GraphQlResponse,
+  PrivateBattleHistories,
+  RegularBattleHistories,
+  Schedules,
+  Summary,
+  VsHistoryDetail,
+  XBattleHistories,
+} from "../models";
 import { base64, base64url } from "./encode";
 import { formUrlEncoded, getParam } from "./url";
 
@@ -201,7 +211,12 @@ export const getBulletToken = async (
   return json["bulletToken"] as string;
 };
 
-const fetchGraphQl = async (bulletToken: string, hash: string, language?: string) => {
+const fetchGraphQl = async (
+  bulletToken: string,
+  hash: string,
+  language?: string,
+  variables?: Record<string, string>
+) => {
   const res = await fetch("https://api.lp1.av5ja.srv.nintendo.net/api/graphql", {
     method: "POST",
     headers: {
@@ -217,7 +232,7 @@ const fetchGraphQl = async (bulletToken: string, hash: string, language?: string
           version: 1,
         },
       },
-      variables: {},
+      variables: variables ?? {},
     }),
   });
   return res;
@@ -247,4 +262,46 @@ export const fetchSummary = async (bulletToken: string, language?: string) => {
     throw new Error(summary.errors[0].message);
   }
   return summary.data!;
+};
+export const fetchBattleHistories = async (bulletToken: string, language?: string) => {
+  const [regularRes, anarchyRes, xRes, privateRes] = await Promise.all([
+    fetchGraphQl(bulletToken, "d5b795d09e67ce153e622a184b7e7dfa", language),
+    fetchGraphQl(bulletToken, "de4754588109b77dbcb90fbe44b612ee", language),
+    fetchGraphQl(bulletToken, "45c74fefb45a49073207229ca65f0a62", language),
+    fetchGraphQl(bulletToken, "1d6ed57dc8b801863126ad4f351dfb9a", language),
+  ]);
+  const [regularJson, anarchyJson, xJson, privateJson] = await Promise.all([
+    regularRes.json(),
+    anarchyRes.json(),
+    xRes.json(),
+    privateRes.json(),
+  ]);
+  const histories = {
+    regular: regularJson as GraphQlResponse<RegularBattleHistories>,
+    anarchy: anarchyJson as GraphQlResponse<AnarchyBattleHistories>,
+    x: xJson as GraphQlResponse<XBattleHistories>,
+    private: privateJson as GraphQlResponse<PrivateBattleHistories>,
+  };
+  Object.values(histories).forEach((history) => {
+    if (history.errors) {
+      throw new Error(history.errors[0].message);
+    }
+  });
+  return {
+    regular: histories.regular.data!,
+    anarchy: histories.anarchy.data!,
+    x: histories.x.data!,
+    private: histories.private.data!,
+  };
+};
+export const fetchVsHistoryDetail = async (id: string, bulletToken: string, language?: string) => {
+  const res = await fetchGraphQl(bulletToken, "291295ad311b99a6288fc95a5c4cb2d2", language, {
+    vsResultId: id,
+  });
+  const json = await res.json();
+  const detail = json as GraphQlResponse<VsHistoryDetail>;
+  if (detail.errors) {
+    throw new Error(detail.errors[0].message);
+  }
+  return detail.data!;
 };
