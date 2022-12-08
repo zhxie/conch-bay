@@ -8,7 +8,6 @@ import {
   Color,
   CoopWeapon,
   Splatfest,
-  GraphQlResponse,
   RegularMatchSetting,
   Schedule,
   Schedules,
@@ -21,7 +20,7 @@ import {
 interface ScheduleViewProps {
   t: (str: string) => string;
   accentColor: ColorType;
-  schedules?: GraphQlResponse<Schedules>;
+  schedules?: Schedules;
 }
 interface DisplayProps {
   title: string;
@@ -65,23 +64,23 @@ const ScheduleView = (props: ScheduleViewProps) => {
   const getShiftSetting = (shift: Shift) => {
     return shift.setting;
   };
-  const currentSplatfest = props.schedules?.data.currentFest?.tricolorStage
-    ? props.schedules?.data.currentFest
+  const currentSplatfest = props.schedules?.currentFest?.tricolorStage
+    ? props.schedules?.currentFest
     : undefined;
-  const splatfestSchedules = props.schedules?.data.festSchedules.nodes.filter((schedule) =>
+  const splatfestSchedules = props.schedules?.festSchedules.nodes.filter((schedule) =>
     getMatchSetting(schedule)
   );
-  const regularSchedules = props.schedules?.data.regularSchedules.nodes.filter((schedule) =>
+  const regularSchedules = props.schedules?.regularSchedules.nodes.filter((schedule) =>
     getMatchSetting(schedule)
   );
-  const anarchySchedules = props.schedules?.data.bankaraSchedules.nodes.filter((schedule) =>
+  const anarchySchedules = props.schedules?.bankaraSchedules.nodes.filter((schedule) =>
     getMatchSetting(schedule)
   );
-  const xSchedules = props.schedules?.data.xSchedules.nodes.filter((schedule) =>
+  const xSchedules = props.schedules?.xSchedules.nodes.filter((schedule) =>
     getMatchSetting(schedule)
   );
-  const bigRunShifts = props.schedules?.data.coopGroupingSchedule.bigRunSchedules.nodes;
-  const regularShifts = props.schedules?.data.coopGroupingSchedule.regularSchedules.nodes;
+  const bigRunShifts = props.schedules?.coopGroupingSchedule.bigRunSchedules.nodes;
+  const regularShifts = props.schedules?.coopGroupingSchedule.regularSchedules.nodes;
 
   const isStarted = (schedule: Schedule) => {
     const now = new Date().getTime();

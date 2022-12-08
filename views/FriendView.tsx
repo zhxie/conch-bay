@@ -1,11 +1,11 @@
 import { Avatar, HStack, ScrollView, Skeleton } from "native-base";
 import { ColorType } from "native-base/lib/typescript/components/types";
 import { TransformPressable } from "../components";
-import { Color, Friend, Friends, GraphQlResponse } from "../models";
+import { Color, Friend, Friends } from "../models";
 
 interface FriendViewProps {
   accentColor: ColorType;
-  friends?: GraphQlResponse<Friends>;
+  friends?: Friends;
 }
 
 const FriendView = (props: FriendViewProps) => {
@@ -63,7 +63,7 @@ const FriendView = (props: FriendViewProps) => {
       <HStack space={2} px={4}>
         {(() => {
           if (props.friends) {
-            return props.friends.data.friends.nodes.map((friend) => (
+            return props.friends.friends.nodes.map((friend) => (
               <TransformPressable key={friend.id}>
                 <Avatar
                   size="md"

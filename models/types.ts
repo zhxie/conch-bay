@@ -88,10 +88,16 @@ export interface Friends {
   };
 }
 
+export interface Player {
+  userIcon: {
+    url: string;
+  };
+}
 export interface PlayHistory {
   rank: number;
   udemae: string;
 }
 export interface Summary {
+  currentPlayer: Player;
   playHistory: PlayHistory;
 }

@@ -18,7 +18,7 @@ import React, { useEffect, useState } from "react";
 import { RefreshControl } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { TransformPressable } from "../components";
-import { Friends, GraphQlResponse, Schedules } from "../models";
+import { Friends, Schedules } from "../models";
 import {
   checkBulletToken,
   fetchFriends,
@@ -60,8 +60,8 @@ const MainView = (props: MainViewProps) => {
   const [rank, setRank] = useState("");
   const [grade, setGrade] = useState("");
 
-  const [schedules, setSchedules] = useState<GraphQlResponse<Schedules> | undefined>(undefined);
-  const [friends, setFriends] = useState<GraphQlResponse<Friends> | undefined>(undefined);
+  const [schedules, setSchedules] = useState<Schedules | undefined>(undefined);
+  const [friends, setFriends] = useState<Friends | undefined>(undefined);
 
   const showError = (e: any) => {
     if (e instanceof Error) {
@@ -113,7 +113,7 @@ const MainView = (props: MainViewProps) => {
     setRefreshing(true);
     try {
       const schedules = await fetchSchedules();
-      setSchedules(schedules);
+      setSchedules(schedules.data);
       if (sessionToken) {
         await updateNsoappVersion();
         await updateWebViewVersion();
@@ -140,10 +140,10 @@ const MainView = (props: MainViewProps) => {
           fetchFriends(newBulletToken),
           fetchSummary(newBulletToken),
         ]);
-        setFriends(friends);
-        const icon = summary["data"]["currentPlayer"]["userIcon"]["url"];
-        const level = summary["data"]["playHistory"]["rank"];
-        const rank = summary["data"]["playHistory"]["udemae"];
+        setFriends(friends.data);
+        const icon = summary.data.currentPlayer.userIcon.url;
+        const level = summary.data.playHistory.rank;
+        const rank = summary.data.playHistory.udemae;
         setIcon(icon);
         setLevel(String(level));
         setRank(rank);

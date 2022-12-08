@@ -10,7 +10,7 @@ const USER_AGENT = "Conch Bay/0.1.0";
 let NSOAPP_VERSION = "2.3.1";
 let WEB_VIEW_VERSION = "1.0.0-5644e7a2";
 
-const fetchSchedules = async () => {
+export const fetchSchedules = async () => {
   const res = await fetch("https://splatoon3.ink/data/schedules.json", {
     headers: {
       "User-Agent": USER_AGENT,
@@ -20,7 +20,7 @@ const fetchSchedules = async () => {
   return json as GraphQlResponse<Schedules>;
 };
 
-const updateNsoappVersion = async () => {
+export const updateNsoappVersion = async () => {
   const res = await fetch("https://apps.apple.com/us/app/nintendo-switch-online/id1234806557");
   const text = await res.text();
 
@@ -28,7 +28,7 @@ const updateNsoappVersion = async () => {
   const tag = soup.find("p", { class: "whats-new__latest__version" });
   NSOAPP_VERSION = tag.getText().replace("Version ", "").trim();
 };
-const updateWebViewVersion = async () => {
+export const updateWebViewVersion = async () => {
   const res = await fetch("https://api.lp1.av5ja.srv.nintendo.net");
   const text = await res.text();
 
@@ -64,7 +64,7 @@ const callIminkFApi = async (idToken: string, step: number) => {
   const json = await res.json();
   return json as { f: string; request_id: string; timestamp: string };
 };
-const generateLogIn = async () => {
+export const generateLogIn = async () => {
   const state = base64url(base64(Random.getRandomBytes(36)));
   const cv = base64url(base64(Random.getRandomBytes(32)));
   const cvHash = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, cv, {
@@ -88,7 +88,7 @@ const generateLogIn = async () => {
     cv,
   };
 };
-const getSessionToken = async (url: string, cv: string) => {
+export const getSessionToken = async (url: string, cv: string) => {
   const sessionTokenCode = getParam(url.replace("#", "?"), "session_token_code");
   const res = await fetch("https://accounts.nintendo.com/connect/1.0.0/api/session_token", {
     method: "POST",
@@ -105,7 +105,7 @@ const getSessionToken = async (url: string, cv: string) => {
   const json = await res.json();
   return json["session_token"] as string;
 };
-const getWebServiceToken = async (sessionToken: string) => {
+export const getWebServiceToken = async (sessionToken: string) => {
   // Get tokens.
   const res = await fetch("https://accounts.nintendo.com/connect/1.0.0/api/token", {
     method: "POST",
@@ -183,7 +183,11 @@ const getWebServiceToken = async (sessionToken: string) => {
   const webServiceToken = json6["result"]["accessToken"];
   return { webServiceToken, country, language };
 };
-const getBulletToken = async (webServiceToken: string, country: string, language?: string) => {
+export const getBulletToken = async (
+  webServiceToken: string,
+  country: string,
+  language?: string
+) => {
   const res = await fetch("https://api.lp1.av5ja.srv.nintendo.net/api/bullet_tokens", {
     method: "POST",
     headers: {
@@ -218,7 +222,7 @@ const fetchGraphQl = async (bulletToken: string, hash: string, language?: string
   });
   return res;
 };
-const checkBulletToken = async (bulletToken: string, language?: string) => {
+export const checkBulletToken = async (bulletToken: string, language?: string) => {
   try {
     const res = await fetchGraphQl(bulletToken, "dba47124d5ec3090c97ba17db5d2f4b3", language);
     return res.ok;
@@ -226,26 +230,13 @@ const checkBulletToken = async (bulletToken: string, language?: string) => {
     return false;
   }
 };
-const fetchFriends = async (bulletToken: string, language?: string) => {
+export const fetchFriends = async (bulletToken: string, language?: string) => {
   const res = await fetchGraphQl(bulletToken, "aa2c979ad21a1100170ddf6afea3e2db", language);
   const json = await res.json();
   return json as GraphQlResponse<Friends>;
 };
-const fetchSummary = async (bulletToken: string, language?: string) => {
+export const fetchSummary = async (bulletToken: string, language?: string) => {
   const res = await fetchGraphQl(bulletToken, "9d4ef9fba3f84d6933bb1f6f436f7200", language);
   const json = await res.json();
-  return json as Summary;
-};
-
-export {
-  fetchSchedules,
-  updateNsoappVersion,
-  updateWebViewVersion,
-  generateLogIn,
-  getSessionToken,
-  getWebServiceToken,
-  getBulletToken,
-  checkBulletToken,
-  fetchFriends,
-  fetchSummary,
+  return json as GraphQlResponse<Summary>;
 };

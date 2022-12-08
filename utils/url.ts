@@ -1,4 +1,4 @@
-const getParam = (url: string, param: string) => {
+export const getParam = (url: string, param: string) => {
   const regex = /[?&]([^=#]+)=([^&#]*)/g;
   let params: Record<string, string> = {};
   let match;
@@ -7,8 +7,8 @@ const getParam = (url: string, param: string) => {
   }
   return params[param];
 };
-const formUrlEncoded = (form: Record<string, string>) => {
-  let body = [];
+export const formUrlEncoded = (form: Record<string, string>) => {
+  let body: string[] = [];
   for (let property in form) {
     let encodedKey = encodeURIComponent(property);
     let encodedValue = encodeURIComponent(form[property]);
@@ -16,5 +16,3 @@ const formUrlEncoded = (form: Record<string, string>) => {
   }
   return body.join("&");
 };
-
-export { getParam, formUrlEncoded };
