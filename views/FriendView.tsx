@@ -78,7 +78,7 @@ const FriendView = (props: FriendViewProps) => {
               </TransformPressable>
             ));
           } else {
-            return new Array(100).fill(0).map((_, i) => (
+            return new Array(8).fill(0).map((_, i) => (
               <TransformPressable key={i}>
                 <Skeleton w={12} h={12} rounded="full" />
               </TransformPressable>
