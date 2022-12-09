@@ -1,18 +1,18 @@
-import { Center, VStack } from "native-base";
+import { VStack } from "native-base";
 import { ColorType } from "native-base/lib/typescript/components/types";
-import { ResultButton } from "../components";
-import { Color, VsHistoryDetail } from "../models";
+import { BattleButton, CoopButton } from "../components";
+import { Color, CoopBossResult, CoopHistoryDetail, VsHistoryDetail } from "../models";
 
 interface ResultViewProps {
   t: (str: string) => string;
   accentColor: ColorType;
-  battles?: VsHistoryDetail[];
+  results?: { battle?: VsHistoryDetail; coop?: CoopHistoryDetail }[];
 }
 
 const ResultView = (props: ResultViewProps) => {
   const { t } = props;
 
-  const getColor = (mode: string) => {
+  const getVsModeColor = (mode: string) => {
     switch (mode) {
       case "VnNNb2RlLTE=":
         return Color.RegularBattle;
@@ -28,7 +28,15 @@ const ResultView = (props: ResultViewProps) => {
         return props.accentColor;
     }
   };
-  const getResult = (judgement: string) => {
+  const getCoopRuleColor = (rule: string) => {
+    switch (rule) {
+      case "REGULAR":
+        return Color.SalmonRun;
+      case "BIG_RUN":
+        return Color.BigRun;
+    }
+  };
+  const getBattleResult = (judgement: string) => {
     switch (judgement) {
       case "WIN":
         return 1;
@@ -40,30 +48,83 @@ const ResultView = (props: ResultViewProps) => {
         return -1;
     }
   };
-  const getSelf = (battle: VsHistoryDetail) => {
+  const getBattleSelf = (battle: VsHistoryDetail) => {
     return battle.vsHistoryDetail.myTeam.players.find((player) => player.isMyself)!;
+  };
+  const getWave = (waveResult: number, bossResult: CoopBossResult | null) => {
+    switch (waveResult) {
+      case -1:
+        return "";
+      case 1:
+        return t("wave_1");
+      case 2:
+        return t("wave_2");
+      case 3:
+        return t("wave_3");
+      case 0:
+        if (bossResult) {
+          return t("xtrawave");
+        }
+        return t("wave_3");
+    }
+  };
+  const getIsWaveClear = (waveResult: number, bossResult: CoopBossResult | null) => {
+    if (waveResult === 0) {
+      if (bossResult) {
+        return bossResult.hasDefeatBoss;
+      }
+      return true;
+    }
+    return false;
   };
 
   return (
     <VStack px={4} flexGrow="unset">
       {(() => {
-        if (props.battles) {
-          return props.battles.map((battle, i) => {
+        if (props.results) {
+          return props.results.map((result, i) => {
+            if (result.battle) {
+              return (
+                <BattleButton
+                  key={result.battle.vsHistoryDetail.id}
+                  isLoaded
+                  isFirst={i === 0}
+                  isLast={i === props.results!.length - 1}
+                  color={getVsModeColor(result.battle.vsHistoryDetail.vsMode.id)}
+                  result={getBattleResult(result.battle.vsHistoryDetail.judgement)!}
+                  rule={t(result.battle.vsHistoryDetail.vsRule.id)}
+                  stage={t(result.battle.vsHistoryDetail.vsStage.id)}
+                  weapon={t(getBattleSelf(result.battle).weapon.id)}
+                  kill={getBattleSelf(result.battle).result?.kill}
+                  assist={getBattleSelf(result.battle).result?.assist}
+                  death={getBattleSelf(result.battle).result?.death}
+                  special={getBattleSelf(result.battle).result?.special}
+                />
+              );
+            }
             return (
-              <ResultButton
-                key={battle.vsHistoryDetail.id}
+              <CoopButton
+                key={result.coop!.coopHistoryDetail.id}
                 isLoaded
                 isFirst={i === 0}
-                isLast={i === props.battles!.length - 1}
-                color={getColor(battle.vsHistoryDetail.vsMode.id)}
-                result={getResult(battle.vsHistoryDetail.judgement)!}
-                rule={t(battle.vsHistoryDetail.vsRule.id)}
-                stage={t(battle.vsHistoryDetail.vsStage.id)}
-                weapon={t(getSelf(battle).weapon.id)}
-                kill={getSelf(battle).result?.kill}
-                assist={getSelf(battle).result?.assist}
-                death={getSelf(battle).result?.death}
-                special={getSelf(battle).result?.special}
+                isLast={i === props.results!.length - 1}
+                color={getCoopRuleColor(result.coop!.coopHistoryDetail.rule)}
+                result={result.coop!.coopHistoryDetail.resultWave === 0 ? 1 : -1}
+                rule={t(result.coop!.coopHistoryDetail.rule)}
+                stage={t(result.coop!.coopHistoryDetail.coopStage.id)}
+                wave={
+                  getWave(
+                    result.coop!.coopHistoryDetail.resultWave,
+                    result.coop!.coopHistoryDetail.bossResult
+                  )!
+                }
+                isWaveClear={getIsWaveClear(
+                  result.coop!.coopHistoryDetail.resultWave,
+                  result.coop!.coopHistoryDetail.bossResult
+                )}
+                deliverCount={result.coop!.coopHistoryDetail.myResult.deliverCount}
+                goldenAssistCount={result.coop!.coopHistoryDetail.myResult.goldenAssistCount}
+                goldenDeliverCount={result.coop!.coopHistoryDetail.myResult.goldenDeliverCount}
               />
             );
           });
@@ -72,7 +133,7 @@ const ResultView = (props: ResultViewProps) => {
             .fill(0)
             .map((_, i) => {
               return (
-                <ResultButton
+                <BattleButton
                   key={i}
                   isLoaded={false}
                   isFirst={i === 0}

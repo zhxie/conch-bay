@@ -36,6 +36,8 @@ const en = {
   "VnNSdWxlLTM=": "Rainmaker",
   "VnNSdWxlLTQ=": "Clam Blitz",
   "VnNSdWxlLTU=": "Tricolor Turf War",
+  REGULAR: "Salmon Run",
+  BIG_RUN: "Big Run",
   // Stages.
   VnNTdGFnZS0x: "Scorch Gorge",
   VnNTdGFnZS0y: "Eeltail Alley",
@@ -126,6 +128,21 @@ const en = {
   "V2VhcG9uLTcwMjA=": "REEF-LUX 450",
   "V2VhcG9uLTgwMDA=": "Splatana Stamper",
   "V2VhcG9uLTgwMTA=": "Splatana Wiper",
+  // Grades.
+  "Q29vcEdyYWRlLTA=": "Apprentice",
+  "Q29vcEdyYWRlLTE=": "Part-Timer",
+  "Q29vcEdyYWRlLTI=": "Go-Getter",
+  "Q29vcEdyYWRlLTM=": "Overachiever",
+  "Q29vcEdyYWRlLTQ=": "Profreshional Part-Timer",
+  "Q29vcEdyYWRlLTU=": "Profreshional +1",
+  "Q29vcEdyYWRlLTY=": "Profreshional +2",
+  "Q29vcEdyYWRlLTc=": "Profreshional +3",
+  "Q29vcEdyYWRlLTg=": "Eggsecutive VP",
+  // Waves.
+  wave_1: "Wave 1",
+  wave_2: "Wave 2",
+  wave_3: "Wave 3",
+  xtrawave: "XTRAWAVE",
 };
 
 export default en;

@@ -11,9 +11,9 @@ import {
   Text,
   VStack,
 } from "native-base";
-import { ColorType } from "native-base/lib/typescript/components/types";
+import { ColorType } from "native-base/src/components/types";
 
-interface ResultButtonProps {
+interface CoopButtonProps {
   color: ColorType;
   isLoaded: boolean;
   isFirst: boolean;
@@ -21,21 +21,19 @@ interface ResultButtonProps {
   result: number;
   rule: string;
   stage: string;
-  weapon: string;
-  kill?: number;
-  assist?: number;
-  death?: number;
-  special?: number;
+  wave: string;
+  isWaveClear: boolean;
+  deliverCount: number;
+  goldenAssistCount: number;
+  goldenDeliverCount: number;
   onPress?: () => void;
 }
 
-const ResultButton = (props: ResultButtonProps) => {
-  const KillAndAssist =
-    props.kill == undefined
-      ? "-"
-      : props.assist! > 0
-      ? `${props.kill}<${props.assist}>`
-      : props.kill;
+const CoopButton = (props: CoopButtonProps) => {
+  const goldenCount =
+    props.goldenAssistCount! > 0
+      ? `${props.goldenDeliverCount}<${props.goldenAssistCount}>`
+      : props.goldenDeliverCount;
 
   return (
     <Button
@@ -76,8 +74,14 @@ const ResultButton = (props: ResultButtonProps) => {
             </HStack>
             <Spacer />
             {props.isLoaded && (
-              <Text fontSize="sm" lineHeight="sm" noOfLines={1}>
-                {props.weapon}
+              <Text
+                bold={props.isWaveClear}
+                color={props.isWaveClear ? props.color : undefined}
+                fontSize="sm"
+                lineHeight="sm"
+                noOfLines={1}
+              >
+                {props.wave}
               </Text>
             )}
           </HStack>
@@ -90,17 +94,13 @@ const ResultButton = (props: ResultButtonProps) => {
             <Spacer />
             {props.isLoaded && (
               <HStack space={1} alignItems="center">
-                <CircleIcon size={2.5} color="green.500" />
+                <CircleIcon size={2.5} color="yellow.300" />
                 <Text fontSize="sm" lineHeight="sm" noOfLines={1}>
-                  {KillAndAssist}
+                  {goldenCount}
                 </Text>
-                <CircleIcon size={2.5} color="red.500" />
+                <CircleIcon size={2.5} color="orange.500" />
                 <Text fontSize="sm" lineHeight="sm" noOfLines={1}>
-                  {props.death ?? "-"}
-                </Text>
-                <CircleIcon size={2.5} color="yellow.500" />
-                <Text fontSize="sm" lineHeight="sm" noOfLines={1}>
-                  {props.special ?? "-"}
+                  {props.deliverCount}
                 </Text>
               </HStack>
             )}
@@ -111,4 +111,4 @@ const ResultButton = (props: ResultButtonProps) => {
   );
 };
 
-export default ResultButton;
+export default CoopButton;

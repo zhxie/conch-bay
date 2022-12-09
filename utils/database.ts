@@ -1,10 +1,11 @@
 import * as SQLite from "expo-sqlite";
 
+let db: SQLite.WebSQLDatabase | undefined = undefined;
+
 export const open = async () => {
-  const db = SQLite.openDatabase("conch-bay.db");
+  db = SQLite.openDatabase("conch-bay.db");
 
   await exec(
-    db,
     "CREATE TABLE IF NOT EXISTS result ( id TEXT PRIMARY KEY, time INT NOT NULL, mode TEXT NOT NULL, rule TEXT NOT NULL, overview TEXT NOT NULL, detail TEXT NOT NULL )",
     false
   );
@@ -13,16 +14,12 @@ export const open = async () => {
 
   return db;
 };
-export const close = async (connection: SQLite.WebSQLDatabase) => {
-  connection.closeAsync();
+export const close = () => {
+  db!.closeAsync();
 };
-const exec = async (
-  connection: SQLite.WebSQLDatabase,
-  sql: string,
-  readonly: boolean
-): Promise<SQLite.ResultSet> => {
+const exec = async (sql: string, readonly: boolean): Promise<SQLite.ResultSet> => {
   return await new Promise((resolve, reject) => {
-    connection.exec([{ sql: sql, args: [] }], readonly, (err, res) => {
+    db!.exec([{ sql: sql, args: [] }], readonly, (err, res) => {
       if (err) {
         return reject(err);
       }
@@ -34,9 +31,8 @@ const exec = async (
   });
 };
 
-export const query = async (connection: SQLite.WebSQLDatabase, offset: number, limit: number) => {
+export const query = async (offset: number, limit: number) => {
   const record = await exec(
-    connection,
     `SELECT * FROM result ORDER BY time DESC LIMIT ${limit} OFFSET ${offset}`,
     true
   );
@@ -51,12 +47,11 @@ export const query = async (connection: SQLite.WebSQLDatabase, offset: number, l
     };
   });
 };
-export const isExist = async (connection: SQLite.WebSQLDatabase, id: string) => {
-  const record = await exec(connection, `SELECT * FROM result WHERE id = '${id}'`, true);
+export const isExist = async (id: string) => {
+  const record = await exec(`SELECT * FROM result WHERE id = '${id}'`, true);
   return record.rows.length > 0;
 };
 export const add = async (
-  connection: SQLite.WebSQLDatabase,
   id: string,
   time: number,
   mode: string,
@@ -65,11 +60,10 @@ export const add = async (
   detail: string
 ) => {
   await exec(
-    connection,
     `INSERT INTO result VALUES ('${id}', ${time}, '${mode}', '${rule}', '${overview}', '${detail}')`,
     false
   );
 };
-export const clear = async (connection: SQLite.WebSQLDatabase) => {
-  await exec(connection, "DELETE FROM result", false);
+export const clear = async () => {
+  await exec("DELETE FROM result", false);
 };

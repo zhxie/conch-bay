@@ -3,6 +3,9 @@ import * as Random from "expo-random";
 import JSSoup from "jssoup";
 import {
   AnarchyBattleHistories,
+  Catalog,
+  CoopHistoryDetail,
+  CoopResult,
   Friends,
   GraphQlResponse,
   PrivateBattleHistories,
@@ -263,6 +266,15 @@ export const fetchSummary = async (bulletToken: string, language?: string) => {
   }
   return summary.data!;
 };
+export const fetchCatalog = async (bulletToken: string, language?: string) => {
+  const res = await fetchGraphQl(bulletToken, "52504060c81ff2f2d618c4e5377e6e7c", language);
+  const json = await res.json();
+  const catalog = json as GraphQlResponse<Catalog>;
+  if (catalog.errors) {
+    throw new Error(catalog.errors[0].message);
+  }
+  return catalog.data!;
+};
 export const fetchBattleHistories = async (bulletToken: string, language?: string) => {
   const [regularRes, anarchyRes, xRes, privateRes] = await Promise.all([
     fetchGraphQl(bulletToken, "d5b795d09e67ce153e622a184b7e7dfa", language),
@@ -300,6 +312,30 @@ export const fetchVsHistoryDetail = async (id: string, bulletToken: string, lang
   });
   const json = await res.json();
   const detail = json as GraphQlResponse<VsHistoryDetail>;
+  if (detail.errors) {
+    throw new Error(detail.errors[0].message);
+  }
+  return detail.data!;
+};
+export const fetchCoopResult = async (bulletToken: string, language?: string) => {
+  const res = await fetchGraphQl(bulletToken, "2fd21f270d381ecf894eb975c5f6a716", language);
+  const json = await res.json();
+  const result = json as GraphQlResponse<CoopResult>;
+  if (result.errors) {
+    throw new Error(result.errors[0].message);
+  }
+  return result.data!;
+};
+export const fetchCoopHistoryDetail = async (
+  id: string,
+  bulletToken: string,
+  language?: string
+) => {
+  const res = await fetchGraphQl(bulletToken, "9ade2aa3656324870ccec023636aed32", language, {
+    coopHistoryDetailId: id,
+  });
+  const json = await res.json();
+  const detail = json as GraphQlResponse<CoopHistoryDetail>;
   if (detail.errors) {
     throw new Error(detail.errors[0].message);
   }

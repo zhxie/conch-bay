@@ -83,8 +83,7 @@ export interface Friend {
     url: string;
   };
   vsMode: { id: string } | null;
-  // TODO: the field has not been verified.
-  coopRule: "REGULAR" | "BIG_RUN" | "PRIVATE_CUSTOM" | null;
+  coopRule: "REGULAR" | "BIG_RUN" | null;
 }
 export interface Friends {
   friends: {
@@ -104,6 +103,15 @@ export interface PlayHistory {
 export interface Summary {
   currentPlayer: Player;
   playHistory: PlayHistory;
+}
+
+export interface CatalogProgress {
+  level: number;
+}
+export interface Catalog {
+  catalog: {
+    progress: CatalogProgress;
+  };
 }
 
 export interface BattleHistoryDetail {
@@ -143,7 +151,7 @@ export interface PrivateBattleHistories {
   };
 }
 
-export interface Weapon {
+export interface VsWeapon {
   image: {
     url: string;
   };
@@ -152,7 +160,7 @@ export interface Weapon {
 export interface VsPlayer {
   id: string;
   isMyself: boolean;
-  weapon: Weapon;
+  weapon: VsWeapon;
   paint: number;
   result: {
     kill: number;
@@ -174,5 +182,51 @@ export interface VsHistoryDetail {
     vsStage: VsStage;
     otherTeams: VsTeam;
     playedTime: string;
+  };
+}
+
+export interface CoopResultHistoryDetail {
+  id: string;
+}
+export interface CoopResultHistoryGroup {
+  historyDetails: {
+    nodes: CoopResultHistoryDetail[];
+  };
+}
+export interface CoopResult {
+  coopResult: {
+    regularGrade: CoopGrade | null;
+    historyGroups: {
+      nodes: CoopResultHistoryGroup[];
+    };
+  };
+}
+
+export interface CoopGrade {
+  id: string;
+}
+export interface CoopPlayer {
+  id: string;
+}
+export interface CoopPlayerResult {
+  player: CoopPlayer;
+  weapons: CoopWeapon[];
+  deliverCount: number;
+  goldenAssistCount: number;
+  goldenDeliverCount: number;
+}
+export interface CoopBossResult {
+  hasDefeatBoss: boolean;
+}
+export interface CoopHistoryDetail {
+  coopHistoryDetail: {
+    id: string;
+    myResult: CoopPlayerResult;
+    memberResults: CoopPlayerResult[];
+    bossResult: CoopBossResult | null;
+    resultWave: number;
+    playedTime: string;
+    rule: "REGULAR" | "BIG_RUN";
+    coopStage: CoopStage;
   };
 }

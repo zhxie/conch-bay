@@ -36,6 +36,8 @@ const ja = {
   "VnNSdWxlLTM=": "ガチホコバトル",
   "VnNSdWxlLTQ=": "ガチアサリ",
   "VnNSdWxlLTU=": "トリカラアタック",
+  REGULAR: "サーモンラン",
+  BIG_RUN: "ビッグラン",
   // Stages.
   VnNTdGFnZS0x: "ユノハナ大渓谷",
   VnNTdGFnZS0y: "ゴンズイ地区",
@@ -126,6 +128,21 @@ const ja = {
   "V2VhcG9uLTcwMjA=": "LACT-450",
   "V2VhcG9uLTgwMDA=": "ジムワイパー",
   "V2VhcG9uLTgwMTA=": "ドライブワイパー",
+  // Grades.
+  "Q29vcEdyYWRlLTA=": "かけだし",
+  "Q29vcEdyYWRlLTE=": "はんにんまえ",
+  "Q29vcEdyYWRlLTI=": "いちにんまえ	",
+  "Q29vcEdyYWRlLTM=": "じゅくれん	",
+  "Q29vcEdyYWRlLTQ=": "たつじん",
+  "Q29vcEdyYWRlLTU=": "たつじん+1",
+  "Q29vcEdyYWRlLTY=": "たつじん+2",
+  "Q29vcEdyYWRlLTc=": "たつじん+3",
+  "Q29vcEdyYWRlLTg=": "でんせつ",
+  // Waves.
+  wave_1: "WAVE 1",
+  wave_2: "WAVE 2",
+  wave_3: "WAVE 3",
+  xtrawave: "EX-WAVE",
 };
 
 export default ja;

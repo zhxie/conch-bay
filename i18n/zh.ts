@@ -36,6 +36,8 @@ const zh = {
   "VnNSdWxlLTM=": "真格鱼虎对战",
   "VnNSdWxlLTQ=": "真格蛤蜊",
   "VnNSdWxlLTU=": "三色夺宝攻击",
+  REGULAR: "鲑鱼跑",
+  BIG_RUN: "大型跑",
   // Stages.
   VnNTdGFnZS0x: "温泉花大峡谷",
   VnNTdGFnZS0y: "鳗鲶区",
@@ -126,6 +128,21 @@ const zh = {
   "V2VhcG9uLTcwMjA=": "LACT-450",
   "V2VhcG9uLTgwMDA=": "工作刮水刀",
   "V2VhcG9uLTgwMTA=": "雨刷刮水刀",
+  // Grades.
+  "Q29vcEdyYWRlLTA=": "新手",
+  "Q29vcEdyYWRlLTE=": "半吊子",
+  "Q29vcEdyYWRlLTI=": "独当一面",
+  "Q29vcEdyYWRlLTM=": "熟练",
+  "Q29vcEdyYWRlLTQ=": "达人",
+  "Q29vcEdyYWRlLTU=": "达人+1",
+  "Q29vcEdyYWRlLTY=": "达人+2",
+  "Q29vcEdyYWRlLTc=": "达人+3",
+  "Q29vcEdyYWRlLTg=": "传说",
+  // Waves.
+  wave_1: "WAVE 1",
+  wave_2: "WAVE 2",
+  wave_3: "WAVE 3",
+  xtrawave: "EX-WAVE",
 };
 
 export default zh;

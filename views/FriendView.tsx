@@ -33,11 +33,9 @@ const FriendView = (props: FriendViewProps) => {
         switch (friend.coopRule!) {
           case "REGULAR":
             return Color.SalmonRun;
-          // TODO: have not been checked.
           case "BIG_RUN":
             return Color.BigRun;
         }
-        return "teal.300";
       case "ONLINE":
         return "teal.300";
       default:
