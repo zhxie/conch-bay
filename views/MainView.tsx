@@ -113,7 +113,7 @@ const MainView = (props: MainViewProps) => {
     setRefreshing(true);
     try {
       const schedules = await fetchSchedules();
-      setSchedules(schedules.data);
+      setSchedules(schedules);
       if (sessionToken) {
         await updateNsoappVersion();
         await updateWebViewVersion();
@@ -140,10 +140,10 @@ const MainView = (props: MainViewProps) => {
           fetchFriends(newBulletToken),
           fetchSummary(newBulletToken),
         ]);
-        setFriends(friends.data);
-        const icon = summary.data.currentPlayer.userIcon.url;
-        const level = summary.data.playHistory.rank;
-        const rank = summary.data.playHistory.udemae;
+        setFriends(friends);
+        const icon = summary.currentPlayer.userIcon.url;
+        const level = summary.playHistory.rank;
+        const rank = summary.playHistory.udemae;
         setIcon(icon);
         setLevel(String(level));
         setRank(rank);

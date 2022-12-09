@@ -17,7 +17,7 @@ export const fetchSchedules = async () => {
     },
   });
   const json = await res.json();
-  return json as GraphQlResponse<Schedules>;
+  return (json as GraphQlResponse<Schedules>).data!;
 };
 
 export const updateNsoappVersion = async () => {
@@ -233,10 +233,18 @@ export const checkBulletToken = async (bulletToken: string, language?: string) =
 export const fetchFriends = async (bulletToken: string, language?: string) => {
   const res = await fetchGraphQl(bulletToken, "aa2c979ad21a1100170ddf6afea3e2db", language);
   const json = await res.json();
-  return json as GraphQlResponse<Friends>;
+  const friends = json as GraphQlResponse<Friends>;
+  if (friends.errors) {
+    throw new Error(friends.errors[0].message);
+  }
+  return friends.data!;
 };
 export const fetchSummary = async (bulletToken: string, language?: string) => {
-  const res = await fetchGraphQl(bulletToken, "9d4ef9fba3f84d6933bb1f6f436f7200", language);
+  const res = await fetchGraphQl(bulletToken, "32b6771f94083d8f04848109b7300af5", language);
   const json = await res.json();
-  return json as GraphQlResponse<Summary>;
+  const summary = json as GraphQlResponse<Summary>;
+  if (summary.errors) {
+    throw new Error(summary.errors[0].message);
+  }
+  return summary.data!;
 };

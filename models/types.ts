@@ -1,5 +1,6 @@
 export interface GraphQlResponse<T> {
-  data: T;
+  data?: T;
+  errors?: { message: string }[];
 }
 
 export interface VsRule {

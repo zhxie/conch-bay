@@ -1,4 +1,4 @@
-const base64 = (bytes: Uint8Array) => {
+export const base64 = (bytes: Uint8Array) => {
   const encodings = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
   let base64 = "";
@@ -6,8 +6,8 @@ const base64 = (bytes: Uint8Array) => {
   let byteRemainder = byteLength % 3;
   let mainLength = byteLength - byteRemainder;
 
-  let a, b, c, d;
-  let chunk;
+  let a: number, b: number, c: number, d: number;
+  let chunk: number;
 
   for (let i = 0; i < mainLength; i = i + 3) {
     chunk = (bytes[i] << 16) | (bytes[i + 1] << 8) | bytes[i + 2];
@@ -39,8 +39,6 @@ const base64 = (bytes: Uint8Array) => {
 
   return base64;
 };
-const base64url = (base64: string) => {
+export const base64url = (base64: string) => {
   return base64.replaceAll("+", "-").replaceAll("/", "_").replaceAll("=", "");
 };
-
-export { base64, base64url };

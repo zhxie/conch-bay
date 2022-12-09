@@ -1,7 +1,7 @@
 export const getParam = (url: string, param: string) => {
   const regex = /[?&]([^=#]+)=([^&#]*)/g;
   let params: Record<string, string> = {};
-  let match;
+  let match: string[] | null;
   while ((match = regex.exec(url))) {
     params[match[1]] = match[2];
   }
