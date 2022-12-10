@@ -6,6 +6,7 @@ import {
   Button,
   HStack,
   Modal,
+  PresenceTransition,
   ScrollView,
   Skeleton,
   Text,
@@ -61,6 +62,7 @@ const MainView = (props: MainViewProps) => {
   const insets = useSafeAreaInsets();
   const toast = useToast();
 
+  const [ready, setReady] = useState(false);
   const [logIn, setLogIn] = useState(false);
   const [loggingIn, setLoggingIn] = useState(false);
   const [logOut, setLogOut] = useState(false);
@@ -93,6 +95,7 @@ const MainView = (props: MainViewProps) => {
     const fetchData = async () => {
       try {
         const { sessionToken, bulletToken } = await loadPersistence();
+        setReady(true);
         await Database.open();
         // HACK: load asynchronously to avoid refresh control layout misbehavior.
         loadResults();
@@ -104,20 +107,27 @@ const MainView = (props: MainViewProps) => {
     fetchData();
   }, []);
   const loadPersistence = async () => {
-    const sessionToken = (await AsyncStorage.getItem("sessionToken")) ?? "";
-    const bulletToken = (await AsyncStorage.getItem("bulletToken")) ?? "";
+    const [sessionToken, bulletToken, icon, catalogLevel, level, rank, grade] = await Promise.all([
+      AsyncStorage.getItem("sessionToken"),
+      AsyncStorage.getItem("bulletToken"),
+      AsyncStorage.getItem("icon"),
+      AsyncStorage.getItem("catalogLevel"),
+      AsyncStorage.getItem("level"),
+      AsyncStorage.getItem("rank"),
+      AsyncStorage.getItem("grade"),
+    ]);
 
-    setSessionToken(sessionToken);
-    setBulletToken(bulletToken);
-    setIcon((await AsyncStorage.getItem("icon")) ?? "");
-    setCatalogLevel((await AsyncStorage.getItem("catalogLevel")) ?? "");
-    setLevel((await AsyncStorage.getItem("level")) ?? "");
-    setRank((await AsyncStorage.getItem("rank")) ?? "");
-    setGrade((await AsyncStorage.getItem("grade")) ?? "");
+    setSessionToken(sessionToken ?? "");
+    setBulletToken(bulletToken ?? "");
+    setIcon(icon ?? "");
+    setCatalogLevel(catalogLevel ?? "");
+    setLevel(level ?? "");
+    setRank(rank ?? "");
+    setGrade(grade ?? "");
 
     return {
-      sessionToken,
-      bulletToken,
+      sessionToken: sessionToken ?? "",
+      bulletToken: bulletToken ?? "",
     };
   };
   const savePersistence = async (persistence: Record<string, string>) => {
@@ -365,52 +375,66 @@ const MainView = (props: MainViewProps) => {
 
   return (
     <VStack flex={1} bg="gray.50" _dark={{ bg: "gray.900" }}>
-      <ScrollView
-        refreshControl={
-          <RefreshControl
-            progressViewOffset={insets.top}
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-          />
-        }
+      <PresenceTransition
+        visible={ready}
+        initial={{
+          opacity: 0,
+        }}
+        animate={{
+          opacity: 1,
+          transition: {
+            duration: 300,
+          },
+        }}
       >
-        <VStack space={4} alignItems="center" safeArea>
-          {!sessionToken && (
-            <VStack px={4} space={2} alignItems="center">
-              <Button colorScheme={accentColorScheme} onPress={onLogInPress}>
-                {t("log_in")}
-              </Button>
-            </VStack>
-          )}
-          {sessionToken.length > 0 && (
-            <VStack px={4} space={2} alignItems="center">
-              <TransformPressable onPress={onLogOutPress}>
-                <Skeleton w={16} h={16} rounded="full" isLoaded={!!icon}>
-                  <Avatar
-                    size="lg"
-                    bg="gray.100"
-                    _dark={{ bg: "gray.700" }}
-                    source={{
-                      uri: icon,
-                    }}
-                  />
-                </Skeleton>
-              </TransformPressable>
-              <HStack space={2} alignSelf="center">
-                {catalogLevel.length > 0 && <Badge colorScheme="lightBlue">{catalogLevel}</Badge>}
-                {level.length > 0 && <Badge colorScheme="green">{level}</Badge>}
-                {rank.length > 0 && <Badge colorScheme="orange">{rank}</Badge>}
-                {grade.length > 0 && <Badge colorScheme="amber">{t(grade)}</Badge>}
-              </HStack>
-            </VStack>
-          )}
-          <ScheduleView t={t} accentColor={accentColor} schedules={schedules} />
-          {sessionToken.length > 0 && <FriendView accentColor={accentColor} friends={friends} />}
-          {sessionToken.length > 0 && (
-            <ResultView t={t} accentColor={accentColor} results={results} />
-          )}
-        </VStack>
-      </ScrollView>
+        <ScrollView
+          refreshControl={
+            <RefreshControl
+              progressViewOffset={insets.top}
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+            />
+          }
+          showsVerticalScrollIndicator={false}
+        >
+          <VStack space={4} alignItems="center" safeArea>
+            {!sessionToken && (
+              <VStack px={4} space={2} alignItems="center">
+                <Button colorScheme={accentColorScheme} onPress={onLogInPress}>
+                  {t("log_in")}
+                </Button>
+              </VStack>
+            )}
+            {sessionToken.length > 0 && (
+              <VStack px={4} space={2} alignItems="center">
+                <TransformPressable onPress={onLogOutPress}>
+                  <Skeleton w={16} h={16} rounded="full" isLoaded={!!icon}>
+                    <Avatar
+                      size="lg"
+                      bg="gray.100"
+                      _dark={{ bg: "gray.700" }}
+                      source={{
+                        uri: icon,
+                      }}
+                    />
+                  </Skeleton>
+                </TransformPressable>
+                <HStack space={2} alignSelf="center">
+                  {catalogLevel.length > 0 && <Badge colorScheme="lightBlue">{catalogLevel}</Badge>}
+                  {level.length > 0 && <Badge colorScheme="green">{level}</Badge>}
+                  {rank.length > 0 && <Badge colorScheme="orange">{rank}</Badge>}
+                  {grade.length > 0 && <Badge colorScheme="amber">{t(grade)}</Badge>}
+                </HStack>
+              </VStack>
+            )}
+            <ScheduleView t={t} accentColor={accentColor} schedules={schedules} />
+            {sessionToken.length > 0 && <FriendView accentColor={accentColor} friends={friends} />}
+            {sessionToken.length > 0 && (
+              <ResultView t={t} accentColor={accentColor} results={results} />
+            )}
+          </VStack>
+        </ScrollView>
+      </PresenceTransition>
       <Modal
         isOpen={logIn}
         onClose={onLogInClose}
