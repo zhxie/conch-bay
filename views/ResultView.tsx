@@ -1,4 +1,4 @@
-import { VStack } from "native-base";
+import { Button, Center, Text, VStack } from "native-base";
 import { ColorType } from "native-base/lib/typescript/components/types";
 import { BattleButton, CoopButton } from "../components";
 import { Color, CoopBossResult, CoopHistoryDetail, VsHistoryDetail } from "../models";
@@ -6,6 +6,8 @@ import { Color, CoopBossResult, CoopHistoryDetail, VsHistoryDetail } from "../mo
 interface ResultViewProps {
   t: (str: string) => string;
   accentColor: ColorType;
+  isLoading: boolean;
+  loadMore: () => void;
   results?: { battle?: VsHistoryDetail; coop?: CoopHistoryDetail }[];
 }
 
@@ -89,7 +91,7 @@ const ResultView = (props: ResultViewProps) => {
                   key={result.battle.vsHistoryDetail.id}
                   isLoaded
                   isFirst={i === 0}
-                  isLast={i === props.results!.length - 1}
+                  isLast={false}
                   color={getVsModeColor(result.battle.vsHistoryDetail.vsMode.id)}
                   result={getBattleResult(result.battle.vsHistoryDetail.judgement)!}
                   rule={t(result.battle.vsHistoryDetail.vsRule.id)}
@@ -107,7 +109,7 @@ const ResultView = (props: ResultViewProps) => {
                 key={result.coop!.coopHistoryDetail.id}
                 isLoaded
                 isFirst={i === 0}
-                isLast={i === props.results!.length - 1}
+                isLast={false}
                 color={getCoopRuleColor(result.coop!.coopHistoryDetail.rule)}
                 result={result.coop!.coopHistoryDetail.resultWave === 0 ? 1 : -1}
                 rule={t(result.coop!.coopHistoryDetail.rule)}
@@ -148,6 +150,26 @@ const ResultView = (props: ResultViewProps) => {
             });
         }
       })()}
+      {props.results && (
+        <Button
+          w="full"
+          h={16}
+          colorScheme="gray"
+          variant="default"
+          isLoading={props.isLoading}
+          roundedTop={props.results.length > 0 ? "none" : "lg"}
+          roundedBottom="lg"
+          _stack={{
+            flex: 1,
+            justifyContent: "center",
+          }}
+          onPress={props.loadMore}
+        >
+          <Center>
+            <Text fontSize="md">{t("load_more")}</Text>
+          </Center>
+        </Button>
+      )}
     </VStack>
   );
 };

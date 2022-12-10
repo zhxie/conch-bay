@@ -10,6 +10,7 @@ const en = {
   log_out_continue: "Log Out",
   logging_out: "Logging out",
   reacquiring_tokens: "Reacquiring tokens",
+  load_more: "Load more",
   // Modes.
   regular_battle: "Regular Battle",
   anarchy_battle: "Anarchy Battle",

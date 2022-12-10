@@ -10,6 +10,7 @@ const zh = {
   log_out_continue: "登出",
   logging_out: "登出中",
   reacquiring_tokens: "重新获取令牌中",
+  load_more: "载入更多",
   // Modes.
   regular_battle: "一般比赛",
   anarchy_battle: "蛮颓比赛",

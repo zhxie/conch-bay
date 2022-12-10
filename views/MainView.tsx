@@ -19,14 +19,7 @@ import React, { useEffect, useState } from "react";
 import { RefreshControl } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { TransformPressable } from "../components";
-import {
-  BattleHistoryGroup,
-  CoopHistoryDetail,
-  CoopResultHistoryGroup,
-  Friends,
-  Schedules,
-  VsHistoryDetail,
-} from "../models";
+import { CoopHistoryDetail, Friends, Schedules, VsHistoryDetail } from "../models";
 import {
   checkBulletToken,
   fetchBattleHistories,
@@ -149,7 +142,7 @@ const MainView = (props: MainViewProps) => {
     await AsyncStorage.clear();
   };
   const loadResults = async (force: boolean) => {
-    const details = (await Database.query(0, 50)).map((record) => {
+    const details = (await Database.query(0, 20)).map((record) => {
       if (record.mode === "salmon_run") {
         return {
           coop: JSON.parse(record.detail) as CoopHistoryDetail,
@@ -160,6 +153,21 @@ const MainView = (props: MainViewProps) => {
     if (details.length > 0 || force) {
       setResults(details);
     }
+  };
+  const loadMoreResults = async () => {
+    setRefreshing(true);
+    const details = (await Database.query(results!.length, 20)).map((record) => {
+      if (record.mode === "salmon_run") {
+        return {
+          coop: JSON.parse(record.detail) as CoopHistoryDetail,
+        };
+      }
+      return { battle: JSON.parse(record.detail) as VsHistoryDetail };
+    });
+    if (details.length > 0) {
+      setResults(results!.concat(details));
+    }
+    setRefreshing(false);
   };
 
   const refresh = async (sessionToken: string, bulletToken?: string) => {
@@ -290,7 +298,7 @@ const MainView = (props: MainViewProps) => {
           }
         }
 
-        // Query stored latest 50 results if updated.
+        // Query stored latest results if updated.
         await loadResults(true);
       }
     } catch (e) {
@@ -416,7 +424,13 @@ const MainView = (props: MainViewProps) => {
             <ScheduleView t={t} accentColor={accentColor} schedules={schedules} />
             {sessionToken.length > 0 && <FriendView accentColor={accentColor} friends={friends} />}
             {sessionToken.length > 0 && (
-              <ResultView t={t} accentColor={accentColor} results={results} />
+              <ResultView
+                t={t}
+                accentColor={accentColor}
+                isLoading={refreshing}
+                loadMore={loadMoreResults}
+                results={results}
+              />
             )}
           </VStack>
         </ScrollView>

@@ -10,6 +10,7 @@ const ja = {
   log_out_continue: "ログアウト",
   logging_out: "ログアウト中",
   reacquiring_tokens: "トークン再取得中",
+  load_more: "もっと読み込む",
   // Modes.
   regular_battle: "レギュラーマッチ",
   anarchy_battle: "バンカラマッチ",
