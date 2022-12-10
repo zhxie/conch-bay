@@ -98,7 +98,7 @@ const MainView = (props: MainViewProps) => {
         setReady(true);
         await Database.open();
         // HACK: load asynchronously to avoid refresh control layout misbehavior.
-        loadResults();
+        loadResults(false);
         await refresh(sessionToken, bulletToken);
       } catch (e) {
         showError(e);
@@ -148,7 +148,7 @@ const MainView = (props: MainViewProps) => {
   const clearPersistence = async () => {
     await AsyncStorage.clear();
   };
-  const loadResults = async () => {
+  const loadResults = async (force: boolean) => {
     const details = (await Database.query(0, 50)).map((record) => {
       if (record.mode === "salmon_run") {
         return {
@@ -157,7 +157,9 @@ const MainView = (props: MainViewProps) => {
       }
       return { battle: JSON.parse(record.detail) as VsHistoryDetail };
     });
-    setResults(details);
+    if (details.length > 0 || force) {
+      setResults(details);
+    }
   };
 
   const refresh = async (sessionToken: string, bulletToken?: string) => {
@@ -306,7 +308,7 @@ const MainView = (props: MainViewProps) => {
         }
 
         // Query stored latest 50 results if updated.
-        await loadResults();
+        await loadResults(true);
       }
     } catch (e) {
       showError(e);
@@ -388,6 +390,7 @@ const MainView = (props: MainViewProps) => {
         }}
       >
         <ScrollView
+          h="full"
           refreshControl={
             <RefreshControl
               progressViewOffset={insets.top}
