@@ -275,6 +275,7 @@ export const fetchCatalog = async (bulletToken: string, language?: string) => {
   }
   return catalog.data!;
 };
+
 export const fetchBattleHistories = async (bulletToken: string, language?: string) => {
   const [regularRes, anarchyRes, xRes, privateRes] = await Promise.all([
     fetchGraphQl(bulletToken, "d5b795d09e67ce153e622a184b7e7dfa", language),
