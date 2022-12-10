@@ -6,7 +6,8 @@ const ja = {
   imink_privacy_policy: "imink プライバシーポリシー",
   log_in_continue: "読んで理解しました",
   logging_in: "トークン取得中",
-  log_out_notice: "ログアウトすると、コンクベイに保存されているすべてのデータが削除されます。",
+  log_out_notice:
+    "ログアウトすると、コンクベイに保存されているすべてのデータが削除されます！続行する前にバックアップを完了してください。",
   log_out_continue: "ログアウト",
   logging_out: "ログアウト中",
   reacquiring_tokens: "トークン再取得中",

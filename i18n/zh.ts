@@ -6,7 +6,7 @@ const zh = {
   imink_privacy_policy: "imink 隐私政策",
   log_in_continue: "我已阅读并理解",
   logging_in: "获取令牌中",
-  log_out_notice: "登出将清除贝壳湾所有存储的数据！",
+  log_out_notice: "登出将清除贝壳湾所有存储的数据！请在继续之前完成备份。",
   log_out_continue: "登出",
   logging_out: "登出中",
   reacquiring_tokens: "重新获取令牌中",

@@ -6,7 +6,8 @@ const en = {
   imink_privacy_policy: "imink Privacy Policy",
   log_in_continue: "I have read and understand",
   logging_in: "Acquiring tokens",
-  log_out_notice: "Logging out will remove all stored data from Conch Bay!",
+  log_out_notice:
+    "Logging out will remove all stored data from Conch Bay! Please complete backup before proceeding.",
   log_out_continue: "Log Out",
   logging_out: "Logging out",
   reacquiring_tokens: "Reacquiring tokens",

@@ -355,9 +355,10 @@ const MainView = (props: MainViewProps) => {
   const onLogOutContinuePress = async () => {
     try {
       setLoggingOut(true);
-      await clearPersistence();
-      await loadPersistence();
+      await Promise.all([clearPersistence(), Database.clear()]);
+      setResults(undefined);
       setFriends(undefined);
+      await loadPersistence();
       setLoggingOut(false);
       setLogOut(false);
     } catch (e) {

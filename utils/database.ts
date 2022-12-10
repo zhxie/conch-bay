@@ -58,4 +58,5 @@ export const add = async (id: string, time: number, mode: string, rule: string, 
 };
 export const clear = async () => {
   await exec("DELETE FROM result", false);
+  await exec("VACUUM", false);
 };
