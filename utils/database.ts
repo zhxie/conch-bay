@@ -6,7 +6,7 @@ export const open = async () => {
   db = SQLite.openDatabase("conch-bay.db");
 
   await exec(
-    "CREATE TABLE IF NOT EXISTS result ( id TEXT PRIMARY KEY, time INT NOT NULL, mode TEXT NOT NULL, rule TEXT NOT NULL, overview TEXT NOT NULL, detail TEXT NOT NULL )",
+    "CREATE TABLE IF NOT EXISTS result ( id TEXT PRIMARY KEY, time INT NOT NULL, mode TEXT NOT NULL, rule TEXT NOT NULL, detail TEXT NOT NULL )",
     false
   );
   // const record = await exec(db, "PRAGMA user_version");
@@ -42,7 +42,6 @@ export const query = async (offset: number, limit: number) => {
       time: row["time"],
       mode: row["mode"],
       rule: row["rule"],
-      overview: row["overview"],
       detail: row["detail"],
     };
   });
@@ -51,16 +50,9 @@ export const isExist = async (id: string) => {
   const record = await exec(`SELECT * FROM result WHERE id = '${id}'`, true);
   return record.rows.length > 0;
 };
-export const add = async (
-  id: string,
-  time: number,
-  mode: string,
-  rule: string,
-  overview: string,
-  detail: string
-) => {
+export const add = async (id: string, time: number, mode: string, rule: string, detail: string) => {
   await exec(
-    `INSERT INTO result VALUES ('${id}', ${time}, '${mode}', '${rule}', '${overview}', '${detail}')`,
+    `INSERT INTO result VALUES ('${id}', ${time}, '${mode}', '${rule}', '${detail}')`,
     false
   );
 };

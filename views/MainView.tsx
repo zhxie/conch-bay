@@ -228,32 +228,31 @@ const MainView = (props: MainViewProps) => {
         // Fetch details.
         let results: {
           id: string;
-          battleHistoryGroup?: BattleHistoryGroup;
-          coopResultHistoryGroup?: CoopResultHistoryGroup;
+          isCoop: boolean;
         }[] = [];
         battleHistories.regular.regularBattleHistories.historyGroups.nodes.forEach((historyGroup) =>
           historyGroup.historyDetails.nodes.forEach((historyDetail) =>
-            results.push({ id: historyDetail.id, battleHistoryGroup: historyGroup })
+            results.push({ id: historyDetail.id, isCoop: false })
           )
         );
         battleHistories.anarchy.bankaraBattleHistories.historyGroups.nodes.forEach((historyGroup) =>
           historyGroup.historyDetails.nodes.forEach((historyDetail) =>
-            results.push({ id: historyDetail.id, battleHistoryGroup: historyGroup })
+            results.push({ id: historyDetail.id, isCoop: false })
           )
         );
         battleHistories.x.xBattleHistories.historyGroups.nodes.forEach((historyGroup) =>
           historyGroup.historyDetails.nodes.forEach((historyDetail) =>
-            results.push({ id: historyDetail.id, battleHistoryGroup: historyGroup })
+            results.push({ id: historyDetail.id, isCoop: false })
           )
         );
         battleHistories.private.privateBattleHistories.historyGroups.nodes.forEach((historyGroup) =>
           historyGroup.historyDetails.nodes.forEach((historyDetail) =>
-            results.push({ id: historyDetail.id, battleHistoryGroup: historyGroup })
+            results.push({ id: historyDetail.id, isCoop: false })
           )
         );
         coopResult.coopResult.historyGroups.nodes.forEach((historyGroup) => {
           historyGroup.historyDetails.nodes.forEach((historyDetail) => {
-            results.push({ id: historyDetail.id, coopResultHistoryGroup: historyGroup });
+            results.push({ id: historyDetail.id, isCoop: true });
           });
         });
 
@@ -262,45 +261,29 @@ const MainView = (props: MainViewProps) => {
         if (newResults.length > 0) {
           const details = await Promise.all(
             newResults.map((result) => {
-              if (result.battleHistoryGroup) {
+              if (!result.isCoop) {
                 return fetchVsHistoryDetail(result.id, newBulletToken);
               }
               return fetchCoopHistoryDetail(result.id, newBulletToken);
             })
           );
-          const skipOverviews: string[] = [];
           for (let i = 0; i < newResults.length; i++) {
-            let overview = "";
-            if (newResults[i].battleHistoryGroup) {
+            if (!newResults[i].isCoop) {
               // Battle.
-              if (!skipOverviews.find((id) => id === newResults[i].id)) {
-                overview = JSON.stringify(newResults[i].battleHistoryGroup!);
-                newResults[i].battleHistoryGroup!.historyDetails.nodes.forEach((detail) => {
-                  skipOverviews.push(detail.id);
-                });
-              }
               await Database.add(
                 (details[i] as VsHistoryDetail).vsHistoryDetail.id,
                 new Date((details[i] as VsHistoryDetail).vsHistoryDetail.playedTime).valueOf(),
                 (details[i] as VsHistoryDetail).vsHistoryDetail.vsMode.id,
                 (details[i] as VsHistoryDetail).vsHistoryDetail.vsRule.id,
-                overview,
                 JSON.stringify(details[i])
               );
             } else {
               // Coop.
-              if (!skipOverviews.find((id) => id === newResults[i].id)) {
-                overview = JSON.stringify(newResults[i].coopResultHistoryGroup!);
-                newResults[i].coopResultHistoryGroup!.historyDetails.nodes.forEach((detail) => {
-                  skipOverviews.push(detail.id);
-                });
-              }
               await Database.add(
                 (details[i] as CoopHistoryDetail).coopHistoryDetail.id,
                 new Date((details[i] as CoopHistoryDetail).coopHistoryDetail.playedTime).valueOf(),
                 "salmon_run",
                 (details[i] as CoopHistoryDetail).coopHistoryDetail.rule,
-                overview,
                 JSON.stringify(details[i])
               );
             }
