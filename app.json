@@ -16,7 +16,8 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "name.sketch.ConchBay"
+      "bundleIdentifier": "name.sketch.ConchBay",
+      "buildNumber": "2"
     },
     "android": {
       "adaptiveIcon": {
