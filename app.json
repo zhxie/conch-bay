@@ -14,18 +14,38 @@
       "zh": "./i18n/ios/zh.json"
     },
     "assetBundlePatterns": ["**/*"],
+    "splash": {
+      "image": "./assets/splash.png",
+      "backgroundColor": "#FAFAFA"
+    },
     "ios": {
       "bundleIdentifier": "name.sketch.ConchBay",
       "buildNumber": "2",
       "config": {
         "usesNonExemptEncryption": false
       },
-      "supportsTablet": true
+      "supportsTablet": true,
+      "splash": {
+        "image": "./assets/splash.png",
+        "backgroundColor": "#FAFAFA",
+        "dark": {
+          "image": "./assets/splash.png",
+          "backgroundColor": "#18181B"
+        }
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
+      },
+      "splash": {
+        "image": "./assets/splash.png",
+        "backgroundColor": "#FAFAFA",
+        "dark": {
+          "image": "./assets/splash.png",
+          "backgroundColor": "#18181B"
+        }
       }
     },
     "extra": {
