@@ -79,6 +79,12 @@ const ResultView = (props: ResultViewProps) => {
     }
     return false;
   };
+  const getHazardLevel = (hazardLevel: number) => {
+    if (hazardLevel > 0) {
+      return `(${parseInt(String(hazardLevel * 100))}%)`;
+    }
+    return "";
+  };
 
   return (
     <VStack px={4} flexGrow="unset">
@@ -124,6 +130,7 @@ const ResultView = (props: ResultViewProps) => {
                   result.coop!.coopHistoryDetail.resultWave,
                   result.coop!.coopHistoryDetail.bossResult
                 )}
+                hazardLevel={getHazardLevel(result.coop!.coopHistoryDetail.dangerRate)}
                 deliverCount={result.coop!.coopHistoryDetail.myResult.deliverCount}
                 goldenAssistCount={result.coop!.coopHistoryDetail.myResult.goldenAssistCount}
                 goldenDeliverCount={result.coop!.coopHistoryDetail.myResult.goldenDeliverCount}

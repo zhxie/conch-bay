@@ -12,6 +12,7 @@ interface CoopButtonProps {
   stage: string;
   wave: string;
   isWaveClear: boolean;
+  hazardLevel: string;
   deliverCount: number;
   goldenAssistCount: number;
   goldenDeliverCount: number;
@@ -34,15 +35,18 @@ const CoopButton = (props: CoopButtonProps) => {
       title={props.rule}
       subtitle={props.stage}
       subChildren={
-        <Text
-          bold={props.isWaveClear}
-          color={props.isWaveClear ? props.color : undefined}
-          fontSize="sm"
-          lineHeight="sm"
-          noOfLines={1}
-        >
-          {props.wave}
-        </Text>
+        <HStack space={1} alignItems="center">
+          <Text
+            bold={props.isWaveClear}
+            color={props.isWaveClear ? props.color : undefined}
+            fontSize="sm"
+            lineHeight="sm"
+            noOfLines={1}
+          >
+            {props.wave}
+          </Text>
+          <Text>{props.hazardLevel}</Text>
+        </HStack>
       }
       onPress={props.onPress}
     >

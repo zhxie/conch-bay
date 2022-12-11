@@ -228,5 +228,6 @@ export interface CoopHistoryDetail {
     playedTime: string;
     rule: "REGULAR" | "BIG_RUN";
     coopStage: CoopStage;
+    dangerRate: number;
   };
 }
