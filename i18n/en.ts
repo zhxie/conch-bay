@@ -12,6 +12,7 @@ const en = {
   logging_out: "Logging out",
   reacquiring_tokens: "Reacquiring tokens",
   load_more: "Load more",
+  feedback: "Feedback",
   // Modes.
   regular_battle: "Regular Battle",
   anarchy_battle: "Anarchy Battle",

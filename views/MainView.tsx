@@ -6,6 +6,7 @@ import {
   Badge,
   Button,
   HStack,
+  Link,
   Modal,
   PresenceTransition,
   ScrollView,
@@ -434,10 +435,23 @@ const MainView = (props: MainViewProps) => {
                 results={results}
               />
             )}
-            <Text
-              color="gray.300"
-              _dark={{ color: "gray.500" }}
-            >{`${Application.applicationName} ${Application.nativeApplicationVersion} (${Application.nativeBuildVersion})`}</Text>
+            <VStack space={0} alignItems="center">
+              <Text
+                color="gray.400"
+                _dark={{ color: "gray.500" }}
+              >{`${Application.applicationName} ${Application.nativeApplicationVersion} (${Application.nativeBuildVersion})`}</Text>
+              <Link
+                _text={{
+                  color: "gray.400",
+                  _dark: {
+                    color: "gray.500",
+                  },
+                }}
+                href="https://github.com/zhxie/conch-bay/issues/new"
+              >
+                {t("feedback")}
+              </Link>
+            </VStack>
           </VStack>
         </ScrollView>
       </PresenceTransition>
