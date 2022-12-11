@@ -335,7 +335,7 @@ const MainView = (props: MainViewProps) => {
       setSessionToken(res3);
       await savePersistence({ sessionToken: res3 });
 
-      await refresh(res3);
+      refresh(res3);
 
       setLoggingIn(false);
       setLogIn(false);
