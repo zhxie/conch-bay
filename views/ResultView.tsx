@@ -1,5 +1,7 @@
-import { Button, Center, Text, VStack } from "native-base";
+import { Button, Center, Modal, Text, VStack } from "native-base";
 import { ColorType } from "native-base/lib/typescript/components/types";
+import { useState } from "react";
+import JSONTree from "react-native-json-tree";
 import { BattleButton, CoopButton } from "../components";
 import { Color, CoopBossResult, CoopHistoryDetail, VsHistoryDetail } from "../models";
 
@@ -13,6 +15,9 @@ interface ResultViewProps {
 
 const ResultView = (props: ResultViewProps) => {
   const { t } = props;
+
+  const [display, setDisplay] = useState<any>(undefined);
+  const [displayResult, setDisplayResult] = useState(false);
 
   const getVsModeColor = (mode: string) => {
     switch (mode) {
@@ -86,6 +91,10 @@ const ResultView = (props: ResultViewProps) => {
     return "";
   };
 
+  const onDisplayResultClose = () => {
+    setDisplayResult(false);
+  };
+
   return (
     <VStack px={4} flexGrow="unset">
       {(() => {
@@ -107,6 +116,10 @@ const ResultView = (props: ResultViewProps) => {
                   assist={getBattleSelf(result.battle).result?.assist}
                   death={getBattleSelf(result.battle).result?.death}
                   special={getBattleSelf(result.battle).result?.special}
+                  onPress={() => {
+                    setDisplay(result.battle!.vsHistoryDetail);
+                    setDisplayResult(true);
+                  }}
                 />
               );
             }
@@ -134,6 +147,10 @@ const ResultView = (props: ResultViewProps) => {
                 deliverCount={result.coop!.coopHistoryDetail.myResult.deliverCount}
                 goldenAssistCount={result.coop!.coopHistoryDetail.myResult.goldenAssistCount}
                 goldenDeliverCount={result.coop!.coopHistoryDetail.myResult.goldenDeliverCount}
+                onPress={() => {
+                  setDisplay(result.coop!.coopHistoryDetail);
+                  setDisplayResult(true);
+                }}
               />
             );
           });
@@ -177,6 +194,45 @@ const ResultView = (props: ResultViewProps) => {
           </Center>
         </Button>
       )}
+      <Modal
+        isOpen={displayResult}
+        onClose={onDisplayResultClose}
+        avoidKeyboard
+        justifyContent="flex-end"
+        safeArea
+        size="xl"
+      >
+        <Modal.Content h="xl" bg="#272822">
+          <Modal.Body>
+            <VStack flex={1}>
+              {display && (
+                <JSONTree
+                  theme="monokai"
+                  invertTheme={false}
+                  data={display}
+                  hideRoot
+                  skipKeys={[
+                    "__typename",
+                    "__isGear",
+                    "__isPlayer",
+                    "id",
+                    "image",
+                    "image2d",
+                    "image2dThumbnail",
+                    "image3d",
+                    "image3dThumbnail",
+                    "maskingImage",
+                    "originalImage",
+                    "thumbnailImage",
+                    "nextHistoryDetail",
+                    "previousHistoryDetail",
+                  ]}
+                />
+              )}
+            </VStack>
+          </Modal.Body>
+        </Modal.Content>
+      </Modal>
     </VStack>
   );
 };
