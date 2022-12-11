@@ -1,4 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Application from "expo-application";
 import * as WebBrowser from "expo-web-browser";
 import {
   Avatar,
@@ -433,6 +434,10 @@ const MainView = (props: MainViewProps) => {
                 results={results}
               />
             )}
+            <Text
+              color="gray.300"
+              _dark={{ color: "gray.500" }}
+            >{`${Application.applicationName} ${Application.nativeApplicationVersion} (${Application.nativeBuildVersion})`}</Text>
           </VStack>
         </ScrollView>
       </PresenceTransition>

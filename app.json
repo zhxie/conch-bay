@@ -4,18 +4,29 @@
     "slug": "conch-bay",
     "version": "0.1.0",
     "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
     "icon": "./assets/icon.png",
     "updates": {
       "fallbackToCacheTimeout": 0
     },
+    "locales": {
+      "ja": "./i18n/ios/ja.json",
+      "zh": "./i18n/ios/zh.json"
+    },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "name.sketch.ConchBay"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
+      }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "6dc18d15-fec6-4bb7-a5c3-b91f9137d933"
       }
     }
   }
