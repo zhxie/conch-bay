@@ -63,6 +63,7 @@ const MainView = (props: MainViewProps) => {
   const [logOut, setLogOut] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
 
   const [sessionToken, setSessionToken] = useState("");
   const [bulletToken, setBulletToken] = useState("");
@@ -157,7 +158,7 @@ const MainView = (props: MainViewProps) => {
     }
   };
   const loadMoreResults = async () => {
-    setRefreshing(true);
+    setLoadingMore(true);
     const details = (await Database.query(results!.length, 20)).map((record) => {
       if (record.mode === "salmon_run") {
         return {
@@ -169,7 +170,7 @@ const MainView = (props: MainViewProps) => {
     if (details.length > 0) {
       setResults(results!.concat(details));
     }
-    setRefreshing(false);
+    setLoadingMore(false);
   };
 
   const refresh = async (sessionToken: string, bulletToken?: string) => {
@@ -430,7 +431,7 @@ const MainView = (props: MainViewProps) => {
               <ResultView
                 t={t}
                 accentColor={accentColor}
-                isLoading={refreshing}
+                isLoading={refreshing || loadingMore}
                 loadMore={loadMoreResults}
                 results={results}
               />
