@@ -223,7 +223,7 @@ const fetchGraphQl = async (
   const res = await fetch("https://api.lp1.av5ja.srv.nintendo.net/api/graphql", {
     method: "POST",
     headers: {
-      "Accept-Language": language ?? "*",
+      "Accept-Language": language || "*",
       Authorization: `Bearer ${bulletToken}`,
       "Content-Type": "application/json",
       "X-Web-View-Ver": WEB_VIEW_VERSION,

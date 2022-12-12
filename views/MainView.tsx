@@ -66,6 +66,7 @@ const MainView = (props: MainViewProps) => {
   const [loadingMore, setLoadingMore] = useState(false);
 
   const [sessionToken, setSessionToken] = useState("");
+  const [language, setLanguage] = useState("");
   const [bulletToken, setBulletToken] = useState("");
   const [icon, setIcon] = useState("");
   const [catalogLevel, setCatalogLevel] = useState("");
@@ -90,12 +91,12 @@ const MainView = (props: MainViewProps) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const { sessionToken, bulletToken } = await loadPersistence();
+        const { sessionToken, language, bulletToken } = await loadPersistence();
         setReady(true);
         await Database.open();
         // HACK: load asynchronously to avoid refresh control layout misbehavior.
         loadResults(false);
-        await refresh(sessionToken, bulletToken);
+        await refresh(sessionToken, language, bulletToken);
       } catch (e) {
         showError(e);
       }
@@ -103,17 +104,20 @@ const MainView = (props: MainViewProps) => {
     fetchData();
   }, []);
   const loadPersistence = async () => {
-    const [sessionToken, bulletToken, icon, catalogLevel, level, rank, grade] = await Promise.all([
-      AsyncStorage.getItem("sessionToken"),
-      AsyncStorage.getItem("bulletToken"),
-      AsyncStorage.getItem("icon"),
-      AsyncStorage.getItem("catalogLevel"),
-      AsyncStorage.getItem("level"),
-      AsyncStorage.getItem("rank"),
-      AsyncStorage.getItem("grade"),
-    ]);
+    const [sessionToken, language, bulletToken, icon, catalogLevel, level, rank, grade] =
+      await Promise.all([
+        AsyncStorage.getItem("sessionToken"),
+        AsyncStorage.getItem("language"),
+        AsyncStorage.getItem("bulletToken"),
+        AsyncStorage.getItem("icon"),
+        AsyncStorage.getItem("catalogLevel"),
+        AsyncStorage.getItem("level"),
+        AsyncStorage.getItem("rank"),
+        AsyncStorage.getItem("grade"),
+      ]);
 
     setSessionToken(sessionToken ?? "");
+    setLanguage(language ?? "");
     setBulletToken(bulletToken ?? "");
     setIcon(icon ?? "");
     setCatalogLevel(catalogLevel ?? "");
@@ -123,12 +127,14 @@ const MainView = (props: MainViewProps) => {
 
     return {
       sessionToken: sessionToken ?? "",
+      language: language ?? "",
       bulletToken: bulletToken ?? "",
     };
   };
   const savePersistence = async (persistence: Record<string, string>) => {
     for (let key of [
       "sessionToken",
+      "language",
       "bulletToken",
       "icon",
       "catalogLevel",
@@ -173,7 +179,7 @@ const MainView = (props: MainViewProps) => {
     setLoadingMore(false);
   };
 
-  const refresh = async (sessionToken: string, bulletToken?: string) => {
+  const refresh = async (sessionToken: string, language?: string, bulletToken?: string) => {
     setRefreshing(true);
     try {
       // Fetch schedules.
@@ -184,6 +190,7 @@ const MainView = (props: MainViewProps) => {
         await Promise.all([await updateNsoappVersion(), await updateWebViewVersion()]);
 
         // Regenerate bullet token if necessary.
+        let newLanguage = language;
         let newBulletToken = "";
         if (bulletToken && bulletToken.length > 0 && (await checkBulletToken(bulletToken))) {
           newBulletToken = bulletToken;
@@ -194,10 +201,13 @@ const MainView = (props: MainViewProps) => {
           }
 
           const res = await getWebServiceToken(sessionToken);
+          newLanguage = res.language;
           newBulletToken = await getBulletToken(res.webServiceToken, res.country);
 
+          setLanguage(res.language);
           setBulletToken(newBulletToken);
           await savePersistence({
+            language: res.language,
             bulletToken: newBulletToken,
           });
         }
@@ -273,9 +283,9 @@ const MainView = (props: MainViewProps) => {
           const details = await Promise.all(
             newResults.map((result) => {
               if (!result.isCoop) {
-                return fetchVsHistoryDetail(result.id, newBulletToken);
+                return fetchVsHistoryDetail(result.id, newBulletToken, newLanguage);
               }
-              return fetchCoopHistoryDetail(result.id, newBulletToken);
+              return fetchCoopHistoryDetail(result.id, newBulletToken, newLanguage);
             })
           );
           for (let i = 0; i < newResults.length; i++) {
@@ -324,7 +334,7 @@ const MainView = (props: MainViewProps) => {
     setRefreshing(false);
   };
   const onRefresh = async () => {
-    await refresh(sessionToken, bulletToken);
+    await refresh(sessionToken, language, bulletToken);
   };
 
   const onLogInPress = () => {
@@ -450,7 +460,6 @@ const MainView = (props: MainViewProps) => {
                 results={results}
               />
             )}
-
             <VStack space={2} px={4} alignItems="center">
               <Text color="gray.400" _dark={{ color: "gray.500" }} textAlign="center">
                 {t("disclaimer")}
