@@ -286,6 +286,16 @@ const MainView = (props: MainViewProps) => {
                 new Date((details[i] as VsHistoryDetail).vsHistoryDetail.playedTime).valueOf(),
                 (details[i] as VsHistoryDetail).vsHistoryDetail.vsMode.id,
                 (details[i] as VsHistoryDetail).vsHistoryDetail.vsRule.id,
+                (details[i] as VsHistoryDetail).vsHistoryDetail.myTeam.players.find(
+                  (player) => player.isMyself
+                )!.weapon.id,
+                (details[i] as VsHistoryDetail).vsHistoryDetail.myTeam.players
+                  .map((player) => player.id)
+                  .concat(
+                    (details[i] as VsHistoryDetail).vsHistoryDetail.otherTeams
+                      .map((otherTeam) => otherTeam.players.map((player) => player.id))
+                      .flat()
+                  ),
                 JSON.stringify(details[i])
               );
             } else {
@@ -295,6 +305,10 @@ const MainView = (props: MainViewProps) => {
                 new Date((details[i] as CoopHistoryDetail).coopHistoryDetail.playedTime).valueOf(),
                 "salmon_run",
                 (details[i] as CoopHistoryDetail).coopHistoryDetail.rule,
+                "",
+                (details[i] as CoopHistoryDetail).coopHistoryDetail.memberResults
+                  .map((memberResult) => memberResult.player.id)
+                  .concat((details[i] as CoopHistoryDetail).coopHistoryDetail.myResult.player.id),
                 JSON.stringify(details[i])
               );
             }

@@ -180,7 +180,7 @@ export interface VsHistoryDetail {
     judgement: "WIN" | "LOSE" | "DEEMED_LOSE" | "EXEMPTED_LOSE" | "DRAW";
     myTeam: VsTeam;
     vsStage: VsStage;
-    otherTeams: VsTeam;
+    otherTeams: VsTeam[];
     playedTime: string;
   };
 }
