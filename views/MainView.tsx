@@ -435,22 +435,41 @@ const MainView = (props: MainViewProps) => {
                 results={results}
               />
             )}
-            <VStack space={0} alignItems="center">
-              <Text
-                color="gray.400"
-                _dark={{ color: "gray.500" }}
-              >{`${Application.applicationName} ${Application.nativeApplicationVersion} (${Application.nativeBuildVersion})`}</Text>
-              <Link
-                _text={{
-                  color: "gray.400",
-                  _dark: {
-                    color: "gray.500",
-                  },
-                }}
-                href="https://github.com/zhxie/conch-bay/issues/new"
-              >
-                {t("feedback")}
-              </Link>
+
+            <VStack space={2} px={4} alignItems="center">
+              <Text color="gray.400" _dark={{ color: "gray.500" }} textAlign="center">
+                {t("disclaimer")}
+              </Text>
+              <VStack space={0} alignItems="center">
+                <Text
+                  color="gray.400"
+                  _dark={{ color: "gray.500" }}
+                >{`${Application.applicationName} ${Application.nativeApplicationVersion} (${Application.nativeBuildVersion})`}</Text>
+                <HStack space={2}>
+                  <Link
+                    _text={{
+                      color: "gray.400",
+                      _dark: {
+                        color: "gray.500",
+                      },
+                    }}
+                    href="https://github.com/zhxie/conch-bay/issues/new"
+                  >
+                    {t("feedback")}
+                  </Link>
+                  <Link
+                    _text={{
+                      color: "gray.400",
+                      _dark: {
+                        color: "gray.500",
+                      },
+                    }}
+                    href="https://github.com/zhxie/conch-bay/wiki/Privacy-Policy"
+                  >
+                    {t("privacy_policy")}
+                  </Link>
+                </HStack>
+              </VStack>
             </VStack>
           </VStack>
         </ScrollView>

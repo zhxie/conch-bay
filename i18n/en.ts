@@ -12,7 +12,10 @@ const en = {
   logging_out: "Logging out",
   reacquiring_tokens: "Reacquiring tokens",
   load_more: "Load more",
+  disclaimer:
+    "This app is an unofficial app which uses the information of and SplatNet 3, and is not related to Nintendo Co., Ltd.",
   feedback: "Feedback",
+  privacy_policy: "Privacy Policy",
   // Modes.
   regular_battle: "Regular Battle",
   anarchy_battle: "Anarchy Battle",

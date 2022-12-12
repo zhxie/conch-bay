@@ -11,7 +11,9 @@ const zh = {
   logging_out: "登出中",
   reacquiring_tokens: "重新获取令牌中",
   load_more: "载入更多",
+  disclaimer: "本应用是使用鱿鱼圈3的信息的非官方应用，与任天堂有限公司无关。",
   feedback: "问题反馈",
+  privacy_policy: "隐私政策",
   // Modes.
   regular_battle: "一般比赛",
   anarchy_battle: "蛮颓比赛",

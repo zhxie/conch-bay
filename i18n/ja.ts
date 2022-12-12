@@ -12,7 +12,10 @@ const ja = {
   logging_out: "ログアウト中",
   reacquiring_tokens: "トークン再取得中",
   load_more: "もっと読み込む",
+  disclaimer:
+    "当アプリは、イカリング3の情報を利用した非公式アプリであり、任天堂株式会社とは一切関係はございません。",
   feedback: "フィードバック",
+  privacy_policy: "プライバシーポリシー",
   // Modes.
   regular_battle: "レギュラーマッチ",
   anarchy_battle: "バンカラマッチ",
