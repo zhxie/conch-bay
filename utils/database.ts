@@ -48,6 +48,20 @@ export const query = async (offset: number, limit: number) => {
     };
   });
 };
+export const queryAll = async () => {
+  const record = await exec(`SELECT * FROM result ORDER BY time DESC`, true);
+  return record.rows.map((row) => {
+    return {
+      id: row["id"],
+      time: row["time"],
+      mode: row["mode"],
+      rule: row["rule"],
+      weapon: row["weapon"],
+      players: row["players"].split(","),
+      detail: row["detail"],
+    };
+  });
+};
 export const isExist = async (id: string) => {
   const record = await exec(`SELECT * FROM result WHERE id = '${id}'`, true);
   return record.rows.length > 0;

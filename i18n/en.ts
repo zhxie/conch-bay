@@ -12,6 +12,9 @@ const en = {
   logging_out: "Logging out",
   reacquiring_tokens: "Reacquiring tokens",
   load_more: "Load more",
+  import: "Import",
+  export: "Export",
+  exporting: "Exporting",
   disclaimer:
     "This app is an unofficial app which uses the information of and SplatNet 3, and is not related to Nintendo Co., Ltd.",
   feedback: "Feedback",

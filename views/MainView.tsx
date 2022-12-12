@@ -1,5 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Application from "expo-application";
+import * as FileSystem from "expo-file-system";
+import * as Sharing from "expo-sharing";
 import * as WebBrowser from "expo-web-browser";
 import {
   Avatar,
@@ -20,7 +22,7 @@ import {
 import React, { useEffect, useState } from "react";
 import { RefreshControl } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { TransformPressable } from "../components";
+import { ToolButton, TransformPressable } from "../components";
 import { CoopHistoryDetail, Friends, Schedules, VsHistoryDetail } from "../models";
 import {
   checkBulletToken,
@@ -64,6 +66,7 @@ const MainView = (props: MainViewProps) => {
   const [loggingOut, setLoggingOut] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [exporting, setExporting] = useState(false);
 
   const [sessionToken, setSessionToken] = useState("");
   const [language, setLanguage] = useState("");
@@ -393,6 +396,31 @@ const MainView = (props: MainViewProps) => {
       setLoggingOut(false);
     }
   };
+  const onExportPress = async () => {
+    setExporting(true);
+    try {
+      let battles: VsHistoryDetail[] = [];
+      let coops: CoopHistoryDetail[] = [];
+      const records = await Database.queryAll();
+      records.forEach((record) => {
+        if (record.mode === "salmon_run") {
+          coops.push(JSON.parse(record.detail) as CoopHistoryDetail);
+        } else {
+          battles.push(JSON.parse(record.detail) as VsHistoryDetail);
+        }
+      });
+      const result = JSON.stringify({ battles, coops });
+      const uri = FileSystem.documentDirectory + "conch-bay-export.json";
+      await FileSystem.writeAsStringAsync(uri, JSON.stringify(result), {
+        encoding: FileSystem.EncodingType.UTF8,
+      });
+      await Sharing.shareAsync(uri, { UTI: "public.json" });
+      await FileSystem.deleteAsync(uri);
+    } catch (e) {
+      showError(e);
+    }
+    setExporting(false);
+  };
 
   return (
     <VStack flex={1} bg="gray.50" _dark={{ bg: "gray.900" }}>
@@ -459,6 +487,32 @@ const MainView = (props: MainViewProps) => {
                 loadMore={loadMoreResults}
                 results={results}
               />
+            )}
+            {sessionToken.length > 0 && (
+              <ScrollView
+                horizontal
+                w="full"
+                flexGrow="unset"
+                showsHorizontalScrollIndicator={false}
+              >
+                <HStack space={2} px={4}>
+                  <ToolButton
+                    isLoading={false}
+                    isLoadingText=""
+                    disabled={true}
+                    icon="download"
+                    title={t("import")}
+                  />
+                  <ToolButton
+                    isLoading={exporting}
+                    isLoadingText={t("exporting")}
+                    disabled={refreshing}
+                    icon="share"
+                    title={t("export")}
+                    onPress={onExportPress}
+                  />
+                </HStack>
+              </ScrollView>
             )}
             <VStack space={2} px={4} alignItems="center">
               <Text color="gray.400" _dark={{ color: "gray.500" }} textAlign="center">

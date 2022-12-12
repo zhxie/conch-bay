@@ -35,7 +35,9 @@
     "react-native-svg": "12.3.0",
     "react-native-web": "0.17.7",
     "expo-system-ui": "~1.2.0",
-    "expo-application": "~4.1.0"
+    "expo-application": "~4.1.0",
+    "expo-sharing": "~10.2.0",
+    "expo-file-system": "~14.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
