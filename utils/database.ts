@@ -49,7 +49,7 @@ export const query = async (offset: number, limit: number) => {
   });
 };
 export const queryAll = async () => {
-  const record = await exec(`SELECT * FROM result ORDER BY time DESC`, true);
+  const record = await exec(`SELECT * FROM result`, true);
   return record.rows.map((row) => {
     return {
       id: row["id"],
@@ -61,6 +61,10 @@ export const queryAll = async () => {
       detail: row["detail"],
     };
   });
+};
+export const count = async () => {
+  const record = await exec(`SELECT COUNT(1) FROM result`, true);
+  return record.rows[0]["COUNT(1)"] as number;
 };
 export const isExist = async (id: string) => {
   const record = await exec(`SELECT * FROM result WHERE id = '${id}'`, true);

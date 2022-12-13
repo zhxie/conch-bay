@@ -398,6 +398,7 @@ const MainView = (props: MainViewProps) => {
   };
   const onExportPress = async () => {
     setExporting(true);
+    const uri = FileSystem.documentDirectory + "conch-bay-export.json";
     try {
       let battles: VsHistoryDetail[] = [];
       let coops: CoopHistoryDetail[] = [];
@@ -409,16 +410,15 @@ const MainView = (props: MainViewProps) => {
           battles.push(JSON.parse(record.detail) as VsHistoryDetail);
         }
       });
-      const result = JSON.stringify({ battles, coops });
-      const uri = FileSystem.documentDirectory + "conch-bay-export.json";
+      const result = { battles, coops };
       await FileSystem.writeAsStringAsync(uri, JSON.stringify(result), {
         encoding: FileSystem.EncodingType.UTF8,
       });
       await Sharing.shareAsync(uri, { UTI: "public.json" });
-      await FileSystem.deleteAsync(uri);
     } catch (e) {
       showError(e);
     }
+    await FileSystem.deleteAsync(uri, { idempotent: true });
     setExporting(false);
   };
 
