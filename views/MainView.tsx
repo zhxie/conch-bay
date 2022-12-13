@@ -330,9 +330,17 @@ const MainView = (props: MainViewProps) => {
           );
           for (let i = 0; i < newResults.length; i++) {
             if (!newResults[i].isCoop) {
-              await addBattle(details[i] as VsHistoryDetail, false);
+              try {
+                await addBattle(details[i] as VsHistoryDetail, false);
+              } catch (e) {
+                showError(e);
+              }
             } else {
-              await addCoop(details[i] as CoopHistoryDetail, false);
+              try {
+                await addCoop(details[i] as CoopHistoryDetail, false);
+              } catch (e) {
+                showError(e);
+              }
             }
           }
         }
