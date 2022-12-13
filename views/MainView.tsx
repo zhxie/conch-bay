@@ -1,5 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Application from "expo-application";
+import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";
 import * as WebBrowser from "expo-web-browser";
@@ -182,6 +183,42 @@ const MainView = (props: MainViewProps) => {
     setLoadingMore(false);
   };
 
+  const addBattle = async (battle: VsHistoryDetail, check: boolean) => {
+    if (check && (await Database.isExist(battle.vsHistoryDetail.id))) {
+      return;
+    }
+    await Database.add(
+      battle.vsHistoryDetail.id,
+      new Date(battle.vsHistoryDetail.playedTime).valueOf(),
+      battle.vsHistoryDetail.vsMode.id,
+      battle.vsHistoryDetail.vsRule.id,
+      battle.vsHistoryDetail.myTeam.players.find((player) => player.isMyself)!.weapon.id,
+      battle.vsHistoryDetail.myTeam.players
+        .map((player) => player.id)
+        .concat(
+          battle.vsHistoryDetail.otherTeams
+            .map((otherTeam) => otherTeam.players.map((player) => player.id))
+            .flat()
+        ),
+      JSON.stringify(battle)
+    );
+  };
+  const addCoop = async (coop: CoopHistoryDetail, check: boolean) => {
+    if (check && (await Database.isExist(coop.coopHistoryDetail.id))) {
+      return;
+    }
+    await Database.add(
+      coop.coopHistoryDetail.id,
+      new Date(coop.coopHistoryDetail.playedTime).valueOf(),
+      "salmon_run",
+      coop.coopHistoryDetail.rule,
+      "",
+      coop.coopHistoryDetail.memberResults
+        .map((memberResult) => memberResult.player.id)
+        .concat(coop.coopHistoryDetail.myResult.player.id),
+      JSON.stringify(coop)
+    );
+  };
   const refresh = async (sessionToken: string, language?: string, bulletToken?: string) => {
     setRefreshing(true);
     try {
@@ -293,37 +330,9 @@ const MainView = (props: MainViewProps) => {
           );
           for (let i = 0; i < newResults.length; i++) {
             if (!newResults[i].isCoop) {
-              // Battle.
-              await Database.add(
-                (details[i] as VsHistoryDetail).vsHistoryDetail.id,
-                new Date((details[i] as VsHistoryDetail).vsHistoryDetail.playedTime).valueOf(),
-                (details[i] as VsHistoryDetail).vsHistoryDetail.vsMode.id,
-                (details[i] as VsHistoryDetail).vsHistoryDetail.vsRule.id,
-                (details[i] as VsHistoryDetail).vsHistoryDetail.myTeam.players.find(
-                  (player) => player.isMyself
-                )!.weapon.id,
-                (details[i] as VsHistoryDetail).vsHistoryDetail.myTeam.players
-                  .map((player) => player.id)
-                  .concat(
-                    (details[i] as VsHistoryDetail).vsHistoryDetail.otherTeams
-                      .map((otherTeam) => otherTeam.players.map((player) => player.id))
-                      .flat()
-                  ),
-                JSON.stringify(details[i])
-              );
+              await addBattle(details[i] as VsHistoryDetail, false);
             } else {
-              // Coop.
-              await Database.add(
-                (details[i] as CoopHistoryDetail).coopHistoryDetail.id,
-                new Date((details[i] as CoopHistoryDetail).coopHistoryDetail.playedTime).valueOf(),
-                "salmon_run",
-                (details[i] as CoopHistoryDetail).coopHistoryDetail.rule,
-                "",
-                (details[i] as CoopHistoryDetail).coopHistoryDetail.memberResults
-                  .map((memberResult) => memberResult.player.id)
-                  .concat((details[i] as CoopHistoryDetail).coopHistoryDetail.myResult.player.id),
-                JSON.stringify(details[i])
-              );
+              await addCoop(details[i] as CoopHistoryDetail, false);
             }
           }
         }
@@ -396,6 +405,40 @@ const MainView = (props: MainViewProps) => {
       setLoggingOut(false);
     }
   };
+  const onImportPress = async () => {
+    let uri = "";
+    try {
+      const doc = await DocumentPicker.getDocumentAsync({ copyToCacheDirectory: true });
+      if (doc.type !== "success") {
+        return;
+      }
+      uri = doc.uri;
+      setRefreshing(true);
+      const result = JSON.parse(await FileSystem.readAsStringAsync(uri));
+      for (let battle of result["battles"]) {
+        try {
+          await addBattle(battle, true);
+        } catch (e) {
+          showError(e);
+        }
+      }
+      for (let coop of result["coops"]) {
+        try {
+          await addCoop(coop, true);
+        } catch (e) {
+          showError(e);
+        }
+      }
+    } catch (e) {
+      showError(e);
+    }
+    try {
+      await FileSystem.deleteAsync(uri, { idempotent: true });
+    } catch (e) {
+      showError(e);
+    }
+    setRefreshing(false);
+  };
   const onExportPress = async () => {
     setExporting(true);
     const uri = FileSystem.documentDirectory + "conch-bay-export.json";
@@ -418,7 +461,11 @@ const MainView = (props: MainViewProps) => {
     } catch (e) {
       showError(e);
     }
-    await FileSystem.deleteAsync(uri, { idempotent: true });
+    try {
+      await FileSystem.deleteAsync(uri, { idempotent: true });
+    } catch (e) {
+      showError(e);
+    }
     setExporting(false);
   };
 
@@ -499,9 +546,10 @@ const MainView = (props: MainViewProps) => {
                   <ToolButton
                     isLoading={false}
                     isLoadingText=""
-                    isDisabled={true}
+                    isDisabled={refreshing}
                     icon="download"
                     title={t("import")}
+                    onPress={onImportPress}
                   />
                   <ToolButton
                     isLoading={exporting}
