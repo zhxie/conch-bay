@@ -174,14 +174,14 @@ const ResultView = (props: ResultViewProps) => {
             });
         }
       })()}
-      {props.results && (
+      {
         <Button
           w="full"
           h={16}
           colorScheme="gray"
           variant="default"
           isLoading={props.isLoading}
-          roundedTop={props.results.length > 0 ? "none" : "lg"}
+          roundedTop={!props.results || props.results.length > 0 ? "none" : "lg"}
           roundedBottom="lg"
           _stack={{
             flex: 1,
@@ -193,7 +193,7 @@ const ResultView = (props: ResultViewProps) => {
             <Text fontSize="md">{t("load_more")}</Text>
           </Center>
         </Button>
-      )}
+      }
       <Modal
         isOpen={displayResult}
         onClose={onDisplayResultClose}

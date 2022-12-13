@@ -499,14 +499,14 @@ const MainView = (props: MainViewProps) => {
                   <ToolButton
                     isLoading={false}
                     isLoadingText=""
-                    disabled={true}
+                    isDisabled={true}
                     icon="download"
                     title={t("import")}
                   />
                   <ToolButton
                     isLoading={exporting}
                     isLoadingText={t("exporting")}
-                    disabled={refreshing}
+                    isDisabled={refreshing}
                     icon="share"
                     title={t("export")}
                     onPress={onExportPress}

@@ -2,7 +2,7 @@ import { Feather } from "@expo/vector-icons";
 import { Button, Center, HStack, Icon, Text } from "native-base";
 
 interface ToolButtonProps {
-  disabled: boolean;
+  isDisabled: boolean;
   isLoading: boolean;
   isLoadingText: string;
   icon: string;
@@ -13,13 +13,15 @@ interface ToolButtonProps {
 const ToolButton = (props: ToolButtonProps) => {
   return (
     <Button
-      disabled={props.disabled}
+      fontSize="md"
+      isDisabled={props.isDisabled}
       isLoading={props.isLoading}
       isLoadingText={props.isLoadingText}
       rounded="full"
       colorScheme="gray"
       variant="default"
       onPress={props.onPress}
+      _text={{ fontSize: "md" }}
     >
       <HStack space={1} flex={1} alignSelf="center">
         <Center>
