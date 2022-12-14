@@ -440,6 +440,7 @@ const MainView = (props: MainViewProps) => {
         return;
       }
       uri = doc.uri;
+
       setRefreshing(true);
       let [fail, skip] = [0, 0];
       const result = JSON.parse(await FileSystem.readAsStringAsync(uri));
@@ -472,9 +473,16 @@ const MainView = (props: MainViewProps) => {
           description: t("loaded_n_results_fail_failed_skip_skipped", { n, fail, skip }),
         });
       }
+
+      // Query stored latest results if updated.
+      if (n - fail - skip > 0) {
+        await loadResults(true);
+      }
     } catch (e) {
       showError(e);
     }
+
+    // Clean up.
     try {
       await FileSystem.deleteAsync(uri, { idempotent: true });
     } catch (e) {
@@ -496,6 +504,7 @@ const MainView = (props: MainViewProps) => {
           battles.push(JSON.parse(record.detail) as VsHistoryDetail);
         }
       });
+
       const result = { battles, coops };
       await FileSystem.writeAsStringAsync(uri, JSON.stringify(result), {
         encoding: FileSystem.EncodingType.UTF8,
@@ -504,6 +513,8 @@ const MainView = (props: MainViewProps) => {
     } catch (e) {
       showError(e);
     }
+
+    // Clean up.
     try {
       await FileSystem.deleteAsync(uri, { idempotent: true });
     } catch (e) {
