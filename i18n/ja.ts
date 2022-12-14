@@ -25,6 +25,9 @@ const ja = {
     "当アプリは、イカリング3の情報を利用した非公式アプリであり、任天堂株式会社とは一切関係はございません。",
   feedback: "フィードバック",
   privacy_policy: "プライバシーポリシー",
+  acknowledgments: "謝辞",
+  creators: "クリエーター",
+  license: "ライセンス",
   // Modes.
   regular_battle: "レギュラーマッチ",
   anarchy_battle: "バンカラマッチ",

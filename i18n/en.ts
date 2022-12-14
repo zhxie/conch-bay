@@ -25,6 +25,9 @@ const en = {
     "This app is an unofficial app which uses the information of and SplatNet 3, and is not related to Nintendo Co., Ltd.",
   feedback: "Feedback",
   privacy_policy: "Privacy Policy",
+  acknowledgments: "Acknowledgments",
+  creators: "Creators",
+  license: "License",
   // Modes.
   regular_battle: "Regular Battle",
   anarchy_battle: "Anarchy Battle",

@@ -22,6 +22,9 @@ const zh = {
   disclaimer: "本应用是使用鱿鱼圈3的信息的非官方应用，与任天堂有限公司无关。",
   feedback: "问题反馈",
   privacy_policy: "隐私政策",
+  acknowledgments: "致谢",
+  creators: "创作者",
+  license: "许可",
   // Modes.
   regular_battle: "一般比赛",
   anarchy_battle: "蛮颓比赛",

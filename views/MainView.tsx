@@ -12,6 +12,7 @@ import {
   Link,
   Modal,
   PresenceTransition,
+  Pressable,
   ScrollView,
   Skeleton,
   Text,
@@ -68,6 +69,7 @@ const MainView = (props: MainViewProps) => {
   const [refreshing, setRefreshing] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [exporting, setExporting] = useState(false);
+  const [acknowledgments, setAcknowledgments] = useState(false);
 
   const [sessionToken, setSessionToken] = useState("");
   const [language, setLanguage] = useState("");
@@ -509,6 +511,12 @@ const MainView = (props: MainViewProps) => {
     }
     setExporting(false);
   };
+  const onAcknowledgmentsPress = () => {
+    setAcknowledgments(true);
+  };
+  const onAcknowledgmentsClose = () => {
+    setAcknowledgments(false);
+  };
 
   return (
     <VStack flex={1} bg="gray.50" _dark={{ bg: "gray.900" }}>
@@ -635,6 +643,11 @@ const MainView = (props: MainViewProps) => {
                   >
                     {t("privacy_policy")}
                   </Link>
+                  <Pressable onPress={onAcknowledgmentsPress}>
+                    <Text underline color="gray.400" _dark={{ color: "gray.500" }}>
+                      {t("acknowledgments")}
+                    </Text>
+                  </Pressable>
                 </HStack>
               </VStack>
             </VStack>
@@ -697,6 +710,49 @@ const MainView = (props: MainViewProps) => {
                 >
                   {t("log_out_continue")}
                 </Button>
+              </VStack>
+            </VStack>
+          </Modal.Body>
+        </Modal.Content>
+      </Modal>
+      <Modal
+        isOpen={acknowledgments}
+        onClose={onAcknowledgmentsClose}
+        avoidKeyboard
+        justifyContent="flex-end"
+        safeArea
+        size="lg"
+      >
+        <Modal.Content>
+          <Modal.Body>
+            <VStack space={3} alignItems="center">
+              <VStack space={2} alignItems="center">
+                <Text fontSize="md">{t("creators")}</Text>
+                <HStack space={2} alignSelf="center">
+                  <Avatar
+                    size="md"
+                    bg="gray.100"
+                    _dark={{ bg: "gray.700" }}
+                    source={{
+                      uri: "https://cdn-image-e0d67c509fb203858ebcb2fe3f88c2aa.baas.nintendo.com/1/1afd1450a5a5ebec",
+                    }}
+                  />
+                  <Avatar
+                    size="md"
+                    bg="gray.100"
+                    _dark={{ bg: "gray.700" }}
+                    source={{
+                      uri: "https://cdn-image-e0d67c509fb203858ebcb2fe3f88c2aa.baas.nintendo.com/1/4b98d8291ae60b8c",
+                    }}
+                  />
+                </HStack>
+              </VStack>
+              <VStack space={2} alignItems="center">
+                <Text fontSize="md">{t("license")}</Text>
+                <VStack space={1} alignItems="center">
+                  <Link href="https://splatoon3.ink/">Splatoon3.ink</Link>
+                  <Link href="https://github.com/imink-app/f-API">imink f API</Link>
+                </VStack>
               </VStack>
             </VStack>
           </Modal.Body>
