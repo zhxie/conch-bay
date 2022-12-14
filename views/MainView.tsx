@@ -729,22 +729,26 @@ const MainView = (props: MainViewProps) => {
               <VStack space={2} alignItems="center">
                 <Text fontSize="md">{t("creators")}</Text>
                 <HStack space={2} alignSelf="center">
-                  <Avatar
-                    size="md"
-                    bg="gray.100"
-                    _dark={{ bg: "gray.700" }}
-                    source={{
-                      uri: "https://cdn-image-e0d67c509fb203858ebcb2fe3f88c2aa.baas.nintendo.com/1/1afd1450a5a5ebec",
-                    }}
-                  />
-                  <Avatar
-                    size="md"
-                    bg="gray.100"
-                    _dark={{ bg: "gray.700" }}
-                    source={{
-                      uri: "https://cdn-image-e0d67c509fb203858ebcb2fe3f88c2aa.baas.nintendo.com/1/4b98d8291ae60b8c",
-                    }}
-                  />
+                  <TransformPressable>
+                    <Avatar
+                      size="md"
+                      bg="gray.100"
+                      _dark={{ bg: "gray.700" }}
+                      source={{
+                        uri: "https://cdn-image-e0d67c509fb203858ebcb2fe3f88c2aa.baas.nintendo.com/1/1afd1450a5a5ebec",
+                      }}
+                    />
+                  </TransformPressable>
+                  <TransformPressable>
+                    <Avatar
+                      size="md"
+                      bg="gray.100"
+                      _dark={{ bg: "gray.700" }}
+                      source={{
+                        uri: "https://cdn-image-e0d67c509fb203858ebcb2fe3f88c2aa.baas.nintendo.com/1/4b98d8291ae60b8c",
+                      }}
+                    />
+                  </TransformPressable>
                 </HStack>
               </VStack>
               <VStack space={2} alignItems="center">
