@@ -10,6 +10,7 @@
       "fallbackToCacheTimeout": 0
     },
     "locales": {
+      "en": "./i18n/ios/en.json",
       "ja": "./i18n/ios/ja.json",
       "zh": "./i18n/ios/zh.json"
     },

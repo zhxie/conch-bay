@@ -2,11 +2,11 @@ const zh = {
   // UI.
   log_in: "登录",
   log_in_notice:
-    "海贝湾需要获取令牌以访问鱿鱼圈 3。该过程涉及向非任天堂的 imink 发送含有最少的非身份信息的安全请求，并且这些信息不会被记录或存储。请参阅 imink 隐私政策以获取更多信息。",
+    "法螺湾需要获取令牌以访问鱿鱼圈 3。该过程涉及向非任天堂的 imink 发送含有最少的非身份信息的安全请求，并且这些信息不会被记录或存储。请参阅 imink 隐私政策以获取更多信息。",
   imink_privacy_policy: "imink 隐私政策",
   log_in_continue: "我已阅读并理解",
   logging_in: "获取令牌中",
-  log_out_notice: "登出将清除海贝湾所有存储的数据！请在继续之前完成备份。",
+  log_out_notice: "登出将清除法螺湾所有存储的数据！请在继续之前完成备份。",
   log_out_continue: "登出",
   logging_out: "登出中",
   reacquiring_tokens: "重新获取令牌中",
