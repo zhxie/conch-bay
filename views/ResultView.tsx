@@ -6,7 +6,7 @@ import { BattleButton, CoopButton } from "../components";
 import { Color, CoopBossResult, CoopHistoryDetail, VsHistoryDetail } from "../models";
 
 interface ResultViewProps {
-  t: (str: string) => string;
+  t: (f: string, params?: Record<string, any>) => string;
   accentColor: ColorType;
   isLoading: boolean;
   loadMore: () => void;

@@ -11,6 +11,12 @@ const ja = {
   log_out_continue: "ログアウト",
   logging_out: "ログアウト中",
   reacquiring_tokens: "トークン再取得中",
+  loading_n_new_results: "%{n}件の新しいリザルトを読み込む中",
+  loading_n_results: "%{n}件のリザルトを読み込む中",
+  loaded_n_results: "%{n}件のリザルトを読み込みました",
+  loaded_n_results_fail_failed: "%{n}件のリザルトを読み込み、%{fail}件は失敗しました",
+  loaded_n_results_fail_failed_skip_skipped:
+    "%{n}件のリザルトを読み込み、%{fail}件は失敗、%{skip}件はスキップしました",
   load_more: "もっと読み込む",
   import: "インポート",
   export: "エクスポート",

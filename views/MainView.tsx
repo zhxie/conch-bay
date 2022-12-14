@@ -48,7 +48,7 @@ import ScheduleView from "./ScheduleView";
 import * as Database from "../utils/database";
 
 interface MainViewProps {
-  t: (str: string) => string;
+  t: (f: string, params?: Record<string, any>) => string;
 }
 
 const MainView = (props: MainViewProps) => {
@@ -184,40 +184,50 @@ const MainView = (props: MainViewProps) => {
   };
 
   const addBattle = async (battle: VsHistoryDetail, check: boolean) => {
-    if (check && (await Database.isExist(battle.vsHistoryDetail.id))) {
-      return;
+    try {
+      if (check && (await Database.isExist(battle.vsHistoryDetail.id))) {
+        return 0;
+      }
+      await Database.add(
+        battle.vsHistoryDetail.id,
+        new Date(battle.vsHistoryDetail.playedTime).valueOf(),
+        battle.vsHistoryDetail.vsMode.id,
+        battle.vsHistoryDetail.vsRule.id,
+        battle.vsHistoryDetail.myTeam.players.find((player) => player.isMyself)!.weapon.id,
+        battle.vsHistoryDetail.myTeam.players
+          .map((player) => player.id)
+          .concat(
+            battle.vsHistoryDetail.otherTeams
+              .map((otherTeam) => otherTeam.players.map((player) => player.id))
+              .flat()
+          ),
+        JSON.stringify(battle)
+      );
+      return 1;
+    } catch {
+      return -1;
     }
-    await Database.add(
-      battle.vsHistoryDetail.id,
-      new Date(battle.vsHistoryDetail.playedTime).valueOf(),
-      battle.vsHistoryDetail.vsMode.id,
-      battle.vsHistoryDetail.vsRule.id,
-      battle.vsHistoryDetail.myTeam.players.find((player) => player.isMyself)!.weapon.id,
-      battle.vsHistoryDetail.myTeam.players
-        .map((player) => player.id)
-        .concat(
-          battle.vsHistoryDetail.otherTeams
-            .map((otherTeam) => otherTeam.players.map((player) => player.id))
-            .flat()
-        ),
-      JSON.stringify(battle)
-    );
   };
   const addCoop = async (coop: CoopHistoryDetail, check: boolean) => {
-    if (check && (await Database.isExist(coop.coopHistoryDetail.id))) {
-      return;
+    try {
+      if (check && (await Database.isExist(coop.coopHistoryDetail.id))) {
+        return 0;
+      }
+      await Database.add(
+        coop.coopHistoryDetail.id,
+        new Date(coop.coopHistoryDetail.playedTime).valueOf(),
+        "salmon_run",
+        coop.coopHistoryDetail.rule,
+        "",
+        coop.coopHistoryDetail.memberResults
+          .map((memberResult) => memberResult.player.id)
+          .concat(coop.coopHistoryDetail.myResult.player.id),
+        JSON.stringify(coop)
+      );
+      return 1;
+    } catch {
+      return -1;
     }
-    await Database.add(
-      coop.coopHistoryDetail.id,
-      new Date(coop.coopHistoryDetail.playedTime).valueOf(),
-      "salmon_run",
-      coop.coopHistoryDetail.rule,
-      "",
-      coop.coopHistoryDetail.memberResults
-        .map((memberResult) => memberResult.player.id)
-        .concat(coop.coopHistoryDetail.myResult.player.id),
-      JSON.stringify(coop)
-    );
   };
   const refresh = async (sessionToken: string, language?: string, bulletToken?: string) => {
     setRefreshing(true);
@@ -320,6 +330,7 @@ const MainView = (props: MainViewProps) => {
         const existed = await Promise.all(results.map((result) => Database.isExist(result.id)));
         const newResults = results.filter((_, i) => !existed[i]);
         if (newResults.length > 0) {
+          toast.show({ description: t("loading_n_new_results", { n: newResults.length }) });
           const details = await Promise.all(
             newResults.map((result) => {
               if (!result.isCoop) {
@@ -328,20 +339,26 @@ const MainView = (props: MainViewProps) => {
               return fetchCoopHistoryDetail(result.id, newBulletToken, newLanguage);
             })
           );
+          let fail = 0;
           for (let i = 0; i < newResults.length; i++) {
+            let result: number;
             if (!newResults[i].isCoop) {
-              try {
-                await addBattle(details[i] as VsHistoryDetail, false);
-              } catch (e) {
-                showError(e);
-              }
+              result = await addBattle(details[i] as VsHistoryDetail, false);
             } else {
-              try {
-                await addCoop(details[i] as CoopHistoryDetail, false);
-              } catch (e) {
-                showError(e);
-              }
+              result = await addCoop(details[i] as CoopHistoryDetail, false);
             }
+            if (result < 0) {
+              fail++;
+            }
+          }
+          if (fail > 0) {
+            toast.show({
+              description: t("loaded_n_results_fail_failed", { n: newResults.length, fail }),
+            });
+          } else {
+            toast.show({
+              description: t("loaded_n_results", { n: newResults.length }),
+            });
           }
         }
 
@@ -422,20 +439,36 @@ const MainView = (props: MainViewProps) => {
       }
       uri = doc.uri;
       setRefreshing(true);
+      let [fail, skip] = [0, 0];
       const result = JSON.parse(await FileSystem.readAsStringAsync(uri));
+      const n = result["battles"].length + result["coops"].length;
+      toast.show({
+        description: t("loading_n_results", { n }),
+      });
       for (let battle of result["battles"]) {
-        try {
-          await addBattle(battle, true);
-        } catch (e) {
-          showError(e);
+        const result = await addBattle(battle, true);
+        if (result < 0) {
+          fail++;
+        } else if (result === 0) {
+          skip++;
         }
       }
       for (let coop of result["coops"]) {
-        try {
-          await addCoop(coop, true);
-        } catch (e) {
-          showError(e);
+        const result = await addCoop(coop, true);
+        if (result < 0) {
+          fail++;
+        } else if (result === 0) {
+          skip++;
         }
+      }
+      if (fail === 0 && skip === 0) {
+        toast.show({
+          description: t("loaded_n_results", { n }),
+        });
+      } else {
+        toast.show({
+          description: t("loaded_n_results_fail_failed_skip_skipped", { n, fail, skip }),
+        });
       }
     } catch (e) {
       showError(e);

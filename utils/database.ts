@@ -82,7 +82,7 @@ export const add = async (
   await exec(
     `INSERT INTO result VALUES ('${id}', ${time}, '${mode}', '${rule}', '${weapon}', '${players.join(
       ","
-    )}', '${detail}')`,
+    )}', '${detail.replaceAll("'", "''")}')`,
     false
   );
 };

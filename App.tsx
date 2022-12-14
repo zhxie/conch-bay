@@ -66,8 +66,8 @@ i18n.defaultLocale = "en";
 i18n.locale = Localization.locale;
 
 const App = () => {
-  const t = (str: string) => {
-    return i18n.t(str);
+  const t = (f: string, params?: Record<string, any>) => {
+    return i18n.t(f, params);
   };
 
   return (

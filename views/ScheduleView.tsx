@@ -18,7 +18,7 @@ import {
 } from "../models";
 
 interface ScheduleViewProps {
-  t: (str: string) => string;
+  t: (f: string, params?: Record<string, any>) => string;
   accentColor: ColorType;
   schedules?: Schedules;
 }
