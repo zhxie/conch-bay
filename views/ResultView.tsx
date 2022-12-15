@@ -48,10 +48,10 @@ const ResultView = (props: ResultViewProps) => {
       case "WIN":
         return 1;
       case "DRAW":
-      case "EXEMPTED_LOSE":
         return 0;
       case "LOSE":
       case "DEEMED_LOSE":
+      case "EXEMPTED_LOSE":
         return -1;
     }
   };
