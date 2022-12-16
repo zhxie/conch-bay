@@ -10,6 +10,7 @@ const ja = {
     "ログアウトすると、ホラカイベイに保存されているすべてのデータが削除されます！続行する前にバックアップを完了してください。",
   log_out_continue: "ログアウト",
   logging_out: "ログアウト中",
+  failed_to_check_update: "アップデートを確認できませんでした",
   reacquiring_tokens: "トークン再取得中",
   loading_n_new_results: "%{n}件の新しいリザルトを読み込む中",
   loading_n_results: "%{n}件のリザルトを読み込む中",

@@ -244,7 +244,11 @@ const MainView = (props: MainViewProps) => {
       setSchedules(schedules);
       if (sessionToken) {
         // Update versions.
-        await Promise.all([await updateNsoappVersion(), await updateWebViewVersion()]);
+        try {
+          await Promise.all([await updateNsoappVersion(), await updateWebViewVersion()]);
+        } catch {
+          Toast.show(t("failed_to_check_update"));
+        }
 
         // Regenerate bullet token if necessary.
         let newLanguage = language;

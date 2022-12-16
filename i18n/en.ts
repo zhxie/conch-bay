@@ -10,6 +10,7 @@ const en = {
     "Logging out will remove all stored data from Conch Bay! Please complete backup before proceeding.",
   log_out_continue: "Log Out",
   logging_out: "Logging out",
+  failed_to_check_update: "Failed to check update",
   reacquiring_tokens: "Reacquiring tokens",
   loading_n_new_results: "Loading %{n} new result(s)",
   loading_n_results: "Loading %{n} result(s)",

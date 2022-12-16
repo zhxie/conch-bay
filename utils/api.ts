@@ -20,8 +20,8 @@ import { formUrlEncoded, getParam } from "./url";
 
 const USER_AGENT = "Conch Bay/0.1.0";
 
-let NSOAPP_VERSION = "2.3.1";
-let WEB_VIEW_VERSION = "1.0.0-5644e7a2";
+let NSOAPP_VERSION = "2.4.0";
+let WEB_VIEW_VERSION = "2.0.0-bd36a652";
 
 export const fetchSchedules = async () => {
   const res = await fetch("https://splatoon3.ink/data/schedules.json", {
@@ -37,9 +37,9 @@ export const updateNsoappVersion = async () => {
   const res = await fetch("https://apps.apple.com/us/app/nintendo-switch-online/id1234806557");
   const text = await res.text();
 
-  const soup = new JSSoup(text);
-  const tag = soup.find("p", { class: "whats-new__latest__version" });
-  NSOAPP_VERSION = tag.getText().replace("Version ", "").trim();
+  const regex = />Version.+?([0-9|\.].+)</;
+  const match = regex.exec(text)!;
+  NSOAPP_VERSION = match[1];
 };
 export const updateWebViewVersion = async () => {
   const res = await fetch("https://api.lp1.av5ja.srv.nintendo.net");
