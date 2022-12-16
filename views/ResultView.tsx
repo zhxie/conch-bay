@@ -139,6 +139,7 @@ const ResultView = (props: ResultViewProps) => {
               return (
                 <BattleButton
                   key={i}
+                  isLoading={true}
                   isFirst={i === 0}
                   color={Color.MiddleTerritory}
                   rule=""

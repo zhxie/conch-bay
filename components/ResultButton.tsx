@@ -6,6 +6,7 @@ import { TextStyles, ViewStyles } from "./Styles";
 
 interface ResultButtonProps {
   color: string;
+  isLoading?: boolean;
   isFirst?: boolean;
   isLast?: boolean;
   result?: number;
@@ -23,9 +24,9 @@ const ResultButton = (props: ResultButtonProps) => {
 
   return (
     <Pressable
+      isDisabled={props.isLoading}
       style={[
         ViewStyles.px3,
-        ViewStyles.py2,
         { height: 64 },
         props.isFirst && ViewStyles.rt,
         props.isLast && ViewStyles.rb,
@@ -33,7 +34,14 @@ const ResultButton = (props: ResultButtonProps) => {
       ]}
       onPress={props.onPress}
     >
-      <View style={[ViewStyles.f, ViewStyles.hc]}>
+      <View
+        style={[
+          ViewStyles.f,
+          ViewStyles.hc,
+          ViewStyles.py2,
+          { borderBottomWidth: 1, borderBottomColor: `${Color.MiddleTerritory}3f` },
+        ]}
+      >
         <View style={[ViewStyles.mr3, ViewStyles.c, { width: 32, height: 32 }]}>
           {props.result !== undefined &&
             (() => {

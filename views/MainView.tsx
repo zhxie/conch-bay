@@ -664,7 +664,7 @@ const MainView = (props: MainViewProps) => {
             <Button
               style={[
                 ViewStyles.mb2,
-                { borderColor: accentColor, borderWidth: 2 },
+                { borderColor: accentColor, borderWidth: 1.5 },
                 backgroundStyle,
               ]}
               textStyle={textColor}

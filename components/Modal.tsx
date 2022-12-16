@@ -16,6 +16,7 @@ const Modal = (props: ModalProps) => {
   return (
     <ReactNativeModal
       isVisible={props.isVisible}
+      backdropOpacity={0.5}
       onBackdropPress={props.onClose}
       useNativeDriverForBackdrop
       style={ViewStyles.c}

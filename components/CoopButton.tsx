@@ -4,6 +4,7 @@ import { TextStyles, ViewStyles } from "./Styles";
 
 interface CoopButtonProps {
   color: string;
+  isLoading?: boolean;
   isFirst?: boolean;
   isLast?: boolean;
   result?: number;
@@ -32,6 +33,7 @@ const CoopButton = (props: CoopButtonProps) => {
   return (
     <ResultButton
       color={props.color}
+      isLoading={props.isLoading}
       isFirst={props.isFirst}
       isLast={props.isLast}
       result={props.result}
