@@ -21,7 +21,7 @@
     },
     "ios": {
       "bundleIdentifier": "name.sketch.ConchBay",
-      "buildNumber": "6",
+      "buildNumber": "7",
       "config": {
         "usesNonExemptEncryption": false
       },
