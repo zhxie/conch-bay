@@ -95,9 +95,11 @@ const MainView = (props: MainViewProps) => {
         const { sessionToken, language, bulletToken } = await loadPersistence();
         setReady(true);
         await Database.open();
-        // HACK: load asynchronously to avoid refresh control layout misbehavior.
+        // HACK: load asynchronously and delay to avoid refresh control layout misbehavior.
         loadResults(false);
-        await refresh(sessionToken, language, bulletToken);
+        setTimeout(() => {
+          refresh(sessionToken, language, bulletToken);
+        }, 600);
       } catch (e) {
         showError(e);
       }
