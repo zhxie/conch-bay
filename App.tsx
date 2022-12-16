@@ -4,6 +4,8 @@ import React from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { en, ja, zh } from "./i18n";
 import { MainView } from "./views";
+import { useColorScheme } from "react-native";
+import { ViewStyles } from "./components";
 
 // Localization.
 const i18n = new I18n();
@@ -13,12 +15,15 @@ i18n.defaultLocale = "en";
 i18n.locale = Localization.locale;
 
 const App = () => {
+  const colorScheme = useColorScheme();
+  const backgroundStyle = colorScheme === "light" ? ViewStyles.light : ViewStyles.dark;
+
   const t = (f: string, params?: Record<string, any>) => {
     return i18n.t(f, params);
   };
 
   return (
-    <SafeAreaProvider>
+    <SafeAreaProvider style={backgroundStyle}>
       <MainView t={t} />
     </SafeAreaProvider>
   );
