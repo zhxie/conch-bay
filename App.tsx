@@ -3,7 +3,7 @@ import { I18n } from "i18n-js";
 import React from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { en, ja, zh } from "./i18n";
-import MainView from "./views/MainView";
+import { MainView } from "./views";
 
 // Localization.
 const i18n = new I18n();

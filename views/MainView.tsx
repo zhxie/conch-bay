@@ -391,7 +391,7 @@ const MainView = (props: MainViewProps) => {
       setLogIn(false);
     }
   };
-  const onPrivacyPolicyPress = () => {
+  const onIminkPrivacyPolicyPress = () => {
     WebBrowser.openBrowserAsync("https://github.com/JoneWang/imink/wiki/Privacy-Policy");
   };
   const onLogInContinuePress = async () => {
@@ -523,11 +523,23 @@ const MainView = (props: MainViewProps) => {
     }
     setExporting(false);
   };
+  const onFeedbackPress = () => {
+    Linking.openURL("https://github.com/zhxie/conch-bay/issues/new");
+  };
+  const onPrivacyPolicyPress = () => {
+    WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay/wiki/Privacy-Policy");
+  };
   const onAcknowledgmentsPress = () => {
     setAcknowledgments(true);
   };
   const onAcknowledgmentsClose = () => {
     setAcknowledgments(false);
+  };
+  const onSplatoon3InkPress = () => {
+    Linking.openURL("https://splatoon3.ink/");
+  };
+  const onIminkFApiPress = () => {
+    Linking.openURL("https://github.com/imink-app/f-API");
   };
 
   return (
@@ -627,15 +639,13 @@ const MainView = (props: MainViewProps) => {
                 <View style={[ViewStyles.hc]}>
                   <Text
                     style={[TextStyles.p, TextStyles.link, TextStyles.subtle, ViewStyles.mr2]}
-                    onPress={() => Linking.openURL("https://github.com/zhxie/conch-bay/issues/new")}
+                    onPress={onFeedbackPress}
                   >
                     {t("feedback")}
                   </Text>
                   <Text
                     style={[TextStyles.p, TextStyles.link, TextStyles.subtle, ViewStyles.mr2]}
-                    onPress={() =>
-                      Linking.openURL("https://github.com/zhxie/conch-bay/wiki/Privacy-Policy")
-                    }
+                    onPress={onPrivacyPolicyPress}
                   >
                     {t("privacy_policy")}
                   </Text>
@@ -668,7 +678,7 @@ const MainView = (props: MainViewProps) => {
                 backgroundStyle,
               ]}
               textStyle={textColor}
-              onPress={onPrivacyPolicyPress}
+              onPress={onIminkPrivacyPolicyPress}
             >
               <Text style={textColor}>{t("imink_privacy_policy")}</Text>
             </Button>
@@ -734,14 +744,11 @@ const MainView = (props: MainViewProps) => {
             <View style={[ViewStyles.v, ViewStyles.c]}>
               <Text
                 style={[TextStyles.p, TextStyles.link, ViewStyles.mb1, textColor]}
-                onPress={() => Linking.openURL("https://splatoon3.ink/")}
+                onPress={onSplatoon3InkPress}
               >
                 Splatoon3.ink
               </Text>
-              <Text
-                style={[TextStyles.p, TextStyles.link, textColor]}
-                onPress={() => Linking.openURL("https://github.com/imink-app/f-API")}
-              >
+              <Text style={[TextStyles.p, TextStyles.link, textColor]} onPress={onIminkFApiPress}>
                 imink f API
               </Text>
             </View>
