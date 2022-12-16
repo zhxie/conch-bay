@@ -4,28 +4,20 @@ import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";
 import * as WebBrowser from "expo-web-browser";
+import React, { useEffect, useRef, useState } from "react";
 import {
-  Avatar,
-  Badge,
-  Button,
-  HStack,
-  Link,
-  Modal,
-  PresenceTransition,
-  Pressable,
+  Animated,
+  Linking,
+  RefreshControl,
   ScrollView,
-  Skeleton,
   Text,
-  useColorModeValue,
-  useToast,
-  VStack,
-  WarningIcon,
-} from "native-base";
-import React, { useEffect, useState } from "react";
-import { RefreshControl } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { ToolButton, TransformPressable } from "../components";
-import { CoopHistoryDetail, Friends, Schedules, VsHistoryDetail } from "../models";
+  useColorScheme,
+  View,
+} from "react-native";
+import Toast from "react-native-root-toast";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { Avatar, Badge, Button, Modal, TextStyles, ToolButton, ViewStyles } from "../components";
+import { Color, CoopHistoryDetail, Friends, Schedules, VsHistoryDetail } from "../models";
 import {
   checkBulletToken,
   fetchBattleHistories,
@@ -47,6 +39,7 @@ import ResultView from "./ResultView";
 import FriendView from "./FriendView";
 import ScheduleView from "./ScheduleView";
 import * as Database from "../utils/database";
+import { Feather } from "@expo/vector-icons";
 
 interface MainViewProps {
   t: (f: string, params?: Record<string, any>) => string;
@@ -55,11 +48,13 @@ interface MainViewProps {
 const MainView = (props: MainViewProps) => {
   const { t } = props;
 
-  const accentColorScheme = useColorModeValue("blue", "yellow");
-  const accentColor = useColorModeValue("blue.500", "yellow.500");
+  const colorScheme = useColorScheme();
+  const accentColor = colorScheme === "light" ? Color.Shiver : Color.Frye;
+  const backgroundStyle = colorScheme === "light" ? ViewStyles.light : ViewStyles.dark;
+  const textColor = colorScheme === "light" ? TextStyles.light : TextStyles.dark;
+  const reverseTextColor = colorScheme === "light" ? TextStyles.dark : TextStyles.light;
 
   const insets = useSafeAreaInsets();
-  const toast = useToast();
 
   const [ready, setReady] = useState(false);
   const [logIn, setLogIn] = useState(false);
@@ -88,9 +83,9 @@ const MainView = (props: MainViewProps) => {
 
   const showError = (e: any) => {
     if (e instanceof Error) {
-      toast.show({ description: e.message });
+      Toast.show(e.message);
     } else if (typeof e === "string") {
-      toast.show({ description: e });
+      Toast.show(e);
     }
   };
 
@@ -109,6 +104,16 @@ const MainView = (props: MainViewProps) => {
     };
     fetchData();
   }, []);
+  const fade = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    if (ready) {
+      Animated.timing(fade, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [ready]);
   const loadPersistence = async () => {
     const [sessionToken, language, bulletToken, icon, catalogLevel, level, rank, grade] =
       await Promise.all([
@@ -249,7 +254,7 @@ const MainView = (props: MainViewProps) => {
         }
         if (!newBulletToken) {
           if (bulletToken && bulletToken.length > 0) {
-            toast.show({ description: t("reacquiring_tokens") });
+            Toast.show(t("reacquiring_tokens"));
           }
 
           const res = await getWebServiceToken(sessionToken);
@@ -332,7 +337,7 @@ const MainView = (props: MainViewProps) => {
         const existed = await Promise.all(results.map((result) => Database.isExist(result.id)));
         const newResults = results.filter((_, i) => !existed[i]);
         if (newResults.length > 0) {
-          toast.show({ description: t("loading_n_new_results", { n: newResults.length }) });
+          Toast.show(t("loading_n_new_results", { n: newResults.length }));
           const details = await Promise.all(
             newResults.map((result) => {
               if (!result.isCoop) {
@@ -354,13 +359,9 @@ const MainView = (props: MainViewProps) => {
             }
           }
           if (fail > 0) {
-            toast.show({
-              description: t("loaded_n_results_fail_failed", { n: newResults.length, fail }),
-            });
+            Toast.show(t("loaded_n_results_fail_failed", { n: newResults.length, fail }));
           } else {
-            toast.show({
-              description: t("loaded_n_results", { n: newResults.length }),
-            });
+            Toast.show(t("loaded_n_results", { n: newResults.length }));
           }
         }
 
@@ -445,9 +446,7 @@ const MainView = (props: MainViewProps) => {
       let [fail, skip] = [0, 0];
       const result = JSON.parse(await FileSystem.readAsStringAsync(uri));
       const n = result["battles"].length + result["coops"].length;
-      toast.show({
-        description: t("loading_n_results", { n }),
-      });
+      Toast.show(t("loading_n_results", { n }));
       for (let battle of result["battles"]) {
         const result = await addBattle(battle, true);
         if (result < 0) {
@@ -465,13 +464,9 @@ const MainView = (props: MainViewProps) => {
         }
       }
       if (fail === 0 && skip === 0) {
-        toast.show({
-          description: t("loaded_n_results", { n }),
-        });
+        Toast.show(t("loaded_n_results", { n }));
       } else {
-        toast.show({
-          description: t("loaded_n_results_fail_failed_skip_skipped", { n, fail, skip }),
-        });
+        Toast.show(t("loaded_n_results_fail_failed_skip_skipped", { n, fail, skip }));
       }
 
       // Query stored latest results if updated.
@@ -530,21 +525,9 @@ const MainView = (props: MainViewProps) => {
   };
 
   return (
-    <VStack flex={1} bg="gray.50" _dark={{ bg: "gray.900" }}>
-      <PresenceTransition
-        visible={ready}
-        initial={{
-          opacity: 0,
-        }}
-        animate={{
-          opacity: 1,
-          transition: {
-            duration: 300,
-          },
-        }}
-      >
+    <View style={[ViewStyles.f, ViewStyles.vc, backgroundStyle]}>
+      <Animated.View style={{ opacity: fade }}>
         <ScrollView
-          h="full"
           refreshControl={
             <RefreshControl
               progressViewOffset={insets.top}
@@ -553,62 +536,65 @@ const MainView = (props: MainViewProps) => {
             />
           }
           showsVerticalScrollIndicator={false}
+          style={{ height: "100%" }}
         >
-          <VStack space={4} alignItems="center" safeArea>
+          <SafeAreaView style={ViewStyles.vc}>
             {!sessionToken && (
-              <VStack px={4} space={2} alignItems="center">
-                <Button colorScheme={accentColorScheme} onPress={onLogInPress}>
-                  {t("log_in")}
+              <View style={[ViewStyles.px4, ViewStyles.c, ViewStyles.mb4]}>
+                <Button style={[{ backgroundColor: accentColor }]} onPress={onLogInPress}>
+                  <Text style={[TextStyles.p, reverseTextColor]}>{t("log_in")}</Text>
                 </Button>
-              </VStack>
+              </View>
             )}
             {sessionToken.length > 0 && (
-              <VStack px={4} space={2} alignItems="center">
-                <TransformPressable onPress={onLogOutPress}>
-                  <Skeleton w={16} h={16} rounded="full" isLoaded={!!icon}>
-                    <Avatar
-                      size="lg"
-                      bg="gray.100"
-                      _dark={{ bg: "gray.700" }}
-                      source={{
-                        uri: icon,
-                      }}
-                    />
-                  </Skeleton>
-                </TransformPressable>
-                <HStack space={2} alignSelf="center">
-                  {catalogLevel.length > 0 && <Badge colorScheme="lightBlue">{catalogLevel}</Badge>}
-                  {level.length > 0 && <Badge colorScheme="green">{level}</Badge>}
-                  {rank.length > 0 && <Badge colorScheme="orange">{rank}</Badge>}
-                  {grade.length > 0 && <Badge colorScheme="amber">{t(grade)}</Badge>}
-                </HStack>
-              </VStack>
+              <View style={[ViewStyles.v, ViewStyles.c, ViewStyles.px4, ViewStyles.mb4]}>
+                <Avatar
+                  size={64}
+                  source={
+                    icon.length > 0
+                      ? {
+                          uri: icon,
+                        }
+                      : undefined
+                  }
+                  onPress={onLogOutPress}
+                  style={ViewStyles.mb2}
+                />
+                <View style={ViewStyles.h}>
+                  {catalogLevel.length > 0 && (
+                    <Badge color={Color.Shiver} title={catalogLevel} style={ViewStyles.mr1} />
+                  )}
+                  {level.length > 0 && (
+                    <Badge color={Color.RegularBattle} title={level} style={ViewStyles.mr1} />
+                  )}
+                  {rank.length > 0 && (
+                    <Badge color={Color.AnarchyBattle} title={rank} style={ViewStyles.mr1} />
+                  )}
+                  {grade.length > 0 && <Badge color={Color.SalmonRun} title={t(grade)} />}
+                </View>
+              </View>
             )}
-            <ScheduleView t={t} accentColor={accentColor} schedules={schedules} />
-            {sessionToken.length > 0 && <FriendView accentColor={accentColor} friends={friends} />}
+            <ScheduleView t={t} schedules={schedules} style={ViewStyles.mb4} />
+            {sessionToken.length > 0 && <FriendView friends={friends} style={ViewStyles.mb4} />}
             {sessionToken.length > 0 && (
               <ResultView
                 t={t}
-                accentColor={accentColor}
                 isLoading={refreshing || loadingMore}
                 loadMore={loadMoreResults}
                 results={results}
+                style={ViewStyles.mb4}
               />
             )}
             {sessionToken.length > 0 && (
-              <ScrollView
-                horizontal
-                w="full"
-                flexGrow="unset"
-                showsHorizontalScrollIndicator={false}
-              >
-                <HStack space={2} px={4}>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={ViewStyles.mb4}>
+                <View style={[ViewStyles.h, ViewStyles.px4]}>
                   <ToolButton
                     isLoading={false}
                     isLoadingText=""
                     isDisabled={refreshing}
                     icon="download"
                     title={t("import")}
+                    style={ViewStyles.mr2}
                     onPress={onImportPress}
                   />
                   <ToolButton
@@ -619,161 +605,144 @@ const MainView = (props: MainViewProps) => {
                     title={t("export")}
                     onPress={onExportPress}
                   />
-                </HStack>
+                </View>
               </ScrollView>
             )}
-            <VStack space={2} px={4} alignItems="center">
-              <Text color="gray.400" _dark={{ color: "gray.500" }} textAlign="center">
+            <View style={[ViewStyles.v, ViewStyles.c, ViewStyles.px4]}>
+              <Text
+                style={[TextStyles.p, TextStyles.subtle, ViewStyles.mb2, { textAlign: "center" }]}
+              >
                 {t("disclaimer")}
               </Text>
-              <VStack space={0} alignItems="center">
+              <View style={[ViewStyles.v, ViewStyles.c]}>
                 <Text
-                  color="gray.400"
-                  _dark={{ color: "gray.500" }}
+                  style={[TextStyles.p, TextStyles.subtle]}
                 >{`${Application.applicationName} ${Application.nativeApplicationVersion} (${Application.nativeBuildVersion})`}</Text>
-                <HStack space={2}>
-                  <Link
-                    _text={{
-                      color: "gray.400",
-                      _dark: {
-                        color: "gray.500",
-                      },
-                    }}
-                    href="https://github.com/zhxie/conch-bay/issues/new"
+                <View style={[ViewStyles.hc]}>
+                  <Text
+                    style={[TextStyles.p, TextStyles.link, TextStyles.subtle, ViewStyles.mr2]}
+                    onPress={() => Linking.openURL("https://github.com/zhxie/conch-bay/issues/new")}
                   >
                     {t("feedback")}
-                  </Link>
-                  <Link
-                    _text={{
-                      color: "gray.400",
-                      _dark: {
-                        color: "gray.500",
-                      },
-                    }}
-                    href="https://github.com/zhxie/conch-bay/wiki/Privacy-Policy"
+                  </Text>
+                  <Text
+                    style={[TextStyles.p, TextStyles.link, TextStyles.subtle, ViewStyles.mr2]}
+                    onPress={() =>
+                      Linking.openURL("https://github.com/zhxie/conch-bay/wiki/Privacy-Policy")
+                    }
                   >
                     {t("privacy_policy")}
-                  </Link>
-                  <Pressable onPress={onAcknowledgmentsPress}>
-                    <Text underline color="gray.400" _dark={{ color: "gray.500" }}>
-                      {t("acknowledgments")}
-                    </Text>
-                  </Pressable>
-                </HStack>
-              </VStack>
-            </VStack>
-          </VStack>
+                  </Text>
+                  <Text
+                    style={[TextStyles.p, TextStyles.link, TextStyles.subtle]}
+                    onPress={onAcknowledgmentsPress}
+                  >
+                    {t("acknowledgments")}
+                  </Text>
+                </View>
+              </View>
+            </View>
+          </SafeAreaView>
         </ScrollView>
-      </PresenceTransition>
-      <Modal
-        isOpen={logIn}
-        onClose={onLogInClose}
-        avoidKeyboard
-        justifyContent="flex-end"
-        safeArea
-        size="lg"
-      >
-        <Modal.Content>
-          <Modal.Body>
-            <VStack space={4} alignItems="center">
-              <WarningIcon size="4xl" />
-              <Text lineHeight="sm">{t("log_in_notice")}</Text>
-              <VStack space={2} alignItems="center">
-                <Button
-                  colorScheme={accentColorScheme}
-                  variant="subtle"
-                  onPress={onPrivacyPolicyPress}
-                >
-                  {t("imink_privacy_policy")}
-                </Button>
-                <Button
-                  colorScheme={accentColorScheme}
-                  isLoading={loggingIn}
-                  isLoadingText={t("logging_in")}
-                  onPress={onLogInContinuePress}
-                >
-                  {t("log_in_continue")}
-                </Button>
-              </VStack>
-            </VStack>
-          </Modal.Body>
-        </Modal.Content>
+      </Animated.View>
+      <Modal isVisible={logIn} onClose={onLogInClose} style={ViewStyles.modal1d}>
+        <View style={[ViewStyles.v, ViewStyles.c]}>
+          <Feather
+            name="alert-circle"
+            size={48}
+            color={Color.MiddleTerritory}
+            style={ViewStyles.mb4}
+          />
+          <Text style={[TextStyles.p, ViewStyles.mb4, textColor]}>{t("log_in_notice")}</Text>
+          <View style={[ViewStyles.vc, { width: "100%" }]}>
+            <Button
+              style={[
+                ViewStyles.mb2,
+                { borderColor: accentColor, borderWidth: 2 },
+                backgroundStyle,
+              ]}
+              textStyle={textColor}
+              onPress={onPrivacyPolicyPress}
+            >
+              <Text style={textColor}>{t("imink_privacy_policy")}</Text>
+            </Button>
+            <Button
+              isLoading={loggingIn}
+              isLoadingText={t("logging_in")}
+              style={[{ backgroundColor: accentColor }]}
+              textStyle={reverseTextColor}
+              onPress={onLogInContinuePress}
+            >
+              <Text style={reverseTextColor}>{t("log_in_continue")}</Text>
+            </Button>
+          </View>
+        </View>
+      </Modal>
+      <Modal isVisible={logOut} onClose={onLogOutClose} style={ViewStyles.modal1d}>
+        <View style={[ViewStyles.v, ViewStyles.c]}>
+          <Feather
+            name="alert-circle"
+            size={48}
+            color={Color.MiddleTerritory}
+            style={ViewStyles.mb4}
+          />
+          <Text style={[TextStyles.p, ViewStyles.mb4, textColor]}>{t("log_out_notice")}</Text>
+          <Button
+            isLoading={loggingOut}
+            isLoadingText={t("logging_out")}
+            style={[{ width: "100%", backgroundColor: accentColor }]}
+            textStyle={reverseTextColor}
+            onPress={onLogOutContinuePress}
+          >
+            <Text style={reverseTextColor}>{t("log_out_continue")}</Text>
+          </Button>
+        </View>
       </Modal>
       <Modal
-        isOpen={logOut}
-        onClose={onLogOutClose}
-        avoidKeyboard
-        justifyContent="flex-end"
-        safeArea
-        size="lg"
-      >
-        <Modal.Content>
-          <Modal.Body>
-            <VStack space={4} alignItems="center">
-              <WarningIcon size="4xl" />
-              <Text lineHeight="sm">{t("log_out_notice")}</Text>
-              <VStack space={2} alignItems="center">
-                <Button
-                  colorScheme={accentColorScheme}
-                  isLoading={loggingOut}
-                  isLoadingText={t("logging_out")}
-                  onPress={onLogOutContinuePress}
-                >
-                  {t("log_out_continue")}
-                </Button>
-              </VStack>
-            </VStack>
-          </Modal.Body>
-        </Modal.Content>
-      </Modal>
-      <Modal
-        isOpen={acknowledgments}
+        isVisible={acknowledgments}
         onClose={onAcknowledgmentsClose}
-        avoidKeyboard
-        justifyContent="flex-end"
-        safeArea
-        size="lg"
+        style={ViewStyles.modal1d}
       >
-        <Modal.Content>
-          <Modal.Body>
-            <VStack space={3} alignItems="center">
-              <VStack space={2} alignItems="center">
-                <Text fontSize="md">{t("creators")}</Text>
-                <HStack space={2} alignSelf="center">
-                  <TransformPressable>
-                    <Avatar
-                      size="md"
-                      bg="gray.100"
-                      _dark={{ bg: "gray.700" }}
-                      source={{
-                        uri: "https://cdn-image-e0d67c509fb203858ebcb2fe3f88c2aa.baas.nintendo.com/1/1afd1450a5a5ebec",
-                      }}
-                    />
-                  </TransformPressable>
-                  <TransformPressable>
-                    <Avatar
-                      size="md"
-                      bg="gray.100"
-                      _dark={{ bg: "gray.700" }}
-                      source={{
-                        uri: "https://cdn-image-e0d67c509fb203858ebcb2fe3f88c2aa.baas.nintendo.com/1/4b98d8291ae60b8c",
-                      }}
-                    />
-                  </TransformPressable>
-                </HStack>
-              </VStack>
-              <VStack space={2} alignItems="center">
-                <Text fontSize="md">{t("license")}</Text>
-                <VStack space={1} alignItems="center">
-                  <Link href="https://splatoon3.ink/">Splatoon3.ink</Link>
-                  <Link href="https://github.com/imink-app/f-API">imink f API</Link>
-                </VStack>
-              </VStack>
-            </VStack>
-          </Modal.Body>
-        </Modal.Content>
+        <View style={ViewStyles.vc}>
+          <View style={[ViewStyles.v, ViewStyles.c, ViewStyles.mb3]}>
+            <Text style={[TextStyles.h3, ViewStyles.mb2, textColor]}>{t("creators")}</Text>
+            <View style={ViewStyles.hc}>
+              <Avatar
+                size={48}
+                source={{
+                  uri: "https://cdn-image-e0d67c509fb203858ebcb2fe3f88c2aa.baas.nintendo.com/1/1afd1450a5a5ebec",
+                }}
+                style={ViewStyles.mr2}
+              />
+              <Avatar
+                size={48}
+                source={{
+                  uri: "https://cdn-image-e0d67c509fb203858ebcb2fe3f88c2aa.baas.nintendo.com/1/4b98d8291ae60b8c",
+                }}
+                style={ViewStyles.mr2}
+              />
+            </View>
+          </View>
+          <View style={[ViewStyles.v, ViewStyles.c]}>
+            <Text style={[TextStyles.h3, ViewStyles.mb2, textColor]}>{t("license")}</Text>
+            <View style={[ViewStyles.v, ViewStyles.c]}>
+              <Text
+                style={[TextStyles.p, TextStyles.link, ViewStyles.mb1, textColor]}
+                onPress={() => Linking.openURL("https://splatoon3.ink/")}
+              >
+                Splatoon3.ink
+              </Text>
+              <Text
+                style={[TextStyles.p, TextStyles.link, textColor]}
+                onPress={() => Linking.openURL("https://github.com/imink-app/f-API")}
+              >
+                imink f API
+              </Text>
+            </View>
+          </View>
+        </View>
       </Modal>
-    </VStack>
+    </View>
   );
 };
 

@@ -18,6 +18,7 @@ const ja = {
   loaded_n_results_fail_failed_skip_skipped:
     "%{n}件のリザルトを読み込み、%{fail}件は失敗、%{skip}件はスキップしました",
   load_more: "もっと読み込む",
+  loading_more: "もっと読み込む中",
   import: "インポート",
   export: "エクスポート",
   exporting: "エクスポート中",
@@ -43,6 +44,7 @@ const ja = {
   "VnNNb2RlLTY=": "フェスマッチ",
   "VnNNb2RlLTc=": "フェスマッチ",
   "VnNNb2RlLTg=": "フェスマッチ",
+  VnNNb2RlLTUx: "バンカラマッチ",
   CHALLENGE: "チャレンジ",
   OPEN: "オープン",
   salmon_run: "サーモンラン",

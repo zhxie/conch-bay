@@ -18,6 +18,7 @@ const en = {
   loaded_n_results_fail_failed_skip_skipped:
     "Loaded %{n} result(s), %{fail} failed, %{skip} skipped",
   load_more: "Load more",
+  loading_more: "Loading more",
   import: "Import",
   export: "Export",
   exporting: "Exporting",
@@ -43,6 +44,7 @@ const en = {
   "VnNNb2RlLTY=": "Splatfest Battle",
   "VnNNb2RlLTc=": "Splatfest Battle",
   "VnNNb2RlLTg=": "Splatfest Battle",
+  VnNNb2RlLTUx: "Anarchy Battle",
   CHALLENGE: "Series",
   OPEN: "Open",
   salmon_run: "Salmon Run",

@@ -1,30 +1,45 @@
-import dayjs from "dayjs";
-import { CircleIcon, HStack, Modal, ScrollView, Text, VStack } from "native-base";
-import { ColorType } from "native-base/lib/typescript/components/types";
 import { useState } from "react";
-import { ScheduleBox, ScheduleButton, ShiftBox } from "../components";
 import {
-  AnarchyMatchSetting,
-  Color,
-  CoopWeapon,
-  Splatfest,
-  RegularMatchSetting,
-  Schedule,
-  Schedules,
-  Shift,
-  SplatfestMatchSetting,
-  VsStage,
-  XMatchSetting,
-} from "../models";
+  ScrollView,
+  StyleProp,
+  StyleSheet,
+  Text,
+  useColorScheme,
+  View,
+  ViewStyle,
+} from "react-native";
+import {
+  Modal,
+  ScheduleBox,
+  ScheduleButton,
+  ShiftBox,
+  TextStyles,
+  ViewStyles,
+} from "../components";
+import { Color, CoopWeapon, Splatfest, Schedule, Schedules, Shift, VsStage } from "../models";
+import {
+  getCoopStage,
+  getCoopStageId,
+  getCoopWeapons,
+  getMatchSetting,
+  getShiftSetting,
+  getSplatfestStage,
+  getSplatfestStageId,
+  getTimeRange,
+  getVsRuleId,
+  getVsStageIds,
+  getVsStages,
+  isStarted,
+} from "../utils/ui";
 
 interface ScheduleViewProps {
   t: (f: string, params?: Record<string, any>) => string;
-  accentColor: ColorType;
   schedules?: Schedules;
+  style?: StyleProp<ViewStyle>;
 }
 interface DisplayProps {
   title: string;
-  color: ColorType;
+  color: string;
   splatfest?: Splatfest;
   schedules?: Schedule[];
   shifts?: Shift[];
@@ -34,106 +49,30 @@ interface DisplayProps {
 const ScheduleView = (props: ScheduleViewProps) => {
   const { t } = props;
 
+  const colorScheme = useColorScheme();
+  const accentColor = colorScheme === "light" ? Color.Shiver : Color.Frye;
+
   const [display, setDisplay] = useState<DisplayProps | undefined>(undefined);
   const [displaySplatfest, setDisplaySplatfest] = useState(false);
   const [displaySchedules, setDisplaySchedules] = useState(false);
   const [displayShifts, setDisplayShifts] = useState(false);
 
-  const getMatchSetting = (schedule: Schedule, index?: number) => {
-    const regularMatchSetting = schedule["regularMatchSetting"];
-    if (regularMatchSetting !== undefined) {
-      return regularMatchSetting as RegularMatchSetting | null;
-    }
-    const anarchyMatchSettings = schedule["bankaraMatchSettings"];
-    if (anarchyMatchSettings !== undefined) {
-      if (anarchyMatchSettings === null) {
-        return null;
-      }
-      return (anarchyMatchSettings as AnarchyMatchSetting[])[index ?? 0];
-    }
-    const xMatchSetting = schedule["xMatchSetting"];
-    if (xMatchSetting !== undefined) {
-      return xMatchSetting as XMatchSetting | null;
-    }
-    const splatfestMatchSetting = schedule["festMatchSetting"];
-    if (splatfestMatchSetting !== undefined) {
-      return splatfestMatchSetting as SplatfestMatchSetting | null;
-    }
-    throw "unexpected match setting";
-  };
-  const getShiftSetting = (shift: Shift) => {
-    return shift.setting;
-  };
   const currentSplatfest = props.schedules?.currentFest?.tricolorStage
     ? props.schedules?.currentFest
     : undefined;
-  const splatfestSchedules = props.schedules?.festSchedules.nodes.filter((schedule) =>
-    getMatchSetting(schedule)
+  const splatfestSchedules = props.schedules?.festSchedules.nodes.filter((node) =>
+    getMatchSetting(node)
   );
-  const regularSchedules = props.schedules?.regularSchedules.nodes.filter((schedule) =>
-    getMatchSetting(schedule)
+  const regularSchedules = props.schedules?.regularSchedules.nodes.filter((node) =>
+    getMatchSetting(node)
   );
-  const anarchySchedules = props.schedules?.bankaraSchedules.nodes.filter((schedule) =>
-    getMatchSetting(schedule)
+  const anarchySchedules = props.schedules?.bankaraSchedules.nodes.filter((node) =>
+    getMatchSetting(node)
   );
-  const xSchedules = props.schedules?.xSchedules.nodes.filter((schedule) =>
-    getMatchSetting(schedule)
-  );
+  const xSchedules = props.schedules?.xSchedules.nodes.filter((node) => getMatchSetting(node));
   const bigRunShifts = props.schedules?.coopGroupingSchedule.bigRunSchedules.nodes;
   const regularShifts = props.schedules?.coopGroupingSchedule.regularSchedules.nodes;
 
-  const isStarted = (schedule: Schedule) => {
-    const now = new Date().getTime();
-    const date = new Date(schedule["startTime"]);
-    const timestamp = date.getTime();
-    return timestamp <= now;
-  };
-  const getRule = (schedule: Schedule, index?: number) => {
-    const setting = getMatchSetting(schedule, index)!;
-    return t(setting.vsRule.id);
-  };
-  const getSplatfestStage = (splatfest: Splatfest) => {
-    return splatfest.tricolorStage!;
-  };
-  const getSplatfestStageTitle = (splatfest: Splatfest) => {
-    const stage = getSplatfestStage(splatfest);
-    return t(stage.id);
-  };
-  const getStages = (schedule: Schedule, index?: number) => {
-    const setting = getMatchSetting(schedule, index)!;
-    return setting.vsStages;
-  };
-  const getStageTitles = (schedule: Schedule, index?: number) => {
-    const stages = getStages(schedule, index);
-    let result: string[] = [];
-    for (let stage of stages) {
-      result.push(t(stage.id));
-    }
-    return result;
-  };
-  const getCoopStage = (shift: Shift) => {
-    const setting = getShiftSetting(shift);
-    return setting["coopStage"];
-  };
-  const getCoopStageTitle = (shift: Shift) => {
-    const stage = getCoopStage(shift);
-    return t(stage["id"]);
-  };
-  const getWeapons = (shift: Shift) => {
-    const setting = getShiftSetting(shift);
-    return setting.weapons;
-  };
-  const getTimeRange = (schedule: Schedule, withDate: boolean) => {
-    let format = "HH:mm";
-    if (withDate) {
-      format = "M/DD HH:mm";
-    }
-
-    const startTime = dayjs(schedule.startTime).format(format);
-    const endTime = dayjs(schedule.endTime).format(format);
-
-    return `${startTime} - ${endTime}`;
-  };
   const formatStage = (stage: VsStage) => {
     return {
       title: t(stage.id),
@@ -147,7 +86,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
   const onCurrentSplatfestPress = () => {
     setDisplay({
       title: t("tricolor_battle"),
-      color: props.accentColor,
+      color: accentColor,
       splatfest: currentSplatfest,
     });
     setDisplaySplatfest(true);
@@ -155,7 +94,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
   const onSplatfestSchedulePress = () => {
     setDisplay({
       title: t("splatfest_battle"),
-      color: props.accentColor,
+      color: accentColor,
       schedules: splatfestSchedules,
     });
     setDisplaySchedules(true);
@@ -221,205 +160,183 @@ const ScheduleView = (props: ScheduleViewProps) => {
   };
 
   return (
-    <ScrollView horizontal w="100%" flexGrow="unset" showsHorizontalScrollIndicator={false}>
-      <HStack space={2} px={4}>
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      style={[{ width: "100%" }, props.style]}
+    >
+      <View style={[ViewStyles.h, ViewStyles.px4]}>
         {!props.schedules &&
           new Array(8).fill(0).map((_, i) => {
             return (
               <ScheduleButton
                 key={i}
-                color="primary"
-                isLoaded={false}
-                isValid={false}
                 rule=""
                 stages={[]}
+                style={i !== 7 ? ViewStyles.mr2 : undefined}
               />
             );
           })}
         {currentSplatfest && (
           <ScheduleButton
-            color={props.accentColor}
-            isLoaded={!!currentSplatfest}
-            isValid={isStarted(currentSplatfest)}
+            color={isStarted(currentSplatfest) ? accentColor : undefined}
             rule={t("VnNSdWxlLTU=")}
-            stages={[getSplatfestStageTitle(currentSplatfest)]}
+            stages={[t(getSplatfestStageId(currentSplatfest))]}
             onPress={onCurrentSplatfestPress}
+            style={ViewStyles.mr2}
           />
         )}
         {splatfestSchedules?.at(0) && (
           <ScheduleButton
-            color={props.accentColor}
-            isLoaded={!!splatfestSchedules[0]}
-            isValid={isStarted(splatfestSchedules[0])}
-            rule={getRule(splatfestSchedules[0])}
-            stages={getStageTitles(splatfestSchedules[0])}
+            color={isStarted(splatfestSchedules[0]) ? accentColor : undefined}
+            rule={t(getVsRuleId(splatfestSchedules[0]))}
+            stages={getVsStageIds(splatfestSchedules[0]).map((schedule) => t(schedule))}
             onPress={onSplatfestSchedulePress}
+            style={ViewStyles.mr2}
           />
         )}
         {regularSchedules?.at(0) && (
           <ScheduleButton
-            color={Color.RegularBattle}
-            isLoaded={!!regularSchedules[0]}
-            isValid={isStarted(regularSchedules[0])}
-            rule={getRule(regularSchedules[0])}
-            stages={getStageTitles(regularSchedules[0])}
+            color={isStarted(regularSchedules[0]) ? Color.RegularBattle : undefined}
+            rule={t(getVsRuleId(regularSchedules[0]))}
+            stages={getVsStageIds(regularSchedules[0]).map((schedule) => t(schedule))}
             onPress={onRegularSchedulePress}
+            style={ViewStyles.mr2}
           />
         )}
         {anarchySchedules?.at(0) && (
           <ScheduleButton
-            color={Color.AnarchyBattle}
-            isLoaded={!!anarchySchedules[0]}
-            isValid={isStarted(anarchySchedules[0])}
-            rule={getRule(anarchySchedules[0], 0)}
-            stages={getStageTitles(anarchySchedules[0], 1)}
+            color={isStarted(anarchySchedules[0]) ? Color.AnarchyBattle : undefined}
+            rule={t(getVsRuleId(anarchySchedules[0], 0))}
+            stages={getVsStageIds(anarchySchedules[0], 0).map((schedule) => t(schedule))}
             onPress={onAnarchySeriesSchedulePress}
+            style={ViewStyles.mr2}
           />
         )}
         {anarchySchedules?.at(0) && (
           <ScheduleButton
-            color={Color.AnarchyBattle}
-            isLoaded={!!anarchySchedules[0]}
-            isValid={isStarted(anarchySchedules[0])}
-            rule={getRule(anarchySchedules[0], 1)}
-            stages={getStageTitles(anarchySchedules[0], 1)}
+            color={isStarted(anarchySchedules[0]) ? Color.AnarchyBattle : undefined}
+            rule={t(getVsRuleId(anarchySchedules[0], 1))}
+            stages={getVsStageIds(anarchySchedules[0], 1).map((schedule) => t(schedule))}
             onPress={onAnarchyOpenSchedulePress}
+            style={ViewStyles.mr2}
           />
         )}
         {xSchedules?.at(0) && (
           <ScheduleButton
-            color={Color.XBattle}
-            isLoaded={!!xSchedules[0]}
-            isValid={isStarted(xSchedules[0])}
-            rule={getRule(xSchedules[0])}
-            stages={getStageTitles(xSchedules[0])}
+            color={isStarted(xSchedules[0]) ? Color.XBattle : undefined}
+            rule={t(getVsRuleId(xSchedules[0]))}
+            stages={getVsStageIds(xSchedules[0]).map((schedule) => t(schedule))}
             onPress={onXSchedulePress}
+            style={ViewStyles.mr2}
           />
         )}
         {bigRunShifts?.at(0) && (
           <ScheduleButton
-            color={Color.BigRun}
-            isLoaded={!!bigRunShifts[0]}
-            isValid={isStarted(bigRunShifts[0])}
+            color={isStarted(bigRunShifts[0]) ? Color.BigRun : undefined}
             rule={t("big_run")}
-            stages={[getCoopStageTitle(bigRunShifts[0])]}
+            stages={[t(getCoopStageId(bigRunShifts[0]))]}
             onPress={onBigRunShiftPress}
+            style={ViewStyles.mr2}
           />
         )}
         {regularShifts?.at(0) && (
           <ScheduleButton
-            color={Color.SalmonRun}
-            isLoaded={!!regularShifts[0]}
-            isValid={isStarted(regularShifts[0])}
+            color={isStarted(regularShifts[0]) ? Color.SalmonRun : undefined}
             rule={t("salmon_run")}
-            stages={[getCoopStageTitle(regularShifts[0])]}
+            stages={[t(getCoopStageId(regularShifts[0]))]}
             onPress={onRegularShiftPress}
           />
         )}
-      </HStack>
+      </View>
       <Modal
-        isOpen={displaySplatfest}
+        isVisible={displaySplatfest}
         onClose={onDisplaySplatfestClose}
-        avoidKeyboard
-        justifyContent="flex-end"
-        safeArea
-        size="xl"
+        style={ViewStyles.modal2d}
       >
-        <Modal.Content maxH="xl">
-          <Modal.Body>
-            <VStack space={4} alignItems="center">
-              <HStack space={2} alignItems="center">
-                <CircleIcon size={3} color={display?.color} />
-                <Text bold fontSize="md" color={display?.color} noOfLines={1}>
-                  {display?.title}
-                </Text>
-              </HStack>
-              {display?.splatfest && (
-                <VStack flex={1} space={2} alignItems="center">
-                  <ScheduleBox
-                    rule={t("VnNSdWxlLTU=")}
-                    time={getTimeRange(display.splatfest, true)}
-                    stages={[formatStage(getSplatfestStage(display.splatfest))]}
-                  />
-                </VStack>
-              )}
-            </VStack>
-          </Modal.Body>
-        </Modal.Content>
+        <View style={ViewStyles.vc}>
+          <View style={[ViewStyles.mb4, ViewStyles.h, ViewStyles.c]}>
+            <View style={[ViewStyles.mr2, styles.circle, { backgroundColor: display?.color }]} />
+            <Text numberOfLines={1} style={[TextStyles.h2, { color: display?.color }]}>
+              {display?.title}
+            </Text>
+          </View>
+          {display?.splatfest && (
+            <View style={[ViewStyles.f, ViewStyles.vc]}>
+              <ScheduleBox
+                rule={t("VnNSdWxlLTU=")}
+                time={getTimeRange(display.splatfest, true)}
+                stages={[formatStage(getSplatfestStage(display.splatfest))]}
+              />
+            </View>
+          )}
+        </View>
       </Modal>
       <Modal
-        isOpen={displaySchedules}
+        isVisible={displaySchedules}
         onClose={onDisplaySchedulesClose}
-        avoidKeyboard
-        justifyContent="flex-end"
-        safeArea
-        size="xl"
+        style={ViewStyles.modal2d}
       >
-        <Modal.Content maxH="xl">
-          <Modal.Body>
-            <VStack space={4} alignItems="center">
-              <HStack space={2} alignItems="center">
-                <CircleIcon size={3} color={display?.color} />
-                <Text bold fontSize="md" color={display?.color} noOfLines={1}>
-                  {display?.title}
-                </Text>
-              </HStack>
-              {display?.schedules && (
-                <VStack flex={1} space={2} alignItems="center">
-                  {display.schedules
-                    .filter((schedule) => getMatchSetting(schedule, display.index))
-                    .map((schedule, i) => (
-                      <ScheduleBox
-                        key={i}
-                        rule={getRule(schedule, display.index)}
-                        time={getTimeRange(schedule, false)}
-                        stages={getStages(schedule, display.index).map(formatStage)}
-                      />
-                    ))}
-                </VStack>
-              )}
-            </VStack>
-          </Modal.Body>
-        </Modal.Content>
+        <View style={ViewStyles.vc}>
+          <View style={[ViewStyles.mb4, ViewStyles.h, ViewStyles.c]}>
+            <View style={[ViewStyles.mr2, styles.circle, { backgroundColor: display?.color }]} />
+            <Text numberOfLines={1} style={[TextStyles.h2, { color: display?.color }]}>
+              {display?.title}
+            </Text>
+          </View>
+          {display?.schedules && (
+            <View style={[ViewStyles.f, ViewStyles.vc]}>
+              {display.schedules
+                .filter((schedule) => getMatchSetting(schedule, display.index))
+                .map((schedule, i) => (
+                  <ScheduleBox
+                    key={i}
+                    rule={t(getVsRuleId(schedule, display.index))}
+                    time={getTimeRange(schedule, false)}
+                    stages={getVsStages(schedule, display.index).map(formatStage)}
+                    style={i !== display.schedules!.length - 1 ? ViewStyles.mb2 : undefined}
+                  />
+                ))}
+            </View>
+          )}
+        </View>
       </Modal>
-      <Modal
-        isOpen={displayShifts}
-        onClose={onDisplayShiftsClose}
-        avoidKeyboard
-        justifyContent="flex-end"
-        safeArea
-        size="xl"
-      >
-        <Modal.Content maxH="xl">
-          <Modal.Body>
-            <VStack space={4} alignItems="center">
-              <HStack space={2} alignItems="center">
-                <CircleIcon size={3} color={display?.color} />
-                <Text bold fontSize="md" color={display?.color} noOfLines={1}>
-                  {display?.title}
-                </Text>
-              </HStack>
-              {display?.shifts && (
-                <VStack flex={1} space={2} alignItems="center">
-                  {display.shifts
-                    .filter((shift) => getShiftSetting(shift))
-                    .map((shift, i) => (
-                      <ShiftBox
-                        key={i}
-                        rule={display.title}
-                        time={getTimeRange(shift, true)}
-                        stage={formatStage(getCoopStage(shift))}
-                        weapons={getWeapons(shift).map(formatWeapon)}
-                      />
-                    ))}
-                </VStack>
-              )}
-            </VStack>
-          </Modal.Body>
-        </Modal.Content>
+      <Modal isVisible={displayShifts} onClose={onDisplayShiftsClose} style={ViewStyles.modal2d}>
+        <View style={ViewStyles.vc}>
+          <View style={[ViewStyles.mb4, ViewStyles.h, ViewStyles.c]}>
+            <View style={[ViewStyles.mr2, styles.circle, { backgroundColor: display?.color }]} />
+            <Text numberOfLines={1} style={[TextStyles.h2, { color: display?.color }]}>
+              {display?.title}
+            </Text>
+          </View>
+          {display?.shifts && (
+            <View style={[ViewStyles.f, ViewStyles.vc]}>
+              {display.shifts
+                .filter((shift) => getShiftSetting(shift))
+                .map((shift, i) => (
+                  <ShiftBox
+                    key={i}
+                    rule={display.title}
+                    time={getTimeRange(shift, true)}
+                    stage={formatStage(getCoopStage(shift))}
+                    weapons={getCoopWeapons(shift).map(formatWeapon)}
+                    style={i !== display.shifts!.length - 1 ? ViewStyles.mb2 : undefined}
+                  />
+                ))}
+            </View>
+          )}
+        </View>
       </Modal>
     </ScrollView>
   );
 };
+
+const styles = StyleSheet.create({
+  circle: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+  },
+});
 
 export default ScheduleView;

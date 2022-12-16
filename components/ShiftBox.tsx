@@ -1,4 +1,5 @@
-import { AspectRatio, HStack, Image, Spacer, Text, VStack } from "native-base";
+import { Image, StyleProp, StyleSheet, Text, useColorScheme, View, ViewStyle } from "react-native";
+import { TextStyles, ViewStyles } from "./Styles";
 
 interface StageProps {
   title: string;
@@ -9,46 +10,78 @@ interface ScheduleBoxProps {
   time: string;
   stage: StageProps;
   weapons: string[];
+  style?: StyleProp<ViewStyle>;
 }
 
 const ShiftBox = (props: ScheduleBoxProps) => {
-  const { rule, time, stage, weapons } = props;
+  const colorScheme = useColorScheme();
+  const textStyle = colorScheme === "light" ? TextStyles.light : TextStyles.dark;
+  const imageStyle = colorScheme === "light" ? ViewStyles.lightTerritory : ViewStyles.darkTerritory;
 
   return (
-    <VStack flex={1} space={1} alignItems="center">
-      <HStack flex={1} space={1} alignSelf="center">
-        <Text bold>{rule}</Text>
-        <Spacer />
-        <Text color="gray.400">{time}</Text>
-      </HStack>
-      <HStack flex={1} space={2} alignSelf="center" alignItems="center">
-        <VStack flex={1} space={1} alignItems="center">
-          <AspectRatio ratio={16 / 9} w="full">
+    <View style={[ViewStyles.f, ViewStyles.h, props.style]}>
+      <View style={[ViewStyles.f, ViewStyles.vc]}>
+        <View style={[ViewStyles.mb1, ViewStyles.f, ViewStyles.hc]}>
+          <Text numberOfLines={1} style={[TextStyles.b, textStyle]}>
+            {props.rule}
+          </Text>
+          <View style={[ViewStyles.f, styles.subtitle]}>
+            <Text numberOfLines={1} style={[TextStyles.subtle]}>
+              {props.time}
+            </Text>
+          </View>
+        </View>
+        <View style={[ViewStyles.f, ViewStyles.hc]}>
+          <View style={[ViewStyles.mr2, ViewStyles.f, ViewStyles.v, ViewStyles.c]}>
             <Image
               source={{
-                uri: stage.image,
+                uri: props.stage.image,
               }}
-              alt={stage.title}
-              bg="gray.100"
-              _dark={{ bg: "gray.700" }}
-              rounded="lg"
+              style={[ViewStyles.mb1, ViewStyles.r, imageStyle, styles.stage]}
             />
-          </AspectRatio>
-          <Text>{stage.title}</Text>
-        </VStack>
-        <VStack flex={1} space={1} alignItems="center">
-          <HStack flex={1} alignSelf="center" alignItems="center">
-            {weapons.map((weapon, i) => (
-              <AspectRatio key={i} flex={1} ratio={1} w="full">
-                <Image source={{ uri: weapon }} alt="" rounded="full" />
-              </AspectRatio>
-            ))}
-          </HStack>
-          <Text> </Text>
-        </VStack>
-      </HStack>
-    </VStack>
+            <Text numberOfLines={1} style={[TextStyles.p, textStyle]}>
+              {props.stage.title}
+            </Text>
+          </View>
+          <View style={[ViewStyles.mb1, ViewStyles.f, ViewStyles.v, ViewStyles.c]}>
+            <View style={[ViewStyles.h, ViewStyles.c]}>
+              {props.weapons.map((weapon, i) => (
+                <Image
+                  key={i}
+                  source={{
+                    uri: weapon,
+                  }}
+                  style={[
+                    i !== props.weapons.length - 1 ? ViewStyles.mr1 : undefined,
+                    ViewStyles.f,
+                    styles.weapon,
+                  ]}
+                />
+              ))}
+            </View>
+            <Text numberOfLines={1} style={[TextStyles.p, textStyle]}>
+              {" "}
+            </Text>
+          </View>
+        </View>
+      </View>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  subtitle: {
+    flexDirection: "row-reverse",
+    alignItems: "center",
+  },
+  stage: {
+    width: "100%",
+    aspectRatio: 16 / 9,
+  },
+  weapon: {
+    width: "100%",
+    aspectRatio: 1 / 1,
+  },
+});
 
 export default ShiftBox;

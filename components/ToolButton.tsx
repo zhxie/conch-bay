@@ -1,5 +1,8 @@
 import { Feather } from "@expo/vector-icons";
-import { Button, Center, HStack, Icon, Text } from "native-base";
+import { ActivityIndicator, StyleProp, Text, useColorScheme, View, ViewStyle } from "react-native";
+import { Color } from "../models";
+import Pressable from "./Pressable";
+import { TextStyles, ViewStyles } from "./Styles";
 
 interface ToolButtonProps {
   isDisabled: boolean;
@@ -7,31 +10,40 @@ interface ToolButtonProps {
   isLoadingText: string;
   icon: string;
   title: string;
+  style?: StyleProp<ViewStyle>;
   onPress?: () => void;
 }
 
 const ToolButton = (props: ToolButtonProps) => {
+  const colorScheme = useColorScheme();
+  const textStyle = colorScheme === "light" ? TextStyles.light : TextStyles.dark;
+
   return (
-    <Button
-      fontSize="md"
-      isDisabled={props.isDisabled}
-      isLoading={props.isLoading}
-      isLoadingText={props.isLoadingText}
-      rounded="full"
-      colorScheme="gray"
-      variant="default"
+    <Pressable
+      isDisabled={props.isDisabled || props.isLoading}
+      style={[ViewStyles.p3, { height: 44, borderRadius: 22 }, props.style]}
       onPress={props.onPress}
-      _text={{ fontSize: "md" }}
     >
-      <HStack space={1} flex={1} alignSelf="center">
-        <Center>
-          <Icon as={Feather} name={props.icon} />
-        </Center>
-        <Text fontSize="md" noOfLines={1}>
-          {props.title}
+      <View style={[ViewStyles.hc]}>
+        {(() => {
+          if (props.isLoading) {
+            return <ActivityIndicator style={ViewStyles.mr1} />;
+          } else {
+            return (
+              <Feather
+                name={props.icon as any}
+                size={16}
+                color={Color.MiddleTerritory}
+                style={ViewStyles.mr1}
+              />
+            );
+          }
+        })()}
+        <Text numberOfLines={1} style={[TextStyles.h3, textStyle]}>
+          {props.isLoading ? props.isLoadingText : props.title}
         </Text>
-      </HStack>
-    </Button>
+      </View>
+    </Pressable>
   );
 };
 

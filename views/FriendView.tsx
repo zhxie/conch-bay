@@ -1,89 +1,49 @@
-import { Avatar, HStack, ScrollView, Skeleton } from "native-base";
-import { ColorType } from "native-base/lib/typescript/components/types";
-import { TransformPressable } from "../components";
-import { Color, Friend, Friends } from "../models";
+import { ScrollView, StyleProp, useColorScheme, View, ViewStyle } from "react-native";
+import { Avatar, ViewStyles } from "../components";
+import { Color, Friends } from "../models";
+import { getFriendColor } from "../utils/ui";
 
 interface FriendViewProps {
-  accentColor: ColorType;
   friends?: Friends;
+  style?: StyleProp<ViewStyle>;
 }
 
 const FriendView = (props: FriendViewProps) => {
-  const getBorderColor = (friend: Friend) => {
-    switch (friend.onlineState) {
-      case "VS_MODE_FIGHTING":
-      case "VS_MODE_MATCHING":
-        switch (friend.vsMode!.id) {
-          case "VnNNb2RlLTE=":
-            return Color.RegularBattle;
-          case "VnNNb2RlLTI=":
-            return Color.AnarchyBattle;
-          case "VnNNb2RlLTM=":
-            return Color.XBattle;
-          case "VnNNb2RlLTU=":
-            return Color.PrivateBattle;
-          case "VnNNb2RlLTY=":
-          case "VnNNb2RlLTc=":
-          case "VnNNb2RlLTg=":
-            return props.accentColor;
-        }
-        return "teal.300";
-      case "COOP_MODE_FIGHTING":
-      case "COOP_MODE_MATCHING":
-        switch (friend.coopRule!) {
-          case "REGULAR":
-            return Color.SalmonRun;
-          case "BIG_RUN":
-            return Color.BigRun;
-        }
-      case "ONLINE":
-        return "teal.300";
-      default:
-        return undefined;
-    }
-  };
-  const getBorderWidth = (friend: Friend) => {
-    switch (friend.onlineState) {
-      case "VS_MODE_FIGHTING":
-      case "COOP_MODE_FIGHTING":
-        return 3;
-      case "VS_MODE_MATCHING":
-      case "COOP_MODE_MATCHING":
-      case "ONLINE":
-        return 2;
-      default:
-        return 0;
-    }
-  };
+  const colorScheme = useColorScheme();
+  const accentColor = colorScheme === "light" ? Color.Shiver : Color.Frye;
 
   return (
-    <ScrollView horizontal w="100%" flexGrow="unset" showsHorizontalScrollIndicator={false}>
-      <HStack space={2} px={4}>
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      style={[{ width: "100%" }, props.style]}
+    >
+      <View style={[ViewStyles.hc, ViewStyles.px4]}>
         {(() => {
           if (props.friends) {
-            return props.friends.friends.nodes.map((friend) => (
-              <TransformPressable key={friend.id}>
-                <Avatar
-                  size="md"
-                  bg="gray.100"
-                  _dark={{ bg: "gray.700" }}
-                  source={{
-                    uri: friend.userIcon.url,
-                  }}
-                  borderColor={getBorderColor(friend)}
-                  borderWidth={getBorderWidth(friend)}
-                />
-              </TransformPressable>
+            return props.friends.friends.nodes.map((friend, i) => (
+              <Avatar
+                key={i}
+                size={48}
+                source={{
+                  uri: friend.userIcon.url,
+                }}
+                style={i !== props.friends!.friends.nodes.length - 1 ? ViewStyles.mr2 : undefined}
+                imageStyle={{
+                  borderColor: getFriendColor(friend, accentColor),
+                  borderWidth: 2,
+                }}
+              />
             ));
           } else {
-            return new Array(8).fill(0).map((_, i) => (
-              <TransformPressable key={i}>
-                <Skeleton w={12} h={12} rounded="full" />
-              </TransformPressable>
-            ));
+            return new Array(8)
+              .fill(0)
+              .map((_, i) => (
+                <Avatar key={i} size={48} style={i !== 7 ? ViewStyles.mr2 : undefined} />
+              ));
           }
         })()}
-      </HStack>
+      </View>
     </ScrollView>
   );
 };

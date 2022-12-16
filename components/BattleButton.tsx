@@ -1,13 +1,12 @@
-import { CircleIcon, HStack, Text } from "native-base";
-import { ColorType } from "native-base/lib/typescript/components/types";
+import { StyleProp, StyleSheet, Text, useColorScheme, View, ViewStyle } from "react-native";
 import ResultButton from "./ResultButton";
+import { TextStyles, ViewStyles } from "./Styles";
 
 interface BattleButtonProps {
-  color: ColorType;
-  isLoaded: boolean;
-  isFirst: boolean;
-  isLast: boolean;
-  result: number;
+  color: string;
+  isFirst?: boolean;
+  isLast?: boolean;
+  result?: number;
   rule: string;
   stage: string;
   weapon: string;
@@ -15,10 +14,14 @@ interface BattleButtonProps {
   assist?: number;
   death?: number;
   special?: number;
+  style?: StyleProp<ViewStyle>;
   onPress?: () => void;
 }
 
 const BattleButton = (props: BattleButtonProps) => {
+  const colorScheme = useColorScheme();
+  const textStyle = colorScheme === "light" ? TextStyles.light : TextStyles.dark;
+
   const killAndAssist =
     props.kill == undefined
       ? "-"
@@ -29,35 +32,45 @@ const BattleButton = (props: BattleButtonProps) => {
   return (
     <ResultButton
       color={props.color}
-      isLoaded={props.isLoaded}
       isFirst={props.isFirst}
       isLast={props.isLast}
       result={props.result}
       title={props.rule}
       subtitle={props.stage}
       subChildren={
-        <Text fontSize="sm" lineHeight="sm" noOfLines={1}>
+        <Text numberOfLines={1} style={[TextStyles.p, textStyle]}>
           {props.weapon}
         </Text>
       }
+      style={props.style}
       onPress={props.onPress}
     >
-      <HStack space={1} alignItems="center">
-        <CircleIcon size={2.5} color="green.500" />
-        <Text fontSize="sm" lineHeight="sm" noOfLines={1}>
-          {killAndAssist}
-        </Text>
-        <CircleIcon size={2.5} color="red.500" />
-        <Text fontSize="sm" lineHeight="sm" noOfLines={1}>
-          {props.death ?? "-"}
-        </Text>
-        <CircleIcon size={2.5} color="yellow.500" />
-        <Text fontSize="sm" lineHeight="sm" noOfLines={1}>
-          {props.special ?? "-"}
-        </Text>
-      </HStack>
+      {props.result !== undefined && (
+        <View style={ViewStyles.hc}>
+          <View style={[ViewStyles.mr1, styles.circle, { backgroundColor: "salmon" }]} />
+          <Text numberOfLines={1} style={[ViewStyles.mr1, TextStyles.p, textStyle]}>
+            {killAndAssist}
+          </Text>
+          <View style={[ViewStyles.mr1, styles.circle, { backgroundColor: "darkseagreen" }]} />
+          <Text numberOfLines={1} style={[ViewStyles.mr1, TextStyles.p, textStyle]}>
+            {props.death ?? "-"}
+          </Text>
+          <View style={[ViewStyles.mr1, styles.circle, { backgroundColor: "gold" }]} />
+          <Text numberOfLines={1} style={[TextStyles.p, textStyle]}>
+            {props.special ?? "-"}
+          </Text>
+        </View>
+      )}
     </ResultButton>
   );
 };
+
+const styles = StyleSheet.create({
+  circle: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+  },
+});
 
 export default BattleButton;

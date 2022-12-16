@@ -1,10 +1,25 @@
 enum Color {
-  RegularBattle = "green.500",
-  AnarchyBattle = "orange.600",
-  XBattle = "emerald.400",
-  PrivateBattle = "fuchsia.600",
-  SalmonRun = "orange.500",
-  BigRun = "purple.600",
+  // UI.
+  LightBackground = "#fafafa",
+  DarkBackground = "#18181b",
+  LightText = "black",
+  DarkText = "white",
+  LightTerritory = "#f4f4f5",
+  MiddleTerritory = "#a1a1aa",
+  DarkTerritory = "#3f3f46",
+  // Splatoon.
+  RegularBattle = "#22c55e",
+  AnarchyBattle = "#ea580c",
+  XBattle = "#34d399",
+  PrivateBattle = "#c026d3",
+  Shiver = "#0034ff",
+  Frye = "#ffff00",
+  BigMan = "#999999",
+  SalmonRun = "#f97316",
+  BigRun = "#9333ea",
+  Online = "#6af6cd",
+  Playing = "#f02d7d",
+  Working = "#f02d7d",
 }
 
 export default Color;

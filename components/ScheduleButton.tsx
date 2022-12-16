@@ -1,44 +1,71 @@
-import { Button, CircleIcon, HStack, Skeleton, Text, VStack } from "native-base";
-import { ColorType } from "native-base/lib/typescript/components/types";
+import { StyleProp, StyleSheet, Text, useColorScheme, View, ViewStyle } from "react-native";
+import Pressable from "./Pressable";
+import { TextStyles, ViewStyles } from "./Styles";
 
 interface ScheduleButtonProps {
-  color: ColorType;
-  isLoaded: boolean;
-  isValid: boolean;
   rule: string;
   stages: string[];
+  color?: string;
+  style?: StyleProp<ViewStyle>;
   onPress?: () => void;
 }
 
 const ScheduleButton = (props: ScheduleButtonProps) => {
+  const colorScheme = useColorScheme();
+  const textStyle = colorScheme === "light" ? TextStyles.light : TextStyles.dark;
+
   return (
-    <Button p={0} rounded="lg" colorScheme="gray" variant="default" onPress={props.onPress}>
-      <VStack w={40} h={20} p={2}>
-        <HStack space={2} alignItems="center">
-          <Skeleton w={3} h={3} rounded="full" isLoaded={props.isLoaded}>
-            <CircleIcon size={3} color={props.isValid ? props.color : "gray.400"} />
-          </Skeleton>
-          <Skeleton.Text flex={1} lines={1} isLoaded={props.isLoaded}>
-            <Text bold fontSize="md" color={props.isValid ? props.color : "gray.400"} noOfLines={1}>
-              {props.rule}
-            </Text>
-          </Skeleton.Text>
-        </HStack>
-        <VStack direction="column-reverse" flex={1} space={1}>
-          <Skeleton.Text lines={1} isLoaded={props.isLoaded}>
-            {props.stages
-              .slice()
-              .reverse()
-              .map((stage, i) => (
-                <Text key={i} fontSize="sm" lineHeight="sm" noOfLines={1}>
-                  {stage}
-                </Text>
-              ))}
-          </Skeleton.Text>
-        </VStack>
-      </VStack>
-    </Button>
+    <Pressable
+      style={[ViewStyles.r, ViewStyles.p2, { width: 160, height: 80 }, props.style]}
+      onPress={props.onPress}
+    >
+      <View style={[ViewStyles.f, ViewStyles.v]}>
+        <View style={[ViewStyles.hc, ViewStyles.mb2]}>
+          {props.rule.length > 0 && (
+            <View
+              style={[
+                ViewStyles.mr2,
+                styles.circle,
+                props.color !== undefined && { backgroundColor: props.color },
+              ]}
+            />
+          )}
+          <Text
+            numberOfLines={1}
+            style={[
+              TextStyles.h2,
+              TextStyles.subtle,
+              props.color !== undefined && { color: props.color },
+            ]}
+          >
+            {props.rule}
+          </Text>
+        </View>
+        <View style={[ViewStyles.f, styles.stages]}>
+          {props.stages
+            .slice()
+            .reverse()
+            .map((stage, i) => (
+              <Text key={i} numberOfLines={1} style={textStyle}>
+                {stage}
+              </Text>
+            ))}
+        </View>
+      </View>
+    </Pressable>
   );
 };
+
+const styles = StyleSheet.create({
+  circle: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: "#a1a1aa",
+  },
+  stages: {
+    flexDirection: "column-reverse",
+  },
+});
 
 export default ScheduleButton;

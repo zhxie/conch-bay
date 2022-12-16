@@ -1,48 +1,28 @@
-import { Button, Center, Modal, Text, VStack } from "native-base";
-import { ColorType } from "native-base/lib/typescript/components/types";
 import { useState } from "react";
+import { ActivityIndicator, StyleProp, Text, useColorScheme, View, ViewStyle } from "react-native";
 import JSONTree from "react-native-json-tree";
-import { BattleButton, CoopButton } from "../components";
+import { BattleButton, Button, CoopButton, Modal, TextStyles, ViewStyles } from "../components";
 import { Color, CoopBossResult, CoopHistoryDetail, VsHistoryDetail } from "../models";
+import { getCoopRuleColor, getVsModeColor } from "../utils/ui";
 
 interface ResultViewProps {
   t: (f: string, params?: Record<string, any>) => string;
-  accentColor: ColorType;
   isLoading: boolean;
   loadMore: () => void;
   results?: { battle?: VsHistoryDetail; coop?: CoopHistoryDetail }[];
+  style?: StyleProp<ViewStyle>;
 }
 
 const ResultView = (props: ResultViewProps) => {
   const { t } = props;
 
+  const colorScheme = useColorScheme();
+  const accentColor = colorScheme === "light" ? Color.Shiver : Color.Frye;
+  const textStyle = colorScheme === "light" ? TextStyles.light : TextStyles.dark;
+
   const [display, setDisplay] = useState<any>(undefined);
   const [displayResult, setDisplayResult] = useState(false);
 
-  const getVsModeColor = (mode: string) => {
-    switch (mode) {
-      case "VnNNb2RlLTE=":
-        return Color.RegularBattle;
-      case "VnNNb2RlLTI=":
-        return Color.AnarchyBattle;
-      case "VnNNb2RlLTM=":
-        return Color.XBattle;
-      case "VnNNb2RlLTU=":
-        return Color.PrivateBattle;
-      case "VnNNb2RlLTY=":
-      case "VnNNb2RlLTc=":
-      case "VnNNb2RlLTg=":
-        return props.accentColor;
-    }
-  };
-  const getCoopRuleColor = (rule: string) => {
-    switch (rule) {
-      case "REGULAR":
-        return Color.SalmonRun;
-      case "BIG_RUN":
-        return Color.BigRun;
-    }
-  };
   const getBattleResult = (judgement: string) => {
     switch (judgement) {
       case "WIN":
@@ -96,7 +76,7 @@ const ResultView = (props: ResultViewProps) => {
   };
 
   return (
-    <VStack px={4} flexGrow="unset">
+    <View style={[ViewStyles.vc, ViewStyles.px4, { width: "100%" }, props.style]}>
       {(() => {
         if (props.results) {
           return props.results.map((result, i) => {
@@ -104,10 +84,9 @@ const ResultView = (props: ResultViewProps) => {
               return (
                 <BattleButton
                   key={result.battle.vsHistoryDetail.id}
-                  isLoaded
                   isFirst={i === 0}
                   isLast={false}
-                  color={getVsModeColor(result.battle.vsHistoryDetail.vsMode.id)}
+                  color={getVsModeColor(result.battle.vsHistoryDetail.vsMode, accentColor)!}
                   result={getBattleResult(result.battle.vsHistoryDetail.judgement)!}
                   rule={t(result.battle.vsHistoryDetail.vsRule.id)}
                   stage={t(result.battle.vsHistoryDetail.vsStage.id)}
@@ -126,10 +105,9 @@ const ResultView = (props: ResultViewProps) => {
             return (
               <CoopButton
                 key={result.coop!.coopHistoryDetail.id}
-                isLoaded
                 isFirst={i === 0}
                 isLast={false}
-                color={getCoopRuleColor(result.coop!.coopHistoryDetail.rule)}
+                color={getCoopRuleColor(result.coop!.coopHistoryDetail.rule)!}
                 result={result.coop!.coopHistoryDetail.resultWave === 0 ? 1 : -1}
                 rule={t(result.coop!.coopHistoryDetail.rule)}
                 stage={t(result.coop!.coopHistoryDetail.coopStage.id)}
@@ -161,11 +139,8 @@ const ResultView = (props: ResultViewProps) => {
               return (
                 <BattleButton
                   key={i}
-                  isLoaded={false}
                   isFirst={i === 0}
-                  isLast={i === 7}
-                  color={props.accentColor}
-                  result={0}
+                  color={Color.MiddleTerritory}
                   rule=""
                   stage=""
                   weapon=""
@@ -176,64 +151,57 @@ const ResultView = (props: ResultViewProps) => {
       })()}
       {
         <Button
-          w="full"
-          h={16}
-          colorScheme="gray"
-          variant="default"
           isLoading={props.isLoading}
-          roundedTop={!props.results || props.results.length > 0 ? "none" : "lg"}
-          roundedBottom="lg"
-          _stack={{
-            flex: 1,
-            justifyContent: "center",
-          }}
+          isLoadingText={t("loading_more")}
+          style={[
+            !props.results || props.results.length > 0 ? undefined : ViewStyles.rt,
+            ViewStyles.rb,
+            { height: 64 },
+          ]}
+          textStyle={TextStyles.h3}
           onPress={props.loadMore}
         >
-          <Center>
-            <Text fontSize="md">{t("load_more")}</Text>
-          </Center>
+          <Text numberOfLines={1} style={[TextStyles.h3, textStyle]}>
+            {t("load_more")}
+          </Text>
         </Button>
       }
       <Modal
-        isOpen={displayResult}
+        isVisible={displayResult}
         onClose={onDisplayResultClose}
-        avoidKeyboard
-        justifyContent="flex-end"
-        safeArea
-        size="xl"
+        style={[
+          ViewStyles.modal2f,
+          {
+            backgroundColor: "#272822",
+          },
+        ]}
       >
-        <Modal.Content h="xl" bg="#272822">
-          <Modal.Body>
-            <VStack flex={1}>
-              {display && (
-                <JSONTree
-                  theme="monokai"
-                  invertTheme={false}
-                  data={display}
-                  hideRoot
-                  skipKeys={[
-                    "__typename",
-                    "__isGear",
-                    "__isPlayer",
-                    "id",
-                    "image",
-                    "image2d",
-                    "image2dThumbnail",
-                    "image3d",
-                    "image3dThumbnail",
-                    "maskingImage",
-                    "originalImage",
-                    "thumbnailImage",
-                    "nextHistoryDetail",
-                    "previousHistoryDetail",
-                  ]}
-                />
-              )}
-            </VStack>
-          </Modal.Body>
-        </Modal.Content>
+        {display && (
+          <JSONTree
+            theme="monokai"
+            invertTheme={false}
+            data={display}
+            hideRoot
+            skipKeys={[
+              "__typename",
+              "__isGear",
+              "__isPlayer",
+              "id",
+              "image",
+              "image2d",
+              "image2dThumbnail",
+              "image3d",
+              "image3dThumbnail",
+              "maskingImage",
+              "originalImage",
+              "thumbnailImage",
+              "nextHistoryDetail",
+              "previousHistoryDetail",
+            ]}
+          />
+        )}
       </Modal>
-    </VStack>
+    </View>
   );
 };
 
