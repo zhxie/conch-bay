@@ -84,16 +84,14 @@ export const ViewStyles = StyleSheet.create({
   h: {
     flexDirection: "row",
   },
-  hc: {
-    flexDirection: "row",
-    alignItems: "center",
+  hr: {
+    flexDirection: "row-reverse",
   },
   v: {
     flexDirection: "column",
   },
-  vc: {
-    flexDirection: "column",
-    justifyContent: "center",
+  vr: {
+    flexDirection: "column-reverse",
   },
   c: {
     alignItems: "center",

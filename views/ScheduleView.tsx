@@ -1,19 +1,12 @@
 import { useState } from "react";
+import { ScrollView, StyleProp, useColorScheme, ViewStyle } from "react-native";
 import {
-  ScrollView,
-  StyleProp,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-  ViewStyle,
-} from "react-native";
-import {
+  HStack,
   Modal,
   ScheduleBox,
   ScheduleButton,
+  ScheduleList,
   ShiftBox,
-  TextStyles,
   ViewStyles,
 } from "../components";
 import { Color, CoopWeapon, Splatfest, Schedule, Schedules, Shift, VsStage } from "../models";
@@ -165,7 +158,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
       showsHorizontalScrollIndicator={false}
       style={[{ width: "100%" }, props.style]}
     >
-      <View style={[ViewStyles.h, ViewStyles.px4]}>
+      <HStack style={ViewStyles.px4}>
         {!props.schedules &&
           new Array(8).fill(0).map((_, i) => {
             return (
@@ -248,95 +241,61 @@ const ScheduleView = (props: ScheduleViewProps) => {
             onPress={onRegularShiftPress}
           />
         )}
-      </View>
+      </HStack>
       <Modal
         isVisible={displaySplatfest}
         onClose={onDisplaySplatfestClose}
         style={ViewStyles.modal2d}
       >
-        <View style={ViewStyles.vc}>
-          <View style={[ViewStyles.mb4, ViewStyles.h, ViewStyles.c]}>
-            <View style={[ViewStyles.mr2, styles.circle, { backgroundColor: display?.color }]} />
-            <Text numberOfLines={1} style={[TextStyles.h2, { color: display?.color }]}>
-              {display?.title}
-            </Text>
-          </View>
+        <ScheduleList color={display?.color} title={display?.title}>
           {display?.splatfest && (
-            <View style={[ViewStyles.f, ViewStyles.vc]}>
-              <ScheduleBox
-                rule={t("VnNSdWxlLTU=")}
-                time={getTimeRange(display.splatfest, true)}
-                stages={[formatStage(getSplatfestStage(display.splatfest))]}
-              />
-            </View>
+            <ScheduleBox
+              rule={t("VnNSdWxlLTU=")}
+              time={getTimeRange(display.splatfest, true)}
+              stages={[formatStage(getSplatfestStage(display.splatfest))]}
+            />
           )}
-        </View>
+        </ScheduleList>
       </Modal>
       <Modal
         isVisible={displaySchedules}
         onClose={onDisplaySchedulesClose}
         style={ViewStyles.modal2d}
       >
-        <View style={ViewStyles.vc}>
-          <View style={[ViewStyles.mb4, ViewStyles.h, ViewStyles.c]}>
-            <View style={[ViewStyles.mr2, styles.circle, { backgroundColor: display?.color }]} />
-            <Text numberOfLines={1} style={[TextStyles.h2, { color: display?.color }]}>
-              {display?.title}
-            </Text>
-          </View>
-          {display?.schedules && (
-            <View style={[ViewStyles.f, ViewStyles.vc]}>
-              {display.schedules
-                .filter((schedule) => getMatchSetting(schedule, display.index))
-                .map((schedule, i) => (
-                  <ScheduleBox
-                    key={i}
-                    rule={t(getVsRuleId(schedule, display.index))}
-                    time={getTimeRange(schedule, false)}
-                    stages={getVsStages(schedule, display.index).map(formatStage)}
-                    style={i !== display.schedules!.length - 1 ? ViewStyles.mb2 : undefined}
-                  />
-                ))}
-            </View>
-          )}
-        </View>
+        <ScheduleList color={display?.color} title={display?.title}>
+          {display?.schedules &&
+            display.schedules
+              .filter((schedule) => getMatchSetting(schedule, display.index))
+              .map((schedule, i) => (
+                <ScheduleBox
+                  key={i}
+                  rule={t(getVsRuleId(schedule, display.index))}
+                  time={getTimeRange(schedule, false)}
+                  stages={getVsStages(schedule, display.index).map(formatStage)}
+                  style={i !== display.schedules!.length - 1 ? ViewStyles.mb2 : undefined}
+                />
+              ))}
+        </ScheduleList>
       </Modal>
       <Modal isVisible={displayShifts} onClose={onDisplayShiftsClose} style={ViewStyles.modal2d}>
-        <View style={ViewStyles.vc}>
-          <View style={[ViewStyles.mb4, ViewStyles.h, ViewStyles.c]}>
-            <View style={[ViewStyles.mr2, styles.circle, { backgroundColor: display?.color }]} />
-            <Text numberOfLines={1} style={[TextStyles.h2, { color: display?.color }]}>
-              {display?.title}
-            </Text>
-          </View>
-          {display?.shifts && (
-            <View style={[ViewStyles.f, ViewStyles.vc]}>
-              {display.shifts
-                .filter((shift) => getShiftSetting(shift))
-                .map((shift, i) => (
-                  <ShiftBox
-                    key={i}
-                    rule={display.title}
-                    time={getTimeRange(shift, true)}
-                    stage={formatStage(getCoopStage(shift))}
-                    weapons={getCoopWeapons(shift).map(formatWeapon)}
-                    style={i !== display.shifts!.length - 1 ? ViewStyles.mb2 : undefined}
-                  />
-                ))}
-            </View>
-          )}
-        </View>
+        <ScheduleList color={display?.color} title={display?.title}>
+          {display?.shifts &&
+            display.shifts
+              .filter((shift) => getShiftSetting(shift))
+              .map((shift, i) => (
+                <ShiftBox
+                  key={i}
+                  rule={display.title}
+                  time={getTimeRange(shift, true)}
+                  stage={formatStage(getCoopStage(shift))}
+                  weapons={getCoopWeapons(shift).map(formatWeapon)}
+                  style={i !== display.shifts!.length - 1 ? ViewStyles.mb2 : undefined}
+                />
+              ))}
+        </ScheduleList>
       </Modal>
     </ScrollView>
   );
 };
-
-const styles = StyleSheet.create({
-  circle: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-  },
-});
 
 export default ScheduleView;

@@ -42,7 +42,7 @@ const zh = {
   "VnNNb2RlLTY=": "祭典比赛",
   "VnNNb2RlLTc=": "祭典比赛",
   "VnNNb2RlLTg=": "祭典比赛",
-  VnNNb2RlLTUx: "蛮颓比赛",
+  VnNNb2RlLTUx: "蛮颓比赛", // TODO: maybe anarchy open.
   CHALLENGE: "挑战",
   OPEN: "开放",
   salmon_run: "鲑鱼跑",

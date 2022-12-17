@@ -45,7 +45,7 @@ const ja = {
   "VnNNb2RlLTY=": "フェスマッチ",
   "VnNNb2RlLTc=": "フェスマッチ",
   "VnNNb2RlLTg=": "フェスマッチ",
-  VnNNb2RlLTUx: "バンカラマッチ",
+  VnNNb2RlLTUx: "バンカラマッチ", // TODO: maybe anarchy open.
   CHALLENGE: "チャレンジ",
   OPEN: "オープン",
   salmon_run: "サーモンラン",

@@ -1,16 +1,10 @@
-import {
-  Image,
-  ImageSourcePropType,
-  ImageStyle,
-  StyleProp,
-  useColorScheme,
-  ViewStyle,
-} from "react-native";
+import { ImageSourcePropType, ImageStyle, StyleProp, ViewStyle } from "react-native";
 import Pressable from "./Pressable";
-import { ViewStyles } from "./Styles";
+import Image from "./Image";
 
 interface AvatarProps {
   size: number;
+  isDisabled?: boolean;
   source?: ImageSourcePropType;
   style?: StyleProp<ViewStyle>;
   imageStyle?: StyleProp<ImageStyle>;
@@ -18,11 +12,9 @@ interface AvatarProps {
 }
 
 const Avatar = (props: AvatarProps) => {
-  const colorScheme = useColorScheme();
-  const style = colorScheme === "light" ? ViewStyles.lightTerritory : ViewStyles.darkTerritory;
-
   return (
     <Pressable
+      isDisabled={props.isDisabled}
       onPress={props.onPress}
       style={[
         {
@@ -38,10 +30,8 @@ const Avatar = (props: AvatarProps) => {
           source={props.source}
           style={[
             { width: props.size, height: props.size, borderRadius: props.size / 2 },
-            style,
             props.imageStyle,
           ]}
-          alt=""
         />
       )}
     </Pressable>

@@ -1,5 +1,8 @@
-import { Image, StyleProp, StyleSheet, Text, useColorScheme, View, ViewStyle } from "react-native";
+import { StyleProp, StyleSheet, ViewStyle } from "react-native";
 import { TextStyles, ViewStyles } from "./Styles";
+import Image from "./Image";
+import Text from "./Text";
+import { Center, HStack, VStack } from "./Stack";
 
 interface StageProps {
   title: string;
@@ -13,56 +16,43 @@ interface ScheduleBoxProps {
 }
 
 const ScheduleBox = (props: ScheduleBoxProps) => {
-  const colorScheme = useColorScheme();
-  const textStyle = colorScheme === "light" ? TextStyles.light : TextStyles.dark;
-  const imageStyle = colorScheme === "light" ? ViewStyles.lightTerritory : ViewStyles.darkTerritory;
-
   return (
-    <View style={[ViewStyles.f, ViewStyles.h, props.style]}>
-      <View style={[ViewStyles.f, ViewStyles.vc]}>
-        <View style={[ViewStyles.mb1, ViewStyles.f, ViewStyles.hc]}>
-          <Text numberOfLines={1} style={[TextStyles.b, textStyle]}>
+    <HStack flex style={props.style}>
+      <VStack flex center>
+        <HStack flex center style={ViewStyles.mb1}>
+          <Text numberOfLines={1} style={TextStyles.b}>
             {props.rule}
           </Text>
-          <View style={[ViewStyles.f, styles.subtitle]}>
-            <Text numberOfLines={1} style={[TextStyles.subtle]}>
+          <HStack flex reverse>
+            <Text numberOfLines={1} style={TextStyles.subtle}>
               {props.time}
             </Text>
-          </View>
-        </View>
-        <View style={[ViewStyles.f, ViewStyles.hc]}>
+          </HStack>
+        </HStack>
+        <HStack flex center>
           {props.stages.map((stage, i) => (
-            <View
+            <VStack
+              flex
+              center
               key={i}
-              style={[
-                i !== props.stages.length - 1 ? ViewStyles.mr2 : undefined,
-                ViewStyles.f,
-                ViewStyles.v,
-                ViewStyles.c,
-              ]}
+              style={i !== props.stages.length - 1 ? ViewStyles.mr2 : undefined}
             >
               <Image
                 source={{
                   uri: stage.image,
                 }}
-                style={[ViewStyles.mb1, ViewStyles.r, imageStyle, styles.image]}
+                style={[ViewStyles.mb1, ViewStyles.r, styles.image]}
               />
-              <Text numberOfLines={1} style={[TextStyles.p, textStyle]}>
-                {stage.title}
-              </Text>
-            </View>
+              <Text numberOfLines={1}>{stage.title}</Text>
+            </VStack>
           ))}
-        </View>
-      </View>
-    </View>
+        </HStack>
+      </VStack>
+    </HStack>
   );
 };
 
 const styles = StyleSheet.create({
-  subtitle: {
-    flexDirection: "row-reverse",
-    alignItems: "center",
-  },
   image: {
     width: "100%",
     aspectRatio: 16 / 9,

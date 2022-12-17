@@ -45,7 +45,7 @@ const en = {
   "VnNNb2RlLTY=": "Splatfest Battle",
   "VnNNb2RlLTc=": "Splatfest Battle",
   "VnNNb2RlLTg=": "Splatfest Battle",
-  VnNNb2RlLTUx: "Anarchy Battle",
+  VnNNb2RlLTUx: "Anarchy Battle", // TODO: maybe anarchy open.
   CHALLENGE: "Series",
   OPEN: "Open",
   salmon_run: "Salmon Run",

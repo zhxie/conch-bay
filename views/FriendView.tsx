@@ -1,5 +1,5 @@
-import { ScrollView, StyleProp, useColorScheme, View, ViewStyle } from "react-native";
-import { Avatar, ViewStyles } from "../components";
+import { ScrollView, StyleProp, useColorScheme, ViewStyle } from "react-native";
+import { Avatar, HStack, ViewStyles } from "../components";
 import { Color, Friends } from "../models";
 import { getFriendColor } from "../utils/ui";
 
@@ -18,7 +18,7 @@ const FriendView = (props: FriendViewProps) => {
       showsHorizontalScrollIndicator={false}
       style={[{ width: "100%" }, props.style]}
     >
-      <View style={[ViewStyles.hc, ViewStyles.px4]}>
+      <HStack center style={ViewStyles.px4}>
         {(() => {
           if (props.friends) {
             return props.friends.friends.nodes.map((friend, i) => (
@@ -39,11 +39,11 @@ const FriendView = (props: FriendViewProps) => {
             return new Array(8)
               .fill(0)
               .map((_, i) => (
-                <Avatar key={i} size={48} style={i !== 7 ? ViewStyles.mr2 : undefined} />
+                <Avatar key={i} size={48} isDisabled style={i !== 7 ? ViewStyles.mr2 : undefined} />
               ));
           }
         })()}
-      </View>
+      </HStack>
     </ScrollView>
   );
 };

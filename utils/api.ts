@@ -1,6 +1,5 @@
 import * as Crypto from "expo-crypto";
 import * as Random from "expo-random";
-import JSSoup from "jssoup";
 import {
   AnarchyBattleHistories,
   Catalog,
@@ -45,22 +44,15 @@ export const updateWebViewVersion = async () => {
   const res = await fetch("https://api.lp1.av5ja.srv.nintendo.net");
   const text = await res.text();
 
-  const soup = new JSSoup(text);
-  const tags = soup.findAll("script");
-  const src = tags.find((tag) => {
-    if (typeof tag.attrs.src !== "string") {
-      return false;
-    }
+  const regex = /src="(\/.*?\.js)"/;
+  const match = regex.exec(text)!;
 
-    return tag.attrs.src.includes("static");
-  }).attrs.src;
-
-  const res2 = await fetch(`https://api.lp1.av5ja.srv.nintendo.net${src}`);
+  const res2 = await fetch(`https://api.lp1.av5ja.srv.nintendo.net${match[1]}`);
   const text2 = await res2.text();
 
-  const regex = /([0-9a-f]{40}).*?revision_info_not_set.*?=`(.*?)-/;
-  const match = regex.exec(text2)!;
-  WEB_VIEW_VERSION = `${match[2]}-${match[1].substring(0, 8)}`;
+  const regex2 = /([0-9a-f]{40}).*?revision_info_not_set.*?=`(.*?)-/;
+  const match2 = regex2.exec(text2)!;
+  WEB_VIEW_VERSION = `${match2[2]}-${match2[1].substring(0, 8)}`;
 };
 const callIminkFApi = async (idToken: string, step: number) => {
   const res = await fetch("https://api.imink.app/f", {

@@ -1,6 +1,9 @@
-import { StyleProp, StyleSheet, Text, useColorScheme, View, ViewStyle } from "react-native";
+import { StyleProp, ViewStyle } from "react-native";
 import ResultButton from "./ResultButton";
 import { TextStyles, ViewStyles } from "./Styles";
+import Text from "./Text";
+import { HStack } from "./Stack";
+import { Circle } from "./Shape";
 
 interface CoopButtonProps {
   color: string;
@@ -21,8 +24,6 @@ interface CoopButtonProps {
 }
 
 const CoopButton = (props: CoopButtonProps) => {
-  const colorScheme = useColorScheme();
-  const textStyle = colorScheme === "light" ? TextStyles.light : TextStyles.dark;
   const waveStyle = props.isWaveClear ? [TextStyles.b, { color: props.color }] : undefined;
 
   const goldenCount =
@@ -40,40 +41,28 @@ const CoopButton = (props: CoopButtonProps) => {
       title={props.rule}
       subtitle={props.stage}
       subChildren={
-        <View style={ViewStyles.hc}>
-          <Text numberOfLines={1} style={[ViewStyles.mr1, textStyle, waveStyle]}>
+        <HStack center>
+          <Text numberOfLines={1} style={[ViewStyles.mr1, waveStyle]}>
             {props.wave}
           </Text>
-          <Text numberOfLines={1} style={textStyle}>
-            {props.hazardLevel}
-          </Text>
-        </View>
+          <Text numberOfLines={1}>{props.hazardLevel}</Text>
+        </HStack>
       }
       style={props.style}
       onPress={props.onPress}
     >
       {props.result !== undefined && (
-        <View style={ViewStyles.hc}>
-          <View style={[ViewStyles.mr1, styles.circle, { backgroundColor: "gold" }]} />
-          <Text numberOfLines={1} style={[ViewStyles.mr1, TextStyles.p, textStyle]}>
+        <HStack center>
+          <Circle size={10} color="gold" style={ViewStyles.mr1} />
+          <Text numberOfLines={1} style={ViewStyles.mr1}>
             {goldenCount}
           </Text>
-          <View style={[ViewStyles.mr1, styles.circle, { backgroundColor: "salmon" }]} />
-          <Text numberOfLines={1} style={[TextStyles.p, textStyle]}>
-            {props.deliverCount}
-          </Text>
-        </View>
+          <Circle size={10} color="salmon" style={ViewStyles.mr1} />
+          <Text numberOfLines={1}>{props.deliverCount}</Text>
+        </HStack>
       )}
     </ResultButton>
   );
 };
-
-const styles = StyleSheet.create({
-  circle: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-  },
-});
 
 export default CoopButton;

@@ -1,6 +1,9 @@
-import { StyleProp, StyleSheet, Text, useColorScheme, View, ViewStyle } from "react-native";
+import { StyleProp, ViewStyle } from "react-native";
 import ResultButton from "./ResultButton";
-import { TextStyles, ViewStyles } from "./Styles";
+import { ViewStyles } from "./Styles";
+import Text from "./Text";
+import { HStack } from "./Stack";
+import { Circle } from "./Shape";
 
 interface BattleButtonProps {
   color: string;
@@ -20,9 +23,6 @@ interface BattleButtonProps {
 }
 
 const BattleButton = (props: BattleButtonProps) => {
-  const colorScheme = useColorScheme();
-  const textStyle = colorScheme === "light" ? TextStyles.light : TextStyles.dark;
-
   const killAndAssist =
     props.kill == undefined
       ? "-"
@@ -39,40 +39,26 @@ const BattleButton = (props: BattleButtonProps) => {
       result={props.result}
       title={props.rule}
       subtitle={props.stage}
-      subChildren={
-        <Text numberOfLines={1} style={[TextStyles.p, textStyle]}>
-          {props.weapon}
-        </Text>
-      }
+      subChildren={<Text numberOfLines={1}>{props.weapon}</Text>}
       style={props.style}
       onPress={props.onPress}
     >
       {props.result !== undefined && (
-        <View style={ViewStyles.hc}>
-          <View style={[ViewStyles.mr1, styles.circle, { backgroundColor: "salmon" }]} />
-          <Text numberOfLines={1} style={[ViewStyles.mr1, TextStyles.p, textStyle]}>
+        <HStack center>
+          <Circle size={10} color="salmon" style={ViewStyles.mr1} />
+          <Text numberOfLines={1} style={ViewStyles.mr1}>
             {killAndAssist}
           </Text>
-          <View style={[ViewStyles.mr1, styles.circle, { backgroundColor: "darkseagreen" }]} />
-          <Text numberOfLines={1} style={[ViewStyles.mr1, TextStyles.p, textStyle]}>
+          <Circle size={10} color="darkseagreen" style={ViewStyles.mr1} />
+          <Text numberOfLines={1} style={ViewStyles.mr1}>
             {props.death ?? "-"}
           </Text>
-          <View style={[ViewStyles.mr1, styles.circle, { backgroundColor: "gold" }]} />
-          <Text numberOfLines={1} style={[TextStyles.p, textStyle]}>
-            {props.special ?? "-"}
-          </Text>
-        </View>
+          <Circle size={10} color="gold" style={ViewStyles.mr1} />
+          <Text numberOfLines={1}>{props.special ?? "-"}</Text>
+        </HStack>
       )}
     </ResultButton>
   );
 };
-
-const styles = StyleSheet.create({
-  circle: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-  },
-});
 
 export default BattleButton;

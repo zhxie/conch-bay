@@ -1,8 +1,10 @@
 import { Feather } from "@expo/vector-icons";
-import { StyleProp, StyleSheet, Text, useColorScheme, View, ViewStyle } from "react-native";
+import { StyleProp, ViewStyle } from "react-native";
 import { Color } from "../models";
 import Pressable from "./Pressable";
 import { TextStyles, ViewStyles } from "./Styles";
+import Text from "./Text";
+import { Center, HStack, VStack } from "./Stack";
 
 interface ResultButtonProps {
   color: string;
@@ -19,9 +21,6 @@ interface ResultButtonProps {
 }
 
 const ResultButton = (props: ResultButtonProps) => {
-  const colorScheme = useColorScheme();
-  const textStyle = colorScheme === "light" ? TextStyles.light : TextStyles.dark;
-
   return (
     <Pressable
       isDisabled={props.isLoading}
@@ -34,15 +33,18 @@ const ResultButton = (props: ResultButtonProps) => {
       ]}
       onPress={props.onPress}
     >
-      <View
+      <HStack
+        flex
+        center
         style={[
-          ViewStyles.f,
-          ViewStyles.hc,
           ViewStyles.py2,
-          { borderBottomWidth: 1, borderBottomColor: `${Color.MiddleTerritory}3f` },
+          !props.isLast && {
+            borderBottomWidth: 1,
+            borderBottomColor: `${Color.MiddleTerritory}3f`,
+          },
         ]}
       >
-        <View style={[ViewStyles.mr3, ViewStyles.c, { width: 32, height: 32 }]}>
+        <Center style={[ViewStyles.mr3, { width: 32, height: 32 }]}>
           {props.result !== undefined &&
             (() => {
               if (props.result > 0) {
@@ -53,31 +55,26 @@ const ResultButton = (props: ResultButtonProps) => {
                 return <Feather name="x" size={32} color={Color.MiddleTerritory} />;
               }
             })()}
-        </View>
-        <View style={[ViewStyles.f, ViewStyles.vc]}>
-          <View style={[ViewStyles.f, ViewStyles.hc]}>
+        </Center>
+        <VStack flex center>
+          <HStack flex center>
             <Text numberOfLines={1} style={[TextStyles.h2, { color: props.color }]}>
               {props.title}
             </Text>
-            <View style={[ViewStyles.f, styles.children]}>{props.subChildren}</View>
-          </View>
-          <View style={[ViewStyles.f, ViewStyles.hc]}>
-            <Text numberOfLines={1} style={[TextStyles.p, textStyle]}>
-              {props.subtitle}
-            </Text>
-            <View style={[ViewStyles.f, styles.children]}>{props.children}</View>
-          </View>
-        </View>
-      </View>
+            <HStack flex center reverse>
+              {props.subChildren}
+            </HStack>
+          </HStack>
+          <HStack flex center>
+            <Text numberOfLines={1}>{props.subtitle}</Text>
+            <HStack flex center reverse>
+              {props.children}
+            </HStack>
+          </HStack>
+        </VStack>
+      </HStack>
     </Pressable>
   );
 };
-
-const styles = StyleSheet.create({
-  children: {
-    flexDirection: "row-reverse",
-    alignItems: "center",
-  },
-});
 
 export default ResultButton;

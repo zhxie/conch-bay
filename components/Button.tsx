@@ -1,14 +1,8 @@
 import Pressable from "./Pressable";
-import {
-  ActivityIndicator,
-  StyleProp,
-  Text,
-  TextStyle,
-  useColorScheme,
-  View,
-  ViewStyle,
-} from "react-native";
-import { TextStyles, ViewStyles } from "./Styles";
+import { ActivityIndicator, StyleProp, TextStyle, ViewStyle } from "react-native";
+import { ViewStyles } from "./Styles";
+import Text from "./Text";
+import { Center, HStack } from "./Stack";
 
 interface ButtonProps {
   isDisabled?: boolean;
@@ -21,9 +15,6 @@ interface ButtonProps {
 }
 
 const Button = (props: ButtonProps) => {
-  const colorScheme = useColorScheme();
-  const textStyle = colorScheme === "light" ? TextStyles.light : TextStyles.dark;
-
   return (
     <Pressable
       isDisabled={props.isDisabled || props.isLoading}
@@ -31,18 +22,21 @@ const Button = (props: ButtonProps) => {
       onPress={props.onPress}
     >
       {props.isLoading && (
-        <View style={[ViewStyles.f, ViewStyles.hc, ViewStyles.c]}>
-          <ActivityIndicator style={ViewStyles.mr1} />
-          <Text
-            numberOfLines={1}
-            style={[ViewStyles.py3, TextStyles.p, textStyle, props.textStyle]}
-          >
-            {props.isLoadingText}
-          </Text>
-        </View>
+        <Center flex>
+          <HStack flex center>
+            <ActivityIndicator style={ViewStyles.mr1} />
+            <Text numberOfLines={1} style={[ViewStyles.py3, props.textStyle]}>
+              {props.isLoadingText}
+            </Text>
+          </HStack>
+        </Center>
       )}
       {!props.isLoading && (
-        <View style={[ViewStyles.hc, ViewStyles.c, ViewStyles.py3]}>{props.children}</View>
+        <Center flex>
+          <HStack flex center style={ViewStyles.py3}>
+            {props.children}
+          </HStack>
+        </Center>
       )}
     </Pressable>
   );

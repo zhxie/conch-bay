@@ -5,18 +5,22 @@ import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";
 import * as WebBrowser from "expo-web-browser";
 import React, { useEffect, useRef, useState } from "react";
-import {
-  Animated,
-  Linking,
-  RefreshControl,
-  ScrollView,
-  Text,
-  useColorScheme,
-  View,
-} from "react-native";
+import { Animated, Linking, RefreshControl, ScrollView, View, useColorScheme } from "react-native";
 import Toast from "react-native-root-toast";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
-import { Avatar, Badge, Button, Modal, TextStyles, ToolButton, ViewStyles } from "../components";
+import {
+  Avatar,
+  Badge,
+  Button,
+  Center,
+  HStack,
+  Modal,
+  Text,
+  TextStyles,
+  ToolButton,
+  VStack,
+  ViewStyles,
+} from "../components";
 import { Color, CoopHistoryDetail, Friends, Schedules, VsHistoryDetail } from "../models";
 import {
   checkBulletToken,
@@ -51,7 +55,6 @@ const MainView = (props: MainViewProps) => {
   const colorScheme = useColorScheme();
   const accentColor = colorScheme === "light" ? Color.Shiver : Color.Frye;
   const backgroundStyle = colorScheme === "light" ? ViewStyles.light : ViewStyles.dark;
-  const textColor = colorScheme === "light" ? TextStyles.light : TextStyles.dark;
   const reverseTextColor = colorScheme === "light" ? TextStyles.dark : TextStyles.light;
 
   const insets = useSafeAreaInsets();
@@ -543,7 +546,7 @@ const MainView = (props: MainViewProps) => {
   };
 
   return (
-    <View style={[ViewStyles.f, ViewStyles.vc, backgroundStyle]}>
+    <VStack flex center style={backgroundStyle}>
       <Animated.View style={{ opacity: fade }}>
         <ScrollView
           refreshControl={
@@ -556,16 +559,16 @@ const MainView = (props: MainViewProps) => {
           showsVerticalScrollIndicator={false}
           style={{ height: "100%" }}
         >
-          <SafeAreaView style={ViewStyles.vc}>
+          <SafeAreaView style={{ alignItems: "center" }}>
             {!sessionToken && (
-              <View style={[ViewStyles.px4, ViewStyles.c, ViewStyles.mb4]}>
-                <Button style={[{ backgroundColor: accentColor }]} onPress={onLogInPress}>
-                  <Text style={[TextStyles.p, reverseTextColor]}>{t("log_in")}</Text>
+              <Center flex style={[ViewStyles.px4, ViewStyles.mb4]}>
+                <Button style={{ backgroundColor: accentColor }} onPress={onLogInPress}>
+                  <Text style={reverseTextColor}>{t("log_in")}</Text>
                 </Button>
-              </View>
+              </Center>
             )}
             {sessionToken.length > 0 && (
-              <View style={[ViewStyles.v, ViewStyles.c, ViewStyles.px4, ViewStyles.mb4]}>
+              <VStack center style={[ViewStyles.px4, ViewStyles.mb4]}>
                 <Avatar
                   size={64}
                   source={
@@ -578,7 +581,7 @@ const MainView = (props: MainViewProps) => {
                   onPress={onLogOutPress}
                   style={ViewStyles.mb2}
                 />
-                <View style={ViewStyles.h}>
+                <HStack>
                   {catalogLevel.length > 0 && (
                     <Badge color={Color.Shiver} title={catalogLevel} style={ViewStyles.mr1} />
                   )}
@@ -589,8 +592,8 @@ const MainView = (props: MainViewProps) => {
                     <Badge color={Color.AnarchyBattle} title={rank} style={ViewStyles.mr1} />
                   )}
                   {grade.length > 0 && <Badge color={Color.SalmonRun} title={t(grade)} />}
-                </View>
-              </View>
+                </HStack>
+              </VStack>
             )}
             <ScheduleView t={t} schedules={schedules} style={ViewStyles.mb4} />
             {sessionToken.length > 0 && <FriendView friends={friends} style={ViewStyles.mb4} />}
@@ -605,7 +608,7 @@ const MainView = (props: MainViewProps) => {
             )}
             {sessionToken.length > 0 && (
               <ScrollView horizontal showsHorizontalScrollIndicator={false} style={ViewStyles.mb4}>
-                <View style={[ViewStyles.h, ViewStyles.px4]}>
+                <HStack style={ViewStyles.px4}>
                   <ToolButton
                     isLoading={false}
                     isLoadingText=""
@@ -623,86 +626,83 @@ const MainView = (props: MainViewProps) => {
                     title={t("export")}
                     onPress={onExportPress}
                   />
-                </View>
+                </HStack>
               </ScrollView>
             )}
-            <View style={[ViewStyles.v, ViewStyles.c, ViewStyles.px4]}>
-              <Text
-                style={[TextStyles.p, TextStyles.subtle, ViewStyles.mb2, { textAlign: "center" }]}
-              >
+            <VStack center style={ViewStyles.px4}>
+              <Text style={[TextStyles.subtle, ViewStyles.mb2, { textAlign: "center" }]}>
                 {t("disclaimer")}
               </Text>
-              <View style={[ViewStyles.v, ViewStyles.c]}>
+              <VStack center>
                 <Text
-                  style={[TextStyles.p, TextStyles.subtle]}
+                  style={TextStyles.subtle}
                 >{`${Application.applicationName} ${Application.nativeApplicationVersion} (${Application.nativeBuildVersion})`}</Text>
-                <View style={[ViewStyles.hc]}>
+                <HStack center>
                   <Text
-                    style={[TextStyles.p, TextStyles.link, TextStyles.subtle, ViewStyles.mr2]}
+                    style={[TextStyles.link, TextStyles.subtle, ViewStyles.mr2]}
                     onPress={onFeedbackPress}
                   >
                     {t("feedback")}
                   </Text>
                   <Text
-                    style={[TextStyles.p, TextStyles.link, TextStyles.subtle, ViewStyles.mr2]}
+                    style={[TextStyles.link, TextStyles.subtle, ViewStyles.mr2]}
                     onPress={onPrivacyPolicyPress}
                   >
                     {t("privacy_policy")}
                   </Text>
                   <Text
-                    style={[TextStyles.p, TextStyles.link, TextStyles.subtle]}
+                    style={[TextStyles.link, TextStyles.subtle]}
                     onPress={onAcknowledgmentsPress}
                   >
                     {t("acknowledgments")}
                   </Text>
-                </View>
-              </View>
-            </View>
+                </HStack>
+              </VStack>
+            </VStack>
           </SafeAreaView>
         </ScrollView>
       </Animated.View>
       <Modal isVisible={logIn} onClose={onLogInClose} style={ViewStyles.modal1d}>
-        <View style={[ViewStyles.v, ViewStyles.c]}>
+        <VStack center>
           <Feather
             name="alert-circle"
             size={48}
             color={Color.MiddleTerritory}
             style={ViewStyles.mb4}
           />
-          <Text style={[TextStyles.p, ViewStyles.mb4, textColor]}>{t("log_in_notice")}</Text>
-          <View style={[ViewStyles.vc, { width: "100%" }]}>
+          <Text style={ViewStyles.mb4}>{t("log_in_notice")}</Text>
+          <VStack center style={{ width: "100%" }}>
             <Button
               style={[
                 ViewStyles.mb2,
-                { borderColor: accentColor, borderWidth: 1.5 },
+                { width: "100%", borderColor: accentColor, borderWidth: 1.5 },
                 backgroundStyle,
               ]}
-              textStyle={textColor}
               onPress={onIminkPrivacyPolicyPress}
             >
-              <Text style={textColor}>{t("imink_privacy_policy")}</Text>
+              <Text>{t("imink_privacy_policy")}</Text>
             </Button>
             <Button
               isLoading={loggingIn}
               isLoadingText={t("logging_in")}
-              style={[{ backgroundColor: accentColor }]}
+              style={[{ width: "100%", backgroundColor: accentColor }]}
               textStyle={reverseTextColor}
               onPress={onLogInContinuePress}
             >
               <Text style={reverseTextColor}>{t("log_in_continue")}</Text>
             </Button>
-          </View>
-        </View>
+          </VStack>
+        </VStack>
       </Modal>
       <Modal isVisible={logOut} onClose={onLogOutClose} style={ViewStyles.modal1d}>
-        <View style={[ViewStyles.v, ViewStyles.c]}>
+        <VStack center>
           <Feather
             name="alert-circle"
             size={48}
             color={Color.MiddleTerritory}
             style={ViewStyles.mb4}
           />
-          <Text style={[TextStyles.p, ViewStyles.mb4, textColor]}>{t("log_out_notice")}</Text>
+          <Text style={ViewStyles.mb4}>{t("log_out_notice")}</Text>
           <Button
             isLoading={loggingOut}
             isLoadingText={t("logging_out")}
@@ -712,50 +712,45 @@ const MainView = (props: MainViewProps) => {
           >
             <Text style={reverseTextColor}>{t("log_out_continue")}</Text>
           </Button>
-        </View>
+        </VStack>
       </Modal>
       <Modal
         isVisible={acknowledgments}
         onClose={onAcknowledgmentsClose}
         style={ViewStyles.modal1d}
       >
-        <View style={ViewStyles.vc}>
-          <View style={[ViewStyles.v, ViewStyles.c, ViewStyles.mb3]}>
-            <Text style={[TextStyles.h3, ViewStyles.mb2, textColor]}>{t("creators")}</Text>
-            <View style={ViewStyles.hc}>
-              <Avatar
-                size={48}
-                source={{
-                  uri: "https://cdn-image-e0d67c509fb203858ebcb2fe3f88c2aa.baas.nintendo.com/1/1afd1450a5a5ebec",
-                }}
-                style={ViewStyles.mr2}
-              />
-              <Avatar
-                size={48}
-                source={{
-                  uri: "https://cdn-image-e0d67c509fb203858ebcb2fe3f88c2aa.baas.nintendo.com/1/4b98d8291ae60b8c",
-                }}
-                style={ViewStyles.mr2}
-              />
-            </View>
-          </View>
-          <View style={[ViewStyles.v, ViewStyles.c]}>
-            <Text style={[TextStyles.h3, ViewStyles.mb2, textColor]}>{t("license")}</Text>
-            <View style={[ViewStyles.v, ViewStyles.c]}>
-              <Text
-                style={[TextStyles.p, TextStyles.link, ViewStyles.mb1, textColor]}
-                onPress={onSplatoon3InkPress}
-              >
-                Splatoon3.ink
-              </Text>
-              <Text style={[TextStyles.p, TextStyles.link, textColor]} onPress={onIminkFApiPress}>
-                imink f API
-              </Text>
-            </View>
-          </View>
-        </View>
+        <VStack center style={ViewStyles.mb3}>
+          <Text style={[TextStyles.h3, ViewStyles.mb2]}>{t("creators")}</Text>
+          <HStack center>
+            <Avatar
+              size={48}
+              source={{
+                uri: "https://cdn-image-e0d67c509fb203858ebcb2fe3f88c2aa.baas.nintendo.com/1/1afd1450a5a5ebec",
+              }}
+              style={ViewStyles.mr2}
+            />
+            <Avatar
+              size={48}
+              source={{
+                uri: "https://cdn-image-e0d67c509fb203858ebcb2fe3f88c2aa.baas.nintendo.com/1/4b98d8291ae60b8c",
+              }}
+              style={ViewStyles.mr2}
+            />
+          </HStack>
+        </VStack>
+        <VStack center>
+          <Text style={[TextStyles.h3, ViewStyles.mb2]}>{t("license")}</Text>
+          <VStack center>
+            <Text style={[TextStyles.link, ViewStyles.mb1]} onPress={onSplatoon3InkPress}>
+              Splatoon3.ink
+            </Text>
+            <Text style={TextStyles.link} onPress={onIminkFApiPress}>
+              imink f API
+            </Text>
+          </VStack>
+        </VStack>
       </Modal>
-    </View>
+    </VStack>
   );
 };
 

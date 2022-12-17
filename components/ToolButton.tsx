@@ -1,8 +1,10 @@
 import { Feather } from "@expo/vector-icons";
-import { ActivityIndicator, StyleProp, Text, useColorScheme, View, ViewStyle } from "react-native";
+import { ActivityIndicator, StyleProp, ViewStyle } from "react-native";
 import { Color } from "../models";
 import Pressable from "./Pressable";
 import { TextStyles, ViewStyles } from "./Styles";
+import Text from "./Text";
+import { HStack } from "./Stack";
 
 interface ToolButtonProps {
   isDisabled: boolean;
@@ -15,16 +17,13 @@ interface ToolButtonProps {
 }
 
 const ToolButton = (props: ToolButtonProps) => {
-  const colorScheme = useColorScheme();
-  const textStyle = colorScheme === "light" ? TextStyles.light : TextStyles.dark;
-
   return (
     <Pressable
       isDisabled={props.isDisabled || props.isLoading}
       style={[ViewStyles.p3, { height: 44, borderRadius: 22 }, props.style]}
       onPress={props.onPress}
     >
-      <View style={[ViewStyles.hc]}>
+      <HStack center>
         {(() => {
           if (props.isLoading) {
             return <ActivityIndicator style={ViewStyles.mr1} />;
@@ -39,10 +38,10 @@ const ToolButton = (props: ToolButtonProps) => {
             );
           }
         })()}
-        <Text numberOfLines={1} style={[TextStyles.h3, textStyle]}>
+        <Text numberOfLines={1} style={TextStyles.h3}>
           {props.isLoading ? props.isLoadingText : props.title}
         </Text>
-      </View>
+      </HStack>
     </Pressable>
   );
 };

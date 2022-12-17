@@ -1,5 +1,8 @@
-import { Image, StyleProp, StyleSheet, Text, useColorScheme, View, ViewStyle } from "react-native";
+import { StyleProp, StyleSheet, ViewStyle } from "react-native";
 import { TextStyles, ViewStyles } from "./Styles";
+import Image from "./Image";
+import Text from "./Text";
+import { Center, HStack, VStack } from "./Stack";
 
 interface StageProps {
   title: string;
@@ -14,37 +17,31 @@ interface ScheduleBoxProps {
 }
 
 const ShiftBox = (props: ScheduleBoxProps) => {
-  const colorScheme = useColorScheme();
-  const textStyle = colorScheme === "light" ? TextStyles.light : TextStyles.dark;
-  const imageStyle = colorScheme === "light" ? ViewStyles.lightTerritory : ViewStyles.darkTerritory;
-
   return (
-    <View style={[ViewStyles.f, ViewStyles.h, props.style]}>
-      <View style={[ViewStyles.f, ViewStyles.vc]}>
-        <View style={[ViewStyles.mb1, ViewStyles.f, ViewStyles.hc]}>
-          <Text numberOfLines={1} style={[TextStyles.b, textStyle]}>
+    <HStack flex style={props.style}>
+      <VStack flex center>
+        <HStack flex center style={ViewStyles.mb1}>
+          <Text numberOfLines={1} style={TextStyles.b}>
             {props.rule}
           </Text>
-          <View style={[ViewStyles.f, styles.subtitle]}>
-            <Text numberOfLines={1} style={[TextStyles.subtle]}>
+          <HStack flex reverse>
+            <Text numberOfLines={1} style={TextStyles.subtle}>
               {props.time}
             </Text>
-          </View>
-        </View>
-        <View style={[ViewStyles.f, ViewStyles.hc]}>
-          <View style={[ViewStyles.mr2, ViewStyles.f, ViewStyles.v, ViewStyles.c]}>
+          </HStack>
+        </HStack>
+        <HStack flex center>
+          <VStack flex center style={ViewStyles.mr2}>
             <Image
               source={{
                 uri: props.stage.image,
               }}
-              style={[ViewStyles.mb1, ViewStyles.r, imageStyle, styles.stage]}
+              style={[ViewStyles.mb1, ViewStyles.r, styles.stage]}
             />
-            <Text numberOfLines={1} style={[TextStyles.p, textStyle]}>
-              {props.stage.title}
-            </Text>
-          </View>
-          <View style={[ViewStyles.mb1, ViewStyles.f, ViewStyles.v, ViewStyles.c]}>
-            <View style={[ViewStyles.h, ViewStyles.c]}>
+            <Text numberOfLines={1}>{props.stage.title}</Text>
+          </VStack>
+          <VStack flex center>
+            <HStack center>
               {props.weapons.map((weapon, i) => (
                 <Image
                   key={i}
@@ -58,22 +55,16 @@ const ShiftBox = (props: ScheduleBoxProps) => {
                   ]}
                 />
               ))}
-            </View>
-            <Text numberOfLines={1} style={[TextStyles.p, textStyle]}>
-              {" "}
-            </Text>
-          </View>
-        </View>
-      </View>
-    </View>
+            </HStack>
+            <Text numberOfLines={1}> </Text>
+          </VStack>
+        </HStack>
+      </VStack>
+    </HStack>
   );
 };
 
 const styles = StyleSheet.create({
-  subtitle: {
-    flexDirection: "row-reverse",
-    alignItems: "center",
-  },
   stage: {
     width: "100%",
     aspectRatio: 16 / 9,
@@ -81,6 +72,7 @@ const styles = StyleSheet.create({
   weapon: {
     width: "100%",
     aspectRatio: 1 / 1,
+    backgroundColor: "transparent",
   },
 });
 

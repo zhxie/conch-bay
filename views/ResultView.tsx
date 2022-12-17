@@ -1,7 +1,16 @@
 import { useState } from "react";
-import { ActivityIndicator, StyleProp, Text, useColorScheme, View, ViewStyle } from "react-native";
+import { StyleProp, useColorScheme, ViewStyle } from "react-native";
 import JSONTree from "react-native-json-tree";
-import { BattleButton, Button, CoopButton, Modal, TextStyles, ViewStyles } from "../components";
+import {
+  BattleButton,
+  Button,
+  CoopButton,
+  Modal,
+  Text,
+  TextStyles,
+  VStack,
+  ViewStyles,
+} from "../components";
 import { Color, CoopBossResult, CoopHistoryDetail, VsHistoryDetail } from "../models";
 import { getCoopRuleColor, getVsModeColor } from "../utils/ui";
 
@@ -18,7 +27,6 @@ const ResultView = (props: ResultViewProps) => {
 
   const colorScheme = useColorScheme();
   const accentColor = colorScheme === "light" ? Color.Shiver : Color.Frye;
-  const textStyle = colorScheme === "light" ? TextStyles.light : TextStyles.dark;
 
   const [display, setDisplay] = useState<any>(undefined);
   const [displayResult, setDisplayResult] = useState(false);
@@ -76,7 +84,7 @@ const ResultView = (props: ResultViewProps) => {
   };
 
   return (
-    <View style={[ViewStyles.vc, ViewStyles.px4, { width: "100%" }, props.style]}>
+    <VStack style={[ViewStyles.px4, { width: "100%" }, props.style]}>
       {(() => {
         if (props.results) {
           return props.results.map((result, i) => {
@@ -162,7 +170,7 @@ const ResultView = (props: ResultViewProps) => {
           textStyle={TextStyles.h3}
           onPress={props.loadMore}
         >
-          <Text numberOfLines={1} style={[TextStyles.h3, textStyle]}>
+          <Text numberOfLines={1} style={TextStyles.h3}>
             {t("load_more")}
           </Text>
         </Button>
@@ -202,7 +210,7 @@ const ResultView = (props: ResultViewProps) => {
           />
         )}
       </Modal>
-    </View>
+    </VStack>
   );
 };
 

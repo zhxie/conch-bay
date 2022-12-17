@@ -1,6 +1,9 @@
-import { StyleProp, StyleSheet, Text, useColorScheme, View, ViewStyle } from "react-native";
+import { StyleProp, ViewStyle } from "react-native";
 import Pressable from "./Pressable";
 import { TextStyles, ViewStyles } from "./Styles";
+import Text from "./Text";
+import { HStack, VStack } from "./Stack";
+import { Circle } from "./Shape";
 
 interface ScheduleButtonProps {
   rule: string;
@@ -11,21 +14,20 @@ interface ScheduleButtonProps {
 }
 
 const ScheduleButton = (props: ScheduleButtonProps) => {
-  const colorScheme = useColorScheme();
-  const textStyle = colorScheme === "light" ? TextStyles.light : TextStyles.dark;
-
   return (
     <Pressable
+      isDisabled={props.rule.length === 0}
       style={[ViewStyles.r, ViewStyles.p2, { width: 160, height: 80 }, props.style]}
       onPress={props.onPress}
     >
-      <View style={[ViewStyles.f, ViewStyles.v]}>
-        <View style={[ViewStyles.hc, ViewStyles.mb2]}>
+      <VStack flex>
+        <HStack center style={ViewStyles.mb2}>
           {props.rule.length > 0 && (
-            <View
+            <Circle
+              size={12}
+              color="#a1a1aa"
               style={[
                 ViewStyles.mr2,
-                styles.circle,
                 props.color !== undefined && { backgroundColor: props.color },
               ]}
             />
@@ -40,32 +42,20 @@ const ScheduleButton = (props: ScheduleButtonProps) => {
           >
             {props.rule}
           </Text>
-        </View>
-        <View style={[ViewStyles.f, styles.stages]}>
+        </HStack>
+        <VStack flex reverse>
           {props.stages
             .slice()
             .reverse()
             .map((stage, i) => (
-              <Text key={i} numberOfLines={1} style={textStyle}>
+              <Text key={i} numberOfLines={1}>
                 {stage}
               </Text>
             ))}
-        </View>
-      </View>
+        </VStack>
+      </VStack>
     </Pressable>
   );
 };
-
-const styles = StyleSheet.create({
-  circle: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    backgroundColor: "#a1a1aa",
-  },
-  stages: {
-    flexDirection: "column-reverse",
-  },
-});
 
 export default ScheduleButton;

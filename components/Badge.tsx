@@ -1,5 +1,7 @@
-import { StyleProp, Text, useColorScheme, View, ViewStyle } from "react-native";
+import { StyleProp, useColorScheme, ViewStyle } from "react-native";
 import { TextStyles, ViewStyles } from "./Styles";
+import Text from "./Text";
+import { Center } from "./Stack";
 
 interface BadgeProps {
   color: string;
@@ -13,9 +15,8 @@ const Badge = (props: BadgeProps) => {
   const fontColor = colorScheme === "light" ? props.color : "#ffffffaf";
 
   return (
-    <View
+    <Center
       style={[
-        ViewStyles.c,
         ViewStyles.px2,
         ViewStyles.py1,
         { backgroundColor: `${props.color}${opacity}`, borderRadius: 2 },
@@ -23,7 +24,7 @@ const Badge = (props: BadgeProps) => {
       ]}
     >
       <Text style={[TextStyles.h5, { color: fontColor }]}>{props.title}</Text>
-    </View>
+    </Center>
   );
 };
 
