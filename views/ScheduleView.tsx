@@ -186,7 +186,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
             style={ViewStyles.mr2}
           />
         )}
-        {splatfestSchedules?.at(0) && (
+        {splatfestSchedules?.[0] && (
           <ScheduleButton
             color={isStarted(splatfestSchedules[0]) ? accentColor : undefined}
             rule={t(getVsRuleId(splatfestSchedules[0]))}
@@ -195,7 +195,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
             style={ViewStyles.mr2}
           />
         )}
-        {regularSchedules?.at(0) && (
+        {regularSchedules?.[0] && (
           <ScheduleButton
             color={isStarted(regularSchedules[0]) ? Color.RegularBattle : undefined}
             rule={t(getVsRuleId(regularSchedules[0]))}
@@ -204,7 +204,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
             style={ViewStyles.mr2}
           />
         )}
-        {anarchySchedules?.at(0) && (
+        {anarchySchedules?.[0] && (
           <ScheduleButton
             color={isStarted(anarchySchedules[0]) ? Color.AnarchyBattle : undefined}
             rule={t(getVsRuleId(anarchySchedules[0], 0))}
@@ -213,7 +213,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
             style={ViewStyles.mr2}
           />
         )}
-        {anarchySchedules?.at(0) && (
+        {anarchySchedules?.[0] && (
           <ScheduleButton
             color={isStarted(anarchySchedules[0]) ? Color.AnarchyBattle : undefined}
             rule={t(getVsRuleId(anarchySchedules[0], 1))}
@@ -222,7 +222,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
             style={ViewStyles.mr2}
           />
         )}
-        {xSchedules?.at(0) && (
+        {xSchedules?.[0] && (
           <ScheduleButton
             color={isStarted(xSchedules[0]) ? Color.XBattle : undefined}
             rule={t(getVsRuleId(xSchedules[0]))}
@@ -231,7 +231,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
             style={ViewStyles.mr2}
           />
         )}
-        {bigRunShifts?.at(0) && (
+        {bigRunShifts?.[0] && (
           <ScheduleButton
             color={isStarted(bigRunShifts[0]) ? Color.BigRun : undefined}
             rule={t("big_run")}
@@ -240,7 +240,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
             style={ViewStyles.mr2}
           />
         )}
-        {regularShifts?.at(0) && (
+        {regularShifts?.[0] && (
           <ScheduleButton
             color={isStarted(regularShifts[0]) ? Color.SalmonRun : undefined}
             rule={t("salmon_run")}
