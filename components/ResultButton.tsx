@@ -7,7 +7,7 @@ import Text from "./Text";
 import { Center, HStack, VStack } from "./Stack";
 
 interface ResultButtonProps {
-  color: string;
+  color?: string;
   isLoading?: boolean;
   isFirst?: boolean;
   isLast?: boolean;
@@ -44,21 +44,27 @@ const ResultButton = (props: ResultButtonProps) => {
           },
         ]}
       >
-        <Center style={[ViewStyles.mr3, { width: 32, height: 32 }]}>
-          {props.result !== undefined &&
-            (() => {
+        {props.result !== undefined && (
+          <Center style={[ViewStyles.mr3, { width: 32, height: 32 }]}>
+            {(() => {
               if (props.result > 0) {
-                return <Feather name="circle" size={28} color={props.color} />;
+                return (
+                  <Feather name="circle" size={28} color={props.color ?? Color.MiddleTerritory} />
+                );
               } else if (props.result === 0) {
                 return <Feather name="minus" size={32} color={Color.MiddleTerritory} />;
               } else {
                 return <Feather name="x" size={32} color={Color.MiddleTerritory} />;
               }
             })()}
-        </Center>
+          </Center>
+        )}
         <VStack flex center>
           <HStack flex center>
-            <Text numberOfLines={1} style={[TextStyles.h2, { color: props.color }]}>
+            <Text
+              numberOfLines={1}
+              style={[TextStyles.h2, props.color !== undefined && { color: props.color }]}
+            >
               {props.title}
             </Text>
             <HStack flex center reverse>

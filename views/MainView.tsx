@@ -563,7 +563,9 @@ const MainView = (props: MainViewProps) => {
             {!sessionToken && (
               <Center flex style={[ViewStyles.px4, ViewStyles.mb4]}>
                 <Button style={{ backgroundColor: accentColor }} onPress={onLogInPress}>
-                  <Text style={reverseTextColor}>{t("log_in")}</Text>
+                  <Text numberOfLines={1} style={reverseTextColor}>
+                    {t("log_in")}
+                  </Text>
                 </Button>
               </Center>
             )}
@@ -670,7 +672,9 @@ const MainView = (props: MainViewProps) => {
             color={Color.MiddleTerritory}
             style={ViewStyles.mb4}
           />
-          <Text style={ViewStyles.mb4}>{t("log_in_notice")}</Text>
+          <Text numberOfLines={1} style={ViewStyles.mb4}>
+            {t("log_in_notice")}
+          </Text>
           <VStack center style={{ width: "100%" }}>
             <Button
               style={[
@@ -680,7 +684,7 @@ const MainView = (props: MainViewProps) => {
               ]}
               onPress={onIminkPrivacyPolicyPress}
             >
-              <Text>{t("imink_privacy_policy")}</Text>
+              <Text numberOfLines={1}>{t("imink_privacy_policy")}</Text>
             </Button>
             <Button
               isLoading={loggingIn}
@@ -689,7 +693,9 @@ const MainView = (props: MainViewProps) => {
               textStyle={reverseTextColor}
               onPress={onLogInContinuePress}
             >
-              <Text style={reverseTextColor}>{t("log_in_continue")}</Text>
+              <Text numberOfLines={1} style={reverseTextColor}>
+                {t("log_in_continue")}
+              </Text>
             </Button>
           </VStack>
         </VStack>
@@ -702,7 +708,9 @@ const MainView = (props: MainViewProps) => {
             color={Color.MiddleTerritory}
             style={ViewStyles.mb4}
           />
-          <Text style={ViewStyles.mb4}>{t("log_out_notice")}</Text>
+          <Text numberOfLines={1} style={ViewStyles.mb4}>
+            {t("log_out_notice")}
+          </Text>
           <Button
             isLoading={loggingOut}
             isLoadingText={t("logging_out")}
@@ -710,7 +718,9 @@ const MainView = (props: MainViewProps) => {
             textStyle={reverseTextColor}
             onPress={onLogOutContinuePress}
           >
-            <Text style={reverseTextColor}>{t("log_out_continue")}</Text>
+            <Text numberOfLines={1} style={reverseTextColor}>
+              {t("log_out_continue")}
+            </Text>
           </Button>
         </VStack>
       </Modal>
@@ -720,7 +730,9 @@ const MainView = (props: MainViewProps) => {
         style={ViewStyles.modal1d}
       >
         <VStack center style={ViewStyles.mb3}>
-          <Text style={[TextStyles.h3, ViewStyles.mb2]}>{t("creators")}</Text>
+          <Text numberOfLines={1} style={[TextStyles.h3, ViewStyles.mb2]}>
+            {t("creators")}
+          </Text>
           <HStack center>
             <Avatar
               size={48}
@@ -739,12 +751,18 @@ const MainView = (props: MainViewProps) => {
           </HStack>
         </VStack>
         <VStack center>
-          <Text style={[TextStyles.h3, ViewStyles.mb2]}>{t("license")}</Text>
+          <Text numberOfLines={1} style={[TextStyles.h3, ViewStyles.mb2]}>
+            {t("license")}
+          </Text>
           <VStack center>
-            <Text style={[TextStyles.link, ViewStyles.mb1]} onPress={onSplatoon3InkPress}>
+            <Text
+              numberOfLines={1}
+              style={[TextStyles.link, ViewStyles.mb1]}
+              onPress={onSplatoon3InkPress}
+            >
               Splatoon3.ink
             </Text>
-            <Text style={TextStyles.link} onPress={onIminkFApiPress}>
+            <Text numberOfLines={1} style={TextStyles.link} onPress={onIminkFApiPress}>
               imink f API
             </Text>
           </VStack>

@@ -30,6 +30,7 @@ const ja = {
   acknowledgments: "謝辞",
   creators: "クリエーター",
   license: "ライセンス",
+  show_raw_result: "元のリザルトを表示",
   // Modes.
   regular_battle: "レギュラーマッチ",
   anarchy_battle: "バンカラマッチ",

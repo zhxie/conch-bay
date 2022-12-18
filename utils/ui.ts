@@ -8,9 +8,13 @@ import {
   Shift,
   Splatfest,
   SplatfestMatchSetting,
+  VsHistoryDetail,
   VsMode,
+  VsStage,
+  VsTeam,
   XMatchSetting,
 } from "../models";
+import { getAuthorityAndPath } from "./url";
 
 export const getMatchSetting = (schedule: Schedule, index?: number) => {
   const regularMatchSetting = schedule["regularMatchSetting"];
@@ -126,4 +130,31 @@ export const getFriendColor = (friend: Friend, accentColor: string) => {
     case "OFFLINE":
       return "transparent";
   }
+};
+
+export const convertStageImageUrl = (stage: VsStage) => {
+  const url = getAuthorityAndPath(stage.image.url);
+  const pathComponents = url.split("/");
+  const imageId = pathComponents[pathComponents.length - 1].split("_")[0];
+  return `https://splatoon3.ink/assets/splatnet/stage_img/icon/high_resolution/${imageId}_0.png`;
+};
+export const getVsJudgement = (battle: VsHistoryDetail) => {
+  switch (battle.vsHistoryDetail.judgement) {
+    case "WIN":
+      return 1;
+    case "DRAW":
+      return 0;
+    case "LOSE":
+    case "DEEMED_LOSE":
+    case "EXEMPTED_LOSE":
+      return -1;
+  }
+};
+export const getVsSelfPlayer = (battle: VsHistoryDetail) => {
+  return battle.vsHistoryDetail.myTeam.players.find((player) => player.isMyself)!;
+};
+export const getTeamColor = (team: VsTeam) => {
+  return `rgba(${Math.round(team.color.r * 255)}, ${Math.round(team.color.g * 255)}, ${Math.round(
+    team.color.b * 255
+  )}, ${Math.round(team.color.a * 255)})`;
 };

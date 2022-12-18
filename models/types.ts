@@ -159,6 +159,7 @@ export interface VsWeapon {
 }
 export interface VsPlayer {
   id: string;
+  name: string;
   isMyself: boolean;
   weapon: VsWeapon;
   paint: number;
@@ -167,9 +168,22 @@ export interface VsPlayer {
     death: number;
     assist: number;
     special: number;
+    noroshiTry: number | null;
   } | null;
 }
+export interface VsResult {
+  paintRatio: number | null;
+  score: number | null;
+}
 export interface VsTeam {
+  color: {
+    a: number;
+    b: number;
+    g: number;
+    r: number;
+  };
+  result: VsResult | null;
+  festTeamName: string | null;
   players: VsPlayer[];
 }
 export interface VsHistoryDetail {

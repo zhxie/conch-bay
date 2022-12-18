@@ -30,6 +30,7 @@ const en = {
   acknowledgments: "Acknowledgments",
   creators: "Creators",
   license: "License",
+  show_raw_result: "Show Raw Result",
   // Modes.
   regular_battle: "Regular Battle",
   anarchy_battle: "Anarchy Battle",
@@ -149,6 +150,10 @@ const en = {
   "V2VhcG9uLTcwMjA=": "REEF-LUX 450",
   "V2VhcG9uLTgwMDA=": "Splatana Stamper",
   "V2VhcG9uLTgwMTA=": "Splatana Wiper",
+  // Judgement.
+  win: "WIN!",
+  lose: "LOSE…",
+  draw: "DRAW",
   // Grades.
   "Q29vcEdyYWRlLTA=": "Apprentice",
   "Q29vcEdyYWRlLTE=": "Part-Timer",

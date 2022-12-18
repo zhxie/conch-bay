@@ -1,3 +1,7 @@
+export const getAuthorityAndPath = (url: string) => {
+  url.split("?")[0];
+  return url.split("?")[0];
+};
 export const getParam = (url: string, param: string) => {
   const regex = /[?&]([^=#]+)=([^&#]*)/g;
   let params: Record<string, string> = {};

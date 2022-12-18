@@ -7,6 +7,9 @@ enum Color {
   LightTerritory = "#f4f4f5",
   MiddleTerritory = "#a1a1aa",
   DarkTerritory = "#3f3f46",
+  KillAndSave = "#22c55e",
+  Death = "#ef4444",
+  Special = "#eab308",
   // Splatoon.
   RegularBattle = "#22c55e",
   AnarchyBattle = "#ea580c",

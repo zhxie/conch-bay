@@ -4,6 +4,7 @@ import { ViewStyles } from "./Styles";
 import Text from "./Text";
 import { HStack } from "./Stack";
 import { Circle } from "./Shape";
+import { Color } from "../models";
 
 interface BattleButtonProps {
   color: string;
@@ -45,15 +46,15 @@ const BattleButton = (props: BattleButtonProps) => {
     >
       {props.result !== undefined && (
         <HStack center>
-          <Circle size={10} color="salmon" style={ViewStyles.mr1} />
+          <Circle size={10} color={Color.KillAndSave} style={ViewStyles.mr1} />
           <Text numberOfLines={1} style={ViewStyles.mr1}>
             {killAndAssist}
           </Text>
-          <Circle size={10} color="darkseagreen" style={ViewStyles.mr1} />
+          <Circle size={10} color={Color.Death} style={ViewStyles.mr1} />
           <Text numberOfLines={1} style={ViewStyles.mr1}>
             {props.death ?? "-"}
           </Text>
-          <Circle size={10} color="gold" style={ViewStyles.mr1} />
+          <Circle size={10} color={Color.Special} style={ViewStyles.mr1} />
           <Text numberOfLines={1}>{props.special ?? "-"}</Text>
         </HStack>
       )}
