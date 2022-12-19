@@ -46,7 +46,7 @@ const BattleButton = (props: BattleButtonProps) => {
     >
       {props.result !== undefined && (
         <HStack center>
-          <Circle size={10} color={Color.KillAndSave} style={ViewStyles.mr1} />
+          <Circle size={10} color={Color.KillAndRescue} style={ViewStyles.mr1} />
           <Text numberOfLines={1} style={ViewStyles.mr1}>
             {killAndAssist}
           </Text>

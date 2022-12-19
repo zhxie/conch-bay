@@ -1,21 +1,26 @@
 import { useState } from "react";
-import { StyleProp, useColorScheme, ViewStyle } from "react-native";
+import { ScrollView, StyleProp, useColorScheme, ViewStyle } from "react-native";
 import JSONTree from "react-native-json-tree";
 import {
   BattleButton,
   BattlePlayerButton,
+  BossSalmonidBox,
   Button,
   Circle,
   CoopButton,
+  CoopPlayerButton,
   HStack,
   Modal,
   Text,
   TextStyles,
   VStack,
   ViewStyles,
+  WaveBox,
 } from "../components";
-import { Color, CoopHistoryDetail, VsHistoryDetail, VsTeam } from "../models";
+import { Color, CoopHistoryDetail, CoopWaveResult, VsHistoryDetail, VsTeam } from "../models";
 import {
+  getCoopIsClear,
+  getCoopIsWaveClear,
   getCoopRuleColor,
   getTeamColor,
   getVsJudgement,
@@ -45,6 +50,7 @@ const ResultView = (props: ResultViewProps) => {
   const [display, setDisplay] = useState<DisplayProps | undefined>(undefined);
   const [displayResult, setDisplayResult] = useState(false);
   const [displayBattle, setDisplayBattle] = useState(false);
+  const [displayCoop, setDisplayCoop] = useState(false);
 
   const formatWave = (coop: CoopHistoryDetail) => {
     switch (coop.coopHistoryDetail.resultWave) {
@@ -62,15 +68,6 @@ const ResultView = (props: ResultViewProps) => {
         }
         return t("wave_3");
     }
-  };
-  const formatIsWaveClear = (coop: CoopHistoryDetail) => {
-    if (coop.coopHistoryDetail.resultWave === 0) {
-      if (coop.coopHistoryDetail.bossResult) {
-        return coop.coopHistoryDetail.bossResult.hasDefeatBoss;
-      }
-      return true;
-    }
-    return false;
   };
   const formatHazardLevel = (coop: CoopHistoryDetail) => {
     if (coop.coopHistoryDetail.dangerRate > 0) {
@@ -105,6 +102,22 @@ const ResultView = (props: ResultViewProps) => {
     }
     return " ";
   };
+  const formatWaterLevel = (waveResult: CoopWaveResult) => {
+    switch (waveResult.waterLevel) {
+      case 0:
+        return t("low_tide");
+      case 1:
+        return t("normal");
+      case 2:
+        return t("high_tide");
+    }
+  };
+  const formatEventWave = (waveResult: CoopWaveResult) => {
+    if (!waveResult.eventWave) {
+      return "-";
+    }
+    return t(waveResult.eventWave.id);
+  };
 
   const onDisplayResultClose = () => {
     setDisplayResult(false);
@@ -112,8 +125,12 @@ const ResultView = (props: ResultViewProps) => {
   const onDisplayBattleClose = () => {
     setDisplayBattle(false);
   };
+  const onDisplayCoopClose = () => {
+    setDisplayCoop(false);
+  };
   const onShowRawResultPress = () => {
     setDisplayBattle(false);
+    setDisplayCoop(false);
     setTimeout(() => {
       setDisplayResult(true);
     }, 500);
@@ -155,15 +172,20 @@ const ResultView = (props: ResultViewProps) => {
                 result={result.coop!.coopHistoryDetail.resultWave === 0 ? 1 : -1}
                 rule={t(result.coop!.coopHistoryDetail.rule)}
                 stage={t(result.coop!.coopHistoryDetail.coopStage.id)}
+                kingSalmonid={
+                  result.coop!.coopHistoryDetail.bossResult !== null
+                    ? t(result.coop!.coopHistoryDetail.bossResult.boss.id)
+                    : undefined
+                }
                 wave={formatWave(result.coop!)!}
-                isWaveClear={formatIsWaveClear(result.coop!)}
+                isClear={getCoopIsClear(result.coop!)}
                 hazardLevel={formatHazardLevel(result.coop!)}
-                deliverCount={result.coop!.coopHistoryDetail.myResult.deliverCount}
-                goldenAssistCount={result.coop!.coopHistoryDetail.myResult.goldenAssistCount}
-                goldenDeliverCount={result.coop!.coopHistoryDetail.myResult.goldenDeliverCount}
+                powerEgg={result.coop!.coopHistoryDetail.myResult.deliverCount}
+                assistGoldenEgg={result.coop!.coopHistoryDetail.myResult.goldenAssistCount}
+                deliverGoldenEgg={result.coop!.coopHistoryDetail.myResult.goldenDeliverCount}
                 onPress={() => {
                   setDisplay({ coop: result.coop! });
-                  setDisplayResult(true);
+                  setDisplayCoop(true);
                 }}
               />
             );
@@ -275,6 +297,98 @@ const ResultView = (props: ResultViewProps) => {
             {t("show_raw_result")}
           </Text>
         </Button>
+      </Modal>
+      <Modal
+        isVisible={displayCoop}
+        onClose={onDisplayCoopClose}
+        style={[ViewStyles.modal2d, { paddingHorizontal: 0 }]}
+      >
+        {display?.coop && (
+          <VStack style={ViewStyles.mb2}>
+            {display.coop.coopHistoryDetail.waveResults.length > 0 && (
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={ViewStyles.mb2}>
+                <HStack center style={ViewStyles.px4}>
+                  {display.coop.coopHistoryDetail.waveResults.slice(0, 3).map((waveResult, i) => (
+                    <WaveBox
+                      key={i}
+                      color={
+                        getCoopIsWaveClear(display.coop!, i)
+                          ? getCoopRuleColor(display.coop!.coopHistoryDetail.rule)!
+                          : undefined
+                      }
+                      waterLevel={formatWaterLevel(waveResult)!}
+                      eventWave={formatEventWave(waveResult)}
+                      deliver={waveResult.teamDeliverCount!}
+                      quota={waveResult.deliverNorm!}
+                      appearance={waveResult.goldenPopCount}
+                      style={
+                        i !== display.coop!.coopHistoryDetail.waveResults.slice(0, 3).length - 1
+                          ? ViewStyles.mr2
+                          : undefined
+                      }
+                    />
+                  ))}
+                </HStack>
+              </ScrollView>
+            )}
+            {display.coop.coopHistoryDetail.enemyResults.length > 0 && (
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={ViewStyles.mb2}>
+                <HStack center style={ViewStyles.px4}>
+                  {display.coop.coopHistoryDetail.enemyResults.map((enemyResult, i) => (
+                    <BossSalmonidBox
+                      key={i}
+                      color={
+                        enemyResult.teamDefeatCount === enemyResult.popCount
+                          ? getCoopRuleColor(display.coop!.coopHistoryDetail.rule)!
+                          : undefined
+                      }
+                      name={t(enemyResult.enemy.id)}
+                      defeat={enemyResult.defeatCount}
+                      teamDefeat={enemyResult.teamDefeatCount}
+                      appearance={enemyResult.popCount}
+                      style={
+                        i !== display.coop!.coopHistoryDetail.enemyResults.length - 1
+                          ? ViewStyles.mr2
+                          : undefined
+                      }
+                    />
+                  ))}
+                </HStack>
+              </ScrollView>
+            )}
+            <VStack style={ViewStyles.px4}>
+              {[
+                display.coop.coopHistoryDetail.myResult,
+                ...display.coop.coopHistoryDetail.memberResults,
+              ].map((result, i) => (
+                <CoopPlayerButton
+                  key={i}
+                  isFirst={i === 0}
+                  isLast={i === display.coop!.coopHistoryDetail.memberResults.length}
+                  name={result.player.name}
+                  subtitle={`${t("boss_salmonids")} x${result.defeatEnemyCount}`}
+                  deliverGoldenEgg={result.goldenDeliverCount}
+                  assistGoldenEgg={result.goldenAssistCount}
+                  powerEgg={result.deliverCount}
+                  rescue={result.rescueCount}
+                  rescued={result.rescuedCount}
+                  style={[
+                    i === display.coop!.coopHistoryDetail.memberResults.length
+                      ? ViewStyles.mb2
+                      : undefined,
+                  ]}
+                />
+              ))}
+            </VStack>
+          </VStack>
+        )}
+        <VStack style={ViewStyles.px4}>
+          <Button style={{ backgroundColor: accentColor }} onPress={onShowRawResultPress}>
+            <Text numberOfLines={1} style={reverseTextColor}>
+              {t("show_raw_result")}
+            </Text>
+          </Button>
+        </VStack>
       </Modal>
     </VStack>
   );

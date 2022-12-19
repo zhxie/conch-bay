@@ -220,17 +220,44 @@ export interface CoopGrade {
   id: string;
 }
 export interface CoopPlayer {
+  name: string;
   id: string;
 }
 export interface CoopPlayerResult {
   player: CoopPlayer;
   weapons: CoopWeapon[];
+  defeatEnemyCount: number;
   deliverCount: number;
   goldenAssistCount: number;
   goldenDeliverCount: number;
+  rescueCount: number;
+  rescuedCount: number;
+}
+export interface CoopBoss {
+  id: string;
 }
 export interface CoopBossResult {
   hasDefeatBoss: boolean;
+  boss: CoopBoss;
+}
+export interface CoopEnemy {
+  id: string;
+}
+export interface CoopEnemyResult {
+  defeatCount: number;
+  teamDefeatCount: number;
+  popCount: number;
+  enemy: CoopEnemy;
+}
+export interface CoopEventWave {
+  id: string;
+}
+export interface CoopWaveResult {
+  waterLevel: number;
+  eventWave: CoopEventWave | null;
+  deliverNorm: number | null;
+  goldenPopCount: number;
+  teamDeliverCount: number | null;
 }
 export interface CoopHistoryDetail {
   coopHistoryDetail: {
@@ -238,6 +265,8 @@ export interface CoopHistoryDetail {
     myResult: CoopPlayerResult;
     memberResults: CoopPlayerResult[];
     bossResult: CoopBossResult | null;
+    enemyResults: CoopEnemyResult[];
+    waveResults: CoopWaveResult[];
     resultWave: number;
     playedTime: string;
     rule: "REGULAR" | "BIG_RUN";

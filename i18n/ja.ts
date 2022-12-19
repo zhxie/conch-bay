@@ -165,6 +165,34 @@ const ja = {
   wave_2: "WAVE 2",
   wave_3: "WAVE 3",
   xtrawave: "EX-WAVE",
+  // Boss Salmonids.
+  boss_salmonids: "オオモノシャケ",
+  "Q29vcEVuZW15LTQ=": "バクダン",
+  "Q29vcEVuZW15LTU=": "カタパッド",
+  "Q29vcEVuZW15LTY=": "テッパン",
+  "Q29vcEVuZW15LTc=": "ヘビ",
+  "Q29vcEVuZW15LTg=": "タワー",
+  "Q29vcEVuZW15LTk=": "モグラ",
+  Q29vcEVuZW15LTEw: "コウモリ",
+  Q29vcEVuZW15LTEx: "ハシラ",
+  Q29vcEVuZW15LTEy: "ダイバー",
+  Q29vcEVuZW15LTEz: "テッキュウ",
+  Q29vcEVuZW15LTE0: "ナベブタ",
+  // King Salmonids.
+  Q29vcEVuZW15LTIz: "ヨコヅナ",
+  // Water levels.
+  low_tide: "干潮",
+  normal: "普通",
+  high_tide: "満潮",
+  // Events.
+  Q29vcEV2ZW50V2F2ZS00: "ハコビヤ襲来",
+  Q29vcEV2ZW50V2F2ZS01: "霧",
+  Q29vcEV2ZW50V2F2ZS02: "ドスコイ大量発生",
+  Q29vcEV2ZW50V2F2ZS03: "巨大タツマキ",
+  Q29vcEV2ZW50V2F2ZS04: "ドロシャケ噴出",
+  Q29vcEV2ZW50V2F2ZS0x: "ラッシュ",
+  Q29vcEV2ZW50V2F2ZS0y: "キンシャケ探し",
+  Q29vcEV2ZW50V2F2ZS0z: "グリル発進",
 };
 
 export default ja;

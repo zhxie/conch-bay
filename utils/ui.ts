@@ -2,6 +2,7 @@ import dayjs from "dayjs";
 import {
   AnarchyMatchSetting,
   Color,
+  CoopHistoryDetail,
   Friend,
   RegularMatchSetting,
   Schedule,
@@ -157,4 +158,19 @@ export const getTeamColor = (team: VsTeam) => {
   return `rgba(${Math.round(team.color.r * 255)}, ${Math.round(team.color.g * 255)}, ${Math.round(
     team.color.b * 255
   )}, ${Math.round(team.color.a * 255)})`;
+};
+export const getCoopIsClear = (coop: CoopHistoryDetail) => {
+  if (coop.coopHistoryDetail.resultWave === 0) {
+    if (coop.coopHistoryDetail.bossResult) {
+      return coop.coopHistoryDetail.bossResult.hasDefeatBoss;
+    }
+    return true;
+  }
+  return false;
+};
+export const getCoopIsWaveClear = (coop: CoopHistoryDetail, wave: number) => {
+  if (coop.coopHistoryDetail.resultWave === 0) {
+    return true;
+  }
+  return wave + 1 < coop.coopHistoryDetail.resultWave;
 };

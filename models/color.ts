@@ -7,7 +7,7 @@ enum Color {
   LightTerritory = "#f4f4f5",
   MiddleTerritory = "#a1a1aa",
   DarkTerritory = "#3f3f46",
-  KillAndSave = "#22c55e",
+  KillAndRescue = "#22c55e",
   Death = "#ef4444",
   Special = "#eab308",
   // Splatoon.
@@ -23,6 +23,8 @@ enum Color {
   Online = "#6af6cd",
   Playing = "#f02d7d",
   Working = "#f02d7d",
+  PowerEgg = "#ff6200",
+  GoldenEgg = "#ffce00",
 }
 
 export default Color;

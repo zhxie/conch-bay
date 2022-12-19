@@ -162,6 +162,34 @@ const zh = {
   wave_2: "WAVE 2",
   wave_3: "WAVE 3",
   xtrawave: "EX-WAVE",
+  // Boss Salmonids.
+  boss_salmonids: "巨大鲑鱼",
+  "Q29vcEVuZW15LTQ=": "炸弹鱼",
+  "Q29vcEVuZW15LTU=": "垫肩飞鱼",
+  "Q29vcEVuZW15LTY=": "铁板鱼",
+  "Q29vcEVuZW15LTc=": "蛇鱼",
+  "Q29vcEVuZW15LTg=": "高塔鱼",
+  "Q29vcEVuZW15LTk=": "鼹鼠鱼",
+  Q29vcEVuZW15LTEw: "蝙蝠鱼",
+  Q29vcEVuZW15LTEx: "柱鱼",
+  Q29vcEVuZW15LTEy: "潜水鱼",
+  Q29vcEVuZW15LTEz: "铁球鱼",
+  Q29vcEVuZW15LTE0: "锅盖鱼",
+  // King Salmonids.
+  Q29vcEVuZW15LTIz: "横纲",
+  // Water levels.
+  low_tide: "干潮",
+  normal: "普通",
+  high_tide: "满潮",
+  // Events.
+  Q29vcEV2ZW50V2F2ZS00: "走私鱼来袭",
+  Q29vcEV2ZW50V2F2ZS01: "雾",
+  Q29vcEV2ZW50V2F2ZS02: "大胖鱼大量出现",
+  Q29vcEV2ZW50V2F2ZS03: "巨型龙卷风",
+  Q29vcEV2ZW50V2F2ZS04: "泥鲑鱼喷发",
+  Q29vcEV2ZW50V2F2ZS0x: "狂潮",
+  Q29vcEV2ZW50V2F2ZS0y: "寻找金鲑鱼",
+  Q29vcEV2ZW50V2F2ZS0z: "烤架鱼进发",
 };
 
 export default zh;

@@ -108,6 +108,14 @@ export const ViewStyles = StyleSheet.create({
     borderBottomLeftRadius: 8,
     borderBottomRightRadius: 8,
   },
+  rl: {
+    borderTopLeftRadius: 8,
+    borderBottomLeftRadius: 8,
+  },
+  rr: {
+    borderTopRightRadius: 8,
+    borderBottomRightRadius: 8,
+  },
   mr1: {
     marginRight: 4,
   },

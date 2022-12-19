@@ -169,6 +169,34 @@ const en = {
   wave_2: "Wave 2",
   wave_3: "Wave 3",
   xtrawave: "XTRAWAVE",
+  // Boss Salmonids.
+  boss_salmonids: "Boss Salmonids",
+  "Q29vcEVuZW15LTQ=": "Steelhead",
+  "Q29vcEVuZW15LTU=": "Flyfish",
+  "Q29vcEVuZW15LTY=": "Scrapper",
+  "Q29vcEVuZW15LTc=": "Steel Eel",
+  "Q29vcEVuZW15LTg=": "Stinger",
+  "Q29vcEVuZW15LTk=": "Maws",
+  Q29vcEVuZW15LTEw: "Drizzler",
+  Q29vcEVuZW15LTEx: "Fish Stick",
+  Q29vcEVuZW15LTEy: "Flipper-Flopper",
+  Q29vcEVuZW15LTEz: "Big Shot",
+  Q29vcEVuZW15LTE0: "Slammin' Lid",
+  // King Salmonids.
+  Q29vcEVuZW15LTIz: "Cohozuna",
+  // Water levels.
+  low_tide: "Low Tide",
+  normal: "Normal",
+  high_tide: "High Tide",
+  // Events.
+  Q29vcEV2ZW50V2F2ZS00: "The Mothership",
+  Q29vcEV2ZW50V2F2ZS01: "Fog",
+  Q29vcEV2ZW50V2F2ZS02: "Cohock Charge",
+  Q29vcEV2ZW50V2F2ZS03: "Giant Tornado",
+  Q29vcEV2ZW50V2F2ZS04: "Mudmouth Eruptions",
+  Q29vcEV2ZW50V2F2ZS0x: "Rush",
+  Q29vcEV2ZW50V2F2ZS0y: "Goldie Seeking",
+  Q29vcEV2ZW50V2F2ZS0z: "The Griller",
 };
 
 export default en;

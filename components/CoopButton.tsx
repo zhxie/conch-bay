@@ -4,6 +4,7 @@ import { TextStyles, ViewStyles } from "./Styles";
 import Text from "./Text";
 import { HStack } from "./Stack";
 import { Circle } from "./Shape";
+import { Color } from "../models";
 
 interface CoopButtonProps {
   color: string;
@@ -13,23 +14,26 @@ interface CoopButtonProps {
   result?: number;
   rule: string;
   stage: string;
+  kingSalmonid?: string;
   wave: string;
-  isWaveClear: boolean;
+  isClear: boolean;
   hazardLevel: string;
-  deliverCount: number;
-  goldenAssistCount: number;
-  goldenDeliverCount: number;
+  deliverGoldenEgg: number;
+  assistGoldenEgg: number;
+  powerEgg: number;
   style?: StyleProp<ViewStyle>;
   onPress?: () => void;
 }
 
 const CoopButton = (props: CoopButtonProps) => {
-  const waveStyle = props.isWaveClear ? [TextStyles.b, { color: props.color }] : undefined;
+  const waveStyle = props.isClear ? [TextStyles.b, { color: props.color }] : undefined;
 
-  const goldenCount =
-    props.goldenAssistCount! > 0
-      ? `${props.goldenDeliverCount}<${props.goldenAssistCount}>`
-      : props.goldenDeliverCount;
+  const subtitle =
+    props.kingSalmonid !== undefined ? `${props.stage} / ${props.kingSalmonid}` : `${props.stage}`;
+  const goldenEgg =
+    props.assistGoldenEgg! > 0
+      ? `${props.deliverGoldenEgg}<${props.assistGoldenEgg}>`
+      : props.deliverGoldenEgg;
 
   return (
     <ResultButton
@@ -39,7 +43,7 @@ const CoopButton = (props: CoopButtonProps) => {
       isLast={props.isLast}
       result={props.result}
       title={props.rule}
-      subtitle={props.stage}
+      subtitle={subtitle}
       subChildren={
         <HStack center>
           <Text numberOfLines={1} style={[ViewStyles.mr1, waveStyle]}>
@@ -53,12 +57,12 @@ const CoopButton = (props: CoopButtonProps) => {
     >
       {props.result !== undefined && (
         <HStack center>
-          <Circle size={10} color="gold" style={ViewStyles.mr1} />
+          <Circle size={10} color={Color.GoldenEgg} style={ViewStyles.mr1} />
           <Text numberOfLines={1} style={ViewStyles.mr1}>
-            {goldenCount}
+            {goldenEgg}
           </Text>
-          <Circle size={10} color="salmon" style={ViewStyles.mr1} />
-          <Text numberOfLines={1}>{props.deliverCount}</Text>
+          <Circle size={10} color={Color.PowerEgg} style={ViewStyles.mr1} />
+          <Text numberOfLines={1}>{props.powerEgg}</Text>
         </HStack>
       )}
     </ResultButton>
