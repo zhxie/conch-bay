@@ -677,9 +677,7 @@ const MainView = (props: MainViewProps) => {
             color={Color.MiddleTerritory}
             style={ViewStyles.mb4}
           />
-          <Text numberOfLines={1} style={ViewStyles.mb4}>
-            {t("log_in_notice")}
-          </Text>
+          <Text style={ViewStyles.mb4}>{t("log_in_notice")}</Text>
           <VStack center style={{ width: "100%" }}>
             <Button
               style={[
@@ -713,9 +711,7 @@ const MainView = (props: MainViewProps) => {
             color={Color.MiddleTerritory}
             style={ViewStyles.mb4}
           />
-          <Text numberOfLines={1} style={ViewStyles.mb4}>
-            {t("log_out_notice")}
-          </Text>
+          <Text style={ViewStyles.mb4}>{t("log_out_notice")}</Text>
           <Button
             isLoading={loggingOut}
             isLoadingText={t("logging_out")}
