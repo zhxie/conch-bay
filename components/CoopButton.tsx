@@ -1,10 +1,9 @@
 import { StyleProp, ViewStyle } from "react-native";
 import ResultButton from "./ResultButton";
-import { TextStyles, ViewStyles } from "./Styles";
+import { Color, TextStyles, ViewStyles } from "./Styles";
 import Text from "./Text";
 import { HStack } from "./Stack";
 import { Circle } from "./Shape";
-import { Color } from "../models";
 
 interface CoopButtonProps {
   color: string;

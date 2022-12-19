@@ -1,6 +1,6 @@
 import { ScrollView, StyleProp, useColorScheme, ViewStyle } from "react-native";
-import { Avatar, HStack, ViewStyles } from "../components";
-import { Color, Friends } from "../models";
+import { Avatar, Color, HStack, ViewStyles } from "../components";
+import { Friends } from "../models/types";
 import { getFriendColor } from "../utils/ui";
 
 interface FriendViewProps {

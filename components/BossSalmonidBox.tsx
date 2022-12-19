@@ -1,9 +1,8 @@
 import { StyleProp, ViewStyle, useColorScheme } from "react-native";
-import { TextStyles, ViewStyles } from "./Styles";
+import { Color, TextStyles, ViewStyles } from "./Styles";
 import { HStack, VStack } from "./Stack";
 import Text from "./Text";
 import { Circle } from "./Shape";
-import { Color } from "../models";
 
 interface BossSalmonidBoxProps {
   color?: string;

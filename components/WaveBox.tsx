@@ -1,8 +1,7 @@
 import { StyleProp, ViewStyle, useColorScheme } from "react-native";
-import { Color } from "../models";
 import { Circle } from "./Shape";
 import { HStack, VStack } from "./Stack";
-import { TextStyles, ViewStyles } from "./Styles";
+import { Color, TextStyles, ViewStyles } from "./Styles";
 import Text from "./Text";
 
 interface WaveBoxProps {

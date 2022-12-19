@@ -13,6 +13,7 @@ import {
   Badge,
   Button,
   Center,
+  Color,
   HStack,
   Modal,
   Text,
@@ -21,7 +22,7 @@ import {
   VStack,
   ViewStyles,
 } from "../components";
-import { Color, CoopHistoryDetail, Friends, Schedules, VsHistoryDetail } from "../models";
+import { CoopHistoryDetail, Friends, Schedules, VsHistoryDetail } from "../models";
 import {
   checkBulletToken,
   fetchBattleHistories,

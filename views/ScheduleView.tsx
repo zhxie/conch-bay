@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ScrollView, StyleProp, useColorScheme, ViewStyle } from "react-native";
 import {
+  Color,
   HStack,
   Modal,
   ScheduleBox,
@@ -9,7 +10,7 @@ import {
   ShiftBox,
   ViewStyles,
 } from "../components";
-import { Color, CoopWeapon, Splatfest, Schedule, Schedules, Shift, VsStage } from "../models";
+import { CoopWeapon, Splatfest, Schedule, Schedules, Shift, VsStage } from "../models/types";
 import {
   getCoopStage,
   getCoopStageId,

@@ -1,7 +1,6 @@
 import dayjs from "dayjs";
 import {
   AnarchyMatchSetting,
-  Color,
   CoopHistoryDetail,
   Friend,
   RegularMatchSetting,
@@ -14,8 +13,9 @@ import {
   VsStage,
   VsTeam,
   XMatchSetting,
-} from "../models";
+} from "../models/types";
 import { getAuthorityAndPath } from "./url";
+import { Color } from "../components";
 
 export const getMatchSetting = (schedule: Schedule, index?: number) => {
   const regularMatchSetting = schedule["regularMatchSetting"];

@@ -13,7 +13,7 @@ import {
   Summary,
   VsHistoryDetail,
   XBattleHistories,
-} from "../models";
+} from "../models/types";
 import { base64, base64url } from "./encode";
 import { formUrlEncoded, getParam } from "./url";
 

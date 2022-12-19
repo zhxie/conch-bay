@@ -7,6 +7,7 @@ import {
   BossSalmonidBox,
   Button,
   Circle,
+  Color,
   CoopButton,
   CoopPlayerButton,
   HStack,
@@ -17,7 +18,7 @@ import {
   ViewStyles,
   WaveBox,
 } from "../components";
-import { Color, CoopHistoryDetail, CoopWaveResult, VsHistoryDetail, VsTeam } from "../models";
+import { CoopHistoryDetail, CoopWaveResult, VsHistoryDetail, VsTeam } from "../models/types";
 import {
   getCoopIsClear,
   getCoopIsWaveClear,
