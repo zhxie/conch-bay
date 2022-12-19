@@ -178,6 +178,9 @@ const ja = {
   Q29vcEVuZW15LTEy: "ダイバー",
   Q29vcEVuZW15LTEz: "テッキュウ",
   Q29vcEVuZW15LTE0: "ナベブタ",
+  Q29vcEVuZW15LTE1: "キンシャケ",
+  Q29vcEVuZW15LTE3: "グリル",
+  Q29vcEVuZW15LTIw: "ドロシャケ",
   // King Salmonids.
   Q29vcEVuZW15LTIz: "ヨコヅナ",
   // Water levels.

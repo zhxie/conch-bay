@@ -175,6 +175,9 @@ const zh = {
   Q29vcEVuZW15LTEy: "潜水鱼",
   Q29vcEVuZW15LTEz: "铁球鱼",
   Q29vcEVuZW15LTE0: "锅盖鱼",
+  Q29vcEVuZW15LTE1: "金鲑鱼",
+  Q29vcEVuZW15LTE3: "烤架鱼",
+  Q29vcEVuZW15LTIw: "泥鲑鱼",
   // King Salmonids.
   Q29vcEVuZW15LTIz: "横纲",
   // Water levels.

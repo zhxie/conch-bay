@@ -182,6 +182,9 @@ const en = {
   Q29vcEVuZW15LTEy: "Flipper-Flopper",
   Q29vcEVuZW15LTEz: "Big Shot",
   Q29vcEVuZW15LTE0: "Slammin' Lid",
+  Q29vcEVuZW15LTE1: "Goldie",
+  Q29vcEVuZW15LTE3: "Griller",
+  Q29vcEVuZW15LTIw: "Mudmouth",
   // King Salmonids.
   Q29vcEVuZW15LTIz: "Cohozuna",
   // Water levels.

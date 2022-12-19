@@ -610,8 +610,12 @@ const MainView = (props: MainViewProps) => {
               />
             )}
             {sessionToken.length > 0 && (
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={ViewStyles.mb4}>
-                <HStack style={ViewStyles.px4}>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                style={[ViewStyles.mb4, { width: "100%" }]}
+              >
+                <HStack flex center style={ViewStyles.px4}>
                   <ToolButton
                     isLoading={false}
                     isLoadingText=""

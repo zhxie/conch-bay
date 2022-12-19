@@ -19,7 +19,7 @@ const WaveBox = (props: WaveBoxProps) => {
   const style = colorScheme === "light" ? ViewStyles.lightTerritory : ViewStyles.darkTerritory;
 
   return (
-    <VStack style={[ViewStyles.r, ViewStyles.p2, { width: 120, height: 90 }, style, props.style]}>
+    <VStack style={[ViewStyles.r, ViewStyles.p2, { width: 125, height: 90 }, style, props.style]}>
       <VStack flex>
         <Text
           numberOfLines={1}

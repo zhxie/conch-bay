@@ -21,7 +21,7 @@ const BossSalmonidBox = (props: BossSalmonidBoxProps) => {
     props.defeat > 0 ? `${props.teamDefeat}(${props.defeat})` : String(props.teamDefeat);
 
   return (
-    <VStack style={[ViewStyles.r, ViewStyles.p2, { width: 100, height: 80 }, style, props.style]}>
+    <VStack style={[ViewStyles.r, ViewStyles.p2, { width: 110, height: 80 }, style, props.style]}>
       <VStack flex>
         <Text
           numberOfLines={1}
