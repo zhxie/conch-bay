@@ -30,12 +30,12 @@ const ScheduleBox = (props: ScheduleBoxProps) => {
           </HStack>
         </HStack>
         <HStack flex center>
-          {props.stages.map((stage, i) => (
+          {props.stages.map((stage, i, stages) => (
             <VStack
               flex
               center
               key={i}
-              style={i !== props.stages.length - 1 ? ViewStyles.mr2 : undefined}
+              style={i !== stages.length - 1 ? ViewStyles.mr2 : undefined}
             >
               <Image
                 source={{

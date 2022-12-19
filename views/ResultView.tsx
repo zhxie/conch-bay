@@ -275,11 +275,11 @@ const ResultView = (props: ResultViewProps) => {
                   </Text>
                 </HStack>
               </HStack>
-              {team.players.map((player, i) => (
+              {team.players.map((player, i, players) => (
                 <BattlePlayerButton
                   key={i}
                   isFirst={i === 0}
-                  isLast={i === team.players.length - 1}
+                  isLast={i === players.length - 1}
                   name={player.name}
                   weapon={t(player.weapon.id)}
                   paint={player.paint}
@@ -308,51 +308,47 @@ const ResultView = (props: ResultViewProps) => {
             {display.coop.coopHistoryDetail.waveResults.length > 0 && (
               <ScrollView horizontal showsHorizontalScrollIndicator={false} style={ViewStyles.mb2}>
                 <HStack center style={ViewStyles.px4}>
-                  {display.coop.coopHistoryDetail.waveResults.slice(0, 3).map((waveResult, i) => (
-                    <WaveBox
-                      key={i}
-                      color={
-                        getCoopIsWaveClear(display.coop!, i)
-                          ? getCoopRuleColor(display.coop!.coopHistoryDetail.rule)!
-                          : undefined
-                      }
-                      waterLevel={formatWaterLevel(waveResult)!}
-                      eventWave={formatEventWave(waveResult)}
-                      deliver={waveResult.teamDeliverCount!}
-                      quota={waveResult.deliverNorm!}
-                      appearance={waveResult.goldenPopCount}
-                      style={
-                        i !== display.coop!.coopHistoryDetail.waveResults.slice(0, 3).length - 1
-                          ? ViewStyles.mr2
-                          : undefined
-                      }
-                    />
-                  ))}
+                  {display.coop.coopHistoryDetail.waveResults
+                    .slice(0, 3)
+                    .map((waveResult, i, waveResults) => (
+                      <WaveBox
+                        key={i}
+                        color={
+                          getCoopIsWaveClear(display.coop!, i)
+                            ? getCoopRuleColor(display.coop!.coopHistoryDetail.rule)!
+                            : undefined
+                        }
+                        waterLevel={formatWaterLevel(waveResult)!}
+                        eventWave={formatEventWave(waveResult)}
+                        deliver={waveResult.teamDeliverCount!}
+                        quota={waveResult.deliverNorm!}
+                        appearance={waveResult.goldenPopCount}
+                        style={i !== waveResults.length - 1 ? ViewStyles.mr2 : undefined}
+                      />
+                    ))}
                 </HStack>
               </ScrollView>
             )}
             {display.coop.coopHistoryDetail.enemyResults.length > 0 && (
               <ScrollView horizontal showsHorizontalScrollIndicator={false} style={ViewStyles.mb2}>
                 <HStack center style={ViewStyles.px4}>
-                  {display.coop.coopHistoryDetail.enemyResults.map((enemyResult, i) => (
-                    <BossSalmonidBox
-                      key={i}
-                      color={
-                        enemyResult.teamDefeatCount === enemyResult.popCount
-                          ? getCoopRuleColor(display.coop!.coopHistoryDetail.rule)!
-                          : undefined
-                      }
-                      name={t(enemyResult.enemy.id)}
-                      defeat={enemyResult.defeatCount}
-                      teamDefeat={enemyResult.teamDefeatCount}
-                      appearance={enemyResult.popCount}
-                      style={
-                        i !== display.coop!.coopHistoryDetail.enemyResults.length - 1
-                          ? ViewStyles.mr2
-                          : undefined
-                      }
-                    />
-                  ))}
+                  {display.coop.coopHistoryDetail.enemyResults.map(
+                    (enemyResult, i, enemyResults) => (
+                      <BossSalmonidBox
+                        key={i}
+                        color={
+                          enemyResult.teamDefeatCount === enemyResult.popCount
+                            ? getCoopRuleColor(display.coop!.coopHistoryDetail.rule)!
+                            : undefined
+                        }
+                        name={t(enemyResult.enemy.id)}
+                        defeat={enemyResult.defeatCount}
+                        teamDefeat={enemyResult.teamDefeatCount}
+                        appearance={enemyResult.popCount}
+                        style={i !== enemyResults.length - 1 ? ViewStyles.mr2 : undefined}
+                      />
+                    )
+                  )}
                 </HStack>
               </ScrollView>
             )}
@@ -360,23 +356,18 @@ const ResultView = (props: ResultViewProps) => {
               {[
                 display.coop.coopHistoryDetail.myResult,
                 ...display.coop.coopHistoryDetail.memberResults,
-              ].map((result, i) => (
+              ].map((memberResult, i, memberResults) => (
                 <CoopPlayerButton
                   key={i}
                   isFirst={i === 0}
-                  isLast={i === display.coop!.coopHistoryDetail.memberResults.length}
-                  name={result.player.name}
-                  subtitle={`${t("boss_salmonids")} x${result.defeatEnemyCount}`}
-                  deliverGoldenEgg={result.goldenDeliverCount}
-                  assistGoldenEgg={result.goldenAssistCount}
-                  powerEgg={result.deliverCount}
-                  rescue={result.rescueCount}
-                  rescued={result.rescuedCount}
-                  style={[
-                    i === display.coop!.coopHistoryDetail.memberResults.length
-                      ? ViewStyles.mb2
-                      : undefined,
-                  ]}
+                  isLast={i === memberResults.length - 1}
+                  name={memberResult.player.name}
+                  subtitle={`${t("boss_salmonids")} x${memberResult.defeatEnemyCount}`}
+                  deliverGoldenEgg={memberResult.goldenDeliverCount}
+                  assistGoldenEgg={memberResult.goldenAssistCount}
+                  powerEgg={memberResult.deliverCount}
+                  rescue={memberResult.rescueCount}
+                  rescued={memberResult.rescuedCount}
                 />
               ))}
             </VStack>

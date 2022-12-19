@@ -21,14 +21,14 @@ const FriendView = (props: FriendViewProps) => {
       <HStack center style={ViewStyles.px4}>
         {(() => {
           if (props.friends) {
-            return props.friends.friends.nodes.map((friend, i) => (
+            return props.friends.friends.nodes.map((friend, i, friends) => (
               <Avatar
                 key={i}
                 size={48}
                 source={{
                   uri: friend.userIcon.url,
                 }}
-                style={i !== props.friends!.friends.nodes.length - 1 ? ViewStyles.mr2 : undefined}
+                style={i !== friends.length - 1 ? ViewStyles.mr2 : undefined}
                 imageStyle={{
                   borderColor: getFriendColor(friend, accentColor),
                   borderWidth: 2,

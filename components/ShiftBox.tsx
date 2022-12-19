@@ -42,14 +42,14 @@ const ShiftBox = (props: ScheduleBoxProps) => {
           </VStack>
           <VStack flex center>
             <HStack center>
-              {props.weapons.map((weapon, i) => (
+              {props.weapons.map((weapon, i, weapons) => (
                 <Image
                   key={i}
                   source={{
                     uri: weapon,
                   }}
                   style={[
-                    i !== props.weapons.length - 1 ? ViewStyles.mr1 : undefined,
+                    i !== weapons.length - 1 ? ViewStyles.mr1 : undefined,
                     ViewStyles.f,
                     styles.weapon,
                   ]}

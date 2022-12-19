@@ -266,13 +266,13 @@ const ScheduleView = (props: ScheduleViewProps) => {
           {display?.schedules &&
             display.schedules
               .filter((schedule) => getMatchSetting(schedule, display.index))
-              .map((schedule, i) => (
+              .map((schedule, i, schedules) => (
                 <ScheduleBox
                   key={i}
                   rule={t(getVsRuleId(schedule, display.index))}
                   time={getTimeRange(schedule, false)}
                   stages={getVsStages(schedule, display.index).map(formatStage)}
-                  style={i !== display.schedules!.length - 1 ? ViewStyles.mb2 : undefined}
+                  style={i !== schedules.length - 1 ? ViewStyles.mb2 : undefined}
                 />
               ))}
         </ScheduleList>
@@ -282,14 +282,14 @@ const ScheduleView = (props: ScheduleViewProps) => {
           {display?.shifts &&
             display.shifts
               .filter((shift) => getShiftSetting(shift))
-              .map((shift, i) => (
+              .map((shift, i, shifts) => (
                 <ShiftBox
                   key={i}
                   rule={display.title}
                   time={getTimeRange(shift, true)}
                   stage={formatStage(getCoopStage(shift))}
                   weapons={getCoopWeapons(shift).map(formatWeapon)}
-                  style={i !== display.shifts!.length - 1 ? ViewStyles.mb2 : undefined}
+                  style={i !== shifts.length - 1 ? ViewStyles.mb2 : undefined}
                 />
               ))}
         </ScheduleList>
