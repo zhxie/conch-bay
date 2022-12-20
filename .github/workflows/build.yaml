@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
@@ -44,4 +44,11 @@ jobs:
         run: npm install
 
       - name: Build
-        run: eas build --local --non-interactive --platform ios --profile preview
+        run: eas build --local --non-interactive --platform android --profile preview
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: conch-bay-android
+          path: |
+            ./*.gz.tar
