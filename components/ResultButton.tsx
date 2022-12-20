@@ -58,7 +58,7 @@ const ResultButton = (props: ResultButtonProps) => {
             })()}
           </Center>
         )}
-        <VStack flex center>
+        <VStack flex>
           <HStack flex center>
             <Text
               numberOfLines={1}

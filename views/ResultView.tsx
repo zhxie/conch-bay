@@ -274,7 +274,7 @@ const ResultView = (props: ResultViewProps) => {
       >
         {display?.battle &&
           formatTeams(display.battle).map((team, i) => (
-            <VStack flex center key={i} style={ViewStyles.mb2}>
+            <VStack flex key={i} style={ViewStyles.mb2}>
               <HStack center style={ViewStyles.mb1}>
                 <Circle size={12} color={getTeamColor(team)} style={ViewStyles.mr1} />
                 <Text numberOfLines={1} style={[TextStyles.b, { color: getTeamColor(team) }]}>

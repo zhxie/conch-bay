@@ -19,7 +19,7 @@ interface ScheduleBoxProps {
 const ShiftBox = (props: ScheduleBoxProps) => {
   return (
     <HStack flex style={props.style}>
-      <VStack flex center>
+      <VStack flex>
         <HStack flex center style={ViewStyles.mb1}>
           <Text numberOfLines={1} style={TextStyles.b}>
             {props.rule}

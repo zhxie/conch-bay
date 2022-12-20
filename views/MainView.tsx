@@ -565,7 +565,7 @@ const MainView = (props: MainViewProps) => {
   };
 
   return (
-    <VStack flex center style={backgroundStyle}>
+    <VStack flex style={backgroundStyle}>
       <Animated.View style={{ opacity: fade }}>
         <ScrollView
           refreshControl={
@@ -697,11 +697,11 @@ const MainView = (props: MainViewProps) => {
             style={ViewStyles.mb4}
           />
           <Text style={ViewStyles.mb4}>{t("log_in_notice")}</Text>
-          <VStack center style={{ width: "100%" }}>
+          <VStack style={{ width: "100%" }}>
             <Button
               style={[
                 ViewStyles.mb2,
-                { width: "100%", borderColor: accentColor, borderWidth: 1.5 },
+                { borderColor: accentColor, borderWidth: 1.5 },
                 backgroundStyle,
               ]}
               onPress={onIminkPrivacyPolicyPress}
@@ -711,7 +711,7 @@ const MainView = (props: MainViewProps) => {
             <Button
               isLoading={loggingIn}
               isLoadingText={t("logging_in")}
-              style={{ width: "100%", backgroundColor: accentColor }}
+              style={{ backgroundColor: accentColor }}
               textStyle={reverseTextColor}
               onPress={onLogInContinuePress}
             >
@@ -753,19 +753,16 @@ const MainView = (props: MainViewProps) => {
             style={ViewStyles.mb4}
           />
           <Text style={ViewStyles.mb4}>{t("debug_notice")}</Text>
-          <VStack center style={{ width: "100%" }}>
+          <VStack style={{ width: "100%" }}>
             <Button
-              style={[ViewStyles.mb2, { width: "100%", backgroundColor: accentColor }]}
+              style={[ViewStyles.mb2, { backgroundColor: accentColor }]}
               onPress={onCopySessionTokenPress}
             >
               <Text numberOfLines={1} style={reverseTextColor}>
                 {t("copy_session_token")}
               </Text>
             </Button>
-            <Button
-              style={{ width: "100%", backgroundColor: accentColor }}
-              onPress={onCopyBulletTokenPress}
-            >
+            <Button style={{ backgroundColor: accentColor }} onPress={onCopyBulletTokenPress}>
               <Text numberOfLines={1} style={reverseTextColor}>
                 {t("copy_bullet_token")}
               </Text>
