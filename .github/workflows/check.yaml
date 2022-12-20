@@ -52,4 +52,4 @@ jobs:
         run: npm install
 
       - name: ESLint code
-        run: npx run lint
+        run: npm run lint
