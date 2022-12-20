@@ -47,4 +47,4 @@ jobs:
         run: npm install
 
       - name: Build
-        run: eas build --local --non-interactive --platform all --profile preview
+        run: eas build --local --non-interactive --platform ios --profile preview
