@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { ScrollView, StyleProp, useColorScheme, ViewStyle } from "react-native";
 import JSONTree from "react-native-json-tree";
 import {
@@ -52,6 +52,7 @@ const ResultView = (props: ResultViewProps) => {
   const [displayResult, setDisplayResult] = useState(false);
   const [displayBattle, setDisplayBattle] = useState(false);
   const [displayCoop, setDisplayCoop] = useState(false);
+  const willDisplayResult = useRef(false);
 
   const formatWave = (coop: CoopHistoryDetail) => {
     switch (coop.coopHistoryDetail.resultWave) {
@@ -130,11 +131,15 @@ const ResultView = (props: ResultViewProps) => {
     setDisplayCoop(false);
   };
   const onShowRawResultPress = () => {
+    willDisplayResult.current = true;
     setDisplayBattle(false);
     setDisplayCoop(false);
-    setTimeout(() => {
+  };
+  const onModalHide = () => {
+    if (willDisplayResult.current) {
+      willDisplayResult.current = false;
       setDisplayResult(true);
-    }, 500);
+    }
   };
 
   return (
@@ -261,7 +266,12 @@ const ResultView = (props: ResultViewProps) => {
           />
         )}
       </Modal>
-      <Modal isVisible={displayBattle} onClose={onDisplayBattleClose} style={ViewStyles.modal2d}>
+      <Modal
+        isVisible={displayBattle}
+        onClose={onDisplayBattleClose}
+        onModalHide={onModalHide}
+        style={ViewStyles.modal2d}
+      >
         {display?.battle &&
           formatTeams(display.battle).map((team, i) => (
             <VStack flex center key={i} style={ViewStyles.mb2}>
@@ -302,6 +312,7 @@ const ResultView = (props: ResultViewProps) => {
       <Modal
         isVisible={displayCoop}
         onClose={onDisplayCoopClose}
+        onModalHide={onModalHide}
         style={[ViewStyles.modal2d, { paddingHorizontal: 0 }]}
       >
         {display?.coop && (

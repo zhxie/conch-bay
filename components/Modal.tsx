@@ -6,6 +6,7 @@ interface ModalProps {
   isVisible: boolean;
   style?: StyleProp<ViewStyle>;
   onClose: () => void;
+  onModalHide?: () => void;
   children?: React.ReactNode;
 }
 
@@ -18,6 +19,7 @@ const Modal = (props: ModalProps) => {
       isVisible={props.isVisible}
       backdropOpacity={0.5}
       onBackdropPress={props.onClose}
+      onModalHide={props.onModalHide}
       useNativeDriverForBackdrop
       style={ViewStyles.c}
     >
