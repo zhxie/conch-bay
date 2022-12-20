@@ -51,4 +51,4 @@ jobs:
         with:
           name: conch-bay-android
           path: |
-            ./*.gz.tar
+            ./*.apk
