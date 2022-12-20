@@ -7,7 +7,7 @@ const Text = (props: TextProps) => {
   const colorScheme = useColorScheme();
   const textStyle = colorScheme === "light" ? TextStyles.light : TextStyles.dark;
 
-  return <RNText style={[TextStyles.p, textStyle, props.style]} {...rest} />;
+  return <RNText style={[TextStyles.p, textStyle, style]} {...rest} />;
 };
 
 export default Text;

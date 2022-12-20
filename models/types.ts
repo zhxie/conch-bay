@@ -30,7 +30,7 @@ export interface Schedule {
   startTime: string;
   endTime: string;
 }
-export interface RegularMatchSetting extends MatchSetting {}
+export type RegularMatchSetting = MatchSetting;
 export interface RegularSchedule extends Schedule {
   regularMatchSetting: RegularMatchSetting | null;
 }
@@ -40,11 +40,11 @@ export interface AnarchyMatchSetting extends MatchSetting {
 export interface AnarchySchedule extends Schedule {
   bankaraMatchSettings: AnarchyMatchSetting[] | null;
 }
-export interface XMatchSetting extends MatchSetting {}
+export type XMatchSetting = MatchSetting;
 export interface XSchedule extends Schedule {
   xMatchSetting: XMatchSetting | null;
 }
-export interface SplatfestMatchSetting extends MatchSetting {}
+export type SplatfestMatchSetting = MatchSetting;
 export interface SplatfestSchedule extends Schedule {
   festMatchSetting: SplatfestMatchSetting | null;
 }

@@ -7,7 +7,7 @@ const Image = (props: ImageProps) => {
   const colorScheme = useColorScheme();
   const imageStyle = colorScheme === "light" ? ViewStyles.lightTerritory : ViewStyles.darkTerritory;
 
-  return <RNImage style={[imageStyle, props.style]} {...rest} />;
+  return <RNImage style={[imageStyle, style]} {...rest} />;
 };
 
 export default Image;

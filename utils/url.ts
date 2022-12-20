@@ -4,7 +4,7 @@ export const getAuthorityAndPath = (url: string) => {
 };
 export const getParam = (url: string, param: string) => {
   const regex = /[?&]([^=#]+)=([^&#]*)/g;
-  let params: Record<string, string> = {};
+  const params: Record<string, string> = {};
   let match: string[] | null;
   while ((match = regex.exec(url))) {
     params[match[1]] = match[2];
@@ -12,19 +12,19 @@ export const getParam = (url: string, param: string) => {
   return params[param];
 };
 export const parameterize = (params: Record<string, string>) => {
-  let body: string[] = [];
-  for (let param in params) {
-    let key = param;
-    let value = params[param];
+  const body: string[] = [];
+  for (const param in params) {
+    const key = param;
+    const value = params[param];
     body.push(`${key}=${value}`);
   }
   return body.join("&");
 };
 export const formUrlEncoded = (form: Record<string, string>) => {
-  let body: string[] = [];
-  for (let property in form) {
-    let encodedKey = encodeURIComponent(property);
-    let encodedValue = encodeURIComponent(form[property]);
+  const body: string[] = [];
+  for (const property in form) {
+    const encodedKey = encodeURIComponent(property);
+    const encodedValue = encodeURIComponent(form[property]);
     body.push(`${encodedKey}=${encodedValue}`);
   }
   return body.join("&");

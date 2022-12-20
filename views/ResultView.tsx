@@ -78,7 +78,7 @@ const ResultView = (props: ResultViewProps) => {
     return "";
   };
   const formatTeams = (battle: VsHistoryDetail) => {
-    let teams = [battle.vsHistoryDetail.myTeam, ...battle.vsHistoryDetail.otherTeams];
+    const teams = [battle.vsHistoryDetail.myTeam, ...battle.vsHistoryDetail.otherTeams];
     teams.sort((a, b) => {
       if (a.result === null) {
         return 0;

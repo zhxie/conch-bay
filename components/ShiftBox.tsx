@@ -2,7 +2,7 @@ import { StyleProp, StyleSheet, ViewStyle } from "react-native";
 import { TextStyles, ViewStyles } from "./Styles";
 import Image from "./Image";
 import Text from "./Text";
-import { Center, HStack, VStack } from "./Stack";
+import { HStack, VStack } from "./Stack";
 
 interface StageProps {
   title: string;

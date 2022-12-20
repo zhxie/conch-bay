@@ -36,7 +36,7 @@ export const updateNsoappVersion = async () => {
   const res = await fetch("https://apps.apple.com/us/app/nintendo-switch-online/id1234806557");
   const text = await res.text();
 
-  const regex = />Version.+?([0-9|\.].+)</;
+  const regex = />Version.+?([0-9|.].+)</;
   const match = regex.exec(text)!;
   NSOAPP_VERSION = match[1];
 };

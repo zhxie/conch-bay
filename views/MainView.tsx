@@ -151,7 +151,7 @@ const MainView = (props: MainViewProps) => {
     };
   };
   const savePersistence = async (persistence: Record<string, string>) => {
-    for (let key of [
+    for (const key of [
       "sessionToken",
       "language",
       "bulletToken",
@@ -316,7 +316,7 @@ const MainView = (props: MainViewProps) => {
         }
 
         // Fetch details.
-        let results: {
+        const results: {
           id: string;
           isCoop: boolean;
         }[] = [];
@@ -475,7 +475,7 @@ const MainView = (props: MainViewProps) => {
       const result = JSON.parse(await FileSystem.readAsStringAsync(uri));
       const n = result["battles"].length + result["coops"].length;
       Toast.show(t("loading_n_results", { n }));
-      for (let battle of result["battles"]) {
+      for (const battle of result["battles"]) {
         const result = await addBattle(battle, true);
         if (result < 0) {
           fail++;
@@ -483,7 +483,7 @@ const MainView = (props: MainViewProps) => {
           skip++;
         }
       }
-      for (let coop of result["coops"]) {
+      for (const coop of result["coops"]) {
         const result = await addCoop(coop, true);
         if (result < 0) {
           fail++;
@@ -517,8 +517,8 @@ const MainView = (props: MainViewProps) => {
     setExporting(true);
     const uri = FileSystem.documentDirectory + "conch-bay-export.json";
     try {
-      let battles: VsHistoryDetail[] = [];
-      let coops: CoopHistoryDetail[] = [];
+      const battles: VsHistoryDetail[] = [];
+      const coops: CoopHistoryDetail[] = [];
       const records = await Database.queryAll();
       records.forEach((record) => {
         if (record.mode === "salmon_run") {

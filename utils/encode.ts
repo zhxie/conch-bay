@@ -2,9 +2,9 @@ export const base64 = (bytes: Uint8Array) => {
   const encodings = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
   let base64 = "";
-  let byteLength = bytes.byteLength;
-  let byteRemainder = byteLength % 3;
-  let mainLength = byteLength - byteRemainder;
+  const byteLength = bytes.byteLength;
+  const byteRemainder = byteLength % 3;
+  const mainLength = byteLength - byteRemainder;
 
   let a: number, b: number, c: number, d: number;
   let chunk: number;
