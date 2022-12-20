@@ -1,11 +1,12 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Application from "expo-application";
+import * as Clipboard from "expo-clipboard";
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";
 import * as WebBrowser from "expo-web-browser";
 import React, { useEffect, useRef, useState } from "react";
-import { Animated, Linking, RefreshControl, ScrollView, View, useColorScheme } from "react-native";
+import { Animated, Linking, RefreshControl, ScrollView, useColorScheme } from "react-native";
 import Toast from "react-native-root-toast";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import {
@@ -22,7 +23,7 @@ import {
   VStack,
   ViewStyles,
 } from "../components";
-import { CoopHistoryDetail, Friends, Schedules, VsHistoryDetail } from "../models";
+import { CoopHistoryDetail, Friends, Schedules, VsHistoryDetail } from "../models/types";
 import {
   checkBulletToken,
   fetchBattleHistories,
@@ -65,6 +66,7 @@ const MainView = (props: MainViewProps) => {
   const [loggingIn, setLoggingIn] = useState(false);
   const [logOut, setLogOut] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
+  const [debug, setDebug] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [exporting, setExporting] = useState(false);
@@ -253,7 +255,7 @@ const MainView = (props: MainViewProps) => {
         try {
           await Promise.all([await updateNsoappVersion(), await updateWebViewVersion()]);
         } catch {
-          Toast.show(t("failed_to_check_update"));
+          Toast.show(t("failed_to_check_api_update"));
         }
 
         // Regenerate bullet token if necessary.
@@ -443,6 +445,22 @@ const MainView = (props: MainViewProps) => {
       setLoggingOut(false);
     }
   };
+  const onDebugPress = () => {
+    setDebug(true);
+  };
+  const onDebugClose = () => {
+    setDebug(false);
+  };
+  const onCopySessionTokenPress = async () => {
+    if (sessionToken.length > 0) {
+      await Clipboard.setStringAsync(sessionToken);
+    }
+  };
+  const onCopyBulletTokenPress = async () => {
+    if (bulletToken.length > 0) {
+      await Clipboard.setStringAsync(bulletToken);
+    }
+  };
   const onImportPress = async () => {
     let uri = "";
     try {
@@ -582,6 +600,7 @@ const MainView = (props: MainViewProps) => {
                       : undefined
                   }
                   onPress={onLogOutPress}
+                  onLongPress={onDebugPress}
                   style={ViewStyles.mb2}
                 />
                 <HStack>
@@ -692,7 +711,7 @@ const MainView = (props: MainViewProps) => {
             <Button
               isLoading={loggingIn}
               isLoadingText={t("logging_in")}
-              style={[{ width: "100%", backgroundColor: accentColor }]}
+              style={{ width: "100%", backgroundColor: accentColor }}
               textStyle={reverseTextColor}
               onPress={onLogInContinuePress}
             >
@@ -715,7 +734,7 @@ const MainView = (props: MainViewProps) => {
           <Button
             isLoading={loggingOut}
             isLoadingText={t("logging_out")}
-            style={[{ width: "100%", backgroundColor: accentColor }]}
+            style={{ width: "100%", backgroundColor: accentColor }}
             textStyle={reverseTextColor}
             onPress={onLogOutContinuePress}
           >
@@ -723,6 +742,35 @@ const MainView = (props: MainViewProps) => {
               {t("log_out_continue")}
             </Text>
           </Button>
+        </VStack>
+      </Modal>
+      <Modal isVisible={debug} onClose={onDebugClose} style={ViewStyles.modal1d}>
+        <VStack center>
+          <Feather
+            name="alert-circle"
+            size={48}
+            color={Color.MiddleTerritory}
+            style={ViewStyles.mb4}
+          />
+          <Text style={ViewStyles.mb4}>{t("debug_notice")}</Text>
+          <VStack center style={{ width: "100%" }}>
+            <Button
+              style={[ViewStyles.mb2, { width: "100%", backgroundColor: accentColor }]}
+              onPress={onCopySessionTokenPress}
+            >
+              <Text numberOfLines={1} style={reverseTextColor}>
+                {t("copy_session_token")}
+              </Text>
+            </Button>
+            <Button
+              style={{ width: "100%", backgroundColor: accentColor }}
+              onPress={onCopyBulletTokenPress}
+            >
+              <Text numberOfLines={1} style={reverseTextColor}>
+                {t("copy_bullet_token")}
+              </Text>
+            </Button>
+          </VStack>
         </VStack>
       </Modal>
       <Modal

@@ -9,6 +9,7 @@ interface AvatarProps {
   style?: StyleProp<ViewStyle>;
   imageStyle?: StyleProp<ImageStyle>;
   onPress?: () => void;
+  onLongPress?: () => void;
 }
 
 const Avatar = (props: AvatarProps) => {
@@ -16,6 +17,7 @@ const Avatar = (props: AvatarProps) => {
     <Pressable
       isDisabled={props.isDisabled}
       onPress={props.onPress}
+      onLongPress={props.onLongPress}
       style={[
         {
           width: props.size,

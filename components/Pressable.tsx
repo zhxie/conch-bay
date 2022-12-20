@@ -5,6 +5,7 @@ interface PressableProps {
   isDisabled?: boolean;
   style?: StyleProp<ViewStyle>;
   onPress?: () => void;
+  onLongPress?: () => void;
   children?: React.ReactNode;
 }
 
@@ -18,6 +19,7 @@ const Pressable = (props: PressableProps) => {
       disabled={props.isDisabled}
       style={[style, props.style, disabledStyle]}
       onPress={props.onPress}
+      onLongPress={props.onLongPress}
     >
       {props.children}
     </TouchableOpacity>
