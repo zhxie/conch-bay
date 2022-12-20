@@ -29,6 +29,7 @@ jobs:
         uses: expo/expo-github-action@v7
         with:
           expo-version: latest
+          eas-version: latest
           packager: npm
 
       - name: Cache dependencies
