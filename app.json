@@ -37,6 +37,7 @@
       }
     },
     "android": {
+      "package": "name.sketch.conch_bay",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
