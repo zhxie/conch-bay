@@ -1,4 +1,12 @@
-import { ScrollView, StyleProp, useColorScheme, View, ViewStyle } from "react-native";
+import {
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  ScrollView,
+  StyleProp,
+  useColorScheme,
+  View,
+  ViewStyle,
+} from "react-native";
 import ReactNativeModal from "react-native-modal";
 import { ViewStyles } from "./Styles";
 
@@ -14,6 +22,12 @@ const Modal = (props: ModalProps) => {
   const colorScheme = useColorScheme();
   const style = colorScheme === "light" ? ViewStyles.light : ViewStyles.dark;
 
+  const onScrollEndDrag = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    if (event.nativeEvent.contentOffset.y < -160) {
+      props.onClose();
+    }
+  };
+
   return (
     <ReactNativeModal
       isVisible={props.isVisible}
@@ -26,6 +40,7 @@ const Modal = (props: ModalProps) => {
       <ScrollView
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
+        onScrollEndDrag={onScrollEndDrag}
         style={[ViewStyles.r, ViewStyles.px4, style, props.style]}
       >
         <View style={{ height: 16 }} />
