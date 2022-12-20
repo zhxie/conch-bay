@@ -1,4 +1,4 @@
-name: Check
+name: Lint
 
 on:
   pull_request:
@@ -6,19 +6,6 @@ on:
       - master
 
 jobs:
-  prettier:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Prettify code
-        uses: creyD/prettier_action@v4.2
-        with:
-          dry: True
-          prettier_options: --check .
-
   eslint:
     runs-on: ubuntu-latest
 
