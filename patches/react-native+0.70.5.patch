@@ -1,0 +1,16 @@
+diff --git a/node_modules/react-native/Libraries/Components/Touchable/TouchableOpacity.js b/node_modules/react-native/Libraries/Components/Touchable/TouchableOpacity.js
+index 67e18c0..d781aaf 100644
+--- a/node_modules/react-native/Libraries/Components/Touchable/TouchableOpacity.js
++++ b/node_modules/react-native/Libraries/Components/Touchable/TouchableOpacity.js
+@@ -263,9 +263,8 @@ class TouchableOpacity extends React.Component<Props, State> {
+     this.state.pressability.configure(this._createPressabilityConfig());
+     if (
+       this.props.disabled !== prevProps.disabled ||
+-      (flattenStyle(prevProps.style)?.opacity !==
+-        flattenStyle(this.props.style)?.opacity) !==
+-        undefined
++      flattenStyle(prevProps.style)?.opacity !==
++        flattenStyle(this.props.style)?.opacity
+     ) {
+       this._opacityInactive(250);
+     }
