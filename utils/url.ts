@@ -11,6 +11,15 @@ export const getParam = (url: string, param: string) => {
   }
   return params[param];
 };
+export const parameterize = (params: Record<string, string>) => {
+  let body: string[] = [];
+  for (let param in params) {
+    let key = param;
+    let value = params[param];
+    body.push(`${key}=${value}`);
+  }
+  return body.join("&");
+};
 export const formUrlEncoded = (form: Record<string, string>) => {
   let body: string[] = [];
   for (let property in form) {

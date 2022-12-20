@@ -15,7 +15,7 @@ import {
   XBattleHistories,
 } from "../models/types";
 import { base64, base64url } from "./encode";
-import { formUrlEncoded, getParam } from "./url";
+import { formUrlEncoded, getParam, parameterize } from "./url";
 
 const USER_AGENT = "Conch Bay/0.1.0";
 
@@ -87,7 +87,7 @@ export const generateLogIn = async () => {
     session_token_code_challenge_method: "S256",
     theme: "login_form",
   };
-  const url = "https://accounts.nintendo.com/connect/1.0.0/authorize?" + new URLSearchParams(body);
+  const url = "https://accounts.nintendo.com/connect/1.0.0/authorize?" + parameterize(body);
   return {
     url: encodeURI(url),
     cv,
