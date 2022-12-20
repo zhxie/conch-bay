@@ -31,6 +31,7 @@ jobs:
           expo-version: latest
           eas-version: latest
           packager: npm
+          token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Cache dependencies
         uses: actions/cache@v3
