@@ -23,7 +23,7 @@ const Modal = (props: ModalProps) => {
   const style = colorScheme === "light" ? ViewStyles.light : ViewStyles.dark;
 
   const onScrollEndDrag = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    if (event.nativeEvent.contentOffset.y < -160) {
+    if (event.nativeEvent.contentOffset.y < -100) {
       props.onClose();
     }
   };

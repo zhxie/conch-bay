@@ -95,6 +95,9 @@ export const generateLogIn = async () => {
 };
 export const getSessionToken = async (url: string, cv: string) => {
   const sessionTokenCode = getParam(url.replace("#", "?"), "session_token_code");
+  if (!sessionTokenCode) {
+    return undefined;
+  }
   const res = await fetch("https://accounts.nintendo.com/connect/1.0.0/api/session_token", {
     method: "POST",
     headers: {

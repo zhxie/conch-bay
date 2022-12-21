@@ -289,7 +289,7 @@ const MainView = (props: MainViewProps) => {
         ]);
         setFriends(friends);
         const icon = summary.currentPlayer.userIcon.url;
-        const catalogLevel = String(catalog.catalog.progress.level);
+        const catalogLevel = String(catalog.catalog.progress?.level ?? 0);
         const level = String(summary.playHistory.rank);
         const rank = summary.playHistory.udemae;
         setIcon(icon);
@@ -411,6 +411,10 @@ const MainView = (props: MainViewProps) => {
         return;
       }
       const res3 = await getSessionToken(res2.url, res.cv);
+      if (!res3) {
+        setLoggingIn(false);
+        return;
+      }
       setSessionToken(res3);
       await savePersistence({ sessionToken: res3 });
 
@@ -618,7 +622,10 @@ const MainView = (props: MainViewProps) => {
               </VStack>
             )}
             <ScheduleView t={t} schedules={schedules} style={ViewStyles.mb4} />
-            {sessionToken.length > 0 && <FriendView friends={friends} style={ViewStyles.mb4} />}
+            {sessionToken.length > 0 &&
+              (friends === undefined || friends.friends.nodes.length > 0) && (
+                <FriendView friends={friends} style={ViewStyles.mb4} />
+              )}
             {sessionToken.length > 0 && (
               <ResultView
                 t={t}

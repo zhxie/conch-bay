@@ -110,7 +110,7 @@ export interface CatalogProgress {
 }
 export interface Catalog {
   catalog: {
-    progress: CatalogProgress;
+    progress: CatalogProgress | null;
   };
 }
 
