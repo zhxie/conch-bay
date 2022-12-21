@@ -2,7 +2,7 @@ const ja = {
   // UI.
   log_in: "ログイン",
   log_in_notice:
-    "Conch Bay requires acquiring tokens to access SplatNet 3. The process involves making a secure request to non-Nintendo imink with minimal, non-identifying information, and this information will not be logged or stored. See the imink Privacy Policy for more information.",
+    "ホラカイベイはイカリング3にアクセスするために、トークンを取得する必要があります。そのプロセスには、最小限の非識別情報を使用し、任天堂以外のiminkに安全なリクエストを行うことが含まれます。この情報はログする、記録または保存されません。詳しくは、iminkのプライバシーポリシーを参照してください。",
   imink_privacy_policy: "imink プライバシーポリシー",
   log_in_continue: "読んで理解しました",
   logging_in: "トークン取得中",
@@ -11,8 +11,8 @@ const ja = {
   log_out_continue: "ログアウト",
   logging_out: "ログアウト中",
   debug_notice: "こちらの情報はデバッグ専用です。他の人と共有しないでください。",
-  copy_session_token: "セッショントークンをコピーする",
-  copy_bullet_token: "ブレットトークンをコピーする",
+  copy_session_token: "セッショントークンをコピー",
+  copy_bullet_token: "ブレットトークンをコピー",
   failed_to_check_api_update: "APIのアップデートを確認できませんでした",
   reacquiring_tokens: "トークン再取得中",
   loading_n_new_results: "%{n}件の新しいリザルトを読み込む中",
@@ -33,7 +33,7 @@ const ja = {
   acknowledgments: "謝辞",
   creators: "クリエーター",
   license: "ライセンス",
-  show_raw_result: "元のリザルトを表示",
+  show_raw_data: "生データを表示",
   // Modes.
   regular_battle: "レギュラーマッチ",
   anarchy_battle: "バンカラマッチ",

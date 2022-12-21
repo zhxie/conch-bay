@@ -305,7 +305,7 @@ const ResultView = (props: ResultViewProps) => {
           ))}
         <Button style={{ backgroundColor: accentColor }} onPress={onShowRawResultPress}>
           <Text numberOfLines={1} style={reverseTextColor}>
-            {t("show_raw_result")}
+            {t("show_raw_data")}
           </Text>
         </Button>
       </Modal>
@@ -388,7 +388,7 @@ const ResultView = (props: ResultViewProps) => {
         <VStack style={ViewStyles.px4}>
           <Button style={{ backgroundColor: accentColor }} onPress={onShowRawResultPress}>
             <Text numberOfLines={1} style={reverseTextColor}>
-              {t("show_raw_result")}
+              {t("show_raw_data")}
             </Text>
           </Button>
         </VStack>

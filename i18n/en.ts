@@ -33,7 +33,7 @@ const en = {
   acknowledgments: "Acknowledgments",
   creators: "Creators",
   license: "License",
-  show_raw_result: "Show Raw Result",
+  show_raw_data: "Show Raw Data",
   // Modes.
   regular_battle: "Regular Battle",
   anarchy_battle: "Anarchy Battle",

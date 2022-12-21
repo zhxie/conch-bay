@@ -30,7 +30,7 @@ const zh = {
   acknowledgments: "致谢",
   creators: "创作者",
   license: "许可",
-  show_raw_result: "显示原始结果",
+  show_raw_data: "显示原始数据",
   // Modes.
   regular_battle: "一般比赛",
   anarchy_battle: "蛮颓比赛",
