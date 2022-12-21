@@ -1,4 +1,5 @@
 import {
+  Animated,
   NativeScrollEvent,
   NativeSyntheticEvent,
   ScrollView,
@@ -23,7 +24,7 @@ const Modal = (props: ModalProps) => {
   const style = colorScheme === "light" ? ViewStyles.light : ViewStyles.dark;
 
   const onScrollEndDrag = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    if (event.nativeEvent.contentOffset.y < -100) {
+    if (event.nativeEvent.contentOffset.y < -80) {
       props.onClose();
     }
   };
