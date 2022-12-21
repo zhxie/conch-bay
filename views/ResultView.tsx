@@ -320,24 +320,43 @@ const ResultView = (props: ResultViewProps) => {
             {display.coop.coopHistoryDetail.waveResults.length > 0 && (
               <ScrollView horizontal showsHorizontalScrollIndicator={false} style={ViewStyles.mb2}>
                 <HStack center style={ViewStyles.px4}>
-                  {display.coop.coopHistoryDetail.waveResults
-                    .slice(0, 3)
-                    .map((waveResult, i, waveResults) => (
+                  {display.coop.coopHistoryDetail.waveResults.map((waveResult, i, waveResults) => {
+                    if (i < 3) {
+                      return (
+                        <WaveBox
+                          key={i}
+                          color={
+                            getCoopIsWaveClear(display.coop!, i)
+                              ? getCoopRuleColor(display.coop!.coopHistoryDetail.rule)!
+                              : undefined
+                          }
+                          waterLevel={formatWaterLevel(waveResult)!}
+                          eventWave={formatEventWave(waveResult)}
+                          deliver={waveResult.teamDeliverCount!}
+                          quota={waveResult.deliverNorm!}
+                          appearance={waveResult.goldenPopCount}
+                          style={i !== waveResults.length - 1 ? ViewStyles.mr2 : undefined}
+                        />
+                      );
+                    }
+                    return (
                       <WaveBox
                         key={i}
                         color={
-                          getCoopIsWaveClear(display.coop!, i)
+                          display.coop!.coopHistoryDetail.bossResult!.hasDefeatBoss
                             ? getCoopRuleColor(display.coop!.coopHistoryDetail.rule)!
                             : undefined
                         }
+                        isKingSalmonid
                         waterLevel={formatWaterLevel(waveResult)!}
-                        eventWave={formatEventWave(waveResult)}
-                        deliver={waveResult.teamDeliverCount!}
-                        quota={waveResult.deliverNorm!}
-                        appearance={waveResult.goldenPopCount}
+                        eventWave={t(display.coop!.coopHistoryDetail.bossResult!.boss.id)}
+                        deliver={display.coop!.coopHistoryDetail.bossResult!.hasDefeatBoss ? 1 : 0}
+                        quota={1}
+                        appearance={1}
                         style={i !== waveResults.length - 1 ? ViewStyles.mr2 : undefined}
                       />
-                    ))}
+                    );
+                  })}
                 </HStack>
               </ScrollView>
             )}

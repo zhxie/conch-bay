@@ -6,6 +6,7 @@ import Text from "./Text";
 
 interface WaveBoxProps {
   color?: string;
+  isKingSalmonid?: boolean;
   waterLevel: string;
   eventWave: string;
   deliver: number;
@@ -37,7 +38,11 @@ const WaveBox = (props: WaveBoxProps) => {
         </Text>
         <VStack flex reverse>
           <HStack center>
-            <Circle size={10} color={Color.GoldenEgg} style={ViewStyles.mr1} />
+            <Circle
+              size={10}
+              color={props.isKingSalmonid ? Color.KillAndRescue : Color.GoldenEgg}
+              style={ViewStyles.mr1}
+            />
             <Text numberOfLines={1} style={ViewStyles.mr1}>
               {`${props.deliver} / ${props.quota}`}
             </Text>
