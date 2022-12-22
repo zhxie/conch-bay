@@ -98,14 +98,10 @@ const MainView = (props: MainViewProps) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const { sessionToken, language, bulletToken } = await loadPersistence();
-        setReady(true);
+        await loadPersistence();
         await Database.open();
-        // HACK: load asynchronously and delay to avoid refresh control layout misbehavior.
-        loadResults(false);
-        setTimeout(() => {
-          refresh(sessionToken, language, bulletToken);
-        }, 600);
+        loadResults(20, false);
+        setReady(true);
       } catch (e) {
         showError(e);
       }
@@ -119,9 +115,18 @@ const MainView = (props: MainViewProps) => {
         toValue: 1,
         duration: 300,
         useNativeDriver: true,
-      }).start();
+      }).start(refresh);
     }
   }, [ready]);
+  useEffect(() => {
+    if (ready) {
+      // HACK: avoid animation racing.
+      setTimeout(() => {
+        refresh();
+      }, 100);
+    }
+  }, [sessionToken]);
+
   const loadPersistence = async () => {
     const [sessionToken, language, bulletToken, icon, catalogLevel, level, rank, grade] =
       await Promise.all([
@@ -136,19 +141,13 @@ const MainView = (props: MainViewProps) => {
       ]);
 
     setSessionToken(sessionToken ?? "");
-    setLanguage(language ?? "");
+    setLanguage(language ?? "*");
     setBulletToken(bulletToken ?? "");
     setIcon(icon ?? "");
     setCatalogLevel(catalogLevel ?? "");
     setLevel(level ?? "");
     setRank(rank ?? "");
     setGrade(grade ?? "");
-
-    return {
-      sessionToken: sessionToken ?? "",
-      language: language ?? "",
-      bulletToken: bulletToken ?? "",
-    };
   };
   const savePersistence = async (persistence: Record<string, string>) => {
     for (const key of [
@@ -169,35 +168,36 @@ const MainView = (props: MainViewProps) => {
   const clearPersistence = async () => {
     await AsyncStorage.clear();
   };
-  const loadResults = async (force: boolean) => {
-    const details = (await Database.query(0, 20)).map((record) => {
-      if (record.mode === "salmon_run") {
-        return {
-          coop: JSON.parse(record.detail) as CoopHistoryDetail,
-        };
-      }
-      return { battle: JSON.parse(record.detail) as VsHistoryDetail };
-    });
-    if (details.length > 0 || force) {
-      setResults(details);
-    }
-  };
-  const loadMoreResults = async () => {
+  const loadResults = async (length: number, forceUpdate: boolean) => {
     setLoadingMore(true);
-    const details = (await Database.query(results!.length, 20)).map((record) => {
-      if (record.mode === "salmon_run") {
-        return {
-          coop: JSON.parse(record.detail) as CoopHistoryDetail,
-        };
+    if (results !== undefined && length > results.length) {
+      const details = (await Database.query(results.length, length - results.length)).map(
+        (record) => {
+          if (record.mode === "salmon_run") {
+            return {
+              coop: JSON.parse(record.detail) as CoopHistoryDetail,
+            };
+          }
+          return { battle: JSON.parse(record.detail) as VsHistoryDetail };
+        }
+      );
+      setResults(results.concat(details));
+    } else {
+      const details = (await Database.query(0, length)).map((record) => {
+        if (record.mode === "salmon_run") {
+          return {
+            coop: JSON.parse(record.detail) as CoopHistoryDetail,
+          };
+        }
+        return { battle: JSON.parse(record.detail) as VsHistoryDetail };
+      });
+      if (details.length > 0 || forceUpdate) {
+        setResults(details);
       }
-      return { battle: JSON.parse(record.detail) as VsHistoryDetail };
-    });
-    if (details.length > 0) {
-      setResults(results!.concat(details));
     }
+
     setLoadingMore(false);
   };
-
   const addBattle = async (battle: VsHistoryDetail, check: boolean) => {
     try {
       if (check && (await Database.isExist(battle.vsHistoryDetail.id))) {
@@ -244,7 +244,7 @@ const MainView = (props: MainViewProps) => {
       return -1;
     }
   };
-  const refresh = async (sessionToken: string, language?: string, bulletToken?: string) => {
+  const refresh = async () => {
     setRefreshing(true);
     try {
       // Fetch schedules.
@@ -261,11 +261,11 @@ const MainView = (props: MainViewProps) => {
         // Regenerate bullet token if necessary.
         let newLanguage = language;
         let newBulletToken = "";
-        if (bulletToken && bulletToken.length > 0 && (await checkBulletToken(bulletToken))) {
+        if (bulletToken.length > 0 && (await checkBulletToken(bulletToken))) {
           newBulletToken = bulletToken;
         }
         if (!newBulletToken) {
-          if (bulletToken && bulletToken.length > 0) {
+          if (bulletToken.length > 0) {
             Toast.show(t("reacquiring_tokens"));
           }
 
@@ -377,16 +377,12 @@ const MainView = (props: MainViewProps) => {
           }
         }
 
-        // Query stored latest results if updated.
-        await loadResults(true);
+        await loadResults(20, true);
       }
     } catch (e) {
       showError(e);
     }
     setRefreshing(false);
-  };
-  const onRefresh = async () => {
-    await refresh(sessionToken, language, bulletToken);
   };
 
   const onLogInPress = () => {
@@ -417,8 +413,6 @@ const MainView = (props: MainViewProps) => {
       }
       setSessionToken(res3);
       await savePersistence({ sessionToken: res3 });
-
-      refresh(res3);
 
       setLoggingIn(false);
       setLogIn(false);
@@ -465,6 +459,9 @@ const MainView = (props: MainViewProps) => {
       await Clipboard.setStringAsync(bulletToken);
     }
   };
+  const onLoadMorePress = async () => {
+    await loadResults(results!.length + 20, true);
+  };
   const onImportPress = async () => {
     let uri = "";
     try {
@@ -503,7 +500,7 @@ const MainView = (props: MainViewProps) => {
 
       // Query stored latest results if updated.
       if (n - fail - skip > 0) {
-        await loadResults(true);
+        await loadResults(20, true);
       }
     } catch (e) {
       showError(e);
@@ -576,7 +573,7 @@ const MainView = (props: MainViewProps) => {
             <RefreshControl
               progressViewOffset={insets.top}
               refreshing={refreshing}
-              onRefresh={onRefresh}
+              onRefresh={refresh}
             />
           }
           showsVerticalScrollIndicator={false}
@@ -630,7 +627,7 @@ const MainView = (props: MainViewProps) => {
               <ResultView
                 t={t}
                 isLoading={refreshing || loadingMore}
-                loadMore={loadMoreResults}
+                loadMore={onLoadMorePress}
                 results={results}
                 style={ViewStyles.mb4}
               />
