@@ -22,7 +22,7 @@ const ToolButton = (props: ToolButtonProps) => {
       style={[ViewStyles.p3, { height: 44, borderRadius: 22 }, props.style]}
       onPress={props.onPress}
     >
-      <HStack center>
+      <HStack flex center>
         {(() => {
           if (props.isLoading) {
             return <ActivityIndicator style={ViewStyles.mr1} />;
