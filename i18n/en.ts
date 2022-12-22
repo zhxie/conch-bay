@@ -153,10 +153,6 @@ const en = {
   "V2VhcG9uLTcwMjA=": "REEF-LUX 450",
   "V2VhcG9uLTgwMDA=": "Splatana Stamper",
   "V2VhcG9uLTgwMTA=": "Splatana Wiper",
-  // Judgement.
-  win: "WIN!",
-  lose: "LOSE…",
-  draw: "DRAW",
   // Grades.
   "Q29vcEdyYWRlLTA=": "Apprentice",
   "Q29vcEdyYWRlLTE=": "Part-Timer",
@@ -172,6 +168,19 @@ const en = {
   wave_2: "Wave 2",
   wave_3: "Wave 3",
   xtrawave: "XTRAWAVE",
+  // Water levels.
+  low_tide: "Low Tide",
+  normal: "Normal",
+  high_tide: "High Tide",
+  // Events.
+  Q29vcEV2ZW50V2F2ZS00: "The Mothership",
+  Q29vcEV2ZW50V2F2ZS01: "Fog",
+  Q29vcEV2ZW50V2F2ZS02: "Cohock Charge",
+  Q29vcEV2ZW50V2F2ZS03: "Giant Tornado",
+  Q29vcEV2ZW50V2F2ZS04: "Mudmouth Eruptions",
+  Q29vcEV2ZW50V2F2ZS0x: "Rush",
+  Q29vcEV2ZW50V2F2ZS0y: "Goldie Seeking",
+  Q29vcEV2ZW50V2F2ZS0z: "The Griller",
   // Boss Salmonids.
   boss_salmonids: "Boss Salmonids",
   "Q29vcEVuZW15LTQ=": "Steelhead",
@@ -190,19 +199,12 @@ const en = {
   Q29vcEVuZW15LTIw: "Mudmouth",
   // King Salmonids.
   Q29vcEVuZW15LTIz: "Cohozuna",
-  // Water levels.
-  low_tide: "Low Tide",
-  normal: "Normal",
-  high_tide: "High Tide",
-  // Events.
-  Q29vcEV2ZW50V2F2ZS00: "The Mothership",
-  Q29vcEV2ZW50V2F2ZS01: "Fog",
-  Q29vcEV2ZW50V2F2ZS02: "Cohock Charge",
-  Q29vcEV2ZW50V2F2ZS03: "Giant Tornado",
-  Q29vcEV2ZW50V2F2ZS04: "Mudmouth Eruptions",
-  Q29vcEV2ZW50V2F2ZS0x: "Rush",
-  Q29vcEV2ZW50V2F2ZS0y: "Goldie Seeking",
-  Q29vcEV2ZW50V2F2ZS0z: "The Griller",
+  // Results.
+  knock_out: "KNOCKOUT!",
+  no_contest: "No contest.",
+  penalty: "The match was not fully completed.",
+  exemption:
+    "Because one or more players were not able to continue, the match will not count as a loss.",
 };
 
 export default en;

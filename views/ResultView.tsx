@@ -24,9 +24,10 @@ import {
   getCoopIsWaveClear,
   getCoopRuleColor,
   getTeamColor,
-  getVsJudgement,
   getVsModeColor,
   getVsSelfPlayer,
+  isCoopAnnotation,
+  isVsAnnotation,
 } from "../utils/ui";
 
 interface ResultViewProps {
@@ -54,6 +55,19 @@ const ResultView = (props: ResultViewProps) => {
   const [displayCoop, setDisplayCoop] = useState(false);
   const willDisplayResult = useRef(false);
 
+  const formatJudgement = (battle: VsHistoryDetail) => {
+    switch (battle.vsHistoryDetail.judgement) {
+      case "WIN":
+        return 1;
+      case "DRAW":
+        return 0;
+      case "LOSE":
+      case "DEEMED_LOSE":
+        return -1;
+      case "EXEMPTED_LOSE":
+        return -2;
+    }
+  };
   const formatWave = (coop: CoopHistoryDetail) => {
     switch (coop.coopHistoryDetail.resultWave) {
       case -1:
@@ -76,6 +90,19 @@ const ResultView = (props: ResultViewProps) => {
       return `(${parseInt(String(coop.coopHistoryDetail.dangerRate * 100))}%)`;
     }
     return "";
+  };
+  const formatAnnotation = (battle: VsHistoryDetail) => {
+    switch (battle.vsHistoryDetail.judgement) {
+      case "WIN":
+      case "LOSE":
+        return undefined;
+      case "DEEMED_LOSE":
+        return t("penalty");
+      case "EXEMPTED_LOSE":
+        return t("exemption");
+      case "DRAW":
+        return t("no_contest");
+    }
   };
   const formatTeams = (battle: VsHistoryDetail) => {
     const teams = [battle.vsHistoryDetail.myTeam, ...battle.vsHistoryDetail.otherTeams];
@@ -154,7 +181,7 @@ const ResultView = (props: ResultViewProps) => {
                   isFirst={i === 0}
                   isLast={false}
                   color={getVsModeColor(result.battle.vsHistoryDetail.vsMode, accentColor)!}
-                  result={getVsJudgement(result.battle)}
+                  result={formatJudgement(result.battle)}
                   rule={t(result.battle.vsHistoryDetail.vsRule.id)}
                   stage={t(result.battle.vsHistoryDetail.vsStage.id)}
                   weapon={t(getVsSelfPlayer(result.battle).weapon.id)}
@@ -270,11 +297,30 @@ const ResultView = (props: ResultViewProps) => {
         isVisible={displayBattle}
         onClose={onDisplayBattleClose}
         onModalHide={onModalHide}
-        style={ViewStyles.modal2d}
+        style={[ViewStyles.modal2d, { paddingHorizontal: 0 }]}
+        topChildren={
+          display?.battle && isVsAnnotation(display.battle) ? (
+            <VStack
+              flex
+              center
+              style={[
+                ViewStyles.px4,
+                ViewStyles.py1,
+                {
+                  backgroundColor: accentColor,
+                },
+              ]}
+            >
+              <Text style={[reverseTextColor, { textAlign: "center" }]}>
+                {formatAnnotation(display.battle)}
+              </Text>
+            </VStack>
+          ) : undefined
+        }
       >
         {display?.battle &&
           formatTeams(display.battle).map((team, i) => (
-            <VStack flex key={i} style={ViewStyles.mb2}>
+            <VStack flex key={i} style={[ViewStyles.px4, ViewStyles.mb2]}>
               <HStack center style={ViewStyles.mb1}>
                 <Circle size={12} color={getTeamColor(team)} style={ViewStyles.mr1} />
                 <Text numberOfLines={1} style={[TextStyles.b, { color: getTeamColor(team) }]}>
@@ -303,17 +349,36 @@ const ResultView = (props: ResultViewProps) => {
               ))}
             </VStack>
           ))}
-        <Button style={{ backgroundColor: accentColor }} onPress={onShowRawResultPress}>
-          <Text numberOfLines={1} style={reverseTextColor}>
-            {t("show_raw_data")}
-          </Text>
-        </Button>
+        <VStack style={ViewStyles.px4}>
+          <Button style={{ backgroundColor: accentColor }} onPress={onShowRawResultPress}>
+            <Text numberOfLines={1} style={reverseTextColor}>
+              {t("show_raw_data")}
+            </Text>
+          </Button>
+        </VStack>
       </Modal>
       <Modal
         isVisible={displayCoop}
         onClose={onDisplayCoopClose}
         onModalHide={onModalHide}
         style={[ViewStyles.modal2d, { paddingHorizontal: 0 }]}
+        topChildren={
+          display?.coop && isCoopAnnotation(display.coop) ? (
+            <VStack
+              flex
+              center
+              style={[
+                ViewStyles.px4,
+                ViewStyles.py1,
+                {
+                  backgroundColor: accentColor,
+                },
+              ]}
+            >
+              <Text style={[reverseTextColor, { textAlign: "center" }]}>{t("penalty")}</Text>
+            </VStack>
+          ) : undefined
+        }
       >
         {display?.coop && (
           <VStack style={ViewStyles.mb2}>

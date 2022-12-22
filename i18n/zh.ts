@@ -165,6 +165,19 @@ const zh = {
   wave_2: "WAVE 2",
   wave_3: "WAVE 3",
   xtrawave: "EX-WAVE",
+  // Water levels.
+  low_tide: "干潮",
+  normal: "普通",
+  high_tide: "满潮",
+  // Events.
+  Q29vcEV2ZW50V2F2ZS00: "走私鱼来袭",
+  Q29vcEV2ZW50V2F2ZS01: "雾",
+  Q29vcEV2ZW50V2F2ZS02: "大胖鱼大量出现",
+  Q29vcEV2ZW50V2F2ZS03: "巨型龙卷风",
+  Q29vcEV2ZW50V2F2ZS04: "泥鲑鱼喷发",
+  Q29vcEV2ZW50V2F2ZS0x: "狂潮",
+  Q29vcEV2ZW50V2F2ZS0y: "寻找金鲑鱼",
+  Q29vcEV2ZW50V2F2ZS0z: "烤架鱼进发",
   // Boss Salmonids.
   boss_salmonids: "巨大鲑鱼",
   "Q29vcEVuZW15LTQ=": "炸弹鱼",
@@ -183,19 +196,11 @@ const zh = {
   Q29vcEVuZW15LTIw: "泥鲑鱼",
   // King Salmonids.
   Q29vcEVuZW15LTIz: "横纲",
-  // Water levels.
-  low_tide: "干潮",
-  normal: "普通",
-  high_tide: "满潮",
-  // Events.
-  Q29vcEV2ZW50V2F2ZS00: "走私鱼来袭",
-  Q29vcEV2ZW50V2F2ZS01: "雾",
-  Q29vcEV2ZW50V2F2ZS02: "大胖鱼大量出现",
-  Q29vcEV2ZW50V2F2ZS03: "巨型龙卷风",
-  Q29vcEV2ZW50V2F2ZS04: "泥鲑鱼喷发",
-  Q29vcEV2ZW50V2F2ZS0x: "狂潮",
-  Q29vcEV2ZW50V2F2ZS0y: "寻找金鲑鱼",
-  Q29vcEV2ZW50V2F2ZS0z: "烤架鱼进发",
+  // Results.
+  knock_out: "完胜！",
+  no_contest: "本场对战已被判定为无效比赛。",
+  penalty: "对战未能正常结束。",
+  exemption: "由于有玩家中断连接，本场对战不会以落败计算。",
 };
 
 export default zh;

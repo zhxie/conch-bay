@@ -168,6 +168,19 @@ const ja = {
   wave_2: "WAVE 2",
   wave_3: "WAVE 3",
   xtrawave: "EX-WAVE",
+  // Water levels.
+  low_tide: "干潮",
+  normal: "普通",
+  high_tide: "満潮",
+  // Events.
+  Q29vcEV2ZW50V2F2ZS00: "ハコビヤ襲来",
+  Q29vcEV2ZW50V2F2ZS01: "霧",
+  Q29vcEV2ZW50V2F2ZS02: "ドスコイ大量発生",
+  Q29vcEV2ZW50V2F2ZS03: "巨大タツマキ",
+  Q29vcEV2ZW50V2F2ZS04: "ドロシャケ噴出",
+  Q29vcEV2ZW50V2F2ZS0x: "ラッシュ",
+  Q29vcEV2ZW50V2F2ZS0y: "キンシャケ探し",
+  Q29vcEV2ZW50V2F2ZS0z: "グリル発進",
   // Boss Salmonids.
   boss_salmonids: "オオモノシャケ",
   "Q29vcEVuZW15LTQ=": "バクダン",
@@ -186,19 +199,11 @@ const ja = {
   Q29vcEVuZW15LTIw: "ドロシャケ",
   // King Salmonids.
   Q29vcEVuZW15LTIz: "ヨコヅナ",
-  // Water levels.
-  low_tide: "干潮",
-  normal: "普通",
-  high_tide: "満潮",
-  // Events.
-  Q29vcEV2ZW50V2F2ZS00: "ハコビヤ襲来",
-  Q29vcEV2ZW50V2F2ZS01: "霧",
-  Q29vcEV2ZW50V2F2ZS02: "ドスコイ大量発生",
-  Q29vcEV2ZW50V2F2ZS03: "巨大タツマキ",
-  Q29vcEV2ZW50V2F2ZS04: "ドロシャケ噴出",
-  Q29vcEV2ZW50V2F2ZS0x: "ラッシュ",
-  Q29vcEV2ZW50V2F2ZS0y: "キンシャケ探し",
-  Q29vcEV2ZW50V2F2ZS0z: "グリル発進",
+  // Results.
+  knock_out: "ノックアウト！",
+  no_contest: "無効試合になりました",
+  penalty: "正常に試合が終了しませんでした",
+  exemption: "通信を切断したプレイヤーがいたため、負けとしてカウントされませんでした",
 };
 
 export default ja;

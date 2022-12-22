@@ -46,14 +46,17 @@ const ResultButton = (props: ResultButtonProps) => {
         {props.result !== undefined && (
           <Center style={[ViewStyles.mr3, { width: 32, height: 32 }]}>
             {(() => {
-              if (props.result > 0) {
-                return (
-                  <Feather name="circle" size={28} color={props.color ?? Color.MiddleTerritory} />
-                );
-              } else if (props.result === 0) {
-                return <Feather name="minus" size={32} color={Color.MiddleTerritory} />;
-              } else {
-                return <Feather name="x" size={32} color={Color.MiddleTerritory} />;
+              switch (props.result) {
+                case 1:
+                  return (
+                    <Feather name="circle" size={28} color={props.color ?? Color.MiddleTerritory} />
+                  );
+                case 0:
+                  return <Feather name="minus" size={32} color={Color.MiddleTerritory} />;
+                case -1:
+                  return <Feather name="x" size={32} color={Color.MiddleTerritory} />;
+                case -2:
+                  return <Feather name="x-circle" size={28} color={Color.MiddleTerritory} />;
               }
             })()}
           </Center>

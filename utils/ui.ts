@@ -139,16 +139,15 @@ export const convertStageImageUrl = (stage: VsStage) => {
   const imageId = pathComponents[pathComponents.length - 1].split("_")[0];
   return `https://splatoon3.ink/assets/splatnet/stage_img/icon/high_resolution/${imageId}_0.png`;
 };
-export const getVsJudgement = (battle: VsHistoryDetail) => {
+export const isVsAnnotation = (battle: VsHistoryDetail) => {
   switch (battle.vsHistoryDetail.judgement) {
     case "WIN":
-      return 1;
-    case "DRAW":
-      return 0;
     case "LOSE":
+      return false;
     case "DEEMED_LOSE":
     case "EXEMPTED_LOSE":
-      return -1;
+    case "DRAW":
+      return true;
   }
 };
 export const getVsSelfPlayer = (battle: VsHistoryDetail) => {
@@ -158,6 +157,9 @@ export const getTeamColor = (team: VsTeam) => {
   return `rgba(${Math.round(team.color.r * 255)}, ${Math.round(team.color.g * 255)}, ${Math.round(
     team.color.b * 255
   )}, ${Math.round(team.color.a * 255)})`;
+};
+export const isCoopAnnotation = (coop: CoopHistoryDetail) => {
+  return coop.coopHistoryDetail.resultWave === -1;
 };
 export const getCoopIsClear = (coop: CoopHistoryDetail) => {
   if (coop.coopHistoryDetail.resultWave === 0) {
