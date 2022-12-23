@@ -31,11 +31,14 @@ const exec = async (sql: string, readonly: boolean): Promise<SQLite.ResultSet> =
   });
 };
 
-export const query = async (offset: number, limit: number) => {
-  const record = await exec(
-    `SELECT * FROM result ORDER BY time DESC LIMIT ${limit} OFFSET ${offset}`,
-    true
-  );
+export const query = async (offset: number, limit: number, condition?: string) => {
+  let sql: string;
+  if (condition) {
+    sql = `SELECT * FROM result WHERE ${condition} ORDER BY time DESC LIMIT ${limit} OFFSET ${offset}`;
+  } else {
+    sql = `SELECT * FROM result ORDER BY time DESC LIMIT ${limit} OFFSET ${offset}`;
+  }
+  const record = await exec(sql, true);
   return record.rows.map((row) => {
     return {
       id: row["id"],
