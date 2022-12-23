@@ -652,13 +652,7 @@ const MainView = (props: MainViewProps) => {
               <VStack center style={[ViewStyles.px4, ViewStyles.mb4]}>
                 <Avatar
                   size={64}
-                  source={
-                    icon.length > 0
-                      ? {
-                          uri: icon,
-                        }
-                      : undefined
-                  }
+                  uri={icon.length > 0 ? icon : undefined}
                   onPress={onLogOutPress}
                   onLongPress={onDebugPress}
                   style={ViewStyles.mb2}
@@ -888,16 +882,12 @@ const MainView = (props: MainViewProps) => {
           <HStack center>
             <Avatar
               size={48}
-              source={{
-                uri: "https://cdn-image-e0d67c509fb203858ebcb2fe3f88c2aa.baas.nintendo.com/1/1afd1450a5a5ebec",
-              }}
+              uri="https://cdn-image-e0d67c509fb203858ebcb2fe3f88c2aa.baas.nintendo.com/1/1afd1450a5a5ebec"
               style={ViewStyles.mr2}
             />
             <Avatar
               size={48}
-              source={{
-                uri: "https://cdn-image-e0d67c509fb203858ebcb2fe3f88c2aa.baas.nintendo.com/1/4b98d8291ae60b8c",
-              }}
+              uri="https://cdn-image-e0d67c509fb203858ebcb2fe3f88c2aa.baas.nintendo.com/1/4b98d8291ae60b8c"
               style={ViewStyles.mr2}
             />
           </HStack>

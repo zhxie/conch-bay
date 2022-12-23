@@ -37,12 +37,7 @@ const ScheduleBox = (props: ScheduleBoxProps) => {
               key={i}
               style={i !== stages.length - 1 ? ViewStyles.mr2 : undefined}
             >
-              <Image
-                source={{
-                  uri: stage.image,
-                }}
-                style={[ViewStyles.mb1, ViewStyles.r, styles.image]}
-              />
+              <Image uri={stage.image} style={[ViewStyles.mb1, ViewStyles.r, styles.image]} />
               <Text numberOfLines={1}>{stage.title}</Text>
             </VStack>
           ))}

@@ -1,13 +1,17 @@
-import { Image as RNImage, useColorScheme, ImageProps } from "react-native";
+import { ImageStyle, StyleProp, useColorScheme } from "react-native";
+import { Image as CacheImage } from "react-native-expo-image-cache";
 import { ViewStyles } from "./Styles";
 
-const Image = (props: ImageProps) => {
-  const { style, ...rest } = props;
+interface ImageProps {
+  uri: string;
+  style?: StyleProp<ImageStyle>;
+}
 
+const Image = (props: ImageProps) => {
   const colorScheme = useColorScheme();
   const imageStyle = colorScheme === "light" ? ViewStyles.lightTerritory : ViewStyles.darkTerritory;
 
-  return <RNImage style={[imageStyle, style]} {...rest} />;
+  return <CacheImage uri={props.uri} style={[imageStyle, { overflow: "hidden" }, props.style]} />;
 };
 
 export default Image;

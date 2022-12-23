@@ -25,9 +25,7 @@ const FriendView = (props: FriendViewProps) => {
               <Avatar
                 key={i}
                 size={48}
-                source={{
-                  uri: friend.userIcon.url,
-                }}
+                uri={friend.userIcon.url}
                 style={i !== friends.length - 1 ? ViewStyles.mr2 : undefined}
                 imageStyle={{
                   borderColor: getFriendColor(friend, accentColor),

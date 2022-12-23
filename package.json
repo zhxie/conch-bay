@@ -36,6 +36,7 @@
     "react": "18.1.0",
     "react-dom": "18.1.0",
     "react-native": "0.70.5",
+    "react-native-expo-image-cache": "^4.1.0",
     "react-native-json-tree": "^1.3.0",
     "react-native-modal": "^13.0.1",
     "react-native-root-toast": "^3.3.1",

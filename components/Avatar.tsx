@@ -1,11 +1,11 @@
-import { ImageSourcePropType, ImageStyle, StyleProp, ViewStyle } from "react-native";
+import { ImageStyle, StyleProp, ViewStyle } from "react-native";
 import Pressable from "./Pressable";
 import Image from "./Image";
 
 interface AvatarProps {
   size: number;
   isDisabled?: boolean;
-  source?: ImageSourcePropType;
+  uri?: string;
   style?: StyleProp<ViewStyle>;
   imageStyle?: StyleProp<ImageStyle>;
   onPress?: () => void;
@@ -27,9 +27,9 @@ const Avatar = (props: AvatarProps) => {
         props.style,
       ]}
     >
-      {props.source && (
+      {props.uri && (
         <Image
-          source={props.source}
+          uri={props.uri}
           style={[
             { width: props.size, height: props.size, borderRadius: props.size / 2 },
             props.imageStyle,

@@ -32,12 +32,7 @@ const ShiftBox = (props: ScheduleBoxProps) => {
         </HStack>
         <HStack flex center>
           <VStack flex center style={ViewStyles.mr2}>
-            <Image
-              source={{
-                uri: props.stage.image,
-              }}
-              style={[ViewStyles.mb1, ViewStyles.r, styles.stage]}
-            />
+            <Image uri={props.stage.image} style={[ViewStyles.mb1, ViewStyles.r, styles.stage]} />
             <Text numberOfLines={1}>{props.stage.title}</Text>
           </VStack>
           <VStack flex center>
@@ -45,9 +40,7 @@ const ShiftBox = (props: ScheduleBoxProps) => {
               {props.weapons.map((weapon, i, weapons) => (
                 <Image
                   key={i}
-                  source={{
-                    uri: weapon,
-                  }}
+                  uri={weapon}
                   style={[
                     i !== weapons.length - 1 ? ViewStyles.mr1 : undefined,
                     ViewStyles.f,
