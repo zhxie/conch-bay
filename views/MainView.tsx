@@ -102,7 +102,6 @@ const MainView = (props: MainViewProps) => {
       try {
         await loadPersistence();
         await Database.open();
-        loadResults(20, false);
         setReady(true);
       } catch (e) {
         showError(e);
@@ -117,7 +116,10 @@ const MainView = (props: MainViewProps) => {
         toValue: 1,
         duration: 300,
         useNativeDriver: true,
-      }).start(refresh);
+      }).start(() => {
+        loadResults(20, false);
+        refresh();
+      });
     }
   }, [ready]);
   useEffect(() => {
