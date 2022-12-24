@@ -50,7 +50,15 @@
           "image": "./assets/splash.png",
           "backgroundColor": "#18181B"
         }
-      }
+      },
+      "intentFilters": [
+        {
+          "autoVerify": true,
+          "action": "VIEW",
+          "data": { "scheme": "npf71b963c1b7b6d119" },
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
     },
     "extra": {
       "eas": {
