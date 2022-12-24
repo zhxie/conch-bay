@@ -682,7 +682,7 @@ const MainView = (props: MainViewProps) => {
                 <FriendView friends={friends} style={ViewStyles.mb4} />
               )}
             {sessionToken.length > 0 && (
-              <VStack flex style={[ViewStyles.mb4, { width: "100%" }]}>
+              <VStack style={[ViewStyles.mb4, ViewStyles.wf]}>
                 <ScrollView
                   horizontal
                   showsHorizontalScrollIndicator={false}
@@ -737,7 +737,7 @@ const MainView = (props: MainViewProps) => {
               <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
-                style={[ViewStyles.mb4, { width: "100%" }]}
+                style={[ViewStyles.mb4, ViewStyles.wf]}
               >
                 <HStack flex center style={ViewStyles.px4}>
                   <ToolButton
@@ -761,7 +761,7 @@ const MainView = (props: MainViewProps) => {
               </ScrollView>
             )}
             <VStack center style={ViewStyles.px4}>
-              <Text style={[TextStyles.subtle, ViewStyles.mb2, { textAlign: "center" }]}>
+              <Text center style={[TextStyles.subtle, ViewStyles.mb2]}>
                 {t("disclaimer")}
               </Text>
               <VStack center>
@@ -802,7 +802,7 @@ const MainView = (props: MainViewProps) => {
             style={ViewStyles.mb4}
           />
           <Text style={ViewStyles.mb4}>{t("log_in_notice")}</Text>
-          <VStack style={{ width: "100%" }}>
+          <VStack style={ViewStyles.wf}>
             <Button
               style={[
                 ViewStyles.mb2,
@@ -836,17 +836,19 @@ const MainView = (props: MainViewProps) => {
             style={ViewStyles.mb4}
           />
           <Text style={ViewStyles.mb4}>{t("log_out_notice")}</Text>
-          <Button
-            isLoading={loggingOut}
-            isLoadingText={t("logging_out")}
-            style={{ width: "100%", backgroundColor: accentColor }}
-            textStyle={reverseTextColor}
-            onPress={onLogOutContinuePress}
-          >
-            <Text numberOfLines={1} style={reverseTextColor}>
-              {t("log_out_continue")}
-            </Text>
-          </Button>
+          <VStack style={ViewStyles.wf}>
+            <Button
+              isLoading={loggingOut}
+              isLoadingText={t("logging_out")}
+              style={{ backgroundColor: accentColor }}
+              textStyle={reverseTextColor}
+              onPress={onLogOutContinuePress}
+            >
+              <Text numberOfLines={1} style={reverseTextColor}>
+                {t("log_out_continue")}
+              </Text>
+            </Button>
+          </VStack>
         </VStack>
       </Modal>
       <Modal isVisible={debug} onClose={onDebugClose} style={ViewStyles.modal1d}>
@@ -858,7 +860,7 @@ const MainView = (props: MainViewProps) => {
             style={ViewStyles.mb4}
           />
           <Text style={ViewStyles.mb4}>{t("debug_notice")}</Text>
-          <VStack style={{ width: "100%" }}>
+          <VStack style={ViewStyles.wf}>
             <Button
               style={[ViewStyles.mb2, { backgroundColor: accentColor }]}
               onPress={onCopySessionTokenPress}

@@ -64,6 +64,9 @@ export const TextStyles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "bold",
   },
+  c: {
+    textAlign: "center",
+  },
 });
 
 export const ViewStyles = StyleSheet.create({
@@ -105,6 +108,9 @@ export const ViewStyles = StyleSheet.create({
     width: "100%",
     position: "absolute",
     bottom: 0,
+  },
+  wf: {
+    width: "100%",
   },
   f: {
     flex: 1,

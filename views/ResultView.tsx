@@ -14,6 +14,7 @@ import {
   Modal,
   Text,
   TextStyles,
+  TitledList,
   VStack,
   ViewStyles,
   WaveBox,
@@ -170,7 +171,7 @@ const ResultView = (props: ResultViewProps) => {
   };
 
   return (
-    <VStack style={[ViewStyles.px4, { width: "100%" }, props.style]}>
+    <VStack style={[ViewStyles.px4, ViewStyles.wf, props.style]}>
       {(() => {
         if (props.results) {
           return props.results.map((result, i) => {
@@ -297,185 +298,176 @@ const ResultView = (props: ResultViewProps) => {
         isVisible={displayBattle}
         onClose={onDisplayBattleClose}
         onModalHide={onModalHide}
-        style={[ViewStyles.modal2d, { paddingHorizontal: 0 }]}
-        topChildren={
-          display?.battle && isVsAnnotation(display.battle) ? (
-            <VStack
-              flex
-              center
-              style={[
-                ViewStyles.px4,
-                ViewStyles.py1,
-                {
-                  backgroundColor: accentColor,
-                },
-              ]}
-            >
-              <Text style={[reverseTextColor, { textAlign: "center" }]}>
-                {formatAnnotation(display.battle)}
-              </Text>
-            </VStack>
-          ) : undefined
-        }
+        style={ViewStyles.modal2d}
       >
-        {display?.battle &&
-          formatTeams(display.battle).map((team, i) => (
-            <VStack flex key={i} style={[ViewStyles.px4, ViewStyles.mb2]}>
-              <HStack center style={ViewStyles.mb1}>
-                <Circle size={12} color={getTeamColor(team)} style={ViewStyles.mr1} />
-                <Text numberOfLines={1} style={[TextStyles.b, { color: getTeamColor(team) }]}>
-                  {team.festTeamName ?? ""}
-                </Text>
-                <HStack flex center reverse>
-                  <Text numberOfLines={1} style={[TextStyles.b, { color: getTeamColor(team) }]}>
-                    {formatTeamResult(team)}
-                  </Text>
-                </HStack>
-              </HStack>
-              {team.players.map((player, i, players) => (
-                <BattlePlayerButton
-                  key={i}
-                  isFirst={i === 0}
-                  isLast={i === players.length - 1}
-                  name={player.name}
-                  weapon={t(player.weapon.id)}
-                  paint={player.paint}
-                  kill={player.result?.kill}
-                  assist={player.result?.assist}
-                  death={player.result?.death}
-                  special={player.result?.special}
-                  style={{ alignItems: "center" }}
-                />
+        {display?.battle && (
+          <TitledList
+            color={getVsModeColor(display.battle.vsHistoryDetail.vsMode, accentColor)}
+            title={t(display.battle.vsHistoryDetail.vsMode.id)}
+            subtitle={formatAnnotation(display.battle)}
+          >
+            <VStack style={ViewStyles.wf}>
+              {formatTeams(display.battle).map((team, i) => (
+                <VStack key={i} style={ViewStyles.mb2}>
+                  <HStack center style={ViewStyles.mb1}>
+                    <Circle size={12} color={getTeamColor(team)} style={ViewStyles.mr1} />
+                    <Text numberOfLines={1} style={[TextStyles.b, { color: getTeamColor(team) }]}>
+                      {team.festTeamName ?? ""}
+                    </Text>
+                    <HStack flex center reverse>
+                      <Text numberOfLines={1} style={[TextStyles.b, { color: getTeamColor(team) }]}>
+                        {formatTeamResult(team)}
+                      </Text>
+                    </HStack>
+                  </HStack>
+                  {team.players.map((player, i, players) => (
+                    <BattlePlayerButton
+                      key={i}
+                      isFirst={i === 0}
+                      isLast={i === players.length - 1}
+                      name={player.name}
+                      weapon={t(player.weapon.id)}
+                      paint={player.paint}
+                      kill={player.result?.kill}
+                      assist={player.result?.assist}
+                      death={player.result?.death}
+                      special={player.result?.special}
+                      style={{ alignItems: "center" }}
+                    />
+                  ))}
+                </VStack>
               ))}
+              <Button style={{ backgroundColor: accentColor }} onPress={onShowRawResultPress}>
+                <Text numberOfLines={1} style={reverseTextColor}>
+                  {t("show_raw_data")}
+                </Text>
+              </Button>
             </VStack>
-          ))}
-        <VStack style={ViewStyles.px4}>
-          <Button style={{ backgroundColor: accentColor }} onPress={onShowRawResultPress}>
-            <Text numberOfLines={1} style={reverseTextColor}>
-              {t("show_raw_data")}
-            </Text>
-          </Button>
-        </VStack>
+          </TitledList>
+        )}
       </Modal>
       <Modal
         isVisible={displayCoop}
         onClose={onDisplayCoopClose}
         onModalHide={onModalHide}
         style={[ViewStyles.modal2d, { paddingHorizontal: 0 }]}
-        topChildren={
-          display?.coop && isCoopAnnotation(display.coop) ? (
-            <VStack
-              flex
-              center
-              style={[
-                ViewStyles.px4,
-                ViewStyles.py1,
-                {
-                  backgroundColor: accentColor,
-                },
-              ]}
-            >
-              <Text style={[reverseTextColor, { textAlign: "center" }]}>{t("penalty")}</Text>
-            </VStack>
-          ) : undefined
-        }
       >
         {display?.coop && (
-          <VStack style={ViewStyles.mb2}>
-            {display.coop.coopHistoryDetail.waveResults.length > 0 && (
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={ViewStyles.mb2}>
-                <HStack center style={ViewStyles.px4}>
-                  {display.coop.coopHistoryDetail.waveResults.map((waveResult, i, waveResults) => {
-                    if (i < 3) {
-                      return (
-                        <WaveBox
-                          key={i}
-                          color={
-                            getCoopIsWaveClear(display.coop!, i)
-                              ? getCoopRuleColor(display.coop!.coopHistoryDetail.rule)!
-                              : undefined
+          <TitledList
+            color={getCoopRuleColor(display.coop.coopHistoryDetail.rule)}
+            title={t(display.coop.coopHistoryDetail.rule)}
+            subtitle={isCoopAnnotation(display.coop) ? t("penalty") : undefined}
+          >
+            <VStack style={ViewStyles.wf}>
+              <VStack style={ViewStyles.mb2}>
+                {display.coop.coopHistoryDetail.waveResults.length > 0 && (
+                  <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    style={ViewStyles.mb2}
+                  >
+                    <HStack center style={ViewStyles.px4}>
+                      {display.coop.coopHistoryDetail.waveResults.map(
+                        (waveResult, i, waveResults) => {
+                          if (i < 3) {
+                            return (
+                              <WaveBox
+                                key={i}
+                                color={
+                                  getCoopIsWaveClear(display.coop!, i)
+                                    ? getCoopRuleColor(display.coop!.coopHistoryDetail.rule)!
+                                    : undefined
+                                }
+                                waterLevel={formatWaterLevel(waveResult)!}
+                                eventWave={formatEventWave(waveResult)}
+                                deliver={waveResult.teamDeliverCount!}
+                                quota={waveResult.deliverNorm!}
+                                appearance={waveResult.goldenPopCount}
+                                style={i !== waveResults.length - 1 ? ViewStyles.mr2 : undefined}
+                              />
+                            );
                           }
-                          waterLevel={formatWaterLevel(waveResult)!}
-                          eventWave={formatEventWave(waveResult)}
-                          deliver={waveResult.teamDeliverCount!}
-                          quota={waveResult.deliverNorm!}
-                          appearance={waveResult.goldenPopCount}
-                          style={i !== waveResults.length - 1 ? ViewStyles.mr2 : undefined}
-                        />
-                      );
-                    }
-                    return (
-                      <WaveBox
-                        key={i}
-                        color={
-                          display.coop!.coopHistoryDetail.bossResult!.hasDefeatBoss
-                            ? getCoopRuleColor(display.coop!.coopHistoryDetail.rule)!
-                            : undefined
+                          return (
+                            <WaveBox
+                              key={i}
+                              color={
+                                display.coop!.coopHistoryDetail.bossResult!.hasDefeatBoss
+                                  ? getCoopRuleColor(display.coop!.coopHistoryDetail.rule)!
+                                  : undefined
+                              }
+                              isKingSalmonid
+                              waterLevel={formatWaterLevel(waveResult)!}
+                              eventWave={t(display.coop!.coopHistoryDetail.bossResult!.boss.id)}
+                              deliver={
+                                display.coop!.coopHistoryDetail.bossResult!.hasDefeatBoss ? 1 : 0
+                              }
+                              quota={1}
+                              appearance={1}
+                              style={i !== waveResults.length - 1 ? ViewStyles.mr2 : undefined}
+                            />
+                          );
                         }
-                        isKingSalmonid
-                        waterLevel={formatWaterLevel(waveResult)!}
-                        eventWave={t(display.coop!.coopHistoryDetail.bossResult!.boss.id)}
-                        deliver={display.coop!.coopHistoryDetail.bossResult!.hasDefeatBoss ? 1 : 0}
-                        quota={1}
-                        appearance={1}
-                        style={i !== waveResults.length - 1 ? ViewStyles.mr2 : undefined}
-                      />
-                    );
-                  })}
-                </HStack>
-              </ScrollView>
-            )}
-            {display.coop.coopHistoryDetail.enemyResults.length > 0 && (
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={ViewStyles.mb2}>
-                <HStack center style={ViewStyles.px4}>
-                  {display.coop.coopHistoryDetail.enemyResults.map(
-                    (enemyResult, i, enemyResults) => (
-                      <BossSalmonidBox
-                        key={i}
-                        color={
-                          enemyResult.teamDefeatCount === enemyResult.popCount
-                            ? getCoopRuleColor(display.coop!.coopHistoryDetail.rule)!
-                            : undefined
-                        }
-                        name={t(enemyResult.enemy.id)}
-                        defeat={enemyResult.defeatCount}
-                        teamDefeat={enemyResult.teamDefeatCount}
-                        appearance={enemyResult.popCount}
-                        style={i !== enemyResults.length - 1 ? ViewStyles.mr2 : undefined}
-                      />
-                    )
-                  )}
-                </HStack>
-              </ScrollView>
-            )}
-            <VStack style={ViewStyles.px4}>
-              {[
-                display.coop.coopHistoryDetail.myResult,
-                ...display.coop.coopHistoryDetail.memberResults,
-              ].map((memberResult, i, memberResults) => (
-                <CoopPlayerButton
-                  key={i}
-                  isFirst={i === 0}
-                  isLast={i === memberResults.length - 1}
-                  name={memberResult.player.name}
-                  subtitle={`${t("boss_salmonids")} x${memberResult.defeatEnemyCount}`}
-                  deliverGoldenEgg={memberResult.goldenDeliverCount}
-                  assistGoldenEgg={memberResult.goldenAssistCount}
-                  powerEgg={memberResult.deliverCount}
-                  rescue={memberResult.rescueCount}
-                  rescued={memberResult.rescuedCount}
-                />
-              ))}
+                      )}
+                    </HStack>
+                  </ScrollView>
+                )}
+                {display.coop.coopHistoryDetail.enemyResults.length > 0 && (
+                  <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    style={ViewStyles.mb2}
+                  >
+                    <HStack center style={ViewStyles.px4}>
+                      {display.coop.coopHistoryDetail.enemyResults.map(
+                        (enemyResult, i, enemyResults) => (
+                          <BossSalmonidBox
+                            key={i}
+                            color={
+                              enemyResult.teamDefeatCount === enemyResult.popCount
+                                ? getCoopRuleColor(display.coop!.coopHistoryDetail.rule)!
+                                : undefined
+                            }
+                            name={t(enemyResult.enemy.id)}
+                            defeat={enemyResult.defeatCount}
+                            teamDefeat={enemyResult.teamDefeatCount}
+                            appearance={enemyResult.popCount}
+                            style={i !== enemyResults.length - 1 ? ViewStyles.mr2 : undefined}
+                          />
+                        )
+                      )}
+                    </HStack>
+                  </ScrollView>
+                )}
+                <VStack style={ViewStyles.px4}>
+                  {[
+                    display.coop.coopHistoryDetail.myResult,
+                    ...display.coop.coopHistoryDetail.memberResults,
+                  ].map((memberResult, i, memberResults) => (
+                    <CoopPlayerButton
+                      key={i}
+                      isFirst={i === 0}
+                      isLast={i === memberResults.length - 1}
+                      name={memberResult.player.name}
+                      subtitle={`${t("boss_salmonids")} x${memberResult.defeatEnemyCount}`}
+                      deliverGoldenEgg={memberResult.goldenDeliverCount}
+                      assistGoldenEgg={memberResult.goldenAssistCount}
+                      powerEgg={memberResult.deliverCount}
+                      rescue={memberResult.rescueCount}
+                      rescued={memberResult.rescuedCount}
+                    />
+                  ))}
+                </VStack>
+              </VStack>
+              <VStack style={ViewStyles.px4}>
+                <Button style={{ backgroundColor: accentColor }} onPress={onShowRawResultPress}>
+                  <Text numberOfLines={1} style={reverseTextColor}>
+                    {t("show_raw_data")}
+                  </Text>
+                </Button>
+              </VStack>
             </VStack>
-          </VStack>
+          </TitledList>
         )}
-        <VStack style={ViewStyles.px4}>
-          <Button style={{ backgroundColor: accentColor }} onPress={onShowRawResultPress}>
-            <Text numberOfLines={1} style={reverseTextColor}>
-              {t("show_raw_data")}
-            </Text>
-          </Button>
-        </VStack>
       </Modal>
     </VStack>
   );

@@ -16,7 +16,6 @@ interface ModalProps {
   onClose: () => void;
   onModalHide?: () => void;
   children?: React.ReactNode;
-  topChildren?: React.ReactNode;
 }
 
 const Modal = (props: ModalProps) => {
@@ -44,8 +43,7 @@ const Modal = (props: ModalProps) => {
         onScrollEndDrag={onScrollEndDrag}
         style={[ViewStyles.r, ViewStyles.px4, style, props.style]}
       >
-        {props.topChildren}
-        <View style={{ height: props.topChildren === undefined ? 16 : 8 }} />
+        <View style={{ height: 16 }} />
         {props.children}
         <View style={{ height: 16 }} />
       </ScrollView>

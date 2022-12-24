@@ -6,8 +6,8 @@ import {
   Modal,
   ScheduleBox,
   ScheduleButton,
-  ScheduleList,
   ShiftBox,
+  TitledList,
   ViewStyles,
 } from "../components";
 import { CoopWeapon, Splatfest, Schedule, Schedules, Shift, VsStage } from "../models/types";
@@ -157,7 +157,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
-      style={[{ width: "100%" }, props.style]}
+      style={[ViewStyles.wf, props.style]}
     >
       <HStack style={ViewStyles.px4}>
         {!props.schedules &&
@@ -248,7 +248,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
         onClose={onDisplaySplatfestClose}
         style={ViewStyles.modal2d}
       >
-        <ScheduleList color={display?.color} title={display?.title}>
+        <TitledList color={display?.color} title={display?.title}>
           {display?.splatfest && (
             <ScheduleBox
               rule={t("VnNSdWxlLTU=")}
@@ -256,14 +256,14 @@ const ScheduleView = (props: ScheduleViewProps) => {
               stages={[formatStage(getSplatfestStage(display.splatfest))]}
             />
           )}
-        </ScheduleList>
+        </TitledList>
       </Modal>
       <Modal
         isVisible={displaySchedules}
         onClose={onDisplaySchedulesClose}
         style={ViewStyles.modal2d}
       >
-        <ScheduleList color={display?.color} title={display?.title}>
+        <TitledList color={display?.color} title={display?.title}>
           {display?.schedules &&
             display.schedules
               .filter((schedule) => getMatchSetting(schedule, display.index))
@@ -276,10 +276,10 @@ const ScheduleView = (props: ScheduleViewProps) => {
                   style={i !== schedules.length - 1 ? ViewStyles.mb2 : undefined}
                 />
               ))}
-        </ScheduleList>
+        </TitledList>
       </Modal>
       <Modal isVisible={displayShifts} onClose={onDisplayShiftsClose} style={ViewStyles.modal2d}>
-        <ScheduleList color={display?.color} title={display?.title}>
+        <TitledList color={display?.color} title={display?.title}>
           {display?.shifts &&
             display.shifts
               .filter((shift) => getShiftSetting(shift))
@@ -293,7 +293,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
                   style={i !== shifts.length - 1 ? ViewStyles.mb2 : undefined}
                 />
               ))}
-        </ScheduleList>
+        </TitledList>
       </Modal>
     </ScrollView>
   );

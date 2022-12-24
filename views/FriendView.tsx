@@ -16,7 +16,7 @@ const FriendView = (props: FriendViewProps) => {
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
-      style={[{ width: "100%" }, props.style]}
+      style={[ViewStyles.wf, props.style]}
     >
       <HStack center style={ViewStyles.px4}>
         {(() => {
