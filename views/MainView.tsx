@@ -102,6 +102,7 @@ const MainView = (props: MainViewProps) => {
       try {
         await loadPersistence();
         await Database.open();
+        await loadResults(20, false);
         setReady(true);
       } catch (e) {
         showError(e);
@@ -117,8 +118,10 @@ const MainView = (props: MainViewProps) => {
         duration: 300,
         useNativeDriver: true,
       }).start(() => {
-        loadResults(20, false);
-        refresh();
+        // HACK: avoid animation racing.
+        setTimeout(() => {
+          refresh();
+        }, 100);
       });
     }
   }, [ready]);

@@ -27,7 +27,7 @@ const en = {
   export: "Export",
   exporting: "Exporting",
   disclaimer:
-    "This app is an unofficial app which uses the information of and SplatNet 3, and is not related to Nintendo Co., Ltd.",
+    "This app is an unofficial app which uses the information of SplatNet 3, and is not related to Nintendo Co., Ltd.",
   feedback: "Feedback",
   privacy_policy: "Privacy Policy",
   acknowledgments: "Acknowledgments",
