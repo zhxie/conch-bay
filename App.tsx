@@ -6,6 +6,7 @@ import { en, ja, zh } from "./i18n";
 import { MainView } from "./views";
 import { useColorScheme } from "react-native";
 import { ViewStyles } from "./components";
+import { StatusBar } from "expo-status-bar";
 
 // Localization.
 const i18n = new I18n();
@@ -16,6 +17,7 @@ i18n.locale = Localization.locale;
 
 const App = () => {
   const colorScheme = useColorScheme();
+  const statusBarStyle = colorScheme === "light" ? "dark" : "light";
   const backgroundStyle = colorScheme === "light" ? ViewStyles.light : ViewStyles.dark;
 
   const t = (f: string, params?: Record<string, any>) => {
@@ -24,6 +26,7 @@ const App = () => {
 
   return (
     <SafeAreaProvider style={backgroundStyle}>
+      <StatusBar style={statusBarStyle} />
       <MainView t={t} />
     </SafeAreaProvider>
   );
