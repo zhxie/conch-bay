@@ -12,6 +12,7 @@ import {
   Schedules,
   Summary,
   VsHistoryDetail,
+  WeaponRecords,
   XBattleHistories,
 } from "../models/types";
 import { base64, base64url } from "./encode";
@@ -269,6 +270,15 @@ export const fetchCatalog = async (bulletToken: string, language?: string) => {
     throw new Error(catalog.errors[0].message);
   }
   return catalog.data!;
+};
+export const fetchWeaponRecords = async (bulletToken: string, language?: string) => {
+  const res = await fetchGraphQl(bulletToken, "5f279779e7081f2d14ae1ddca0db2b6e", language);
+  const json = await res.json();
+  const weaponRecords = json as GraphQlResponse<WeaponRecords>;
+  if (weaponRecords.errors) {
+    throw new Error(weaponRecords.errors[0].message);
+  }
+  return weaponRecords.data!;
 };
 
 export const fetchBattleHistories = async (bulletToken: string, language?: string) => {

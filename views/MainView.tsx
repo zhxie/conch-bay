@@ -1,5 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Application from "expo-application";
+import { CacheManager } from "expo-cached-image";
 import * as Clipboard from "expo-clipboard";
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
@@ -35,6 +36,7 @@ import {
   fetchSchedules,
   fetchSummary,
   fetchVsHistoryDetail,
+  fetchWeaponRecords,
   generateLogIn,
   getBulletToken,
   getSessionToken,
@@ -47,6 +49,7 @@ import FriendView from "./FriendView";
 import ScheduleView from "./ScheduleView";
 import * as Database from "../utils/database";
 import { Feather } from "@expo/vector-icons";
+import { getImageCacheKey, getUserIconCacheKey } from "../utils/ui";
 
 interface MainViewProps {
   t: (f: string, params?: Record<string, any>) => string;
@@ -310,11 +313,12 @@ const MainView = (props: MainViewProps) => {
           });
         }
 
-        // Fetch friends, summary and catalog.
-        const [friends, summary, catalog] = await Promise.all([
+        // Fetch friends, summary, catalog and weapon records.
+        const [friends, summary, catalog, weaponRecords] = await Promise.all([
           fetchFriends(newBulletToken),
           fetchSummary(newBulletToken),
           fetchCatalog(newBulletToken),
+          fetchWeaponRecords(newBulletToken),
         ]);
         setFriends(friends);
         const icon = summary.currentPlayer.userIcon.url;
@@ -331,6 +335,23 @@ const MainView = (props: MainViewProps) => {
           level: level,
           rank: rank,
         });
+        // Pre-download weapon images.
+        const resources = new Map<string, string>();
+        weaponRecords.weaponRecords.nodes.forEach((record) => {
+          resources.set(getImageCacheKey(record.image2d.url), record.image2d.url);
+        });
+        const resourcesArray = Array.from(resources);
+        const resourcesInfo = await Promise.all(
+          resourcesArray.map((resource) =>
+            FileSystem.getInfoAsync(`${FileSystem.cacheDirectory}${resource[0]}`)
+          )
+        );
+        const newResources = resourcesArray.filter((_, i) => !resourcesInfo[i].exists);
+        await Promise.all(
+          Array.from(newResources).map((resource) =>
+            CacheManager.downloadAsync({ uri: resource[1], key: resource[0] })
+          )
+        );
 
         // Fetch results.
         const [battleHistories, coopResult] = await Promise.all([
@@ -658,6 +679,7 @@ const MainView = (props: MainViewProps) => {
                 <Avatar
                   size={64}
                   uri={icon.length > 0 ? icon : undefined}
+                  cacheKey={icon.length > 0 ? getUserIconCacheKey(icon) : undefined}
                   onPress={onLogOutPress}
                   onLongPress={onDebugPress}
                   style={ViewStyles.mb2}
@@ -890,11 +912,13 @@ const MainView = (props: MainViewProps) => {
             <Avatar
               size={48}
               uri="https://cdn-image-e0d67c509fb203858ebcb2fe3f88c2aa.baas.nintendo.com/1/1afd1450a5a5ebec"
+              cacheKey="1afd1450a5a5ebec"
               style={ViewStyles.mr2}
             />
             <Avatar
               size={48}
               uri="https://cdn-image-e0d67c509fb203858ebcb2fe3f88c2aa.baas.nintendo.com/1/4b98d8291ae60b8c"
+              cacheKey="4b98d8291ae60b8c"
               style={ViewStyles.mr2}
             />
           </HStack>

@@ -5,11 +5,16 @@ import Text from "./Text";
 import { HStack } from "./Stack";
 import { Circle } from "./Shape";
 
+interface WeaponProps {
+  name: string;
+  image: string;
+  cacheKey: string;
+}
 interface BattlePlayerButtonProps {
   isFirst?: boolean;
   isLast?: boolean;
   name: string;
-  weapon: string;
+  weapon: WeaponProps;
   paint: number;
   kill?: number;
   assist?: number;
@@ -31,9 +36,10 @@ const BattlePlayerButton = (props: BattlePlayerButtonProps) => {
     <ResultButton
       isFirst={props.isFirst}
       isLast={props.isLast}
+      image={{ uri: props.weapon.image, cacheKey: props.weapon.cacheKey }}
       title={props.name}
       subtitle={`${props.paint} pt`}
-      subChildren={<Text numberOfLines={1}>{props.weapon}</Text>}
+      subChildren={<Text numberOfLines={1}>{props.weapon.name}</Text>}
       style={props.style}
       onPress={props.onPress}
     >

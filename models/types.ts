@@ -114,6 +114,18 @@ export interface Catalog {
   };
 }
 
+export interface WeaponRecord {
+  image2d: {
+    url: string;
+  };
+  id: string;
+}
+export interface WeaponRecords {
+  weaponRecords: {
+    nodes: WeaponRecord[];
+  };
+}
+
 export interface BattleHistoryDetail {
   id: string;
 }
@@ -152,10 +164,10 @@ export interface PrivateBattleHistories {
 }
 
 export interface VsWeapon {
-  image: {
+  id: string;
+  image2d: {
     url: string;
   };
-  id: string;
 }
 export interface VsPlayer {
   id: string;

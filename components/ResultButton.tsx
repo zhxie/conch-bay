@@ -4,12 +4,18 @@ import Pressable from "./Pressable";
 import { Color, TextStyles, ViewStyles } from "./Styles";
 import Text from "./Text";
 import { Center, HStack, VStack } from "./Stack";
+import Image from "./Image";
 
+interface ImageProps {
+  uri: string;
+  cacheKey: string;
+}
 interface ResultButtonProps {
   color?: string;
   isLoading?: boolean;
   isFirst?: boolean;
   isLast?: boolean;
+  image?: ImageProps;
   result?: number;
   title: string;
   subtitle: string;
@@ -60,6 +66,13 @@ const ResultButton = (props: ResultButtonProps) => {
               }
             })()}
           </Center>
+        )}
+        {props.image !== undefined && (
+          <Image
+            uri={props.image.uri}
+            cacheKey={props.image.cacheKey}
+            style={[ViewStyles.mr3, { width: 32, height: 32 }]}
+          />
         )}
         <VStack flex>
           <HStack flex center reverse>

@@ -1,7 +1,7 @@
 import { ScrollView, StyleProp, useColorScheme, ViewStyle } from "react-native";
 import { Avatar, Color, HStack, ViewStyles } from "../components";
 import { Friends } from "../models/types";
-import { getFriendColor } from "../utils/ui";
+import { getFriendColor, getUserIconCacheKey } from "../utils/ui";
 
 interface FriendViewProps {
   friends?: Friends;
@@ -26,6 +26,7 @@ const FriendView = (props: FriendViewProps) => {
                 key={i}
                 size={48}
                 uri={friend.userIcon.url}
+                cacheKey={getUserIconCacheKey(friend.userIcon.url)}
                 style={i !== friends.length - 1 ? ViewStyles.mr2 : undefined}
                 imageStyle={{
                   borderColor: getFriendColor(friend, accentColor),

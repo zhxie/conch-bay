@@ -19,16 +19,22 @@ import {
   ViewStyles,
   WaveBox,
 } from "../components";
-import { CoopHistoryDetail, CoopWaveResult, VsHistoryDetail, VsTeam } from "../models/types";
+import {
+  CoopHistoryDetail,
+  CoopWaveResult,
+  VsHistoryDetail,
+  VsTeam,
+  VsWeapon,
+} from "../models/types";
 import {
   getCoopIsClear,
   getCoopIsWaveClear,
   getCoopRuleColor,
+  getImageCacheKey,
   getTeamColor,
   getVsModeColor,
   getVsSelfPlayer,
   isCoopAnnotation,
-  isVsAnnotation,
 } from "../utils/ui";
 
 interface ResultViewProps {
@@ -131,6 +137,13 @@ const ResultView = (props: ResultViewProps) => {
       }
     }
     return " ";
+  };
+  const formatWeapon = (weapon: VsWeapon) => {
+    return {
+      name: t(weapon.id),
+      image: weapon.image2d.url,
+      cacheKey: getImageCacheKey(weapon.image2d.url),
+    };
   };
   const formatWaterLevel = (waveResult: CoopWaveResult) => {
     switch (waveResult.waterLevel) {
@@ -326,7 +339,7 @@ const ResultView = (props: ResultViewProps) => {
                       isFirst={i === 0}
                       isLast={i === players.length - 1}
                       name={player.name}
-                      weapon={t(player.weapon.id)}
+                      weapon={formatWeapon(player.weapon)}
                       paint={player.paint}
                       kill={player.result?.kill}
                       assist={player.result?.assist}

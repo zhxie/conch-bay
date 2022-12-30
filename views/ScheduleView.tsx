@@ -15,6 +15,7 @@ import {
   getCoopStage,
   getCoopStageId,
   getCoopWeapons,
+  getImageCacheKey,
   getMatchSetting,
   getShiftSetting,
   getSplatfestStage,
@@ -71,10 +72,14 @@ const ScheduleView = (props: ScheduleViewProps) => {
     return {
       title: t(stage.id),
       image: stage.image.url,
+      cacheKey: getImageCacheKey(stage.image.url),
     };
   };
   const formatWeapon = (weapon: CoopWeapon) => {
-    return weapon.image.url;
+    return {
+      image: weapon.image.url,
+      cacheKey: getImageCacheKey(weapon.image.url),
+    };
   };
 
   const onCurrentSplatfestPress = () => {

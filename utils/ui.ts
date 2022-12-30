@@ -87,6 +87,11 @@ export const getCoopWeapons = (shift: Shift) => {
   const setting = getShiftSetting(shift);
   return setting.weapons;
 };
+export const getImageCacheKey = (image: string) => {
+  const regex = /\/([0-9|a-f]{64}_\d)\./;
+  const match = regex.exec(image)!;
+  return match[1];
+};
 
 export const getVsModeColor = (mode: VsMode, accentColor: string) => {
   switch (mode.id) {
@@ -131,6 +136,10 @@ export const getFriendColor = (friend: Friend, accentColor: string) => {
     case "OFFLINE":
       return "transparent";
   }
+};
+export const getUserIconCacheKey = (userIcon: string) => {
+  const components = userIcon.split("/");
+  return components[components.length - 1];
 };
 
 export const convertStageImageUrl = (stage: VsStage) => {

@@ -7,12 +7,17 @@ import { HStack, VStack } from "./Stack";
 interface StageProps {
   title: string;
   image: string;
+  cacheKey: string;
+}
+interface WeaponProps {
+  image: string;
+  cacheKey: string;
 }
 interface ScheduleBoxProps {
   rule: string;
   time: string;
   stage: StageProps;
-  weapons: string[];
+  weapons: WeaponProps[];
   style?: StyleProp<ViewStyle>;
 }
 
@@ -32,7 +37,11 @@ const ShiftBox = (props: ScheduleBoxProps) => {
         </HStack>
         <HStack flex center>
           <VStack flex center style={ViewStyles.mr2}>
-            <Image uri={props.stage.image} style={[ViewStyles.mb1, ViewStyles.r, styles.stage]} />
+            <Image
+              uri={props.stage.image}
+              cacheKey={props.stage.cacheKey}
+              style={[ViewStyles.mb1, ViewStyles.r, styles.stage]}
+            />
             <Text numberOfLines={1}>{props.stage.title}</Text>
           </VStack>
           <VStack flex center>
@@ -40,7 +49,8 @@ const ShiftBox = (props: ScheduleBoxProps) => {
               {props.weapons.map((weapon, i, weapons) => (
                 <Image
                   key={i}
-                  uri={weapon}
+                  uri={weapon.image}
+                  cacheKey={weapon.cacheKey}
                   style={[
                     i !== weapons.length - 1 ? ViewStyles.mr1 : undefined,
                     ViewStyles.f,

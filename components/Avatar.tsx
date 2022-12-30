@@ -6,6 +6,7 @@ interface AvatarProps {
   size: number;
   isDisabled?: boolean;
   uri?: string;
+  cacheKey?: string;
   style?: StyleProp<ViewStyle>;
   imageStyle?: StyleProp<ImageStyle>;
   onPress?: () => void;
@@ -30,6 +31,7 @@ const Avatar = (props: AvatarProps) => {
       {props.uri && (
         <Image
           uri={props.uri}
+          cacheKey={props.cacheKey ?? ""}
           style={[
             { width: props.size, height: props.size, borderRadius: props.size / 2 },
             props.imageStyle,
