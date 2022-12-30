@@ -6,7 +6,6 @@ import { HStack } from "./Stack";
 import { Circle } from "./Shape";
 
 interface WeaponProps {
-  name: string;
   image: string;
   cacheKey: string;
 }
@@ -39,7 +38,6 @@ const BattlePlayerButton = (props: BattlePlayerButtonProps) => {
       image={{ uri: props.weapon.image, cacheKey: props.weapon.cacheKey }}
       title={props.name}
       subtitle={`${props.paint} pt`}
-      subChildren={<Text numberOfLines={1}>{props.weapon.name}</Text>}
       style={props.style}
       onPress={props.onPress}
     >

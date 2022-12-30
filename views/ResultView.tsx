@@ -140,7 +140,6 @@ const ResultView = (props: ResultViewProps) => {
   };
   const formatWeapon = (weapon: VsWeapon) => {
     return {
-      name: t(weapon.id),
       image: weapon.image2d.url,
       cacheKey: getImageCacheKey(weapon.image2d.url),
     };
