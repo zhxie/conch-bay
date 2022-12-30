@@ -1,3 +1,4 @@
+import { Feather } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Application from "expo-application";
 import { CacheManager } from "expo-cached-image";
@@ -48,7 +49,6 @@ import ResultView from "./ResultView";
 import FriendView from "./FriendView";
 import ScheduleView from "./ScheduleView";
 import * as Database from "../utils/database";
-import { Feather } from "@expo/vector-icons";
 import { getImageCacheKey, getUserIconCacheKey } from "../utils/ui";
 
 interface MainViewProps {
@@ -235,21 +235,7 @@ const MainView = (props: MainViewProps) => {
       if (check && (await Database.isExist(battle.vsHistoryDetail.id))) {
         return 0;
       }
-      await Database.add(
-        battle.vsHistoryDetail.id,
-        new Date(battle.vsHistoryDetail.playedTime).valueOf(),
-        battle.vsHistoryDetail.vsMode.id,
-        battle.vsHistoryDetail.vsRule.id,
-        battle.vsHistoryDetail.myTeam.players.find((player) => player.isMyself)!.weapon.id,
-        battle.vsHistoryDetail.myTeam.players
-          .map((player) => player.id)
-          .concat(
-            battle.vsHistoryDetail.otherTeams
-              .map((otherTeam) => otherTeam.players.map((player) => player.id))
-              .flat()
-          ),
-        JSON.stringify(battle)
-      );
+      await Database.addBattle(battle);
       return 1;
     } catch {
       return -1;
@@ -260,17 +246,7 @@ const MainView = (props: MainViewProps) => {
       if (check && (await Database.isExist(coop.coopHistoryDetail.id))) {
         return 0;
       }
-      await Database.add(
-        coop.coopHistoryDetail.id,
-        new Date(coop.coopHistoryDetail.playedTime).valueOf(),
-        "salmon_run",
-        coop.coopHistoryDetail.rule,
-        "",
-        coop.coopHistoryDetail.memberResults
-          .map((memberResult) => memberResult.player.id)
-          .concat(coop.coopHistoryDetail.myResult.player.id),
-        JSON.stringify(coop)
-      );
+      await Database.addCoop(coop);
       return 1;
     } catch {
       return -1;
@@ -507,6 +483,14 @@ const MainView = (props: MainViewProps) => {
   const onCopyBulletTokenPress = async () => {
     if (bulletToken.length > 0) {
       await Clipboard.setStringAsync(bulletToken);
+    }
+  };
+  const onExportDatabasePress = async () => {
+    const uri = FileSystem.documentDirectory + "SQLite/conch-bay.db";
+    try {
+      await Sharing.shareAsync(uri, { UTI: "public.database" });
+    } catch (e) {
+      showError(e);
     }
   };
   const onFilterRegularBattlePress = async () => {
@@ -891,9 +875,17 @@ const MainView = (props: MainViewProps) => {
                 {t("copy_session_token")}
               </Text>
             </Button>
-            <Button style={{ backgroundColor: accentColor }} onPress={onCopyBulletTokenPress}>
+            <Button
+              style={[ViewStyles.mb2, { backgroundColor: accentColor }]}
+              onPress={onCopyBulletTokenPress}
+            >
               <Text numberOfLines={1} style={reverseTextColor}>
                 {t("copy_bullet_token")}
+              </Text>
+            </Button>
+            <Button style={{ backgroundColor: accentColor }} onPress={onExportDatabasePress}>
+              <Text numberOfLines={1} style={reverseTextColor}>
+                {t("export_database")}
               </Text>
             </Button>
           </VStack>

@@ -12,6 +12,7 @@ const zh = {
   debug_notice: "这些信息仅用于调试。请不要与他人分享。",
   copy_session_token: "复制会话令牌",
   copy_bullet_token: "复制Bullet令牌",
+  export_database: "导出数据库",
   failed_to_check_api_update: "未能检查API更新",
   reacquiring_tokens: "重新获取令牌中",
   loading_n_new_results: "加载%{n}项新记录中",

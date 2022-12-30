@@ -13,6 +13,7 @@ const ja = {
   debug_notice: "こちらの情報はデバッグ専用です。他の人と共有しないでください。",
   copy_session_token: "セッショントークンをコピー",
   copy_bullet_token: "ブレットトークンをコピー",
+  export_database: "データーベースをエクスポート",
   failed_to_check_api_update: "APIのアップデートを確認できませんでした",
   reacquiring_tokens: "トークン再取得中",
   loading_n_new_results: "%{n}件の新しいリザルトを読み込む中",

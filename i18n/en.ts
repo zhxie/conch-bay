@@ -13,6 +13,7 @@ const en = {
   debug_notice: "These information is for debug only. Please do NOT share with others.",
   copy_session_token: "Copy Session Token",
   copy_bullet_token: "Copy Bullet Token",
+  export_database: "Export Database",
   failed_to_check_api_update: "Failed to check API update",
   reacquiring_tokens: "Reacquiring tokens",
   loading_n_new_results: "Loading %{n} new result(s)",
