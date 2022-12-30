@@ -199,6 +199,7 @@ const zh = {
   // King Salmonids.
   Q29vcEVuZW15LTIz: "横纲",
   // Results.
+  score_score: "%{score}计数",
   knock_out: "完胜！",
   no_contest: "本场对战已被判定为无效比赛。",
   penalty: "对战未能正常结束。",

@@ -202,6 +202,7 @@ const en = {
   // King Salmonids.
   Q29vcEVuZW15LTIz: "Cohozuna",
   // Results.
+  score_score: "Score %{score}",
   knock_out: "KNOCKOUT!",
   no_contest: "No contest.",
   penalty: "The match was not fully completed.",

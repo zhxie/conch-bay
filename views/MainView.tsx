@@ -92,7 +92,7 @@ const MainView = (props: MainViewProps) => {
     { battle?: VsHistoryDetail; coop?: CoopHistoryDetail }[] | undefined
   >(undefined);
 
-  const showError = (e: any) => {
+  const showToast = (e: any) => {
     if (e instanceof Error) {
       Toast.show(e.message);
     } else if (typeof e === "string") {
@@ -108,7 +108,7 @@ const MainView = (props: MainViewProps) => {
         await loadResults(20, false);
         setReady(true);
       } catch (e) {
-        showError(e);
+        showToast(e);
       }
     };
     fetchData();
@@ -263,7 +263,7 @@ const MainView = (props: MainViewProps) => {
         try {
           await Promise.all([await updateNsoappVersion(), await updateWebViewVersion()]);
         } catch {
-          Toast.show(t("failed_to_check_api_update"));
+          showToast(t("failed_to_check_api_update"));
         }
 
         // Regenerate bullet token if necessary.
@@ -274,7 +274,7 @@ const MainView = (props: MainViewProps) => {
         }
         if (!newBulletToken) {
           if (bulletToken.length > 0) {
-            Toast.show(t("reacquiring_tokens"));
+            showToast(t("reacquiring_tokens"));
           }
 
           const res = await getWebServiceToken(sessionToken);
@@ -375,7 +375,7 @@ const MainView = (props: MainViewProps) => {
         const existed = await Promise.all(results.map((result) => Database.isExist(result.id)));
         const newResults = results.filter((_, i) => !existed[i]);
         if (newResults.length > 0) {
-          Toast.show(t("loading_n_new_results", { n: newResults.length }));
+          showToast(t("loading_n_new_results", { n: newResults.length }));
           const details = await Promise.all(
             newResults.map((result) => {
               if (!result.isCoop) {
@@ -397,16 +397,16 @@ const MainView = (props: MainViewProps) => {
             }
           }
           if (fail > 0) {
-            Toast.show(t("loaded_n_results_fail_failed", { n: newResults.length, fail }));
+            showToast(t("loaded_n_results_fail_failed", { n: newResults.length, fail }));
           } else {
-            Toast.show(t("loaded_n_results", { n: newResults.length }));
+            showToast(t("loaded_n_results", { n: newResults.length }));
           }
         }
 
         await loadResults(20, true);
       }
     } catch (e) {
-      showError(e);
+      showToast(e);
     }
     setRefreshing(false);
   };
@@ -443,7 +443,7 @@ const MainView = (props: MainViewProps) => {
       setLoggingIn(false);
       setLogIn(false);
     } catch (e) {
-      showError(e);
+      showToast(e);
       setLoggingIn(false);
     }
   };
@@ -465,7 +465,7 @@ const MainView = (props: MainViewProps) => {
       setLoggingOut(false);
       setLogOut(false);
     } catch (e) {
-      showError(e);
+      showToast(e);
       setLoggingOut(false);
     }
   };
@@ -490,7 +490,7 @@ const MainView = (props: MainViewProps) => {
     try {
       await Sharing.shareAsync(uri, { UTI: "public.database" });
     } catch (e) {
-      showError(e);
+      showToast(e);
     }
   };
   const onFilterRegularBattlePress = async () => {
@@ -544,7 +544,7 @@ const MainView = (props: MainViewProps) => {
       let [fail, skip] = [0, 0];
       const result = JSON.parse(await FileSystem.readAsStringAsync(uri));
       const n = result["battles"].length + result["coops"].length;
-      Toast.show(t("loading_n_results", { n }));
+      showToast(t("loading_n_results", { n }));
       for (const battle of result["battles"]) {
         const result = await addBattle(battle, true);
         if (result < 0) {
@@ -562,9 +562,9 @@ const MainView = (props: MainViewProps) => {
         }
       }
       if (fail === 0 && skip === 0) {
-        Toast.show(t("loaded_n_results", { n }));
+        showToast(t("loaded_n_results", { n }));
       } else {
-        Toast.show(t("loaded_n_results_fail_failed_skip_skipped", { n, fail, skip }));
+        showToast(t("loaded_n_results_fail_failed_skip_skipped", { n, fail, skip }));
       }
 
       // Query stored latest results if updated.
@@ -572,14 +572,14 @@ const MainView = (props: MainViewProps) => {
         await loadResults(20, true);
       }
     } catch (e) {
-      showError(e);
+      showToast(e);
     }
 
     // Clean up.
     try {
       await FileSystem.deleteAsync(uri, { idempotent: true });
     } catch (e) {
-      showError(e);
+      showToast(e);
     }
     setRefreshing(false);
   };
@@ -604,14 +604,14 @@ const MainView = (props: MainViewProps) => {
       });
       await Sharing.shareAsync(uri, { UTI: "public.json" });
     } catch (e) {
-      showError(e);
+      showToast(e);
     }
 
     // Clean up.
     try {
       await FileSystem.deleteAsync(uri, { idempotent: true });
     } catch (e) {
-      showError(e);
+      showToast(e);
     }
     setExporting(false);
   };

@@ -202,6 +202,7 @@ const ja = {
   // King Salmonids.
   Q29vcEVuZW15LTIz: "ヨコヅナ",
   // Results.
+  score_score: "%{score}カウント",
   knock_out: "ノックアウト！",
   no_contest: "無効試合になりました",
   penalty: "正常に試合が終了しませんでした",
