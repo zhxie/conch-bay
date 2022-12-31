@@ -2,7 +2,7 @@
   "expo": {
     "name": "Conch Bay",
     "slug": "conch-bay",
-    "version": "0.1.0",
+    "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
     "icon": "./assets/icon.png",
@@ -22,7 +22,7 @@
     "jsEngine": "hermes",
     "ios": {
       "bundleIdentifier": "name.sketch.ConchBay",
-      "buildNumber": "13",
+      "buildNumber": "14",
       "config": {
         "usesNonExemptEncryption": false
       },
@@ -38,7 +38,7 @@
     },
     "android": {
       "package": "name.sketch.conch_bay",
-      "versionCode": 13,
+      "versionCode": 14,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#6B84F5"
