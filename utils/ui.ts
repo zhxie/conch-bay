@@ -185,3 +185,15 @@ export const getCoopIsWaveClear = (coop: CoopHistoryDetail, wave: number) => {
   }
   return wave + 1 < coop.coopHistoryDetail.resultWave;
 };
+export const getCoopPowerEgg = (coop: CoopHistoryDetail) => {
+  return coop.coopHistoryDetail.memberResults.reduce(
+    (sum, result) => sum + result.deliverCount,
+    coop.coopHistoryDetail.myResult.deliverCount
+  );
+};
+export const getCoopGoldenEgg = (coop: CoopHistoryDetail) => {
+  return coop.coopHistoryDetail.memberResults.reduce(
+    (sum, result) => sum + result.goldenDeliverCount,
+    coop.coopHistoryDetail.myResult.goldenDeliverCount
+  );
+};

@@ -27,8 +27,10 @@ import {
   VsWeapon,
 } from "../models/types";
 import {
+  getCoopGoldenEgg,
   getCoopIsClear,
   getCoopIsWaveClear,
+  getCoopPowerEgg,
   getCoopRuleColor,
   getImageCacheKey,
   getTeamColor,
@@ -226,9 +228,8 @@ const ResultView = (props: ResultViewProps) => {
                 wave={formatWave(result.coop!)!}
                 isClear={getCoopIsClear(result.coop!)}
                 hazardLevel={formatHazardLevel(result.coop!)}
-                powerEgg={result.coop!.coopHistoryDetail.myResult.deliverCount}
-                assistGoldenEgg={result.coop!.coopHistoryDetail.myResult.goldenAssistCount}
-                deliverGoldenEgg={result.coop!.coopHistoryDetail.myResult.goldenDeliverCount}
+                powerEgg={getCoopPowerEgg(result.coop!)}
+                goldenEgg={getCoopGoldenEgg(result.coop!)}
                 onPress={() => {
                   setDisplay({ coop: result.coop! });
                   setDisplayCoop(true);
@@ -423,13 +424,34 @@ const ResultView = (props: ResultViewProps) => {
                     </HStack>
                   </ScrollView>
                 )}
-                {display.coop.coopHistoryDetail.enemyResults.length > 0 && (
+                {(display.coop.coopHistoryDetail.enemyResults.length > 0 ||
+                  display.coop.coopHistoryDetail.bossResult !== null) && (
                   <ScrollView
                     horizontal
                     showsHorizontalScrollIndicator={false}
                     style={ViewStyles.mb2}
                   >
                     <HStack center style={ViewStyles.px4}>
+                      {display.coop.coopHistoryDetail.bossResult !== null && (
+                        <BossSalmonidBox
+                          color={
+                            display.coop.coopHistoryDetail.bossResult.hasDefeatBoss
+                              ? getCoopRuleColor(display.coop!.coopHistoryDetail.rule)!
+                              : undefined
+                          }
+                          name={t(display.coop.coopHistoryDetail.bossResult.boss.id)}
+                          defeat={0}
+                          teamDefeat={
+                            display.coop.coopHistoryDetail.bossResult.hasDefeatBoss ? 1 : 0
+                          }
+                          appearance={1}
+                          style={
+                            display.coop.coopHistoryDetail.enemyResults.length > 0
+                              ? ViewStyles.mr2
+                              : undefined
+                          }
+                        />
+                      )}
                       {display.coop.coopHistoryDetail.enemyResults.map(
                         (enemyResult, i, enemyResults) => (
                           <BossSalmonidBox

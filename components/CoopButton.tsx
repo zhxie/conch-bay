@@ -17,8 +17,7 @@ interface CoopButtonProps {
   wave: string;
   isClear: boolean;
   hazardLevel: string;
-  deliverGoldenEgg: number;
-  assistGoldenEgg: number;
+  goldenEgg: number;
   powerEgg: number;
   style?: StyleProp<ViewStyle>;
   onPress?: () => void;
@@ -29,10 +28,6 @@ const CoopButton = (props: CoopButtonProps) => {
 
   const subtitle =
     props.kingSalmonid !== undefined ? `${props.stage} / ${props.kingSalmonid}` : `${props.stage}`;
-  const goldenEgg =
-    props.assistGoldenEgg! > 0
-      ? `${props.deliverGoldenEgg}<${props.assistGoldenEgg}>`
-      : props.deliverGoldenEgg;
 
   return (
     <ResultButton
@@ -58,7 +53,7 @@ const CoopButton = (props: CoopButtonProps) => {
         <HStack center>
           <Circle size={10} color={Color.GoldenEgg} style={ViewStyles.mr1} />
           <Text numberOfLines={1} style={ViewStyles.mr1}>
-            {goldenEgg}
+            {props.goldenEgg}
           </Text>
           <Circle size={10} color={Color.PowerEgg} style={ViewStyles.mr1} />
           <Text numberOfLines={1}>{props.powerEgg}</Text>
