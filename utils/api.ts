@@ -283,10 +283,10 @@ export const fetchWeaponRecords = async (bulletToken: string, language?: string)
 
 export const fetchBattleHistories = async (bulletToken: string, language?: string) => {
   const [regularRes, anarchyRes, xRes, privateRes] = await Promise.all([
-    fetchGraphQl(bulletToken, "d5b795d09e67ce153e622a184b7e7dfa", language),
-    fetchGraphQl(bulletToken, "de4754588109b77dbcb90fbe44b612ee", language),
-    fetchGraphQl(bulletToken, "45c74fefb45a49073207229ca65f0a62", language),
-    fetchGraphQl(bulletToken, "1d6ed57dc8b801863126ad4f351dfb9a", language),
+    fetchGraphQl(bulletToken, "3baef04b095ad8975ea679d722bc17de", language),
+    fetchGraphQl(bulletToken, "0438ea6978ae8bd77c5d1250f4f84803", language),
+    fetchGraphQl(bulletToken, "6796e3cd5dc3ebd51864dc709d899fc5", language),
+    fetchGraphQl(bulletToken, "8e5ae78b194264a6c230e262d069bd28", language),
   ]);
   const [regularJson, anarchyJson, xJson, privateJson] = await Promise.all([
     regularRes.json(),
@@ -324,7 +324,7 @@ export const fetchVsHistoryDetail = async (id: string, bulletToken: string, lang
   return detail.data!;
 };
 export const fetchCoopResult = async (bulletToken: string, language?: string) => {
-  const res = await fetchGraphQl(bulletToken, "2fd21f270d381ecf894eb975c5f6a716", language);
+  const res = await fetchGraphQl(bulletToken, "2a7f4335bcf586d904db85e75ba868c0", language);
   const json = await res.json();
   const result = json as GraphQlResponse<CoopResult>;
   if (result.errors) {

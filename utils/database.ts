@@ -162,5 +162,5 @@ export const addCoop = async (coop: CoopHistoryDetail) => {
 };
 export const clear = async () => {
   await exec("DELETE FROM result", false);
-  await exec("VACUUM", false);
+  await exec("VACUUM result", false);
 };
