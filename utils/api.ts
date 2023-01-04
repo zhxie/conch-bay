@@ -34,12 +34,10 @@ export const fetchSchedules = async () => {
 };
 
 export const updateNsoappVersion = async () => {
-  const res = await fetch("https://apps.apple.com/us/app/nintendo-switch-online/id1234806557");
-  const text = await res.text();
+  const res = await fetch("https://itunes.apple.com/lookup?id=1234806557");
+  const json = await res.json();
 
-  const regex = />Version.+?([0-9|.].+)</;
-  const match = regex.exec(text)!;
-  NSOAPP_VERSION = match[1];
+  NSOAPP_VERSION = json["results"][0]["version"];
 };
 export const updateWebViewVersion = async () => {
   const res = await fetch("https://api.lp1.av5ja.srv.nintendo.net");
