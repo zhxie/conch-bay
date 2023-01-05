@@ -14,6 +14,9 @@ const en = {
   copy_session_token: "Copy Session Token",
   copy_bullet_token: "Copy Bullet Token",
   export_database: "Export Database",
+  first_aid_notice:
+    "The database is corrupted and cannot be loaded. Please export results and reinstall Conch Bay.",
+  export_results: "Export Results",
   failed_to_check_api_update: "Failed to check API update",
   reacquiring_tokens: "Reacquiring tokens",
   loading_n_new_results: "Loading %{n} new result(s)",

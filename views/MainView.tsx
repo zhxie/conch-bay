@@ -76,6 +76,7 @@ const MainView = (props: MainViewProps) => {
   const [filter, setFilter] = useState("");
   const [exporting, setExporting] = useState(false);
   const [acknowledgments, setAcknowledgments] = useState(false);
+  const [firstAid, setFirstAid] = useState(false);
 
   const [sessionToken, setSessionToken] = useState("");
   const [language, setLanguage] = useState("");
@@ -109,6 +110,7 @@ const MainView = (props: MainViewProps) => {
         setReady(true);
       } catch (e) {
         showToast(e);
+        setFirstAid(true);
       }
     };
     fetchData();
@@ -930,6 +932,35 @@ const MainView = (props: MainViewProps) => {
             <Text numberOfLines={1} style={TextStyles.link} onPress={onIminkFApiPress}>
               imink f API
             </Text>
+          </VStack>
+        </VStack>
+      </Modal>
+      <Modal isVisible={firstAid} style={ViewStyles.modal1dc}>
+        <VStack center>
+          <Feather
+            name="alert-triangle"
+            size={48}
+            color={Color.MiddleTerritory}
+            style={ViewStyles.mb4}
+          />
+          <Text style={ViewStyles.mb4}>{t("first_aid_notice")}</Text>
+          <VStack style={ViewStyles.wf}>
+            <Button
+              isLoading={exporting}
+              isLoadingText={t("exporting")}
+              style={[ViewStyles.mb2, { backgroundColor: accentColor }]}
+              textStyle={reverseTextColor}
+              onPress={onExportPress}
+            >
+              <Text numberOfLines={1} style={reverseTextColor}>
+                {t("export_results")}
+              </Text>
+            </Button>
+            <Button style={{ backgroundColor: accentColor }} onPress={onExportDatabasePress}>
+              <Text numberOfLines={1} style={reverseTextColor}>
+                {t("export_database")}
+              </Text>
+            </Button>
           </VStack>
         </VStack>
       </Modal>

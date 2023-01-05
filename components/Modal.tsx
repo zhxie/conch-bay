@@ -13,7 +13,7 @@ import { ViewStyles } from "./Styles";
 interface ModalProps {
   isVisible: boolean;
   style?: StyleProp<ViewStyle>;
-  onClose: () => void;
+  onClose?: () => void;
   onModalHide?: () => void;
   children?: React.ReactNode;
 }
@@ -23,7 +23,7 @@ const Modal = (props: ModalProps) => {
   const style = colorScheme === "light" ? ViewStyles.light : ViewStyles.dark;
 
   const onScrollEndDrag = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    if (event.nativeEvent.contentOffset.y < -80) {
+    if (!!props.onClose && event.nativeEvent.contentOffset.y < -80) {
       props.onClose();
     }
   };
