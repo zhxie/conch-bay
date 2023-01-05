@@ -27,11 +27,8 @@ const FriendView = (props: FriendViewProps) => {
                 size={48}
                 uri={friend.userIcon.url}
                 cacheKey={getUserIconCacheKey(friend.userIcon.url)}
+                badge={getFriendColor(friend, accentColor)}
                 style={i !== friends.length - 1 ? ViewStyles.mr2 : undefined}
-                imageStyle={{
-                  borderColor: getFriendColor(friend, accentColor),
-                  borderWidth: 2,
-                }}
               />
             ));
           } else {
