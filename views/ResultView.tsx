@@ -311,7 +311,7 @@ const ResultView = (props: ResultViewProps) => {
         isVisible={displayBattle}
         onClose={onDisplayBattleClose}
         onModalHide={onModalHide}
-        style={ViewStyles.modal2d}
+        style={ViewStyles.modal3d}
       >
         {display?.battle && (
           <TitledList

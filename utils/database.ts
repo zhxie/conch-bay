@@ -5,6 +5,9 @@ import { getVsSelfPlayer } from "./ui";
 let db: SQLite.WebSQLDatabase | undefined = undefined;
 
 export const open = async () => {
+  if (db) {
+    return;
+  }
   db = SQLite.openDatabase("conch-bay.db");
 
   // Initialize database.

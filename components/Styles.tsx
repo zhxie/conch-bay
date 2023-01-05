@@ -109,6 +109,12 @@ export const ViewStyles = StyleSheet.create({
     position: "absolute",
     bottom: 0,
   },
+  modal3d: {
+    maxHeight: 620,
+    width: "100%",
+    position: "absolute",
+    bottom: 0,
+  },
   wf: {
     width: "100%",
   },
