@@ -22,7 +22,7 @@
     "jsEngine": "hermes",
     "ios": {
       "bundleIdentifier": "name.sketch.ConchBay",
-      "buildNumber": "14",
+      "buildNumber": "15",
       "config": {
         "usesNonExemptEncryption": false
       },
@@ -38,7 +38,7 @@
     },
     "android": {
       "package": "name.sketch.conch_bay",
-      "versionCode": 14,
+      "versionCode": 15,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#6B84F5"
