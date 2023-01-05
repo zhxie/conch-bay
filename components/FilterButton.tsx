@@ -24,7 +24,7 @@ const FilterButton = (props: FilterButtonProps) => {
         <Circle
           size={12}
           color="#a1a1aa"
-          style={[ViewStyles.mr1, props.color !== undefined && { backgroundColor: props.color }]}
+          style={[ViewStyles.mr1, !!props.color && { backgroundColor: props.color }]}
         />
         <Text numberOfLines={1}>{props.title}</Text>
       </HStack>

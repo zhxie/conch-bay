@@ -49,7 +49,7 @@ const CoopButton = (props: CoopButtonProps) => {
       style={props.style}
       onPress={props.onPress}
     >
-      {props.result !== undefined && (
+      {!!props.result && (
         <HStack center>
           <Circle size={10} color={Color.GoldenEgg} style={ViewStyles.mr1} />
           <Text numberOfLines={1} style={ViewStyles.mr1}>

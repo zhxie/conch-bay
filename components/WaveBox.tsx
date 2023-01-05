@@ -28,7 +28,7 @@ const WaveBox = (props: WaveBoxProps) => {
             ViewStyles.mb1,
             TextStyles.h2,
             TextStyles.subtle,
-            props.color !== undefined && { color: props.color },
+            !!props.color && { color: props.color },
           ]}
         >
           {props.waterLevel}

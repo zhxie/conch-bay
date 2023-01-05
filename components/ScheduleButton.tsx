@@ -26,19 +26,12 @@ const ScheduleButton = (props: ScheduleButtonProps) => {
             <Circle
               size={12}
               color="#a1a1aa"
-              style={[
-                ViewStyles.mr2,
-                props.color !== undefined && { backgroundColor: props.color },
-              ]}
+              style={[ViewStyles.mr2, !!props.color && { backgroundColor: props.color }]}
             />
           )}
           <Text
             numberOfLines={1}
-            style={[
-              TextStyles.h2,
-              TextStyles.subtle,
-              props.color !== undefined && { color: props.color },
-            ]}
+            style={[TextStyles.h2, TextStyles.subtle, !!props.color && { color: props.color }]}
           >
             {props.rule}
           </Text>

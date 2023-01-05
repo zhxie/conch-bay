@@ -49,7 +49,7 @@ const ResultButton = (props: ResultButtonProps) => {
           },
         ]}
       >
-        {props.result !== undefined && (
+        {!!props.result && (
           <Center style={[ViewStyles.mr3, { width: 32, height: 32 }]}>
             {(() => {
               switch (props.result) {
@@ -67,7 +67,7 @@ const ResultButton = (props: ResultButtonProps) => {
             })()}
           </Center>
         )}
-        {props.image !== undefined && (
+        {!!props.image && (
           <Image
             uri={props.image.uri}
             cacheKey={props.image.cacheKey}
@@ -80,7 +80,7 @@ const ResultButton = (props: ResultButtonProps) => {
             <HStack center flex style={ViewStyles.mr1}>
               <Text
                 numberOfLines={1}
-                style={[TextStyles.h2, props.color !== undefined && { color: props.color }]}
+                style={[TextStyles.h2, !!props.color && { color: props.color }]}
               >
                 {props.title}
               </Text>

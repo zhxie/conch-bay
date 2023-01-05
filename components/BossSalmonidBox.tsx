@@ -29,7 +29,7 @@ const BossSalmonidBox = (props: BossSalmonidBoxProps) => {
             ViewStyles.mb2,
             TextStyles.h2,
             TextStyles.subtle,
-            props.color !== undefined && { color: props.color },
+            !!props.color && { color: props.color },
           ]}
         >
           {props.name}
