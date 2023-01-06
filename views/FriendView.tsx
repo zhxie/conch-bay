@@ -23,7 +23,7 @@ const FriendView = (props: FriendViewProps) => {
           if (props.friends) {
             return props.friends.friends.nodes.map((friend, i, friends) => (
               <Avatar
-                key={friend.userIcon.url}
+                key={friend.id}
                 size={48}
                 uri={friend.userIcon.url}
                 cacheKey={getUserIconCacheKey(friend.userIcon.url)}
