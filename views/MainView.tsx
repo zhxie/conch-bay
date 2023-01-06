@@ -79,7 +79,6 @@ const MainView = (props: MainViewProps) => {
   const [firstAid, setFirstAid] = useState(false);
 
   const [sessionToken, setSessionToken] = useState("");
-  const [language, setLanguage] = useState("");
   const [bulletToken, setBulletToken] = useState("");
   const [icon, setIcon] = useState("");
   const [catalogLevel, setCatalogLevel] = useState("");
@@ -145,20 +144,17 @@ const MainView = (props: MainViewProps) => {
   }, [filter]);
 
   const loadPersistence = async () => {
-    const [sessionToken, language, bulletToken, icon, catalogLevel, level, rank, grade] =
-      await Promise.all([
-        AsyncStorage.getItem("sessionToken"),
-        AsyncStorage.getItem("language"),
-        AsyncStorage.getItem("bulletToken"),
-        AsyncStorage.getItem("icon"),
-        AsyncStorage.getItem("catalogLevel"),
-        AsyncStorage.getItem("level"),
-        AsyncStorage.getItem("rank"),
-        AsyncStorage.getItem("grade"),
-      ]);
+    const [sessionToken, bulletToken, icon, catalogLevel, level, rank, grade] = await Promise.all([
+      AsyncStorage.getItem("sessionToken"),
+      AsyncStorage.getItem("bulletToken"),
+      AsyncStorage.getItem("icon"),
+      AsyncStorage.getItem("catalogLevel"),
+      AsyncStorage.getItem("level"),
+      AsyncStorage.getItem("rank"),
+      AsyncStorage.getItem("grade"),
+    ]);
 
     setSessionToken(sessionToken ?? "");
-    setLanguage(language ?? "*");
     setBulletToken(bulletToken ?? "");
     setIcon(icon ?? "");
     setCatalogLevel(catalogLevel ?? "");
@@ -169,7 +165,6 @@ const MainView = (props: MainViewProps) => {
   const savePersistence = async (persistence: Record<string, string>) => {
     for (const key of [
       "sessionToken",
-      "language",
       "bulletToken",
       "icon",
       "catalogLevel",
@@ -269,7 +264,6 @@ const MainView = (props: MainViewProps) => {
         }
 
         // Regenerate bullet token if necessary.
-        let newLanguage = language;
         let newBulletToken = "";
         if (bulletToken.length > 0 && (await checkBulletToken(bulletToken))) {
           newBulletToken = bulletToken;
@@ -280,13 +274,10 @@ const MainView = (props: MainViewProps) => {
           }
 
           const res = await getWebServiceToken(sessionToken);
-          newLanguage = res.language;
           newBulletToken = await getBulletToken(res.webServiceToken, res.country);
 
-          setLanguage(res.language);
           setBulletToken(newBulletToken);
           await savePersistence({
-            language: res.language,
             bulletToken: newBulletToken,
           });
         }
@@ -381,9 +372,9 @@ const MainView = (props: MainViewProps) => {
           const details = await Promise.all(
             newResults.map((result) => {
               if (!result.isCoop) {
-                return fetchVsHistoryDetail(result.id, newBulletToken, newLanguage);
+                return fetchVsHistoryDetail(result.id, newBulletToken, t("lang"));
               }
-              return fetchCoopHistoryDetail(result.id, newBulletToken, newLanguage);
+              return fetchCoopHistoryDetail(result.id, newBulletToken, t("lang"));
             })
           );
           let fail = 0;

@@ -1,4 +1,6 @@
 const zh = {
+  // API.
+  lang: "zh-CN",
   // UI.
   log_in: "登录",
   log_in_notice:

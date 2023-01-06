@@ -1,4 +1,6 @@
 const en = {
+  // API.
+  lang: "en-US",
   // UI.
   log_in: "Log In",
   log_in_notice:

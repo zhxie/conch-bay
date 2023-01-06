@@ -1,4 +1,6 @@
 const ja = {
+  // API.
+  lang: "ja-JP",
   // UI.
   log_in: "ログイン",
   log_in_notice:
