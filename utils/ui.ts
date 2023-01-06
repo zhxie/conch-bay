@@ -42,13 +42,19 @@ export const getMatchSetting = (schedule: Schedule, index?: number) => {
 export const getShiftSetting = (shift: Shift) => {
   return shift.setting;
 };
-export const isStarted = (schedule: Schedule) => {
+export const isScheduleStarted = (schedule: Schedule) => {
   const now = new Date().getTime();
-  const date = new Date(schedule["startTime"]);
+  const date = new Date(schedule.startTime);
   const timestamp = date.getTime();
   return timestamp <= now;
 };
-export const getTimeRange = (schedule: Schedule, withDate: boolean) => {
+export const isSplatfestStarted = (splatfest: Splatfest) => {
+  const now = new Date().getTime();
+  const date = new Date(splatfest.midtermTime);
+  const timestamp = date.getTime();
+  return timestamp <= now;
+};
+export const getScheduleTimeRange = (schedule: Schedule, withDate: boolean) => {
   let format = "HH:mm";
   if (withDate) {
     format = "M/DD HH:mm";
@@ -56,6 +62,17 @@ export const getTimeRange = (schedule: Schedule, withDate: boolean) => {
 
   const startTime = dayjs(schedule.startTime).format(format);
   const endTime = dayjs(schedule.endTime).format(format);
+
+  return `${startTime} - ${endTime}`;
+};
+export const getSplatfestTimeRange = (splatfest: Splatfest, withDate: boolean) => {
+  let format = "HH:mm";
+  if (withDate) {
+    format = "M/DD HH:mm";
+  }
+
+  const startTime = dayjs(splatfest.midtermTime).format(format);
+  const endTime = dayjs(splatfest.endTime).format(format);
 
   return `${startTime} - ${endTime}`;
 };

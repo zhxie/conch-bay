@@ -17,14 +17,16 @@ import {
   getCoopWeapons,
   getImageCacheKey,
   getMatchSetting,
+  getScheduleTimeRange,
   getShiftSetting,
   getSplatfestStage,
   getSplatfestStageId,
-  getTimeRange,
+  getSplatfestTimeRange,
   getVsRuleId,
   getVsStageIds,
   getVsStages,
-  isStarted,
+  isScheduleStarted,
+  isSplatfestStarted,
 } from "../utils/ui";
 
 interface ScheduleViewProps {
@@ -178,7 +180,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
           })}
         {currentSplatfest && (
           <ScheduleButton
-            color={isStarted(currentSplatfest) ? accentColor : undefined}
+            color={isSplatfestStarted(currentSplatfest) ? accentColor : undefined}
             rule={t("VnNSdWxlLTU=")}
             stages={[t(getSplatfestStageId(currentSplatfest))]}
             onPress={onCurrentSplatfestPress}
@@ -187,7 +189,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
         )}
         {splatfestSchedules?.[0] && (
           <ScheduleButton
-            color={isStarted(splatfestSchedules[0]) ? accentColor : undefined}
+            color={isScheduleStarted(splatfestSchedules[0]) ? accentColor : undefined}
             rule={t(getVsRuleId(splatfestSchedules[0]))}
             stages={getVsStageIds(splatfestSchedules[0]).map((schedule) => t(schedule))}
             onPress={onSplatfestSchedulePress}
@@ -196,7 +198,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
         )}
         {regularSchedules?.[0] && (
           <ScheduleButton
-            color={isStarted(regularSchedules[0]) ? Color.RegularBattle : undefined}
+            color={isScheduleStarted(regularSchedules[0]) ? Color.RegularBattle : undefined}
             rule={t(getVsRuleId(regularSchedules[0]))}
             stages={getVsStageIds(regularSchedules[0]).map((schedule) => t(schedule))}
             onPress={onRegularSchedulePress}
@@ -205,7 +207,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
         )}
         {anarchySchedules?.[0] && (
           <ScheduleButton
-            color={isStarted(anarchySchedules[0]) ? Color.AnarchyBattle : undefined}
+            color={isScheduleStarted(anarchySchedules[0]) ? Color.AnarchyBattle : undefined}
             rule={t(getVsRuleId(anarchySchedules[0], 0))}
             stages={getVsStageIds(anarchySchedules[0], 0).map((schedule) => t(schedule))}
             onPress={onAnarchySeriesSchedulePress}
@@ -214,7 +216,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
         )}
         {anarchySchedules?.[0] && (
           <ScheduleButton
-            color={isStarted(anarchySchedules[0]) ? Color.AnarchyBattle : undefined}
+            color={isScheduleStarted(anarchySchedules[0]) ? Color.AnarchyBattle : undefined}
             rule={t(getVsRuleId(anarchySchedules[0], 1))}
             stages={getVsStageIds(anarchySchedules[0], 1).map((schedule) => t(schedule))}
             onPress={onAnarchyOpenSchedulePress}
@@ -223,7 +225,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
         )}
         {xSchedules?.[0] && (
           <ScheduleButton
-            color={isStarted(xSchedules[0]) ? Color.XBattle : undefined}
+            color={isScheduleStarted(xSchedules[0]) ? Color.XBattle : undefined}
             rule={t(getVsRuleId(xSchedules[0]))}
             stages={getVsStageIds(xSchedules[0]).map((schedule) => t(schedule))}
             onPress={onXSchedulePress}
@@ -232,7 +234,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
         )}
         {bigRunShifts?.[0] && (
           <ScheduleButton
-            color={isStarted(bigRunShifts[0]) ? Color.BigRun : undefined}
+            color={isScheduleStarted(bigRunShifts[0]) ? Color.BigRun : undefined}
             rule={t("big_run")}
             stages={[t(getCoopStageId(bigRunShifts[0]))]}
             onPress={onBigRunShiftPress}
@@ -241,7 +243,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
         )}
         {regularShifts?.[0] && (
           <ScheduleButton
-            color={isStarted(regularShifts[0]) ? Color.SalmonRun : undefined}
+            color={isScheduleStarted(regularShifts[0]) ? Color.SalmonRun : undefined}
             rule={t("salmon_run")}
             stages={[t(getCoopStageId(regularShifts[0]))]}
             onPress={onRegularShiftPress}
@@ -257,7 +259,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
           {display?.splatfest && (
             <ScheduleBox
               rule={t("VnNSdWxlLTU=")}
-              time={getTimeRange(display.splatfest, true)}
+              time={getSplatfestTimeRange(display.splatfest, true)}
               stages={[formatStage(getSplatfestStage(display.splatfest))]}
             />
           )}
@@ -276,7 +278,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
                 <ScheduleBox
                   key={i}
                   rule={t(getVsRuleId(schedule, display.index))}
-                  time={getTimeRange(schedule, false)}
+                  time={getScheduleTimeRange(schedule, false)}
                   stages={getVsStages(schedule, display.index).map(formatStage)}
                   style={i !== schedules.length - 1 ? ViewStyles.mb2 : undefined}
                 />
@@ -292,7 +294,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
                 <ShiftBox
                   key={i}
                   rule={display.title}
-                  time={getTimeRange(shift, true)}
+                  time={getScheduleTimeRange(shift, true)}
                   stage={formatStage(getCoopStage(shift))}
                   weapons={getCoopWeapons(shift).map(formatWeapon)}
                   style={i !== shifts.length - 1 ? ViewStyles.mb2 : undefined}

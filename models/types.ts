@@ -49,6 +49,7 @@ export interface SplatfestSchedule extends Schedule {
   festMatchSetting: SplatfestMatchSetting | null;
 }
 export interface Splatfest extends Schedule {
+  midtermTime: string;
   tricolorStage: VsStage | null;
 }
 export interface ShiftSetting {
