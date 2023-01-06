@@ -282,13 +282,16 @@ const MainView = (props: MainViewProps) => {
           });
         }
 
-        // Fetch friends, summary, catalog and weapon records.
-        const [friends, summary, catalog, weaponRecords] = await Promise.all([
-          fetchFriends(newBulletToken),
-          fetchSummary(newBulletToken),
-          fetchCatalog(newBulletToken),
-          fetchWeaponRecords(newBulletToken),
-        ]);
+        // Fetch friends, summary, catalog, weapon records and results.
+        const [friends, summary, catalog, weaponRecords, battleHistories, coopResult] =
+          await Promise.all([
+            fetchFriends(newBulletToken),
+            fetchSummary(newBulletToken),
+            fetchCatalog(newBulletToken),
+            fetchWeaponRecords(newBulletToken),
+            fetchBattleHistories(newBulletToken),
+            fetchCoopResult(newBulletToken),
+          ]);
         setFriends(friends);
         const icon = summary.currentPlayer.userIcon.url;
         const catalogLevel = String(catalog.catalog.progress?.level ?? 0);
@@ -321,12 +324,6 @@ const MainView = (props: MainViewProps) => {
             CacheManager.downloadAsync({ uri: resource[1], key: resource[0] })
           )
         );
-
-        // Fetch results.
-        const [battleHistories, coopResult] = await Promise.all([
-          fetchBattleHistories(newBulletToken),
-          fetchCoopResult(newBulletToken),
-        ]);
         if (coopResult.coopResult.regularGrade) {
           setGrade(coopResult.coopResult.regularGrade.id);
           await savePersistence({
