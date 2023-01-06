@@ -11,6 +11,7 @@ import {
   PrivateBattleHistories,
   RegularBattleHistories,
   Schedules,
+  SplatfestFriendsTeams,
   Summary,
   VsHistoryDetail,
   WeaponRecords,
@@ -259,6 +260,21 @@ export const fetchFriends = async (bulletToken: string, language?: string) => {
     throw new Error(friends.errors[0].message);
   }
   return friends.data!;
+};
+export const fetchSplatfestFriendsTeams = async (
+  id: string,
+  bulletToken: string,
+  language?: string
+) => {
+  const res = await fetchGraphQl(bulletToken, "53ee6b6e2acc3859bf42454266d671fc", language, {
+    festId: id,
+  });
+  const json = await res.json();
+  const detail = json as GraphQlResponse<SplatfestFriendsTeams>;
+  if (detail.errors) {
+    throw new Error(detail.errors[0].message);
+  }
+  return detail.data!;
 };
 export const fetchSummary = async (bulletToken: string, language?: string) => {
   const res = await fetchGraphQl(bulletToken, "32b6771f94083d8f04848109b7300af5", language);

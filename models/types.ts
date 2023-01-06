@@ -49,6 +49,7 @@ export interface SplatfestSchedule extends Schedule {
   festMatchSetting: SplatfestMatchSetting | null;
 }
 export interface Splatfest extends Schedule {
+  id: string;
   midtermTime: string;
   tricolorStage: VsStage | null;
 }
@@ -89,6 +90,28 @@ export interface Friend {
 export interface Friends {
   friends: {
     nodes: Friend[];
+  };
+}
+
+export interface SplatfestFriend {
+  userIcon: {
+    url: string;
+  };
+}
+export interface SplatfestFriendsTeam {
+  color: {
+    a: number;
+    b: number;
+    g: number;
+    r: number;
+  };
+  votes: {
+    nodes: SplatfestFriend[];
+  };
+}
+export interface SplatfestFriendsTeams {
+  fest: {
+    teams: SplatfestFriendsTeam[];
   };
 }
 

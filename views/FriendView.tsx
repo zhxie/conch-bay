@@ -1,16 +1,35 @@
 import { ScrollView, StyleProp, useColorScheme, ViewStyle } from "react-native";
 import { Avatar, Color, HStack, ViewStyles } from "../components";
-import { Friends } from "../models/types";
-import { getFriendColor, getUserIconCacheKey } from "../utils/ui";
+import { Friend, Friends, SplatfestFriendsTeams } from "../models/types";
+import { getFriendColor, getSplatfestFriendsTeamColor, getUserIconCacheKey } from "../utils/ui";
 
 interface FriendViewProps {
   friends?: Friends;
+  splatfestFriendsTeams?: SplatfestFriendsTeams;
   style?: StyleProp<ViewStyle>;
 }
 
 const FriendView = (props: FriendViewProps) => {
   const colorScheme = useColorScheme();
   const accentColor = colorScheme === "light" ? Color.Shiver : Color.Frye;
+
+  const formatTeamColor = (friend: Friend) => {
+    if (!props.splatfestFriendsTeams) {
+      return "transparent";
+    }
+
+    const team = props.splatfestFriendsTeams.fest.teams.find((team) => {
+      const node = team.votes.nodes.find((node) => node.userIcon.url === friend.userIcon.url);
+      if (node) {
+        return true;
+      }
+      return false;
+    });
+    if (team) {
+      return getSplatfestFriendsTeamColor(team);
+    }
+    return "transparent";
+  };
 
   return (
     <ScrollView
@@ -29,6 +48,10 @@ const FriendView = (props: FriendViewProps) => {
                 cacheKey={getUserIconCacheKey(friend.userIcon.url)}
                 badge={getFriendColor(friend, accentColor)}
                 style={i !== friends.length - 1 ? ViewStyles.mr2 : undefined}
+                imageStyle={{
+                  borderColor: formatTeamColor(friend),
+                  borderWidth: 2,
+                }}
               />
             ));
           } else {

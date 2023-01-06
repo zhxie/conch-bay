@@ -7,6 +7,7 @@ import {
   Schedule,
   Shift,
   Splatfest,
+  SplatfestFriendsTeam,
   SplatfestMatchSetting,
   VsHistoryDetail,
   VsMode,
@@ -159,6 +160,12 @@ export const getUserIconCacheKey = (userIcon: string) => {
   return components[components.length - 1];
 };
 
+export const getSplatfestFriendsTeamColor = (team: SplatfestFriendsTeam) => {
+  return `rgba(${Math.round(team.color.r * 255)}, ${Math.round(team.color.g * 255)}, ${Math.round(
+    team.color.b * 255
+  )}, ${Math.round(team.color.a * 255)})`;
+};
+
 export const convertStageImageUrl = (stage: VsStage) => {
   const url = getAuthorityAndPath(stage.image.url);
   const pathComponents = url.split("/");
@@ -179,7 +186,7 @@ export const isVsAnnotation = (battle: VsHistoryDetail) => {
 export const getVsSelfPlayer = (battle: VsHistoryDetail) => {
   return battle.vsHistoryDetail.myTeam.players.find((player) => player.isMyself)!;
 };
-export const getTeamColor = (team: VsTeam) => {
+export const getVsTeamColor = (team: VsTeam) => {
   return `rgba(${Math.round(team.color.r * 255)}, ${Math.round(team.color.g * 255)}, ${Math.round(
     team.color.b * 255
   )}, ${Math.round(team.color.a * 255)})`;

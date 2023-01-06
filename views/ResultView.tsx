@@ -34,7 +34,7 @@ import {
   getCoopPowerEgg,
   getCoopRuleColor,
   getImageCacheKey,
-  getTeamColor,
+  getVsTeamColor,
   getVsModeColor,
   getVsSelfPlayer,
   isCoopAnnotation,
@@ -339,12 +339,15 @@ const ResultView = (props: ResultViewProps) => {
               {formatTeams(display.battle).map((team, i) => (
                 <VStack key={i} style={ViewStyles.mb2}>
                   <HStack center style={ViewStyles.mb1}>
-                    <Circle size={12} color={getTeamColor(team)} style={ViewStyles.mr1} />
-                    <Text numberOfLines={1} style={[TextStyles.b, { color: getTeamColor(team) }]}>
+                    <Circle size={12} color={getVsTeamColor(team)} style={ViewStyles.mr1} />
+                    <Text numberOfLines={1} style={[TextStyles.b, { color: getVsTeamColor(team) }]}>
                       {team.festTeamName ?? ""}
                     </Text>
                     <HStack flex center reverse>
-                      <Text numberOfLines={1} style={[TextStyles.b, { color: getTeamColor(team) }]}>
+                      <Text
+                        numberOfLines={1}
+                        style={[TextStyles.b, { color: getVsTeamColor(team) }]}
+                      >
                         {formatTeamResult(team)}
                       </Text>
                     </HStack>

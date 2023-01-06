@@ -26,7 +26,13 @@ import {
   VStack,
   ViewStyles,
 } from "../components";
-import { CoopHistoryDetail, Friends, Schedules, VsHistoryDetail } from "../models/types";
+import {
+  CoopHistoryDetail,
+  Friends,
+  Schedules,
+  SplatfestFriendsTeams,
+  VsHistoryDetail,
+} from "../models/types";
 import {
   checkBulletToken,
   fetchBattleHistories,
@@ -35,6 +41,7 @@ import {
   fetchCoopResult,
   fetchFriends,
   fetchSchedules,
+  fetchSplatfestFriendsTeams,
   fetchSummary,
   fetchVsHistoryDetail,
   fetchWeaponRecords,
@@ -88,6 +95,9 @@ const MainView = (props: MainViewProps) => {
 
   const [schedules, setSchedules] = useState<Schedules | undefined>(undefined);
   const [friends, setFriends] = useState<Friends | undefined>(undefined);
+  const [splatfestFriendsTeams, setSplatfestFriendsTeams] = useState<
+    SplatfestFriendsTeams | undefined
+  >(undefined);
   const [results, setResults] = useState<
     { battle?: VsHistoryDetail; coop?: CoopHistoryDetail }[] | undefined
   >(undefined);
@@ -282,17 +292,28 @@ const MainView = (props: MainViewProps) => {
           });
         }
 
-        // Fetch friends, summary, catalog, weapon records and results.
-        const [friends, summary, catalog, weaponRecords, battleHistories, coopResult] =
-          await Promise.all([
-            fetchFriends(newBulletToken),
-            fetchSummary(newBulletToken),
-            fetchCatalog(newBulletToken),
-            fetchWeaponRecords(newBulletToken),
-            fetchBattleHistories(newBulletToken),
-            fetchCoopResult(newBulletToken),
-          ]);
+        // Fetch friends, Splatfest friends teams, summary, catalog, weapon records and results.
+        const [
+          friends,
+          splatfestFriendsTeams,
+          summary,
+          catalog,
+          weaponRecords,
+          battleHistories,
+          coopResult,
+        ] = await Promise.all([
+          fetchFriends(newBulletToken),
+          schedules.currentFest
+            ? fetchSplatfestFriendsTeams(schedules.currentFest.id, newBulletToken)
+            : undefined,
+          fetchSummary(newBulletToken),
+          fetchCatalog(newBulletToken),
+          fetchWeaponRecords(newBulletToken),
+          fetchBattleHistories(newBulletToken),
+          fetchCoopResult(newBulletToken),
+        ]);
         setFriends(friends);
+        setSplatfestFriendsTeams(splatfestFriendsTeams);
         const icon = summary.currentPlayer.userIcon.url;
         const catalogLevel = String(catalog.catalog.progress?.level ?? 0);
         const level = String(summary.playHistory.rank);
@@ -675,7 +696,11 @@ const MainView = (props: MainViewProps) => {
             <ScheduleView t={t} schedules={schedules} style={ViewStyles.mb4} />
             {sessionToken.length > 0 &&
               (friends === undefined || friends.friends.nodes.length > 0) && (
-                <FriendView friends={friends} style={ViewStyles.mb4} />
+                <FriendView
+                  friends={friends}
+                  splatfestFriendsTeams={splatfestFriendsTeams}
+                  style={ViewStyles.mb4}
+                />
               )}
             {sessionToken.length > 0 && (
               <VStack style={[ViewStyles.mb4, ViewStyles.wf]}>
