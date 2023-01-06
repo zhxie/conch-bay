@@ -39,6 +39,8 @@ const ja = {
   acknowledgments: "謝辞",
   creators: "クリエーター",
   license: "ライセンス",
+  hide_player_names: "プレイヤー名を隠す",
+  show_player_names: "プレイヤー名を表示",
   show_raw_data: "生データを表示",
   // Modes.
   regular_battle: "レギュラーマッチ",

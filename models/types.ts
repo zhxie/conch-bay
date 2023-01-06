@@ -170,11 +170,13 @@ export interface VsWeapon {
     url: string;
   };
 }
+export type Species = "INKLING" | "OCTOLING";
 export interface VsPlayer {
   id: string;
   name: string;
   isMyself: boolean;
   weapon: VsWeapon;
+  species: Species;
   paint: number;
   result: {
     kill: number;
@@ -235,6 +237,7 @@ export interface CoopGrade {
 export interface CoopPlayer {
   name: string;
   id: string;
+  species: Species;
 }
 export interface CoopPlayerResult {
   player: CoopPlayer;

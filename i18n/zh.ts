@@ -35,6 +35,8 @@ const zh = {
   acknowledgments: "致谢",
   creators: "创作者",
   license: "许可",
+  hide_player_names: "隐藏玩家名称",
+  show_player_names: "显示玩家名称",
   show_raw_data: "显示原始数据",
   // Modes.
   regular_battle: "一般比赛",

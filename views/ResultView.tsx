@@ -22,6 +22,7 @@ import {
 import {
   CoopHistoryDetail,
   CoopWaveResult,
+  Species,
   VsHistoryDetail,
   VsTeam,
   VsWeapon,
@@ -63,6 +64,7 @@ const ResultView = (props: ResultViewProps) => {
   const [displayBattle, setDisplayBattle] = useState(false);
   const [displayCoop, setDisplayCoop] = useState(false);
   const willDisplayResult = useRef(false);
+  const [hidePlayerNames, setHidePlayerNames] = useState(false);
 
   const formatJudgement = (battle: VsHistoryDetail) => {
     switch (battle.vsHistoryDetail.judgement) {
@@ -76,6 +78,17 @@ const ResultView = (props: ResultViewProps) => {
       case "EXEMPTED_LOSE":
         return -2;
     }
+  };
+  const formatName = (name: string, species: Species, isSelf: boolean) => {
+    if (hidePlayerNames && !isSelf) {
+      switch (species) {
+        case "INKLING":
+          return "ᔦꙬᔨ三ᔦꙬᔨ✧‧˚";
+        case "OCTOLING":
+          return "( Ꙭ )三( Ꙭ )✧‧˚";
+      }
+    }
+    return name;
   };
   const formatWave = (coop: CoopHistoryDetail) => {
     switch (coop.coopHistoryDetail.resultWave) {
@@ -182,6 +195,9 @@ const ResultView = (props: ResultViewProps) => {
       willDisplayResult.current = false;
       setDisplayResult(true);
     }
+  };
+  const onHidePlayerNamesPress = () => {
+    setHidePlayerNames(!hidePlayerNames);
   };
 
   return (
@@ -338,7 +354,7 @@ const ResultView = (props: ResultViewProps) => {
                       key={i}
                       isFirst={i === 0}
                       isLast={i === players.length - 1}
-                      name={player.name}
+                      name={formatName(player.name, player.species, player.isMyself)}
                       weapon={formatWeapon(player.weapon)}
                       paint={player.paint}
                       kill={player.result?.kill}
@@ -350,6 +366,14 @@ const ResultView = (props: ResultViewProps) => {
                   ))}
                 </VStack>
               ))}
+              <Button
+                style={[ViewStyles.mb2, { backgroundColor: accentColor }]}
+                onPress={onHidePlayerNamesPress}
+              >
+                <Text numberOfLines={1} style={reverseTextColor}>
+                  {hidePlayerNames ? t("show_player_names") : t("hide_player_names")}
+                </Text>
+              </Button>
               <Button style={{ backgroundColor: accentColor }} onPress={onShowRawResultPress}>
                 <Text numberOfLines={1} style={reverseTextColor}>
                   {t("show_raw_data")}
@@ -363,7 +387,7 @@ const ResultView = (props: ResultViewProps) => {
         isVisible={displayCoop}
         onClose={onDisplayCoopClose}
         onModalHide={onModalHide}
-        style={[ViewStyles.modal2d, { paddingHorizontal: 0 }]}
+        style={[ViewStyles.modal3d, { paddingHorizontal: 0 }]}
       >
         {display?.coop && (
           <TitledList
@@ -481,7 +505,11 @@ const ResultView = (props: ResultViewProps) => {
                       key={i}
                       isFirst={i === 0}
                       isLast={i === memberResults.length - 1}
-                      name={memberResult.player.name}
+                      name={formatName(
+                        memberResult.player.name,
+                        memberResult.player.species,
+                        i === 0
+                      )}
                       subtitle={`${t("boss_salmonids")} x${memberResult.defeatEnemyCount}`}
                       deliverGoldenEgg={memberResult.goldenDeliverCount}
                       assistGoldenEgg={memberResult.goldenAssistCount}
@@ -493,6 +521,14 @@ const ResultView = (props: ResultViewProps) => {
                 </VStack>
               </VStack>
               <VStack style={ViewStyles.px4}>
+                <Button
+                  style={[ViewStyles.mb2, { backgroundColor: accentColor }]}
+                  onPress={onHidePlayerNamesPress}
+                >
+                  <Text numberOfLines={1} style={reverseTextColor}>
+                    {hidePlayerNames ? t("show_player_names") : t("hide_player_names")}
+                  </Text>
+                </Button>
                 <Button style={{ backgroundColor: accentColor }} onPress={onShowRawResultPress}>
                   <Text numberOfLines={1} style={reverseTextColor}>
                     {t("show_raw_data")}
