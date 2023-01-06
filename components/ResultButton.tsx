@@ -49,7 +49,7 @@ const ResultButton = (props: ResultButtonProps) => {
           },
         ]}
       >
-        {!!props.result && (
+        {props.result !== undefined && (
           <Center style={[ViewStyles.mr3, { width: 32, height: 32 }]}>
             {(() => {
               switch (props.result) {
