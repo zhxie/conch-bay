@@ -63,7 +63,7 @@ const zh = {
   "VnNSdWxlLTI=": "真格塔楼",
   "VnNSdWxlLTM=": "真格鱼虎对战",
   "VnNSdWxlLTQ=": "真格蛤蜊",
-  "VnNSdWxlLTU=": "三色夺宝攻击",
+  "VnNSdWxlLTU=": "三色夺宝对战",
   REGULAR: "鲑鱼跑",
   BIG_RUN: "大型跑",
   // Stages.

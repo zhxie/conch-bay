@@ -67,7 +67,7 @@ const ja = {
   "VnNSdWxlLTI=": "ガチヤグラ",
   "VnNSdWxlLTM=": "ガチホコバトル",
   "VnNSdWxlLTQ=": "ガチアサリ",
-  "VnNSdWxlLTU=": "トリカラアタック",
+  "VnNSdWxlLTU=": "トリカラバトル",
   REGULAR: "サーモンラン",
   BIG_RUN: "ビッグラン",
   // Stages.
