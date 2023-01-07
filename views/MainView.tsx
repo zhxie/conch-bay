@@ -34,6 +34,7 @@ import {
   fetchCoopHistoryDetail,
   fetchCoopResult,
   fetchFriends,
+  fetchOperationalStatus,
   fetchSchedules,
   fetchSummary,
   fetchVsHistoryDetail,
@@ -87,6 +88,7 @@ const MainView = (props: MainViewProps) => {
   const [grade, setGrade] = useState("");
 
   const [schedules, setSchedules] = useState<Schedules | undefined>(undefined);
+  const [operationalStatus, setOperationalStatus] = useState(false);
   const [friends, setFriends] = useState<Friends | undefined>(undefined);
   const [results, setResults] = useState<
     { battle?: VsHistoryDetail; coop?: CoopHistoryDetail }[] | undefined
@@ -252,9 +254,13 @@ const MainView = (props: MainViewProps) => {
   const refresh = async () => {
     setRefreshing(true);
     try {
-      // Fetch schedules.
-      const schedules = await fetchSchedules();
+      // Fetch schedules and operational status.
+      const [schedules, operationalStatus] = await Promise.all([
+        await fetchSchedules(),
+        await fetchOperationalStatus(),
+      ]);
       setSchedules(schedules);
+      setOperationalStatus(operationalStatus);
       if (sessionToken) {
         // Update versions.
         try {
@@ -369,9 +375,9 @@ const MainView = (props: MainViewProps) => {
           const details = await Promise.all(
             newResults.map((result) => {
               if (!result.isCoop) {
-                return fetchVsHistoryDetail(result.id, newBulletToken, t("lang"));
+                return fetchVsHistoryDetail(result.id, newBulletToken, t("splatnet_lang"));
               }
-              return fetchCoopHistoryDetail(result.id, newBulletToken, t("lang"));
+              return fetchCoopHistoryDetail(result.id, newBulletToken, t("splatnet_lang"));
             })
           );
           let fail = 0;
@@ -482,6 +488,11 @@ const MainView = (props: MainViewProps) => {
     } catch (e) {
       showToast(e);
     }
+  };
+  const onOperationalStatusPress = () => {
+    WebBrowser.openBrowserAsync(
+      `https://www.nintendo.co.jp/netinfo/${t("nintendo_lang")}/index.html`
+    );
   };
   const onFilterRegularBattlePress = async () => {
     if (filter !== "regular_battle") {
@@ -671,6 +682,15 @@ const MainView = (props: MainViewProps) => {
                   {grade.length > 0 && <Badge color={Color.SalmonRun} title={t(grade)} />}
                 </HStack>
               </VStack>
+            )}
+            {operationalStatus && (
+              <Text
+                center
+                style={[ViewStyles.px4, ViewStyles.mb2]}
+                onPress={onOperationalStatusPress}
+              >
+                {t("network_service_unavailable")}
+              </Text>
             )}
             <ScheduleView t={t} schedules={schedules} style={ViewStyles.mb4} />
             {sessionToken.length > 0 &&

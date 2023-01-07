@@ -41,6 +41,16 @@ export const fetchSchedules = async () => {
   const json = await res.json();
   return (json as GraphQlResponse<Schedules>).data!;
 };
+export const fetchOperationalStatus = async () => {
+  const res = await fetchRetry(
+    "https://www.nintendo.co.jp/netinfo/en_US/status.json?" +
+      parameterize({ _: String(new Date().valueOf()) })
+  );
+  const json = await res.json();
+  return !!json["operational_statuses"].find((status) =>
+    status["software_title"].includes("Splatoon 3")
+  );
+};
 
 export const updateNsoappVersion = async () => {
   const res = await fetchRetry("https://itunes.apple.com/lookup?id=1234806557");

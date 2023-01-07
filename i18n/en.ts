@@ -1,6 +1,7 @@
 const en = {
   // API.
-  lang: "en-US",
+  splatnet_lang: "en-US",
+  nintendo_lang: "en_US",
   // UI.
   log_in: "Log In",
   log_in_notice:
@@ -19,6 +20,7 @@ const en = {
   first_aid_notice:
     "The database is corrupted and cannot be loaded. Please export results and reinstall Conch Bay.",
   export_results: "Export Results",
+  network_service_unavailable: "The network service may be unavailable at this time.",
   failed_to_check_api_update: "Failed to check API update",
   reacquiring_tokens: "Reacquiring tokens",
   loading_n_new_results: "Loading %{n} new result(s)",

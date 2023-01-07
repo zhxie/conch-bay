@@ -1,6 +1,7 @@
 const ja = {
   // API.
-  lang: "ja-JP",
+  splatnet_lang: "ja-JP",
+  nintendo_lang: "ja_JP",
   // UI.
   log_in: "ログイン",
   log_in_notice:
@@ -19,6 +20,7 @@ const ja = {
   first_aid_notice:
     "データベースが壊れているため、ロードできません。リザルトをエクスポートして、ホラカイベイを再インストールしてください。",
   export_results: "リザルトをエクスポート",
+  network_service_unavailable: "現在、ネットワークサービスが正常に稼動していない可能性があります。",
   failed_to_check_api_update: "APIのアップデートを確認できませんでした",
   reacquiring_tokens: "トークン再取得中",
   loading_n_new_results: "%{n}件の新しいリザルトを読み込む中",
