@@ -22,7 +22,7 @@ interface CoopPlayerButtonProps {
 const CoopPlayerButton = (props: CoopPlayerButtonProps) => {
   const goldenEgg =
     props.assistGoldenEgg! > 0
-      ? `${props.deliverGoldenEgg}<${props.assistGoldenEgg}>`
+      ? `${props.deliverGoldenEgg}(${props.assistGoldenEgg})`
       : props.deliverGoldenEgg;
 
   return (
