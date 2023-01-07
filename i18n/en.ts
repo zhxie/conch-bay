@@ -20,7 +20,9 @@ const en = {
   first_aid_notice:
     "The database is corrupted and cannot be loaded. Please export results and reinstall Conch Bay.",
   export_results: "Export Results",
-  network_service_unavailable: "The network service may be unavailable at this time.",
+  operational_status: "The network service may be unavailable at this time.",
+  future_maintenance_schedule: "There is a future maintenance schedule.",
+  maintenance: "There server is currently undergoing maintenance.",
   failed_to_check_api_update: "Failed to check API update",
   reacquiring_tokens: "Reacquiring tokens",
   loading_n_new_results: "Loading %{n} new result(s)",

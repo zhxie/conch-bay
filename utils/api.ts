@@ -41,15 +41,38 @@ export const fetchSchedules = async () => {
   const json = await res.json();
   return (json as GraphQlResponse<Schedules>).data!;
 };
-export const fetchOperationalStatus = async () => {
+export enum NetInfo {
+  OperationalStatus = "operational_status",
+  FutureMaintenanceSchedule = "future_maintenance_schedule",
+  Maintenance = "maintenance",
+}
+export const fetchNetInfo = async () => {
   const res = await fetchRetry(
     "https://www.nintendo.co.jp/netinfo/en_US/status.json?" +
       parameterize({ _: String(new Date().valueOf()) })
   );
   const json = await res.json();
-  return !!json["operational_statuses"].find((status) =>
-    status["software_title"].includes("Splatoon 3")
-  );
+  for (const status of json["operational_statuses"]) {
+    if (status["software_title"] === "Splatoon 3") {
+      const eventStatus = status["event_status"];
+      if (eventStatus === "1" || eventStatus === "2") {
+        return NetInfo.OperationalStatus;
+      }
+    }
+  }
+  for (const maintenance of json["temporary_maintenances"]) {
+    if (maintenance["software_title"] === "Splatoon 3") {
+      const eventStatus = maintenance["event_status"];
+      if (eventStatus === "0") {
+        return NetInfo.FutureMaintenanceSchedule;
+      }
+      if (eventStatus === "1" || eventStatus === "2") {
+        return NetInfo.Maintenance;
+      }
+    }
+  }
+
+  return undefined;
 };
 
 export const updateNsoappVersion = async () => {

@@ -20,7 +20,9 @@ const ja = {
   first_aid_notice:
     "データベースが壊れているため、ロードできません。リザルトをエクスポートして、ホラカイベイを再インストールしてください。",
   export_results: "リザルトをエクスポート",
-  network_service_unavailable: "現在、ネットワークサービスが正常に稼動していない可能性があります。",
+  operational_status: "現在、ネットワークサービスが正常に稼動していない可能性があります。",
+  future_maintenance_schedule: "今後のメンテナンス予定があります。",
+  maintenance: "サーバーのメンテナンス中です。",
   failed_to_check_api_update: "APIのアップデートを確認できませんでした",
   reacquiring_tokens: "トークン再取得中",
   loading_n_new_results: "%{n}件の新しいリザルトを読み込む中",

@@ -28,13 +28,14 @@ import {
 } from "../components";
 import { CoopHistoryDetail, Friends, Schedules, VsHistoryDetail } from "../models/types";
 import {
+  NetInfo,
   checkBulletToken,
   fetchBattleHistories,
   fetchCatalog,
   fetchCoopHistoryDetail,
   fetchCoopResult,
   fetchFriends,
-  fetchOperationalStatus,
+  fetchNetInfo,
   fetchSchedules,
   fetchSummary,
   fetchVsHistoryDetail,
@@ -88,7 +89,7 @@ const MainView = (props: MainViewProps) => {
   const [grade, setGrade] = useState("");
 
   const [schedules, setSchedules] = useState<Schedules | undefined>(undefined);
-  const [operationalStatus, setOperationalStatus] = useState(false);
+  const [netInfo, setNetInfo] = useState<NetInfo | undefined>(undefined);
   const [friends, setFriends] = useState<Friends | undefined>(undefined);
   const [results, setResults] = useState<
     { battle?: VsHistoryDetail; coop?: CoopHistoryDetail }[] | undefined
@@ -254,13 +255,13 @@ const MainView = (props: MainViewProps) => {
   const refresh = async () => {
     setRefreshing(true);
     try {
-      // Fetch schedules and operational status.
-      const [schedules, operationalStatus] = await Promise.all([
+      // Fetch schedules and net info.
+      const [schedules, netInfo] = await Promise.all([
         await fetchSchedules(),
-        await fetchOperationalStatus(),
+        await fetchNetInfo(),
       ]);
       setSchedules(schedules);
-      setOperationalStatus(operationalStatus);
+      setNetInfo(netInfo);
       if (sessionToken) {
         // Update versions.
         try {
@@ -489,7 +490,7 @@ const MainView = (props: MainViewProps) => {
       showToast(e);
     }
   };
-  const onOperationalStatusPress = () => {
+  const onNetInfoPress = () => {
     WebBrowser.openBrowserAsync(
       `https://www.nintendo.co.jp/netinfo/${t("nintendo_lang")}/index.html`
     );
@@ -683,13 +684,9 @@ const MainView = (props: MainViewProps) => {
                 </HStack>
               </VStack>
             )}
-            {operationalStatus && (
-              <Text
-                center
-                style={[ViewStyles.px4, ViewStyles.mb2]}
-                onPress={onOperationalStatusPress}
-              >
-                {t("network_service_unavailable")}
+            {!!netInfo && (
+              <Text center style={[ViewStyles.px4, ViewStyles.mb2]} onPress={onNetInfoPress}>
+                {t(netInfo)}
               </Text>
             )}
             <ScheduleView t={t} schedules={schedules} style={ViewStyles.mb4} />
