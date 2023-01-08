@@ -31,7 +31,12 @@ const ScheduleButton = (props: ScheduleButtonProps) => {
           )}
           <Text
             numberOfLines={1}
-            style={[TextStyles.h2, TextStyles.subtle, !!props.color && { color: props.color }]}
+            style={[
+              ViewStyles.f,
+              TextStyles.h2,
+              TextStyles.subtle,
+              !!props.color && { color: props.color },
+            ]}
           >
             {props.rule}
           </Text>

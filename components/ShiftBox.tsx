@@ -26,7 +26,7 @@ const ShiftBox = (props: ScheduleBoxProps) => {
     <HStack flex style={props.style}>
       <VStack flex>
         <HStack flex center justify style={ViewStyles.mb1}>
-          <Text numberOfLines={1} style={[ViewStyles.mr1, TextStyles.b]}>
+          <Text numberOfLines={1} style={[ViewStyles.f, ViewStyles.mr1, TextStyles.b]}>
             {props.rule}
           </Text>
           <Text numberOfLines={1} style={TextStyles.subtle}>
