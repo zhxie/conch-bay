@@ -12,6 +12,7 @@ export enum Color {
   KillAndRescue = "#22c55e",
   Death = "#ef4444",
   Special = "#eab308",
+  UltraSignal = "#06b6d4",
   // Splatoon.
   RegularBattle = "#22c55e",
   AnarchyBattle = "#ea580c",

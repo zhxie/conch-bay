@@ -189,6 +189,7 @@ export interface VsPlayer {
 export interface VsResult {
   paintRatio: number | null;
   score: number | null;
+  noroshi: number | null;
 }
 export interface VsTeam {
   color: {
@@ -198,6 +199,7 @@ export interface VsTeam {
     r: number;
   };
   result: VsResult | null;
+  tricolorRole: null | "DEFENSE" | "ATTACK1" | "ATTACK2";
   judgement: "WIN" | "LOSE" | "DRAW";
   festTeamName: string | null;
   players: VsPlayer[];

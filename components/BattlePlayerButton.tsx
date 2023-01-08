@@ -19,6 +19,7 @@ interface BattlePlayerButtonProps {
   assist?: number;
   death?: number;
   special?: number;
+  ultraSignal?: number | null;
   style?: StyleProp<ViewStyle>;
   onPress?: () => void;
 }
@@ -42,6 +43,12 @@ const BattlePlayerButton = (props: BattlePlayerButtonProps) => {
       onPress={props.onPress}
     >
       <HStack center>
+        {props.ultraSignal !== undefined && props.ultraSignal !== null && (
+          <HStack center style={ViewStyles.mr1}>
+            <Circle size={10} color={Color.UltraSignal} style={ViewStyles.mr1} />
+            <Text numberOfLines={1}>{props.ultraSignal}</Text>
+          </HStack>
+        )}
         <Circle size={10} color={Color.KillAndRescue} style={ViewStyles.mr1} />
         <Text numberOfLines={1} style={ViewStyles.mr1}>
           {killAndAssist}

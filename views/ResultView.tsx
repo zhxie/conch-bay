@@ -226,6 +226,11 @@ const ResultView = (props: ResultViewProps) => {
                   assist={getVsSelfPlayer(result.battle).result?.assist}
                   death={getVsSelfPlayer(result.battle).result?.death}
                   special={getVsSelfPlayer(result.battle).result?.special}
+                  ultraSignal={
+                    result.battle.vsHistoryDetail.myTeam.tricolorRole !== "DEFENSE"
+                      ? getVsSelfPlayer(result.battle).result?.noroshiTry
+                      : undefined
+                  }
                   onPress={() => {
                     setDisplay({ battle: result.battle! });
                     setDisplayBattle(true);
@@ -353,6 +358,17 @@ const ResultView = (props: ResultViewProps) => {
                       <Text numberOfLines={1} style={[TextStyles.b, { color: getTeamColor(team) }]}>
                         {formatTeamResult(team)}
                       </Text>
+                      {!!team.result?.noroshi &&
+                        new Array(team.result.noroshi)
+                          .fill(0)
+                          .map((_, i) => (
+                            <Circle
+                              key={i}
+                              size={10}
+                              color={getTeamColor(team)}
+                              style={ViewStyles.mr1}
+                            />
+                          ))}
                     </HStack>
                   </HStack>
                   {team.players.map((player, i, players) => (
@@ -367,6 +383,9 @@ const ResultView = (props: ResultViewProps) => {
                       assist={player.result?.assist}
                       death={player.result?.death}
                       special={player.result?.special}
+                      ultraSignal={
+                        team.tricolorRole !== "DEFENSE" ? player.result?.noroshiTry : undefined
+                      }
                       style={{ alignItems: "center" }}
                     />
                   ))}
