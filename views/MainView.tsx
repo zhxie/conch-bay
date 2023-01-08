@@ -441,7 +441,7 @@ const MainView = (props: MainViewProps) => {
     setLogOut(true);
   };
   const onLogOutClose = () => {
-    if (!loggingOut) {
+    if (!loggingOut && !exporting) {
       setLogOut(false);
     }
   };
@@ -834,6 +834,18 @@ const MainView = (props: MainViewProps) => {
           <Text style={ViewStyles.mb4}>{t("log_out_notice")}</Text>
           <VStack style={ViewStyles.wf}>
             <Button
+              isLoading={exporting}
+              isLoadingText={t("exporting")}
+              style={[ViewStyles.mb2, { backgroundColor: accentColor }]}
+              textStyle={reverseTextColor}
+              onPress={onExportPress}
+            >
+              <Text numberOfLines={1} style={reverseTextColor}>
+                {t("export_results")}
+              </Text>
+            </Button>
+            <Button
+              isDisabled={exporting}
               isLoading={loggingOut}
               isLoadingText={t("logging_out")}
               style={{ backgroundColor: accentColor }}
