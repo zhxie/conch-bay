@@ -198,6 +198,7 @@ export interface VsTeam {
     r: number;
   };
   result: VsResult | null;
+  judgement: "WIN" | "LOSE" | "DRAW";
   festTeamName: string | null;
   players: VsPlayer[];
 }

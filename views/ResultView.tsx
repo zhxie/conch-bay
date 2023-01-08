@@ -129,6 +129,12 @@ const ResultView = (props: ResultViewProps) => {
   const formatTeams = (battle: VsHistoryDetail) => {
     const teams = [battle.vsHistoryDetail.myTeam, ...battle.vsHistoryDetail.otherTeams];
     teams.sort((a, b) => {
+      if (a.judgement === "WIN" && b.judgement === "LOSE") {
+        return -1;
+      }
+      if (a.judgement === "LOSE" && b.judgement === "WIN") {
+        return 1;
+      }
       if (a.result === null) {
         return 0;
       }
