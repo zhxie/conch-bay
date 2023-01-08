@@ -54,12 +54,12 @@ const ScheduleView = (props: ScheduleViewProps) => {
   const [displaySchedules, setDisplaySchedules] = useState(false);
   const [displayShifts, setDisplayShifts] = useState(false);
 
-  const currentSplatfest = props.schedules?.currentFest?.tricolorStage
-    ? props.schedules?.currentFest
-    : undefined;
   const splatfestSchedules = props.schedules?.festSchedules.nodes.filter((node) =>
     getMatchSetting(node)
   );
+  const currentSplatfest = props.schedules?.currentFest?.tricolorStage
+    ? props.schedules?.currentFest
+    : undefined;
   const regularSchedules = props.schedules?.regularSchedules.nodes.filter((node) =>
     getMatchSetting(node)
   );
@@ -84,14 +84,6 @@ const ScheduleView = (props: ScheduleViewProps) => {
     };
   };
 
-  const onCurrentSplatfestPress = () => {
-    setDisplay({
-      title: t("tricolor_battle"),
-      color: accentColor,
-      splatfest: currentSplatfest,
-    });
-    setDisplaySplatfest(true);
-  };
   const onSplatfestSchedulePress = () => {
     setDisplay({
       title: t("splatfest_battle"),
@@ -99,6 +91,14 @@ const ScheduleView = (props: ScheduleViewProps) => {
       schedules: splatfestSchedules,
     });
     setDisplaySchedules(true);
+  };
+  const onCurrentSplatfestPress = () => {
+    setDisplay({
+      title: t("tricolor_battle"),
+      color: accentColor,
+      splatfest: currentSplatfest,
+    });
+    setDisplaySplatfest(true);
   };
   const onRegularSchedulePress = () => {
     setDisplay({
@@ -150,11 +150,11 @@ const ScheduleView = (props: ScheduleViewProps) => {
     });
     setDisplayShifts(true);
   };
-  const onDisplaySplatfestClose = () => {
-    setDisplaySplatfest(false);
-  };
   const onDisplaySchedulesClose = () => {
     setDisplaySchedules(false);
+  };
+  const onDisplaySplatfestClose = () => {
+    setDisplaySplatfest(false);
   };
   const onDisplayShiftsClose = () => {
     setDisplayShifts(false);
@@ -178,21 +178,21 @@ const ScheduleView = (props: ScheduleViewProps) => {
               />
             );
           })}
-        {currentSplatfest && (
-          <ScheduleButton
-            color={isSplatfestStarted(currentSplatfest) ? accentColor : undefined}
-            rule={t("VnNSdWxlLTU=")}
-            stages={[t(getSplatfestStageId(currentSplatfest))]}
-            onPress={onCurrentSplatfestPress}
-            style={ViewStyles.mr2}
-          />
-        )}
         {splatfestSchedules?.[0] && (
           <ScheduleButton
             color={isScheduleStarted(splatfestSchedules[0]) ? accentColor : undefined}
             rule={t(getVsRuleId(splatfestSchedules[0]))}
             stages={getVsStageIds(splatfestSchedules[0]).map((schedule) => t(schedule))}
             onPress={onSplatfestSchedulePress}
+            style={ViewStyles.mr2}
+          />
+        )}
+        {currentSplatfest && (
+          <ScheduleButton
+            color={isSplatfestStarted(currentSplatfest) ? accentColor : undefined}
+            rule={t("VnNSdWxlLTU=")}
+            stages={[t(getSplatfestStageId(currentSplatfest))]}
+            onPress={onCurrentSplatfestPress}
             style={ViewStyles.mr2}
           />
         )}
@@ -251,21 +251,6 @@ const ScheduleView = (props: ScheduleViewProps) => {
         )}
       </HStack>
       <Modal
-        isVisible={displaySplatfest}
-        onClose={onDisplaySplatfestClose}
-        style={ViewStyles.modal2d}
-      >
-        <TitledList color={display?.color} title={display?.title}>
-          {display?.splatfest && (
-            <ScheduleBox
-              rule={t("VnNSdWxlLTU=")}
-              time={getSplatfestTimeRange(display.splatfest, true)}
-              stages={[formatStage(getSplatfestStage(display.splatfest))]}
-            />
-          )}
-        </TitledList>
-      </Modal>
-      <Modal
         isVisible={displaySchedules}
         onClose={onDisplaySchedulesClose}
         style={ViewStyles.modal2d}
@@ -283,6 +268,21 @@ const ScheduleView = (props: ScheduleViewProps) => {
                   style={i !== schedules.length - 1 ? ViewStyles.mb2 : undefined}
                 />
               ))}
+        </TitledList>
+      </Modal>
+      <Modal
+        isVisible={displaySplatfest}
+        onClose={onDisplaySplatfestClose}
+        style={ViewStyles.modal2d}
+      >
+        <TitledList color={display?.color} title={display?.title}>
+          {display?.splatfest && (
+            <ScheduleBox
+              rule={t("VnNSdWxlLTU=")}
+              time={getSplatfestTimeRange(display.splatfest, true)}
+              stages={[formatStage(getSplatfestStage(display.splatfest))]}
+            />
+          )}
         </TitledList>
       </Modal>
       <Modal isVisible={displayShifts} onClose={onDisplayShiftsClose} style={ViewStyles.modal2d}>
