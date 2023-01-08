@@ -75,9 +75,8 @@ const ResultButton = (props: ResultButtonProps) => {
           />
         )}
         <VStack flex>
-          <HStack flex center reverse>
-            <HStack center>{props.subChildren}</HStack>
-            <HStack center flex style={ViewStyles.mr1}>
+          <HStack flex center justify>
+            <HStack center style={ViewStyles.mr1}>
               <Text
                 numberOfLines={1}
                 style={[TextStyles.h2, !!props.color && { color: props.color }]}
@@ -85,12 +84,13 @@ const ResultButton = (props: ResultButtonProps) => {
                 {props.title}
               </Text>
             </HStack>
+            <HStack center>{props.subChildren}</HStack>
           </HStack>
-          <HStack flex center reverse>
-            <HStack center>{props.children}</HStack>
-            <HStack center flex style={ViewStyles.mr1}>
+          <HStack flex center justify>
+            <HStack center style={ViewStyles.mr1}>
               <Text numberOfLines={1}>{props.subtitle}</Text>
             </HStack>
+            <HStack center>{props.children}</HStack>
           </HStack>
         </VStack>
       </HStack>

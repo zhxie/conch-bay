@@ -13,18 +13,19 @@ const Center = (props: CenterProps) => {
 
 interface StackProps extends CenterProps {
   center?: boolean;
-  reverse?: boolean;
+  justify?: boolean;
 }
 
 const HStack = (props: StackProps) => {
-  const { flex, center, reverse, style, ...rest } = props;
+  const { flex, center, justify, style, ...rest } = props;
 
   return (
     <View
       style={[
         flex && ViewStyles.f,
-        reverse ? ViewStyles.hr : ViewStyles.h,
+        ViewStyles.h,
         center && styles.center,
+        justify && ViewStyles.j,
         style,
       ]}
       {...rest}
@@ -33,14 +34,15 @@ const HStack = (props: StackProps) => {
 };
 
 const VStack = (props: StackProps) => {
-  const { flex, center, reverse, style, ...rest } = props;
+  const { flex, center, justify, style, ...rest } = props;
 
   return (
     <View
       style={[
         flex && ViewStyles.f,
-        reverse ? ViewStyles.vr : ViewStyles.v,
+        ViewStyles.v,
         center && styles.center,
+        justify && ViewStyles.j,
         style,
       ]}
       {...rest}

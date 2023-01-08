@@ -22,7 +22,7 @@ const BossSalmonidBox = (props: BossSalmonidBoxProps) => {
 
   return (
     <VStack style={[ViewStyles.r, ViewStyles.p2, { width: 110, height: 80 }, style, props.style]}>
-      <VStack flex>
+      <VStack flex justify>
         <Text
           numberOfLines={1}
           style={[
@@ -34,16 +34,14 @@ const BossSalmonidBox = (props: BossSalmonidBoxProps) => {
         >
           {props.name}
         </Text>
-        <VStack flex reverse>
-          <HStack center>
-            <Circle size={10} color={Color.KillAndRescue} style={ViewStyles.mr1} />
-            <Text numberOfLines={1} style={ViewStyles.mr1}>
-              {defeat}
-            </Text>
-            <Circle size={10} color={Color.Special} style={ViewStyles.mr1} />
-            <Text numberOfLines={1}>{props.appearance}</Text>
-          </HStack>
-        </VStack>
+        <HStack center>
+          <Circle size={10} color={Color.KillAndRescue} style={ViewStyles.mr1} />
+          <Text numberOfLines={1} style={ViewStyles.mr1}>
+            {defeat}
+          </Text>
+          <Circle size={10} color={Color.Special} style={ViewStyles.mr1} />
+          <Text numberOfLines={1}>{props.appearance}</Text>
+        </HStack>
       </VStack>
     </VStack>
   );

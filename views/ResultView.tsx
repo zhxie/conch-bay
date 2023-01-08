@@ -349,15 +349,14 @@ const ResultView = (props: ResultViewProps) => {
             <VStack style={ViewStyles.wf}>
               {formatTeams(display.battle).map((team, i) => (
                 <VStack key={i} style={ViewStyles.mb2}>
-                  <HStack center style={ViewStyles.mb1}>
-                    <Circle size={12} color={getTeamColor(team)} style={ViewStyles.mr1} />
-                    <Text numberOfLines={1} style={[TextStyles.b, { color: getTeamColor(team) }]}>
-                      {team.festTeamName ?? ""}
-                    </Text>
-                    <HStack flex center reverse>
+                  <HStack center justify style={ViewStyles.mb1}>
+                    <HStack center style={ViewStyles.mr1}>
+                      <Circle size={12} color={getTeamColor(team)} style={ViewStyles.mr1} />
                       <Text numberOfLines={1} style={[TextStyles.b, { color: getTeamColor(team) }]}>
-                        {formatTeamResult(team)}
+                        {team.festTeamName ?? ""}
                       </Text>
+                    </HStack>
+                    <HStack center>
                       {!!team.result?.noroshi &&
                         new Array(team.result.noroshi)
                           .fill(0)
@@ -369,6 +368,9 @@ const ResultView = (props: ResultViewProps) => {
                               style={ViewStyles.mr1}
                             />
                           ))}
+                      <Text numberOfLines={1} style={[TextStyles.b, { color: getTeamColor(team) }]}>
+                        {formatTeamResult(team)}
+                      </Text>
                     </HStack>
                   </HStack>
                   {team.players.map((player, i, players) => (

@@ -20,7 +20,7 @@ const ScheduleButton = (props: ScheduleButtonProps) => {
       style={[ViewStyles.r, ViewStyles.p2, { width: 160, height: 80 }, props.style]}
       onPress={props.onPress}
     >
-      <VStack flex>
+      <VStack flex justify>
         <HStack center style={ViewStyles.mb2}>
           {props.rule.length > 0 && (
             <Circle
@@ -36,15 +36,12 @@ const ScheduleButton = (props: ScheduleButtonProps) => {
             {props.rule}
           </Text>
         </HStack>
-        <VStack flex reverse>
-          {props.stages
-            .slice()
-            .reverse()
-            .map((stage, i) => (
-              <Text key={i} numberOfLines={1}>
-                {stage}
-              </Text>
-            ))}
+        <VStack>
+          {props.stages.map((stage, i) => (
+            <Text key={i} numberOfLines={1}>
+              {stage}
+            </Text>
+          ))}
         </VStack>
       </VStack>
     </Pressable>

@@ -20,15 +20,13 @@ const ScheduleBox = (props: ScheduleBoxProps) => {
   return (
     <HStack flex style={props.style}>
       <VStack flex>
-        <HStack flex center style={ViewStyles.mb1}>
-          <Text numberOfLines={1} style={TextStyles.b}>
+        <HStack flex center justify style={ViewStyles.mb1}>
+          <Text numberOfLines={1} style={[ViewStyles.mr1, TextStyles.b]}>
             {props.rule}
           </Text>
-          <HStack flex reverse>
-            <Text numberOfLines={1} style={TextStyles.subtle}>
-              {props.time}
-            </Text>
-          </HStack>
+          <Text numberOfLines={1} style={TextStyles.subtle}>
+            {props.time}
+          </Text>
         </HStack>
         <HStack flex center>
           {props.stages.map((stage, i, stages) => (

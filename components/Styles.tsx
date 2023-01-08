@@ -130,18 +130,15 @@ export const ViewStyles = StyleSheet.create({
   h: {
     flexDirection: "row",
   },
-  hr: {
-    flexDirection: "row-reverse",
-  },
   v: {
     flexDirection: "column",
-  },
-  vr: {
-    flexDirection: "column-reverse",
   },
   c: {
     alignItems: "center",
     justifyContent: "center",
+  },
+  j: {
+    justifyContent: "space-between",
   },
   r: {
     borderRadius: 8,
