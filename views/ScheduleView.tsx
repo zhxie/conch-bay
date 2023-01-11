@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ScrollView, StyleProp, useColorScheme, ViewStyle } from "react-native";
+import { ScrollView, StyleProp, ViewStyle } from "react-native";
 import {
   Color,
   HStack,
@@ -46,9 +46,6 @@ interface DisplayProps {
 const ScheduleView = (props: ScheduleViewProps) => {
   const { t } = props;
 
-  const colorScheme = useColorScheme();
-  const accentColor = colorScheme === "light" ? Color.Shiver : Color.Frye;
-
   const [display, setDisplay] = useState<DisplayProps | undefined>(undefined);
   const [displaySplatfest, setDisplaySplatfest] = useState(false);
   const [displaySchedules, setDisplaySchedules] = useState(false);
@@ -87,7 +84,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
   const onSplatfestSchedulePress = () => {
     setDisplay({
       title: t("splatfest_battle"),
-      color: accentColor,
+      color: Color.AccentColor,
       schedules: splatfestSchedules,
     });
     setDisplaySchedules(true);
@@ -95,7 +92,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
   const onCurrentSplatfestPress = () => {
     setDisplay({
       title: t("tricolor_battle"),
-      color: accentColor,
+      color: Color.AccentColor,
       splatfest: currentSplatfest,
     });
     setDisplaySplatfest(true);
@@ -180,7 +177,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
           })}
         {splatfestSchedules?.[0] && (
           <ScheduleButton
-            color={isScheduleStarted(splatfestSchedules[0]) ? accentColor : undefined}
+            color={isScheduleStarted(splatfestSchedules[0]) ? Color.AccentColor : undefined}
             rule={t(getVsRuleId(splatfestSchedules[0]))}
             stages={getVsStageIds(splatfestSchedules[0]).map((schedule) => t(schedule))}
             onPress={onSplatfestSchedulePress}
@@ -189,7 +186,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
         )}
         {currentSplatfest && (
           <ScheduleButton
-            color={isSplatfestStarted(currentSplatfest) ? accentColor : undefined}
+            color={isSplatfestStarted(currentSplatfest) ? Color.AccentColor : undefined}
             rule={t("VnNSdWxlLTU=")}
             stages={[t(getSplatfestStageId(currentSplatfest))]}
             onPress={onCurrentSplatfestPress}

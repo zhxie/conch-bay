@@ -59,7 +59,6 @@ const MainView = (props: MainViewProps) => {
   const { t } = props;
 
   const colorScheme = useColorScheme();
-  const accentColor = colorScheme === "light" ? Color.Shiver : Color.Frye;
   const backgroundStyle = colorScheme === "light" ? ViewStyles.light : ViewStyles.dark;
   const reverseTextColor = colorScheme === "light" ? TextStyles.dark : TextStyles.light;
 
@@ -641,7 +640,7 @@ const MainView = (props: MainViewProps) => {
           <SafeAreaView style={{ alignItems: "center" }}>
             {!sessionToken && (
               <Center flex style={[ViewStyles.px4, ViewStyles.mb4]}>
-                <Button style={{ backgroundColor: accentColor }} onPress={onLogInPress}>
+                <Button style={{ backgroundColor: Color.AccentColor }} onPress={onLogInPress}>
                   <Text numberOfLines={1} style={reverseTextColor}>
                     {t("log_in")}
                   </Text>
@@ -660,7 +659,7 @@ const MainView = (props: MainViewProps) => {
                 />
                 <HStack>
                   {catalogLevel.length > 0 && (
-                    <Badge color={Color.Shiver} title={catalogLevel} style={ViewStyles.mr1} />
+                    <Badge color={Color.AccentColor} title={catalogLevel} style={ViewStyles.mr1} />
                   )}
                   {level.length > 0 && (
                     <Badge color={Color.RegularBattle} title={level} style={ViewStyles.mr1} />
@@ -802,7 +801,7 @@ const MainView = (props: MainViewProps) => {
             <Button
               style={[
                 ViewStyles.mb2,
-                { borderColor: accentColor, borderWidth: 1.5 },
+                { borderColor: Color.AccentColor, borderWidth: 1.5 },
                 backgroundStyle,
               ]}
               onPress={onIminkPrivacyPolicyPress}
@@ -812,7 +811,7 @@ const MainView = (props: MainViewProps) => {
             <Button
               isLoading={loggingIn}
               isLoadingText={t("logging_in")}
-              style={{ backgroundColor: accentColor }}
+              style={{ backgroundColor: Color.AccentColor }}
               textStyle={reverseTextColor}
               onPress={onLogInContinuePress}
             >
@@ -836,7 +835,7 @@ const MainView = (props: MainViewProps) => {
             <Button
               isLoading={exporting}
               isLoadingText={t("exporting")}
-              style={[ViewStyles.mb2, { backgroundColor: accentColor }]}
+              style={[ViewStyles.mb2, { backgroundColor: Color.AccentColor }]}
               textStyle={reverseTextColor}
               onPress={onExportPress}
             >
@@ -848,7 +847,7 @@ const MainView = (props: MainViewProps) => {
               isDisabled={exporting}
               isLoading={loggingOut}
               isLoadingText={t("logging_out")}
-              style={{ backgroundColor: accentColor }}
+              style={{ backgroundColor: Color.AccentColor }}
               textStyle={reverseTextColor}
               onPress={onLogOutContinuePress}
             >
@@ -870,7 +869,7 @@ const MainView = (props: MainViewProps) => {
           <Text style={ViewStyles.mb4}>{t("debug_notice")}</Text>
           <VStack style={ViewStyles.wf}>
             <Button
-              style={[ViewStyles.mb2, { backgroundColor: accentColor }]}
+              style={[ViewStyles.mb2, { backgroundColor: Color.AccentColor }]}
               onPress={onCopySessionTokenPress}
             >
               <Text numberOfLines={1} style={reverseTextColor}>
@@ -878,14 +877,14 @@ const MainView = (props: MainViewProps) => {
               </Text>
             </Button>
             <Button
-              style={[ViewStyles.mb2, { backgroundColor: accentColor }]}
+              style={[ViewStyles.mb2, { backgroundColor: Color.AccentColor }]}
               onPress={onCopyBulletTokenPress}
             >
               <Text numberOfLines={1} style={reverseTextColor}>
                 {t("copy_bullet_token")}
               </Text>
             </Button>
-            <Button style={{ backgroundColor: accentColor }} onPress={onExportDatabasePress}>
+            <Button style={{ backgroundColor: Color.AccentColor }} onPress={onExportDatabasePress}>
               <Text numberOfLines={1} style={reverseTextColor}>
                 {t("export_database")}
               </Text>
@@ -948,7 +947,7 @@ const MainView = (props: MainViewProps) => {
             <Button
               isLoading={exporting}
               isLoadingText={t("exporting")}
-              style={[ViewStyles.mb2, { backgroundColor: accentColor }]}
+              style={[ViewStyles.mb2, { backgroundColor: Color.AccentColor }]}
               textStyle={reverseTextColor}
               onPress={onExportPress}
             >
@@ -956,7 +955,7 @@ const MainView = (props: MainViewProps) => {
                 {t("export_results")}
               </Text>
             </Button>
-            <Button style={{ backgroundColor: accentColor }} onPress={onExportDatabasePress}>
+            <Button style={{ backgroundColor: Color.AccentColor }} onPress={onExportDatabasePress}>
               <Text numberOfLines={1} style={reverseTextColor}>
                 {t("export_database")}
               </Text>

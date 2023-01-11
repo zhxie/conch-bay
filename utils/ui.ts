@@ -110,7 +110,7 @@ export const getImageCacheKey = (image: string) => {
   return match[1];
 };
 
-export const getVsModeColor = (mode: VsMode, accentColor: string) => {
+export const getVsModeColor = (mode: VsMode) => {
   switch (mode.id) {
     case "VnNNb2RlLTE=":
       return Color.RegularBattle;
@@ -124,7 +124,7 @@ export const getVsModeColor = (mode: VsMode, accentColor: string) => {
     case "VnNNb2RlLTY=":
     case "VnNNb2RlLTc=":
     case "VnNNb2RlLTg=":
-      return accentColor;
+      return Color.AccentColor;
   }
 };
 export const getVsRuleId = (schedule: Schedule, index?: number) => {
@@ -140,11 +140,11 @@ export const getCoopRuleColor = (rule: string) => {
   }
 };
 
-export const getFriendColor = (friend: Friend, accentColor: string) => {
+export const getFriendColor = (friend: Friend) => {
   switch (friend.onlineState) {
     case "VS_MODE_FIGHTING":
     case "VS_MODE_MATCHING":
-      return getVsModeColor(friend.vsMode!, accentColor);
+      return getVsModeColor(friend.vsMode!);
     case "COOP_MODE_FIGHTING":
     case "COOP_MODE_MATCHING":
       return getCoopRuleColor(friend.coopRule!);

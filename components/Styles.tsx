@@ -2,6 +2,7 @@ import { StyleSheet } from "react-native";
 
 export enum Color {
   // UI.
+  AccentColor = "#6b84f5",
   LightBackground = "#fafafa",
   DarkBackground = "#18181b",
   LightText = "black",

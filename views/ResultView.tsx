@@ -56,7 +56,6 @@ const ResultView = (props: ResultViewProps) => {
   const { t } = props;
 
   const colorScheme = useColorScheme();
-  const accentColor = colorScheme === "light" ? Color.Shiver : Color.Frye;
   const reverseTextColor = colorScheme === "light" ? TextStyles.dark : TextStyles.light;
 
   const [display, setDisplay] = useState<DisplayProps | undefined>(undefined);
@@ -217,7 +216,7 @@ const ResultView = (props: ResultViewProps) => {
                   key={result.battle.vsHistoryDetail.id}
                   isFirst={i === 0}
                   isLast={false}
-                  color={getVsModeColor(result.battle.vsHistoryDetail.vsMode, accentColor)!}
+                  color={getVsModeColor(result.battle.vsHistoryDetail.vsMode)!}
                   result={formatJudgement(result.battle)}
                   rule={t(result.battle.vsHistoryDetail.vsRule.id)}
                   stage={t(result.battle.vsHistoryDetail.vsStage.id)}
@@ -342,7 +341,7 @@ const ResultView = (props: ResultViewProps) => {
       >
         {display?.battle && (
           <TitledList
-            color={getVsModeColor(display.battle.vsHistoryDetail.vsMode, accentColor)}
+            color={getVsModeColor(display.battle.vsHistoryDetail.vsMode)}
             title={t(display.battle.vsHistoryDetail.vsMode.id)}
             subtitle={formatAnnotation(display.battle)}
           >
@@ -394,14 +393,14 @@ const ResultView = (props: ResultViewProps) => {
                 </VStack>
               ))}
               <Button
-                style={[ViewStyles.mb2, { backgroundColor: accentColor }]}
+                style={[ViewStyles.mb2, { backgroundColor: Color.AccentColor }]}
                 onPress={onHidePlayerNamesPress}
               >
                 <Text numberOfLines={1} style={reverseTextColor}>
                   {hidePlayerNames ? t("show_player_names") : t("hide_player_names")}
                 </Text>
               </Button>
-              <Button style={{ backgroundColor: accentColor }} onPress={onShowRawResultPress}>
+              <Button style={{ backgroundColor: Color.AccentColor }} onPress={onShowRawResultPress}>
                 <Text numberOfLines={1} style={reverseTextColor}>
                   {t("show_raw_data")}
                 </Text>
@@ -549,14 +548,17 @@ const ResultView = (props: ResultViewProps) => {
               </VStack>
               <VStack style={ViewStyles.px4}>
                 <Button
-                  style={[ViewStyles.mb2, { backgroundColor: accentColor }]}
+                  style={[ViewStyles.mb2, { backgroundColor: Color.AccentColor }]}
                   onPress={onHidePlayerNamesPress}
                 >
                   <Text numberOfLines={1} style={reverseTextColor}>
                     {hidePlayerNames ? t("show_player_names") : t("hide_player_names")}
                   </Text>
                 </Button>
-                <Button style={{ backgroundColor: accentColor }} onPress={onShowRawResultPress}>
+                <Button
+                  style={{ backgroundColor: Color.AccentColor }}
+                  onPress={onShowRawResultPress}
+                >
                   <Text numberOfLines={1} style={reverseTextColor}>
                     {t("show_raw_data")}
                   </Text>

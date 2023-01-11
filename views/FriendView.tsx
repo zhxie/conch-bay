@@ -1,5 +1,5 @@
-import { ScrollView, StyleProp, useColorScheme, ViewStyle } from "react-native";
-import { Avatar, Color, HStack, ViewStyles } from "../components";
+import { ScrollView, StyleProp, ViewStyle } from "react-native";
+import { Avatar, HStack, ViewStyles } from "../components";
 import { Friends } from "../models/types";
 import { getFriendColor, getUserIconCacheKey } from "../utils/ui";
 
@@ -9,9 +9,6 @@ interface FriendViewProps {
 }
 
 const FriendView = (props: FriendViewProps) => {
-  const colorScheme = useColorScheme();
-  const accentColor = colorScheme === "light" ? Color.Shiver : Color.Frye;
-
   return (
     <ScrollView
       horizontal
@@ -27,7 +24,7 @@ const FriendView = (props: FriendViewProps) => {
                 size={48}
                 uri={friend.userIcon.url}
                 cacheKey={getUserIconCacheKey(friend.userIcon.url)}
-                badge={getFriendColor(friend, accentColor)}
+                badge={getFriendColor(friend)}
                 style={i !== friends.length - 1 ? ViewStyles.mr2 : undefined}
               />
             ));
