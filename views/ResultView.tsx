@@ -465,7 +465,7 @@ const ResultView = (props: ResultViewProps) => {
                                 display.coop!.coopHistoryDetail.bossResult!.hasDefeatBoss ? 1 : 0
                               }
                               quota={1}
-                              appearance={1}
+                              appearance={waveResult.goldenPopCount}
                               style={i !== waveResults.length - 1 ? ViewStyles.mr2 : undefined}
                             />
                           );
