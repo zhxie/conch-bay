@@ -66,6 +66,9 @@ export const TextStyles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "bold",
   },
+  h6: {
+    fontSize: 12,
+  },
   c: {
     textAlign: "center",
   },
