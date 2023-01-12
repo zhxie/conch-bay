@@ -19,14 +19,6 @@ const ja = {
   first_aid_notice:
     "データベースが壊れているため、ロードできません。リザルトをエクスポートして、ホラガイベイを再インストールしてください。",
   export_results: "リザルトをエクスポート",
-  failed_to_check_api_update: "APIのアップデートを確認できませんでした",
-  reacquiring_tokens: "トークン再取得中",
-  loading_n_new_results: "%{n}件の新しいリザルトを読み込む中",
-  loading_n_results: "%{n}件のリザルトを読み込む中",
-  loaded_n_results: "%{n}件のリザルトを読み込みました",
-  loaded_n_results_fail_failed: "%{n}件のリザルトを読み込み、%{fail}件は失敗しました",
-  loaded_n_results_fail_failed_skip_skipped:
-    "%{n}件のリザルトを読み込み、%{fail}件は失敗、%{skip}件はスキップしました",
   load_more: "もっと読み込む",
   loading_more: "もっと読み込む中",
   import: "インポート",
@@ -39,6 +31,14 @@ const ja = {
   acknowledgments: "謝辞",
   creators: "クリエーター",
   license: "ライセンス",
+  failed_to_check_api_update: "APIのアップデートを確認できませんでした",
+  reacquiring_tokens: "トークン再取得中",
+  loading_n_new_results: "%{n}件の新しいリザルトを読み込む中",
+  loading_n_results: "%{n}件のリザルトを読み込む中",
+  loaded_n_results: "%{n}件のリザルトを読み込みました",
+  loaded_n_results_fail_failed: "%{n}件のリザルトを読み込み、%{fail}件は失敗しました",
+  loaded_n_results_fail_failed_skip_skipped:
+    "%{n}件のリザルトを読み込み、%{fail}件は失敗、%{skip}件はスキップしました",
   hide_player_names: "プレイヤー名を隠す",
   show_player_names: "プレイヤー名を表示",
   show_raw_data: "生データを表示",
@@ -211,9 +211,9 @@ const ja = {
   // Results.
   score_score: "%{score}カウント",
   knock_out: "ノックアウト！",
-  no_contest: "無効試合になりました",
-  penalty: "正常に試合が終了しませんでした",
-  exemption: "通信を切断したプレイヤーがいたため、負けとしてカウントされませんでした",
+  no_contest: "無効試合になりました。",
+  penalty: "正常に試合が終了しませんでした。",
+  exemption: "通信を切断したプレイヤーがいたため、負けとしてカウントされませんでした。",
 };
 
 export default ja;
