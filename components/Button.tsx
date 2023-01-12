@@ -1,8 +1,8 @@
-import Pressable from "./Pressable";
 import { ActivityIndicator, StyleProp, TextStyle, ViewStyle } from "react-native";
+import Pressable from "./Pressable";
+import { Center, HStack } from "./Stack";
 import { ViewStyles } from "./Styles";
 import Text from "./Text";
-import { Center, HStack } from "./Stack";
 
 interface ButtonProps {
   isDisabled?: boolean;

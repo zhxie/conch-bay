@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+import { Color } from "../components";
 import {
   AnarchyMatchSetting,
   CoopHistoryDetail,
@@ -15,7 +16,6 @@ import {
   XMatchSetting,
 } from "../models/types";
 import { getAuthorityAndPath } from "./url";
-import { Color } from "../components";
 
 export const getMatchSetting = (schedule: Schedule, index?: number) => {
   const regularMatchSetting = schedule["regularMatchSetting"];

@@ -1,9 +1,9 @@
 import { StyleProp, ViewStyle } from "react-native";
+import Pressable from "./Pressable";
+import { Circle } from "./Shape";
 import { HStack } from "./Stack";
 import { ViewStyles } from "./Styles";
-import Pressable from "./Pressable";
 import Text from "./Text";
-import { Circle } from "./Shape";
 
 interface FilterButtonProps {
   isDisabled?: boolean;

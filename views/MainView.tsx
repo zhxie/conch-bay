@@ -50,11 +50,11 @@ import {
   updateNsoappVersion,
   updateWebViewVersion,
 } from "../utils/api";
-import ResultView from "./ResultView";
-import FriendView from "./FriendView";
-import ScheduleView from "./ScheduleView";
 import * as Database from "../utils/database";
 import { getImageCacheKey, getUserIconCacheKey } from "../utils/ui";
+import FriendView from "./FriendView";
+import ResultView from "./ResultView";
+import ScheduleView from "./ScheduleView";
 
 interface MainViewProps {
   t: (f: string, params?: Record<string, any>) => string;

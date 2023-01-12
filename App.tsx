@@ -1,12 +1,12 @@
 import * as Localization from "expo-localization";
+import { StatusBar } from "expo-status-bar";
 import { I18n } from "i18n-js";
 import React from "react";
+import { useColorScheme } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { ViewStyles } from "./components";
 import { en, ja, zh } from "./i18n";
 import { MainView } from "./views";
-import { useColorScheme } from "react-native";
-import { ViewStyles } from "./components";
-import { StatusBar } from "expo-status-bar";
 
 // Localization.
 const i18n = new I18n();

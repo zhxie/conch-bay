@@ -3,9 +3,9 @@ import {
   NativeSyntheticEvent,
   ScrollView,
   StyleProp,
-  useColorScheme,
   View,
   ViewStyle,
+  useColorScheme,
 } from "react-native";
 import ReactNativeModal from "react-native-modal";
 import { ViewStyles } from "./Styles";

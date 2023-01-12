@@ -1,4 +1,4 @@
-import { StyleProp, TouchableOpacity, useColorScheme, ViewStyle } from "react-native";
+import { StyleProp, TouchableOpacity, ViewStyle, useColorScheme } from "react-native";
 import { ViewStyles } from "./Styles";
 
 interface PressableProps {

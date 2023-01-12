@@ -10,7 +10,7 @@ import {
   TitledList,
   ViewStyles,
 } from "../components";
-import { CoopWeapon, Splatfest, Schedule, Schedules, Shift, VsStage } from "../models/types";
+import { CoopWeapon, Schedule, Schedules, Shift, Splatfest, VsStage } from "../models/types";
 import {
   getCoopStage,
   getCoopStageId,

@@ -1,7 +1,7 @@
+import { Circle } from "./Shape";
+import { Center, HStack, VStack } from "./Stack";
 import { TextStyles, ViewStyles } from "./Styles";
 import Text from "./Text";
-import { Center, HStack, VStack } from "./Stack";
-import { Circle } from "./Shape";
 
 interface TitledListProps {
   color?: string;

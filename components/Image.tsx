@@ -1,7 +1,7 @@
 import CachedImage from "expo-cached-image";
 import { ImageStyle, StyleProp, useColorScheme } from "react-native";
-import { ViewStyles } from "./Styles";
 import { Center } from "./Stack";
+import { ViewStyles } from "./Styles";
 
 interface ImageProps {
   uri: string;

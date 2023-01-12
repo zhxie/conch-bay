@@ -1,6 +1,6 @@
 import { ImageStyle, StyleProp, ViewStyle } from "react-native";
-import Pressable from "./Pressable";
 import Image from "./Image";
+import Pressable from "./Pressable";
 import { Circle } from "./Shape";
 
 interface AvatarProps {

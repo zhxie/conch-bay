@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { ScrollView, StyleProp, useColorScheme, ViewStyle } from "react-native";
+import { ScrollView, StyleProp, ViewStyle, useColorScheme } from "react-native";
 import JSONTree from "react-native-json-tree";
 import {
   BattleButton,

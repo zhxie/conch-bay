@@ -1,10 +1,10 @@
 import { Feather } from "@expo/vector-icons";
 import { StyleProp, ViewStyle } from "react-native";
+import Image from "./Image";
 import Pressable from "./Pressable";
+import { Center, HStack, VStack } from "./Stack";
 import { Color, TextStyles, ViewStyles } from "./Styles";
 import Text from "./Text";
-import { Center, HStack, VStack } from "./Stack";
-import Image from "./Image";
 
 interface ImageProps {
   uri: string;

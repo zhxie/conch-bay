@@ -1,9 +1,9 @@
 import { Feather } from "@expo/vector-icons";
 import { ActivityIndicator, StyleProp, ViewStyle } from "react-native";
 import Pressable from "./Pressable";
+import { HStack } from "./Stack";
 import { Color, TextStyles, ViewStyles } from "./Styles";
 import Text from "./Text";
-import { HStack } from "./Stack";
 
 interface ToolButtonProps {
   isDisabled: boolean;
@@ -29,6 +29,7 @@ const ToolButton = (props: ToolButtonProps) => {
           } else {
             return (
               <Feather
+                // HACK: forcly cast.
                 name={props.icon as any}
                 size={16}
                 color={Color.MiddleTerritory}

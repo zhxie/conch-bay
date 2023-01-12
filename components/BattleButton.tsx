@@ -1,9 +1,9 @@
 import { StyleProp, ViewStyle } from "react-native";
 import ResultButton from "./ResultButton";
+import { Circle } from "./Shape";
+import { HStack } from "./Stack";
 import { Color, ViewStyles } from "./Styles";
 import Text from "./Text";
-import { HStack } from "./Stack";
-import { Circle } from "./Shape";
 
 interface BattleButtonProps {
   color: string;

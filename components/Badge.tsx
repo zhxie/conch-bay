@@ -1,7 +1,7 @@
-import { StyleProp, useColorScheme, ViewStyle } from "react-native";
+import { StyleProp, ViewStyle, useColorScheme } from "react-native";
+import { Center } from "./Stack";
 import { TextStyles, ViewStyles } from "./Styles";
 import Text from "./Text";
-import { Center } from "./Stack";
 
 interface BadgeProps {
   color: string;

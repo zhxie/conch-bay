@@ -1,9 +1,9 @@
 import { StyleProp, ViewStyle } from "react-native";
 import Pressable from "./Pressable";
+import { Circle } from "./Shape";
+import { HStack, VStack } from "./Stack";
 import { TextStyles, ViewStyles } from "./Styles";
 import Text from "./Text";
-import { HStack, VStack } from "./Stack";
-import { Circle } from "./Shape";
 
 interface ScheduleButtonProps {
   rule: string;
