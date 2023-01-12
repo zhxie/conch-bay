@@ -26,9 +26,14 @@ import {
   VStack,
   ViewStyles,
 } from "../components";
-import { CoopHistoryDetail, Friends, Schedules, VsHistoryDetail } from "../models/types";
 import {
-  checkBulletToken,
+  CoopHistoryDetail,
+  Friends,
+  Schedules,
+  VsHistoryDetail,
+  WeaponRecords,
+} from "../models/types";
+import {
   fetchBattleHistories,
   fetchCatalog,
   fetchCoopHistoryDetail,
@@ -262,11 +267,19 @@ const MainView = (props: MainViewProps) => {
           showToast(t("failed_to_check_api_update"));
         }
 
-        // Regenerate bullet token if necessary.
+        // Attempt to fetch weapon records.
         let newBulletToken = "";
-        if (bulletToken.length > 0 && (await checkBulletToken(bulletToken))) {
-          newBulletToken = bulletToken;
+        let weaponRecordsAttempt: WeaponRecords | undefined = undefined;
+        if (bulletToken.length > 0) {
+          try {
+            weaponRecordsAttempt = await fetchWeaponRecords(bulletToken);
+            newBulletToken = bulletToken;
+          } catch {
+            /* empty */
+          }
         }
+
+        // Regenerate bullet token if necessary.
         if (!newBulletToken) {
           if (bulletToken.length > 0) {
             showToast(t("reacquiring_tokens"));
@@ -287,7 +300,7 @@ const MainView = (props: MainViewProps) => {
             fetchFriends(newBulletToken),
             fetchSummary(newBulletToken),
             fetchCatalog(newBulletToken),
-            fetchWeaponRecords(newBulletToken),
+            weaponRecordsAttempt || fetchWeaponRecords(newBulletToken),
             fetchBattleHistories(newBulletToken),
             fetchCoopResult(newBulletToken),
           ]);
