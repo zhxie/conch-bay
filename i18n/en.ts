@@ -42,6 +42,7 @@ const en = {
   hide_player_names: "Hide Player Names",
   show_player_names: "Show Player Names",
   show_raw_data: "Show Raw Data",
+  open_in_nintendo_switch_online: "Open in Nintendo Switch Online",
   // Modes.
   regular_battle: "Regular Battle",
   anarchy_battle: "Anarchy Battle",

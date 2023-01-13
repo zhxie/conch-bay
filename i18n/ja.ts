@@ -42,6 +42,7 @@ const ja = {
   hide_player_names: "プレイヤー名を隠す",
   show_player_names: "プレイヤー名を表示",
   show_raw_data: "生データを表示",
+  open_in_nintendo_switch_online: "Nintendo Switch Onlineでチェック",
   // Modes.
   regular_battle: "レギュラーマッチ",
   anarchy_battle: "バンカラマッチ",

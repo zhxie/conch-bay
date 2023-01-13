@@ -38,6 +38,7 @@ const zh = {
   hide_player_names: "隐藏玩家名称",
   show_player_names: "显示玩家名称",
   show_raw_data: "显示原始数据",
+  open_in_nintendo_switch_online: "在Nintendo Switch Online中查看",
   // Modes.
   regular_battle: "一般比赛",
   anarchy_battle: "蛮颓比赛",

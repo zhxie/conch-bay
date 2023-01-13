@@ -87,6 +87,9 @@ export const ViewStyles = StyleSheet.create({
   darkTerritory: {
     backgroundColor: Color.DarkTerritory,
   },
+  accent: {
+    backgroundColor: Color.AccentColor,
+  },
   disabled: {
     opacity: 0.4,
   },

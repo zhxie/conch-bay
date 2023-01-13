@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { ScrollView, StyleProp, ViewStyle, useColorScheme } from "react-native";
+import { Linking, ScrollView, StyleProp, ViewStyle, useColorScheme } from "react-native";
 import JSONTree from "react-native-json-tree";
 import {
   BattleButton,
@@ -194,6 +194,21 @@ const ResultView = (props: ResultViewProps) => {
     willDisplayResult.current = true;
     setDisplayBattle(false);
     setDisplayCoop(false);
+  };
+  const onOpenInNintendoSwitchOnlinePress = () => {
+    if (display!.battle) {
+      Linking.openURL(
+        `com.nintendo.znca://znca/game/4834290508791808?p=/history/detail/${
+          display!.battle.vsHistoryDetail.id
+        }`
+      );
+    } else {
+      Linking.openURL(
+        `com.nintendo.znca://znca/game/4834290508791808?p=/coop/${
+          display!.coop!.coopHistoryDetail.id
+        }`
+      );
+    }
   };
   const onModalHide = () => {
     if (willDisplayResult.current) {
@@ -392,17 +407,19 @@ const ResultView = (props: ResultViewProps) => {
                   ))}
                 </VStack>
               ))}
-              <Button
-                style={[ViewStyles.mb2, { backgroundColor: Color.AccentColor }]}
-                onPress={onHidePlayerNamesPress}
-              >
+              <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onHidePlayerNamesPress}>
                 <Text numberOfLines={1} style={reverseTextColor}>
                   {hidePlayerNames ? t("show_player_names") : t("hide_player_names")}
                 </Text>
               </Button>
-              <Button style={{ backgroundColor: Color.AccentColor }} onPress={onShowRawResultPress}>
+              <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onShowRawResultPress}>
                 <Text numberOfLines={1} style={reverseTextColor}>
                   {t("show_raw_data")}
+                </Text>
+              </Button>
+              <Button style={ViewStyles.accent} onPress={onOpenInNintendoSwitchOnlinePress}>
+                <Text numberOfLines={1} style={reverseTextColor}>
+                  {t("open_in_nintendo_switch_online")}
                 </Text>
               </Button>
             </VStack>
@@ -548,19 +565,21 @@ const ResultView = (props: ResultViewProps) => {
               </VStack>
               <VStack style={ViewStyles.px4}>
                 <Button
-                  style={[ViewStyles.mb2, { backgroundColor: Color.AccentColor }]}
+                  style={[ViewStyles.mb2, ViewStyles.accent]}
                   onPress={onHidePlayerNamesPress}
                 >
                   <Text numberOfLines={1} style={reverseTextColor}>
                     {hidePlayerNames ? t("show_player_names") : t("hide_player_names")}
                   </Text>
                 </Button>
-                <Button
-                  style={{ backgroundColor: Color.AccentColor }}
-                  onPress={onShowRawResultPress}
-                >
+                <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onShowRawResultPress}>
                   <Text numberOfLines={1} style={reverseTextColor}>
                     {t("show_raw_data")}
+                  </Text>
+                </Button>
+                <Button style={ViewStyles.accent} onPress={onOpenInNintendoSwitchOnlinePress}>
+                  <Text numberOfLines={1} style={reverseTextColor}>
+                    {t("open_in_nintendo_switch_online")}
                   </Text>
                 </Button>
               </VStack>
