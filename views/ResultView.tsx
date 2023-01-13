@@ -301,7 +301,12 @@ const ResultView = (props: ResultViewProps) => {
           isLoading={props.isLoading}
           isLoadingText={t("loading_more")}
           style={[
-            !props.results || props.results.length > 0 ? undefined : ViewStyles.rt,
+            props.results?.length ?? 0 > 0
+              ? {
+                  borderTopLeftRadius: 0,
+                  borderTopRightRadius: 0,
+                }
+              : ViewStyles.rt,
             ViewStyles.rb,
             { height: 64 },
           ]}
