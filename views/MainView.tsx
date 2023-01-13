@@ -8,7 +8,16 @@ import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";
 import * as WebBrowser from "expo-web-browser";
 import React, { useEffect, useRef, useState } from "react";
-import { Animated, Linking, RefreshControl, ScrollView, useColorScheme } from "react-native";
+import {
+  Animated,
+  Dimensions,
+  Linking,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  RefreshControl,
+  ScrollView,
+  useColorScheme,
+} from "react-native";
 import Toast from "react-native-root-toast";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import {
@@ -413,6 +422,15 @@ const MainView = (props: MainViewProps) => {
     setRefreshing(false);
   };
 
+  const onScrollEndDrag = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    if (refreshing) {
+      return;
+    }
+    const overHeight = event.nativeEvent.contentSize.height - Dimensions.get("window").height;
+    if (overHeight >= 0 && event.nativeEvent.contentOffset.y - 80 > overHeight) {
+      onLoadMorePress();
+    }
+  };
   const onLogInPress = () => {
     setLogIn(true);
   };
@@ -648,6 +666,7 @@ const MainView = (props: MainViewProps) => {
             />
           }
           showsVerticalScrollIndicator={false}
+          onScrollEndDrag={onScrollEndDrag}
           style={{ height: "100%" }}
         >
           <SafeAreaView style={{ alignItems: "center" }}>
