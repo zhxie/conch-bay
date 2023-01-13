@@ -58,7 +58,7 @@ const ResultView = (props: ResultViewProps) => {
   const colorScheme = useColorScheme();
   const reverseTextColor = colorScheme === "light" ? TextStyles.dark : TextStyles.light;
 
-  const [display, setDisplay] = useState<DisplayProps | undefined>(undefined);
+  const [display, setDisplay] = useState<DisplayProps>();
   const [displayResult, setDisplayResult] = useState(false);
   const [displayBattle, setDisplayBattle] = useState(false);
   const [displayCoop, setDisplayCoop] = useState(false);

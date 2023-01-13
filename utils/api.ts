@@ -24,7 +24,7 @@ const USER_AGENT = "Conch Bay/1.0.0";
 let NSOAPP_VERSION = "2.4.0";
 let WEB_VIEW_VERSION = "2.0.0-bd36a652";
 
-const fetchRetry = async (input: RequestInfo, init?: RequestInit | undefined) => {
+const fetchRetry = async (input: RequestInfo, init?: RequestInit) => {
   return await pRetry(
     async () => {
       return await fetch(input, init);

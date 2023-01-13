@@ -46,7 +46,7 @@ interface DisplayProps {
 const ScheduleView = (props: ScheduleViewProps) => {
   const { t } = props;
 
-  const [display, setDisplay] = useState<DisplayProps | undefined>(undefined);
+  const [display, setDisplay] = useState<DisplayProps>();
   const [displaySplatfest, setDisplaySplatfest] = useState(false);
   const [displaySchedules, setDisplaySchedules] = useState(false);
   const [displayShifts, setDisplayShifts] = useState(false);

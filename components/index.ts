@@ -6,6 +6,7 @@ export { default as BossSalmonidBox } from "./BossSalmonidBox";
 export { default as Button } from "./Button";
 export { default as CoopButton } from "./CoopButton";
 export { default as CoopPlayerButton } from "./CoopPlayerButton";
+export { default as Display } from "./Display";
 export { default as FilterButton } from "./FilterButton";
 export { default as Image } from "./Image";
 export { default as Modal } from "./Modal";
