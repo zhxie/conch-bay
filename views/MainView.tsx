@@ -61,12 +61,7 @@ import {
   updateWebViewVersion,
 } from "../utils/api";
 import * as Database from "../utils/database";
-import {
-  getCoopIsClear,
-  getImageCacheKey,
-  getUserIconCacheKey,
-  getVsSelfPlayer,
-} from "../utils/ui";
+import { getImageCacheKey, getUserIconCacheKey, getVsSelfPlayer } from "../utils/ui";
 import FriendView from "./FriendView";
 import ResultView from "./ResultView";
 import ScheduleView from "./ScheduleView";

@@ -244,7 +244,7 @@ const fetchGraphQl = async (
   return res;
 };
 export const fetchFriends = async (bulletToken: string, language?: string) => {
-  const res = await fetchGraphQl(bulletToken, "aa2c979ad21a1100170ddf6afea3e2db", language);
+  const res = await fetchGraphQl(bulletToken, "f0a8ebc384cf5fbac01e8085fbd7c898", language);
   const json = await res.json();
   const friends = json as GraphQlResponse<Friends>;
   if (friends.errors) {
