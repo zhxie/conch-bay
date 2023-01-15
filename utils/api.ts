@@ -19,7 +19,7 @@ import {
 import { base64, base64url } from "./encode";
 import { formUrlEncoded, getParam, parameterize } from "./url";
 
-const USER_AGENT = "Conch Bay/1.0.0";
+const USER_AGENT = "Conch Bay/1.1.0";
 
 let NSOAPP_VERSION = "2.4.0";
 let WEB_VIEW_VERSION = "2.0.0-bd36a652";
