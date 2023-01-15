@@ -29,6 +29,7 @@ import {
   Color,
   Display,
   FilterButton,
+  FloatingActionButton,
   HStack,
   Modal,
   Text,
@@ -117,13 +118,13 @@ const MainView = (props: MainViewProps) => {
   const refreshingRef = useRef(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [filter, setFilter] = useState("");
-  const [autoRefresh, setAutoFresh] = useState(false);
   const [stats, setStats] = useState(false);
   const [count, setCount] = useState<CountProps>();
   const [counting, setCounting] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [acknowledgments, setAcknowledgments] = useState(false);
   const [firstAid, setFirstAid] = useState(false);
+  const [autoRefresh, setAutoFresh] = useState(false);
 
   const [sessionToken, setSessionToken] = useState("");
   const [bulletToken, setBulletToken] = useState("");
@@ -460,7 +461,7 @@ const MainView = (props: MainViewProps) => {
     setRefreshing(true);
     refreshingRef.current = true;
     try {
-      if (bulletToken) {
+      if (sessionToken) {
         // Fetch results.
         const [battleHistories, coopResult] = await Promise.all([
           fetchBattleHistories(bulletToken),
@@ -671,20 +672,6 @@ const MainView = (props: MainViewProps) => {
   const onLoadMorePress = async () => {
     await loadResults(results!.length + 20, true);
   };
-  const onAutoRefreshPress = () => {
-    if (!autoRefresh) {
-      autoRefreshTimer = setInterval(() => {
-        if (!refreshingRef.current) {
-          refreshResults();
-        }
-      }, 10000);
-      activateKeepAwake();
-    } else {
-      clearInterval(autoRefreshTimer);
-      deactivateKeepAwake();
-    }
-    setAutoFresh(!autoRefresh);
-  };
   const onStatsPress = async () => {
     setCounting(true);
     const count = await Database.count();
@@ -874,6 +861,22 @@ const MainView = (props: MainViewProps) => {
   const onIminkFApiPress = () => {
     Linking.openURL("https://github.com/imink-app/f-API");
   };
+  const onAutoRefreshPress = () => {
+    if (!autoRefresh) {
+      autoRefreshTimer = setInterval(() => {
+        if (!refreshingRef.current) {
+          refreshResults();
+        }
+      }, 10000);
+      activateKeepAwake();
+      showToast(t("auto_refresh_enabled"));
+    } else {
+      clearInterval(autoRefreshTimer);
+      deactivateKeepAwake();
+      showToast(t("auto_refresh_disabled"));
+    }
+    setAutoFresh(!autoRefresh);
+  };
 
   const formatTotalAndAverage = (total: number, count: number) => {
     if (count === 0) {
@@ -1008,16 +1011,6 @@ const MainView = (props: MainViewProps) => {
               >
                 <HStack flex center style={ViewStyles.px4}>
                   <ToolButton
-                    isLoading={false}
-                    isLoadingText=""
-                    isDisabled={refreshing}
-                    icon="refresh-cw"
-                    color={autoRefresh ? Color.AccentColor : undefined}
-                    title={t("auto_refresh")}
-                    style={ViewStyles.mr2}
-                    onPress={onAutoRefreshPress}
-                  />
-                  <ToolButton
                     isLoading={counting}
                     isLoadingText={t("stats")}
                     isDisabled={refreshing}
@@ -1078,6 +1071,14 @@ const MainView = (props: MainViewProps) => {
             </VStack>
           </SafeAreaView>
         </ScrollView>
+        {sessionToken.length > 0 && (
+          <FloatingActionButton
+            size={50}
+            color={autoRefresh ? Color.AccentColor : undefined}
+            icon="refresh-cw"
+            onPress={onAutoRefreshPress}
+          />
+        )}
       </Animated.View>
       <Modal isVisible={logIn} onClose={onLogInClose} style={ViewStyles.modal1d}>
         <VStack center>

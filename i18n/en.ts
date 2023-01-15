@@ -21,7 +21,6 @@ const en = {
   export_results: "Export Results",
   load_more: "Load more",
   loading_more: "Loading more",
-  auto_refresh: "Auto Refresh",
   stats: "Stats",
   stats_notice: "Statistics from currently loaded results.",
   import: "Import",
@@ -42,6 +41,8 @@ const en = {
   loaded_n_results_fail_failed: "Loaded %{n} result(s), %{fail} failed",
   loaded_n_results_fail_failed_skip_skipped:
     "Loaded %{n} result(s), %{fail} failed, %{skip} skipped",
+  auto_refresh_enabled: "Auto refresh enabled",
+  auto_refresh_disabled: "Auto refresh disabled",
   hide_player_names: "Hide Player Names",
   show_player_names: "Show Player Names",
   show_raw_data: "Show Raw Data",

@@ -16,29 +16,17 @@ interface AvatarProps {
 }
 
 const Avatar = (props: AvatarProps) => {
+  const circle = { width: props.size, height: props.size, borderRadius: props.size / 2 };
+
   return (
     <Pressable
       isDisabled={props.isDisabled}
       onPress={props.onPress}
       onLongPress={props.onLongPress}
-      style={[
-        {
-          width: props.size,
-          height: props.size,
-          borderRadius: props.size / 2,
-        },
-        props.style,
-      ]}
+      style={[circle, props.style]}
     >
       {props.uri && (
-        <Image
-          uri={props.uri}
-          cacheKey={props.cacheKey ?? ""}
-          style={[
-            { width: props.size, height: props.size, borderRadius: props.size / 2 },
-            props.imageStyle,
-          ]}
-        />
+        <Image uri={props.uri} cacheKey={props.cacheKey ?? ""} style={[circle, props.imageStyle]} />
       )}
       {props.badge && (
         <Circle

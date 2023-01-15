@@ -8,6 +8,7 @@ export { default as CoopButton } from "./CoopButton";
 export { default as CoopPlayerButton } from "./CoopPlayerButton";
 export { default as Display } from "./Display";
 export { default as FilterButton } from "./FilterButton";
+export { default as FloatingActionButton } from "./FloatingActionButton";
 export { default as Image } from "./Image";
 export { default as Modal } from "./Modal";
 export { default as ScheduleButton } from "./ScheduleButton";
