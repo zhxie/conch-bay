@@ -21,6 +21,7 @@ const en = {
   export_results: "Export Results",
   load_more: "Load more",
   loading_more: "Loading more",
+  auto_refresh: "Auto Refresh",
   stats: "Stats",
   stats_notice: "Statistics from currently loaded results.",
   import: "Import",

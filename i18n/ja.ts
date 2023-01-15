@@ -21,6 +21,7 @@ const ja = {
   export_results: "リザルトをエクスポート",
   load_more: "もっと読み込む",
   loading_more: "もっと読み込む中",
+  auto_refresh: "自動更新",
   stats: "統計",
   stats_notice: "現在ロードされているリザルトからの統計。",
   import: "インポート",

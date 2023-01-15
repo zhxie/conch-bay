@@ -9,6 +9,7 @@ interface ToolButtonProps {
   isDisabled: boolean;
   isLoading: boolean;
   isLoadingText: string;
+  color?: string;
   icon: string;
   title: string;
   style?: StyleProp<ViewStyle>;
@@ -32,7 +33,7 @@ const ToolButton = (props: ToolButtonProps) => {
                 // HACK: forcly cast.
                 name={props.icon as any}
                 size={16}
-                color={Color.MiddleTerritory}
+                color={props.color ?? Color.MiddleTerritory}
                 style={ViewStyles.mr1}
               />
             );

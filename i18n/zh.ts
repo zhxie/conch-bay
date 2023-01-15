@@ -19,6 +19,7 @@ const zh = {
   export_results: "导出记录",
   load_more: "载入更多",
   loading_more: "载入更多中",
+  auto_refresh: "自动刷新",
   stats: "统计",
   stats_notice: "由当前已加载的记录统计。",
   import: "导入",

@@ -5,6 +5,7 @@ import { CacheManager } from "expo-cached-image";
 import * as Clipboard from "expo-clipboard";
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
+import { activateKeepAwake, deactivateKeepAwake } from "expo-keep-awake";
 import * as Sharing from "expo-sharing";
 import * as WebBrowser from "expo-web-browser";
 import React, { useEffect, useRef, useState } from "react";
@@ -95,6 +96,8 @@ interface CountProps {
   };
 }
 
+let autoRefreshTimer: NodeJS.Timer | undefined;
+
 const MainView = (props: MainViewProps) => {
   const { t } = props;
 
@@ -111,8 +114,10 @@ const MainView = (props: MainViewProps) => {
   const [loggingOut, setLoggingOut] = useState(false);
   const [debug, setDebug] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const refreshingRef = useRef(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [filter, setFilter] = useState("");
+  const [autoRefresh, setAutoFresh] = useState(false);
   const [stats, setStats] = useState(false);
   const [count, setCount] = useState<CountProps>();
   const [counting, setCounting] = useState(false);
@@ -292,6 +297,7 @@ const MainView = (props: MainViewProps) => {
   };
   const refresh = async () => {
     setRefreshing(true);
+    refreshingRef.current = true;
     try {
       // Fetch schedules.
       const schedules = await fetchSchedules();
@@ -448,6 +454,89 @@ const MainView = (props: MainViewProps) => {
       showToast(e);
     }
     setRefreshing(false);
+    refreshingRef.current = false;
+  };
+  const refreshResults = async () => {
+    setRefreshing(true);
+    refreshingRef.current = true;
+    try {
+      if (bulletToken) {
+        // Fetch results.
+        const [battleHistories, coopResult] = await Promise.all([
+          fetchBattleHistories(bulletToken),
+          fetchCoopResult(bulletToken),
+        ]);
+
+        // Fetch details.
+        const results: {
+          id: string;
+          isCoop: boolean;
+        }[] = [];
+        battleHistories.regular.regularBattleHistories.historyGroups.nodes.forEach((historyGroup) =>
+          historyGroup.historyDetails.nodes.forEach((historyDetail) =>
+            results.push({ id: historyDetail.id, isCoop: false })
+          )
+        );
+        battleHistories.anarchy.bankaraBattleHistories.historyGroups.nodes.forEach((historyGroup) =>
+          historyGroup.historyDetails.nodes.forEach((historyDetail) =>
+            results.push({ id: historyDetail.id, isCoop: false })
+          )
+        );
+        battleHistories.x.xBattleHistories.historyGroups.nodes.forEach((historyGroup) =>
+          historyGroup.historyDetails.nodes.forEach((historyDetail) =>
+            results.push({ id: historyDetail.id, isCoop: false })
+          )
+        );
+        battleHistories.private.privateBattleHistories.historyGroups.nodes.forEach((historyGroup) =>
+          historyGroup.historyDetails.nodes.forEach((historyDetail) =>
+            results.push({ id: historyDetail.id, isCoop: false })
+          )
+        );
+        coopResult.coopResult.historyGroups.nodes.forEach((historyGroup) => {
+          historyGroup.historyDetails.nodes.forEach((historyDetail) => {
+            results.push({ id: historyDetail.id, isCoop: true });
+          });
+        });
+
+        const existed = await Promise.all(results.map((result) => Database.isExist(result.id)));
+        const newResults = results.filter((_, i) => !existed[i]);
+        if (newResults.length > 0) {
+          showToast(t("loading_n_new_results", { n: newResults.length }));
+          const details = await Promise.all(
+            newResults.map((result) => {
+              if (!result.isCoop) {
+                return fetchVsHistoryDetail(result.id, bulletToken, t("lang"));
+              }
+              return fetchCoopHistoryDetail(result.id, bulletToken, t("lang"));
+            })
+          );
+          let fail = 0;
+          for (let i = 0; i < newResults.length; i++) {
+            let result: number;
+            if (!newResults[i].isCoop) {
+              result = await addBattle(details[i] as VsHistoryDetail, false);
+            } else {
+              result = await addCoop(details[i] as CoopHistoryDetail, false);
+            }
+            if (result < 0) {
+              fail++;
+            }
+          }
+          if (fail > 0) {
+            showToast(t("loaded_n_results_fail_failed", { n: newResults.length, fail }));
+          } else {
+            showToast(t("loaded_n_results", { n: newResults.length }));
+          }
+
+          await loadResults(20, true);
+        }
+      }
+    } catch (e) {
+      refresh();
+      return;
+    }
+    setRefreshing(false);
+    refreshingRef.current = false;
   };
 
   const onScrollEndDrag = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -506,6 +595,9 @@ const MainView = (props: MainViewProps) => {
   const onLogOutContinuePress = async () => {
     try {
       setLoggingOut(true);
+      if (autoRefresh) {
+        onAutoRefreshPress();
+      }
       await Promise.all([clearPersistence(), Database.clear()]);
       setResults(undefined);
       setFriends(undefined);
@@ -578,6 +670,20 @@ const MainView = (props: MainViewProps) => {
   };
   const onLoadMorePress = async () => {
     await loadResults(results!.length + 20, true);
+  };
+  const onAutoRefreshPress = () => {
+    if (!autoRefresh) {
+      autoRefreshTimer = setInterval(() => {
+        if (!refreshingRef.current) {
+          refreshResults();
+        }
+      }, 10000);
+      activateKeepAwake();
+    } else {
+      clearInterval(autoRefreshTimer);
+      deactivateKeepAwake();
+    }
+    setAutoFresh(!autoRefresh);
   };
   const onStatsPress = async () => {
     setCounting(true);
@@ -901,6 +1007,16 @@ const MainView = (props: MainViewProps) => {
                 style={[ViewStyles.mb4, ViewStyles.wf]}
               >
                 <HStack flex center style={ViewStyles.px4}>
+                  <ToolButton
+                    isLoading={false}
+                    isLoadingText=""
+                    isDisabled={refreshing}
+                    icon="refresh-cw"
+                    color={autoRefresh ? Color.AccentColor : undefined}
+                    title={t("auto_refresh")}
+                    style={ViewStyles.mr2}
+                    onPress={onAutoRefreshPress}
+                  />
                   <ToolButton
                     isLoading={counting}
                     isLoadingText={t("stats")}
