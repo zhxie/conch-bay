@@ -59,8 +59,8 @@ import {
   getBulletToken,
   getSessionToken,
   getWebServiceToken,
-  updateNsoappVersion,
-  updateWebViewVersion,
+  updateNsoVersion,
+  updateSplatnetVersion,
 } from "../utils/api";
 import * as Database from "../utils/database";
 import { getImageCacheKey, getUserIconCacheKey, getVsSelfPlayer } from "../utils/ui";
@@ -97,7 +97,7 @@ interface CountProps {
   };
 }
 
-let autoRefreshTimer: NodeJS.Timer | undefined;
+let autoRefreshTimeout: NodeJS.Timeout | undefined;
 
 const MainView = (props: MainViewProps) => {
   const { t } = props;
@@ -115,7 +115,6 @@ const MainView = (props: MainViewProps) => {
   const [loggingOut, setLoggingOut] = useState(false);
   const [debug, setDebug] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const refreshingRef = useRef(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [filter, setFilter] = useState("");
   const [stats, setStats] = useState(false);
@@ -124,7 +123,7 @@ const MainView = (props: MainViewProps) => {
   const [exporting, setExporting] = useState(false);
   const [acknowledgments, setAcknowledgments] = useState(false);
   const [firstAid, setFirstAid] = useState(false);
-  const [autoRefresh, setAutoFresh] = useState(false);
+  const [autoRefresh, setAutoRefresh] = useState(false);
 
   const [sessionToken, setSessionToken] = useState("");
   const [bulletToken, setBulletToken] = useState("");
@@ -189,6 +188,21 @@ const MainView = (props: MainViewProps) => {
       loadResults(20, true);
     }
   }, [filter]);
+  useEffect(() => {
+    if (ready) {
+      if (autoRefresh) {
+        if (refreshing) {
+          clearTimeout(autoRefreshTimeout);
+        } else {
+          autoRefreshTimeout = setTimeout(() => {
+            refreshResults();
+          }, 10000);
+        }
+      } else {
+        clearTimeout(autoRefreshTimeout);
+      }
+    }
+  }, [refreshing, autoRefresh]);
 
   const loadPersistence = async () => {
     const [sessionToken, bulletToken, icon, catalogLevel, level, rank, grade] = await Promise.all([
@@ -298,7 +312,6 @@ const MainView = (props: MainViewProps) => {
   };
   const refresh = async () => {
     setRefreshing(true);
-    refreshingRef.current = true;
     try {
       // Fetch schedules.
       const schedules = await fetchSchedules();
@@ -306,7 +319,7 @@ const MainView = (props: MainViewProps) => {
       if (sessionToken) {
         // Update versions.
         try {
-          await Promise.all([await updateNsoappVersion(), await updateWebViewVersion()]);
+          await Promise.all([await updateNsoVersion(), await updateSplatnetVersion()]);
         } catch {
           showToast(t("failed_to_check_api_update"));
         }
@@ -455,11 +468,9 @@ const MainView = (props: MainViewProps) => {
       showToast(e);
     }
     setRefreshing(false);
-    refreshingRef.current = false;
   };
   const refreshResults = async () => {
     setRefreshing(true);
-    refreshingRef.current = true;
     try {
       if (sessionToken) {
         // Fetch results.
@@ -537,7 +548,6 @@ const MainView = (props: MainViewProps) => {
       return;
     }
     setRefreshing(false);
-    refreshingRef.current = false;
   };
 
   const onScrollEndDrag = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -863,19 +873,12 @@ const MainView = (props: MainViewProps) => {
   };
   const onAutoRefreshPress = () => {
     if (!autoRefresh) {
-      autoRefreshTimer = setInterval(() => {
-        if (!refreshingRef.current) {
-          refreshResults();
-        }
-      }, 10000);
-      activateKeepAwake();
       showToast(t("auto_refresh_enabled"));
+      activateKeepAwake();
     } else {
-      clearInterval(autoRefreshTimer);
       deactivateKeepAwake();
-      showToast(t("auto_refresh_disabled"));
     }
-    setAutoFresh(!autoRefresh);
+    setAutoRefresh(!autoRefresh);
   };
 
   const formatTotalAndAverage = (total: number, count: number) => {

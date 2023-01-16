@@ -21,8 +21,8 @@ import { formUrlEncoded, getParam, parameterize } from "./url";
 
 const USER_AGENT = "Conch Bay/1.1.0";
 
-let NSOAPP_VERSION = "2.4.0";
-let WEB_VIEW_VERSION = "2.0.0-bd36a652";
+let NSO_VERSION = "2.4.0";
+let SPLATNET_VERSION = "2.0.0-bd36a652";
 
 const fetchRetry = async (input: RequestInfo, init?: RequestInit) => {
   return await pRetry(
@@ -42,13 +42,13 @@ export const fetchSchedules = async () => {
   return (json as GraphQlResponse<Schedules>).data!;
 };
 
-export const updateNsoappVersion = async () => {
+export const updateNsoVersion = async () => {
   const res = await fetchRetry("https://itunes.apple.com/lookup?id=1234806557");
   const json = await res.json();
 
-  NSOAPP_VERSION = json["results"][0]["version"];
+  NSO_VERSION = json["results"][0]["version"];
 };
-export const updateWebViewVersion = async () => {
+export const updateSplatnetVersion = async () => {
   const res = await fetchRetry("https://api.lp1.av5ja.srv.nintendo.net");
   const text = await res.text();
 
@@ -60,7 +60,7 @@ export const updateWebViewVersion = async () => {
 
   const regex2 = /([0-9a-f]{40}).*?revision_info_not_set.*?=`(.*?)-/;
   const match2 = regex2.exec(text2)!;
-  WEB_VIEW_VERSION = `${match2[2]}-${match2[1].substring(0, 8)}`;
+  SPLATNET_VERSION = `${match2[2]}-${match2[1].substring(0, 8)}`;
 };
 const callIminkFApi = async (idToken: string, step: number) => {
   const res = await fetchRetry("https://api.imink.app/f", {
@@ -157,7 +157,7 @@ export const getWebServiceToken = async (sessionToken: string) => {
     headers: {
       "Content-Type": "application/json; charset=utf-8",
       "X-Platform": "Android",
-      "X-ProductVersion": NSOAPP_VERSION,
+      "X-ProductVersion": NSO_VERSION,
     },
     body: JSON.stringify({
       parameter: {
@@ -183,7 +183,7 @@ export const getWebServiceToken = async (sessionToken: string) => {
       Authorization: `Bearer ${idToken2}`,
       "Content-Type": "application/json; charset=utf-8",
       "X-Platform": "Android",
-      "X-ProductVersion": NSOAPP_VERSION,
+      "X-ProductVersion": NSO_VERSION,
     },
     body: JSON.stringify({
       parameter: {
@@ -210,7 +210,7 @@ export const getBulletToken = async (
       "Accept-Language": language ?? "*",
       Cookie: `_gtoken=${webServiceToken}`,
       "X-NACOUNTRY": country,
-      "X-Web-View-Ver": WEB_VIEW_VERSION,
+      "X-Web-View-Ver": SPLATNET_VERSION,
     },
   });
   const json = await res.json();
@@ -229,7 +229,7 @@ const fetchGraphQl = async (
       "Accept-Language": language || "*",
       Authorization: `Bearer ${bulletToken}`,
       "Content-Type": "application/json",
-      "X-Web-View-Ver": WEB_VIEW_VERSION,
+      "X-Web-View-Ver": SPLATNET_VERSION,
     },
     body: JSON.stringify({
       extensions: {

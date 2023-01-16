@@ -1,3 +1,4 @@
+// https://gist.github.com/jonleighton/958841.
 export const base64 = (bytes: Uint8Array) => {
   const encodings = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 

@@ -42,7 +42,6 @@ const ja = {
   loaded_n_results_fail_failed_skip_skipped:
     "%{n}件のリザルトを読み込み、%{fail}件は失敗、%{skip}件はスキップしました",
   auto_refresh_enabled: "自動更新が有効になりました",
-  auto_refresh_disabled: "自動更新が無効になりました",
   hide_player_names: "プレイヤー名を隠す",
   show_player_names: "プレイヤー名を表示",
   show_raw_data: "生データを表示",
