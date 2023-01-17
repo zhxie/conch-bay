@@ -244,7 +244,7 @@ const MainView = (props: MainViewProps) => {
   const loadResults = async (length: number, forceUpdate: boolean) => {
     setLoadingMore(true);
     let offset: number, limit: number;
-    if (results !== undefined && length > results.length) {
+    if (results !== undefined && results.length >= 20 && length > results.length) {
       offset = results.length;
       limit = length - results.length;
     } else {
@@ -279,7 +279,7 @@ const MainView = (props: MainViewProps) => {
       }
       return { battle: JSON.parse(record.detail) as VsHistoryDetail };
     });
-    if (results !== undefined && length > results.length) {
+    if (results !== undefined && results.length >= 20 && length > results.length) {
       setResults((results ?? []).concat(details));
     } else {
       if (details.length > 0 || forceUpdate) {
