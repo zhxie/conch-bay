@@ -165,16 +165,16 @@ const ScheduleView = (props: ScheduleViewProps) => {
     >
       <HStack style={ViewStyles.px4}>
         {!props.schedules &&
-          new Array(8).fill(0).map((_, i) => {
-            return (
+          new Array(8)
+            .fill(0)
+            .map((_, i) => (
               <ScheduleButton
                 key={i}
                 rule=""
                 stages={[]}
                 style={i !== 7 ? ViewStyles.mr2 : undefined}
               />
-            );
-          })}
+            ))}
         {splatfestSchedules?.[0] && (
           <ScheduleButton
             color={isScheduleStarted(splatfestSchedules[0]) ? Color.AccentColor : undefined}

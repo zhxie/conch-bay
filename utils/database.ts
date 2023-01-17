@@ -78,33 +78,29 @@ export const query = async (offset: number, limit: number, condition?: string) =
     sql = `SELECT * FROM result ORDER BY time DESC LIMIT ${limit} OFFSET ${offset}`;
   }
   const record = await exec(sql, true);
-  return record.rows.map((row) => {
-    return {
-      id: row["id"],
-      time: row["time"],
-      mode: row["mode"],
-      rule: row["rule"],
-      weapon: row["weapon"],
-      players: row["players"].split(","),
-      detail: row["detail"],
-      stage: row["stage"],
-    };
-  });
+  return record.rows.map((row) => ({
+    id: row["id"],
+    time: row["time"],
+    mode: row["mode"],
+    rule: row["rule"],
+    weapon: row["weapon"],
+    players: row["players"].split(","),
+    detail: row["detail"],
+    stage: row["stage"],
+  }));
 };
 export const queryAll = async () => {
   const record = await exec(`SELECT * FROM result`, true);
-  return record.rows.map((row) => {
-    return {
-      id: row["id"],
-      time: row["time"],
-      mode: row["mode"],
-      rule: row["rule"],
-      weapon: row["weapon"],
-      players: row["players"].split(","),
-      detail: row["detail"],
-      stage: row["stage"],
-    };
-  });
+  return record.rows.map((row) => ({
+    id: row["id"],
+    time: row["time"],
+    mode: row["mode"],
+    rule: row["rule"],
+    weapon: row["weapon"],
+    players: row["players"].split(","),
+    detail: row["detail"],
+    stage: row["stage"],
+  }));
 };
 export const count = async () => {
   const record = await exec(`SELECT COUNT(1) FROM result`, true);
