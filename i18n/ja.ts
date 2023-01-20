@@ -12,12 +12,6 @@ const ja = {
     "ログアウトすると、ホラガイベイに保存されているすべてのデータが削除されます！続行する前にバックアップを完了してください。",
   log_out_continue: "ログアウト",
   logging_out: "ログアウト中",
-  debug_notice: "こちらの情報はデバッグ専用です。他の人と共有しないでください。",
-  copy_session_token: "セッショントークンをコピー",
-  copy_bullet_token: "ブレットトークンをコピー",
-  export_database: "データーベースをエクスポート",
-  first_aid_notice:
-    "データベースが壊れているため、ロードできません。リザルトをエクスポートして、ホラガイベイを再インストールしてください。",
   export_results: "リザルトをエクスポート",
   load_more: "もっと読み込む",
   loading_more: "もっと読み込む中",
@@ -28,11 +22,24 @@ const ja = {
   exporting: "エクスポート中",
   disclaimer:
     "当アプリは、イカリング3の情報を利用した非公式アプリであり、任天堂株式会社とは一切関係はございません。",
-  feedback: "フィードバック",
+  support: "サポート",
+  resource_notice:
+    "ホラガイベイが画像を読み込めない場合は、事前に読み込むことができます。イカリング3の制限により、ホラガイベイは既に所有しているギアとブキの画像のみを事前に読み込むできることに注意してください。",
+  preload_resources: "リソースの読み込む",
+  preloading_resources: "リソースの読み込む中",
+  feedback_notice:
+    "ホラガイベイの使用中に問題が発生した場合、またはアドバイスがある場合は、お気軽にフィードバックをお寄せください。",
+  create_a_github_issue: "GitHub Issueを作成",
+  debug_notice: "次の情報はデバッグ専用です。他の人と共有しないでください。",
+  copy_session_token: "セッショントークンをコピー",
+  copy_bullet_token: "ブレットトークンをコピー",
+  export_database: "データーベースをエクスポート",
   privacy_policy: "プライバシーポリシー",
   acknowledgments: "謝辞",
   creators: "クリエーター",
   license: "ライセンス",
+  first_aid_notice:
+    "データベースが壊れているため、ロードできません。リザルトをエクスポートして、ホラガイベイを再インストールしてください。",
   failed_to_check_api_update: "APIのアップデートを確認できませんでした",
   reacquiring_tokens: "トークン再取得中",
   loading_n_new_results: "%{n}件の新しいリザルトを読み込む中",

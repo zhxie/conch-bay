@@ -12,12 +12,6 @@ const en = {
     "Logging out will remove all stored data from Conch Bay! Please complete backup before proceeding.",
   log_out_continue: "Log Out",
   logging_out: "Logging out",
-  debug_notice: "These information is for debug only. Please do NOT share with others.",
-  copy_session_token: "Copy Session Token",
-  copy_bullet_token: "Copy Bullet Token",
-  export_database: "Export Database",
-  first_aid_notice:
-    "The database is corrupted and cannot be loaded. Please export results and reinstall Conch Bay.",
   export_results: "Export Results",
   load_more: "Load more",
   loading_more: "Loading more",
@@ -28,11 +22,24 @@ const en = {
   exporting: "Exporting",
   disclaimer:
     "This app is an unofficial app which uses the information of SplatNet 3, and is not related to Nintendo Co., Ltd.",
-  feedback: "Feedback",
+  support: "Support",
+  resource_notice:
+    "If Conch Bay cannot load images, you can preload them in advance. Please note, due to SplatNet 3 restrictions, Conch Bay can only preload images of gear and weapons you already own.",
+  preload_resources: "Preload Resources",
+  preloading_resources: "Preloading Resources",
+  feedback_notice:
+    "If you encountered any problems using Conch Bay or have any advice, feel free to share your feedback.",
+  create_a_github_issue: "Create a GitHub Issue",
+  debug_notice: "The following information is for debug only. Please do NOT share with others.",
+  copy_session_token: "Copy Session Token",
+  copy_bullet_token: "Copy Bullet Token",
+  export_database: "Export Database",
   privacy_policy: "Privacy Policy",
   acknowledgments: "Acknowledgments",
   creators: "Creators",
   license: "License",
+  first_aid_notice:
+    "The database is corrupted and cannot be loaded. Please export results and reinstall Conch Bay.",
   failed_to_check_api_update: "Failed to check API update",
   reacquiring_tokens: "Reacquiring tokens",
   loading_n_new_results: "Loading %{n} new result(s)",

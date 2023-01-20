@@ -113,7 +113,6 @@ const MainView = (props: MainViewProps) => {
   const [loggingIn, setLoggingIn] = useState(false);
   const [logOut, setLogOut] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
-  const [debug, setDebug] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [filter, setFilter] = useState("");
@@ -121,6 +120,8 @@ const MainView = (props: MainViewProps) => {
   const [count, setCount] = useState<CountProps>();
   const [counting, setCounting] = useState(false);
   const [exporting, setExporting] = useState(false);
+  const [support, setSupport] = useState(false);
+  const [preloadingResources, setPreloadingResources] = useState(false);
   const [acknowledgments, setAcknowledgments] = useState(false);
   const [firstAid, setFirstAid] = useState(false);
   const [autoRefresh, setAutoRefresh] = useState(false);
@@ -324,12 +325,12 @@ const MainView = (props: MainViewProps) => {
           showToast(t("failed_to_check_api_update"));
         }
 
-        // Attempt to fetch weapon records.
+        // Attempt to friends.
         let newBulletToken = "";
-        let weaponRecordsAttempt: WeaponRecords | undefined;
+        let friendsAttempt: Friends | undefined;
         if (bulletToken.length > 0) {
           try {
-            weaponRecordsAttempt = await fetchWeaponRecords(bulletToken);
+            friendsAttempt = await fetchFriends(bulletToken);
             newBulletToken = bulletToken;
           } catch {
             /* empty */
@@ -351,16 +352,14 @@ const MainView = (props: MainViewProps) => {
           });
         }
 
-        // Fetch friends, summary, catalog, weapon records and results.
-        const [friends, summary, catalog, weaponRecords, battleHistories, coopResult] =
-          await Promise.all([
-            fetchFriends(newBulletToken),
-            fetchSummary(newBulletToken),
-            fetchCatalog(newBulletToken),
-            weaponRecordsAttempt || fetchWeaponRecords(newBulletToken),
-            fetchBattleHistories(newBulletToken),
-            fetchCoopResult(newBulletToken),
-          ]);
+        // Fetch friends, summary, catalog and results.
+        const [friends, summary, catalog, battleHistories, coopResult] = await Promise.all([
+          friendsAttempt || fetchFriends(newBulletToken),
+          fetchSummary(newBulletToken),
+          fetchCatalog(newBulletToken),
+          fetchBattleHistories(newBulletToken),
+          fetchCoopResult(newBulletToken),
+        ]);
         setFriends(friends);
         const icon = summary.currentPlayer.userIcon.url;
         const catalogLevel = String(catalog.catalog.progress?.level ?? 0);
@@ -376,23 +375,6 @@ const MainView = (props: MainViewProps) => {
           level: level,
           rank: rank,
         });
-        // Pre-download weapon images.
-        const resources = new Map<string, string>();
-        weaponRecords.weaponRecords.nodes.forEach((record) => {
-          resources.set(getImageCacheKey(record.image2d.url), record.image2d.url);
-        });
-        const resourcesArray = Array.from(resources);
-        const resourcesInfo = await Promise.all(
-          resourcesArray.map((resource) =>
-            FileSystem.getInfoAsync(`${FileSystem.cacheDirectory}${resource[0]}`)
-          )
-        );
-        const newResources = resourcesArray.filter((_, i) => !resourcesInfo[i].exists);
-        await Promise.all(
-          Array.from(newResources).map((resource) =>
-            CacheManager.downloadAsync({ uri: resource[1], key: resource[0] })
-          )
-        );
         if (coopResult.coopResult.regularGrade) {
           setGrade(coopResult.coopResult.regularGrade.id);
           await savePersistence({
@@ -620,30 +602,6 @@ const MainView = (props: MainViewProps) => {
       setLoggingOut(false);
     }
   };
-  const onDebugPress = () => {
-    setDebug(true);
-  };
-  const onDebugClose = () => {
-    setDebug(false);
-  };
-  const onCopySessionTokenPress = async () => {
-    if (sessionToken.length > 0) {
-      await Clipboard.setStringAsync(sessionToken);
-    }
-  };
-  const onCopyBulletTokenPress = async () => {
-    if (bulletToken.length > 0) {
-      await Clipboard.setStringAsync(bulletToken);
-    }
-  };
-  const onExportDatabasePress = async () => {
-    const uri = FileSystem.documentDirectory + "SQLite/conch-bay.db";
-    try {
-      await Sharing.shareAsync(uri, { UTI: "public.database" });
-    } catch (e) {
-      showToast(e);
-    }
-  };
   const onFilterRegularBattlePress = async () => {
     if (filter !== "regular_battle") {
       setFilter("regular_battle");
@@ -853,8 +811,65 @@ const MainView = (props: MainViewProps) => {
     }
     setExporting(false);
   };
-  const onFeedbackPress = () => {
+  const onSupportPress = () => {
+    setSupport(true);
+  };
+  const onSupportClose = () => {
+    if (!preloadingResources) {
+      setSupport(false);
+    }
+  };
+  const onPreloadResourcesPress = async () => {
+    setPreloadingResources(true);
+    try {
+      // Generate tokens.
+      // TODO: request update instead generating a one-time-use token.
+      const res = await getWebServiceToken(sessionToken);
+      const bulletToken = await getBulletToken(res.webServiceToken, res.country);
+
+      const weaponRecords = await fetchWeaponRecords(bulletToken);
+      // Pre-download weapon images.
+      const resources = new Map<string, string>();
+      weaponRecords.weaponRecords.nodes.forEach((record) => {
+        resources.set(getImageCacheKey(record.image2d.url), record.image2d.url);
+      });
+      const resourcesArray = Array.from(resources);
+      const resourcesInfo = await Promise.all(
+        resourcesArray.map((resource) =>
+          FileSystem.getInfoAsync(`${FileSystem.cacheDirectory}${resource[0]}`)
+        )
+      );
+      const newResources = resourcesArray.filter((_, i) => !resourcesInfo[i].exists);
+      await Promise.all(
+        Array.from(newResources).map((resource) =>
+          CacheManager.downloadAsync({ uri: resource[1], key: resource[0] })
+        )
+      );
+    } catch (e) {
+      showToast(e);
+    }
+    setPreloadingResources(false);
+  };
+  const onCreateAGithubIssuePress = () => {
     Linking.openURL("https://github.com/zhxie/conch-bay/issues/new");
+  };
+  const onCopySessionTokenPress = async () => {
+    if (sessionToken.length > 0) {
+      await Clipboard.setStringAsync(sessionToken);
+    }
+  };
+  const onCopyBulletTokenPress = async () => {
+    if (bulletToken.length > 0) {
+      await Clipboard.setStringAsync(bulletToken);
+    }
+  };
+  const onExportDatabasePress = async () => {
+    const uri = FileSystem.documentDirectory + "SQLite/conch-bay.db";
+    try {
+      await Sharing.shareAsync(uri, { UTI: "public.database" });
+    } catch (e) {
+      showToast(e);
+    }
   };
   const onPrivacyPolicyPress = () => {
     WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay/wiki/Privacy-Policy");
@@ -932,7 +947,6 @@ const MainView = (props: MainViewProps) => {
                   uri={icon.length > 0 ? icon : undefined}
                   cacheKey={icon.length > 0 ? getUserIconCacheKey(icon) : undefined}
                   onPress={onLogOutPress}
-                  onLongPress={onDebugPress}
                   style={ViewStyles.mb2}
                 />
                 <HStack>
@@ -1053,9 +1067,9 @@ const MainView = (props: MainViewProps) => {
                 <HStack center>
                   <Text
                     style={[TextStyles.link, TextStyles.subtle, ViewStyles.mr2]}
-                    onPress={onFeedbackPress}
+                    onPress={onSupportPress}
                   >
-                    {t("feedback")}
+                    {t("support")}
                   </Text>
                   <Text
                     style={[TextStyles.link, TextStyles.subtle, ViewStyles.mr2]}
@@ -1148,63 +1162,6 @@ const MainView = (props: MainViewProps) => {
             >
               <Text numberOfLines={1} style={reverseTextColor}>
                 {t("log_out_continue")}
-              </Text>
-            </Button>
-          </VStack>
-        </VStack>
-      </Modal>
-      <Modal isVisible={debug} onClose={onDebugClose} style={ViewStyles.modal1d}>
-        <VStack center>
-          <Feather
-            name="alert-circle"
-            size={48}
-            color={Color.MiddleTerritory}
-            style={ViewStyles.mb4}
-          />
-          <Text style={ViewStyles.mb4}>{t("debug_notice")}</Text>
-          <VStack style={ViewStyles.wf}>
-            <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onCopySessionTokenPress}>
-              <Text numberOfLines={1} style={reverseTextColor}>
-                {t("copy_session_token")}
-              </Text>
-            </Button>
-            <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onCopyBulletTokenPress}>
-              <Text numberOfLines={1} style={reverseTextColor}>
-                {t("copy_bullet_token")}
-              </Text>
-            </Button>
-            <Button style={ViewStyles.accent} onPress={onExportDatabasePress}>
-              <Text numberOfLines={1} style={reverseTextColor}>
-                {t("export_database")}
-              </Text>
-            </Button>
-          </VStack>
-        </VStack>
-      </Modal>
-      <Modal isVisible={firstAid} style={ViewStyles.modal1dc}>
-        <VStack center>
-          <Feather
-            name="alert-triangle"
-            size={48}
-            color={Color.MiddleTerritory}
-            style={ViewStyles.mb4}
-          />
-          <Text style={ViewStyles.mb4}>{t("first_aid_notice")}</Text>
-          <VStack style={ViewStyles.wf}>
-            <Button
-              isLoading={exporting}
-              isLoadingText={t("exporting")}
-              style={[ViewStyles.mb2, ViewStyles.accent]}
-              textStyle={reverseTextColor}
-              onPress={onExportPress}
-            >
-              <Text numberOfLines={1} style={reverseTextColor}>
-                {t("export_results")}
-              </Text>
-            </Button>
-            <Button style={ViewStyles.accent} onPress={onExportDatabasePress}>
-              <Text numberOfLines={1} style={reverseTextColor}>
-                {t("export_database")}
               </Text>
             </Button>
           </VStack>
@@ -1311,6 +1268,59 @@ const MainView = (props: MainViewProps) => {
         )}
         <Text center>{t("stats_notice")}</Text>
       </Modal>
+      <Modal isVisible={support} onClose={onSupportClose} style={ViewStyles.modal1d}>
+        <VStack center>
+          <Feather name="tool" size={48} color={Color.MiddleTerritory} style={ViewStyles.mb4} />
+          {sessionToken.length > 0 && (
+            <VStack style={[ViewStyles.mb4, ViewStyles.wf]}>
+              <VStack center>
+                <Text style={ViewStyles.mb2}>{t("resource_notice")}</Text>
+              </VStack>
+              <Button
+                isLoading={preloadingResources}
+                isLoadingText={t("preloading_resources")}
+                style={ViewStyles.accent}
+                textStyle={reverseTextColor}
+                onPress={onPreloadResourcesPress}
+              >
+                <Text numberOfLines={1} style={reverseTextColor}>
+                  {t("preload_resources")}
+                </Text>
+              </Button>
+            </VStack>
+          )}
+          <VStack style={[ViewStyles.mb4, ViewStyles.wf]}>
+            <VStack center>
+              <Text style={ViewStyles.mb2}>{t("feedback_notice")}</Text>
+            </VStack>
+            <Button style={ViewStyles.accent} onPress={onCreateAGithubIssuePress}>
+              <Text numberOfLines={1} style={reverseTextColor}>
+                {t("create_a_github_issue")}
+              </Text>
+            </Button>
+          </VStack>
+          <VStack style={ViewStyles.wf}>
+            <VStack center>
+              <Text style={ViewStyles.mb2}>{t("debug_notice")}</Text>
+            </VStack>
+            <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onCopySessionTokenPress}>
+              <Text numberOfLines={1} style={reverseTextColor}>
+                {t("copy_session_token")}
+              </Text>
+            </Button>
+            <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onCopyBulletTokenPress}>
+              <Text numberOfLines={1} style={reverseTextColor}>
+                {t("copy_bullet_token")}
+              </Text>
+            </Button>
+            <Button style={ViewStyles.accent} onPress={onExportDatabasePress}>
+              <Text numberOfLines={1} style={reverseTextColor}>
+                {t("export_database")}
+              </Text>
+            </Button>
+          </VStack>
+        </VStack>
+      </Modal>
       <Modal
         isVisible={acknowledgments}
         onClose={onAcknowledgmentsClose}
@@ -1350,6 +1360,35 @@ const MainView = (props: MainViewProps) => {
             <Text numberOfLines={1} style={TextStyles.link} onPress={onIminkFApiPress}>
               imink f API
             </Text>
+          </VStack>
+        </VStack>
+      </Modal>
+      <Modal isVisible={firstAid} style={ViewStyles.modal1dc}>
+        <VStack center>
+          <Feather
+            name="life-buoy"
+            size={48}
+            color={Color.MiddleTerritory}
+            style={ViewStyles.mb4}
+          />
+          <Text style={ViewStyles.mb4}>{t("first_aid_notice")}</Text>
+          <VStack style={ViewStyles.wf}>
+            <Button
+              isLoading={exporting}
+              isLoadingText={t("exporting")}
+              style={[ViewStyles.mb2, ViewStyles.accent]}
+              textStyle={reverseTextColor}
+              onPress={onExportPress}
+            >
+              <Text numberOfLines={1} style={reverseTextColor}>
+                {t("export_results")}
+              </Text>
+            </Button>
+            <Button style={ViewStyles.accent} onPress={onExportDatabasePress}>
+              <Text numberOfLines={1} style={reverseTextColor}>
+                {t("export_database")}
+              </Text>
+            </Button>
           </VStack>
         </VStack>
       </Modal>
