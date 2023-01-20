@@ -1,13 +1,12 @@
 import { ImageStyle, StyleProp, ViewStyle } from "react-native";
-import Image from "./Image";
+import Image, { SourceProps } from "./Image";
 import Pressable from "./Pressable";
 import { Circle } from "./Shape";
 
 interface AvatarProps {
   size: number;
   isDisabled?: boolean;
-  uri?: string;
-  cacheKey?: string;
+  image?: SourceProps;
   badge?: string;
   style?: StyleProp<ViewStyle>;
   imageStyle?: StyleProp<ImageStyle>;
@@ -19,9 +18,7 @@ const Avatar = (props: AvatarProps) => {
 
   return (
     <Pressable isDisabled={props.isDisabled} onPress={props.onPress} style={[circle, props.style]}>
-      {props.uri && (
-        <Image uri={props.uri} cacheKey={props.cacheKey ?? ""} style={[circle, props.imageStyle]} />
-      )}
+      {props.image && <Image source={props.image} style={[circle, props.imageStyle]} />}
       {props.badge && (
         <Circle
           size={12}

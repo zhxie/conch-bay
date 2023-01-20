@@ -115,7 +115,21 @@ export interface Catalog {
   };
 }
 
+export interface SubWeaponRecord {
+  id: string;
+  image: {
+    url: string;
+  };
+}
+export interface SpecialWeaponRecord {
+  id: string;
+  image: {
+    url: string;
+  };
+}
 export interface WeaponRecord {
+  subWeapon: SubWeaponRecord;
+  specialWeapon: SpecialWeaponRecord;
   image2d: {
     url: string;
   };
@@ -124,6 +138,37 @@ export interface WeaponRecord {
 export interface WeaponRecords {
   weaponRecords: {
     nodes: WeaponRecord[];
+  };
+}
+
+export interface Brand {
+  id: string;
+  image: {
+    url: string;
+  };
+}
+export interface GearPower {
+  image: {
+    url: string;
+  };
+}
+export interface Gear {
+  image: {
+    url: string;
+  };
+  brand: Brand;
+  primaryGearPower: GearPower;
+  additionalGearPowers: GearPower[];
+}
+export interface Gears {
+  clothingGears: {
+    nodes: Gear[];
+  };
+  headGears: {
+    nodes: Gear[];
+  };
+  shoesGears: {
+    nodes: Gear[];
   };
 }
 
@@ -164,19 +209,44 @@ export interface PrivateBattleHistories {
   };
 }
 
+export interface VsSpecialWeapon {
+  image: {
+    url: string;
+  };
+}
+export interface VsSubWeapon {
+  image: {
+    url: string;
+  };
+}
+
 export interface VsWeapon {
+  specialWeapon: VsSpecialWeapon;
   id: string;
   image2d: {
     url: string;
   };
+  subWeapon: VsSubWeapon;
 }
 export type Species = "INKLING" | "OCTOLING";
+export interface VsGear {
+  primaryGearPower: GearPower;
+  additionalGearPowers: GearPower[];
+  originalImage: {
+    url: string;
+  };
+  brand: Brand;
+}
 export interface VsPlayer {
   id: string;
+  nameId: string;
   name: string;
   isMyself: boolean;
   weapon: VsWeapon;
   species: Species;
+  headGear: VsGear;
+  clothingGear: VsGear;
+  shoesGear: VsGear;
   paint: number;
   result: {
     kill: number;

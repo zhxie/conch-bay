@@ -11,6 +11,7 @@ import {
   SplatfestMatchSetting,
   VsHistoryDetail,
   VsMode,
+  VsPlayer,
   VsStage,
   VsTeam,
   XMatchSetting,
@@ -109,6 +110,12 @@ export const getImageCacheKey = (image: string) => {
   const match = regex.exec(image)!;
   return match[1];
 };
+export const getImageCacheSource = (image: string) => {
+  return {
+    uri: image,
+    cacheKey: getImageCacheKey(image),
+  };
+};
 
 export const getVsModeColor = (mode: VsMode) => {
   switch (mode.id) {
@@ -158,6 +165,12 @@ export const getUserIconCacheKey = (userIcon: string) => {
   const components = userIcon.split("/");
   return components[components.length - 1];
 };
+export const getUserIconCacheSource = (userIcon: string) => {
+  return {
+    uri: userIcon,
+    cacheKey: getUserIconCacheKey(userIcon),
+  };
+};
 
 export const convertStageImageUrl = (stage: VsStage) => {
   const url = getAuthorityAndPath(stage.image.url);
@@ -183,6 +196,13 @@ export const getTeamColor = (team: VsTeam) => {
   return `rgba(${Math.round(team.color.r * 255)}, ${Math.round(team.color.g * 255)}, ${Math.round(
     team.color.b * 255
   )}, ${Math.round(team.color.a * 255)})`;
+};
+export const getMaxAdditionalGearPowerCount = (player: VsPlayer) => {
+  return Math.max(
+    player.headGear.additionalGearPowers.length,
+    player.clothingGear.additionalGearPowers.length,
+    player.shoesGear.additionalGearPowers.length
+  );
 };
 export const isCoopAnnotation = (coop: CoopHistoryDetail) => {
   return coop.coopHistoryDetail.resultWave === -1;

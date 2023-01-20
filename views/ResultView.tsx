@@ -4,12 +4,14 @@ import JSONTree from "react-native-json-tree";
 import {
   BattleButton,
   BattlePlayerButton,
+  BattleWeaponBox,
   BossSalmonidBox,
   Button,
   Circle,
   Color,
   CoopButton,
   CoopPlayerButton,
+  GearBox,
   HStack,
   Modal,
   Text,
@@ -24,8 +26,8 @@ import {
   CoopWaveResult,
   Species,
   VsHistoryDetail,
+  VsPlayer,
   VsTeam,
-  VsWeapon,
 } from "../models/types";
 import {
   getCoopGoldenEgg,
@@ -33,7 +35,8 @@ import {
   getCoopIsWaveClear,
   getCoopPowerEgg,
   getCoopRuleColor,
-  getImageCacheKey,
+  getImageCacheSource,
+  getMaxAdditionalGearPowerCount,
   getTeamColor,
   getVsModeColor,
   getVsSelfPlayer,
@@ -47,9 +50,13 @@ interface ResultViewProps {
   results?: { battle?: VsHistoryDetail; coop?: CoopHistoryDetail }[];
   style?: StyleProp<ViewStyle>;
 }
-interface DisplayProps {
+interface ResultProps {
   battle?: VsHistoryDetail;
   coop?: CoopHistoryDetail;
+}
+interface BattlePlayerProps {
+  color: string;
+  player: VsPlayer;
 }
 
 const ResultView = (props: ResultViewProps) => {
@@ -58,9 +65,11 @@ const ResultView = (props: ResultViewProps) => {
   const colorScheme = useColorScheme();
   const reverseTextColor = colorScheme === "light" ? TextStyles.dark : TextStyles.light;
 
-  const [display, setDisplay] = useState<DisplayProps>();
+  const [result, setResult] = useState<ResultProps>();
   const [displayResult, setDisplayResult] = useState(false);
   const [displayBattle, setDisplayBattle] = useState(false);
+  const [battlePlayer, setBattlePlayer] = useState<BattlePlayerProps>();
+  const [displayBattlePlayer, setDisplayBattlePlayer] = useState(false);
   const [displayCoop, setDisplayCoop] = useState(false);
   const willDisplayResult = useRef(false);
   const [hidePlayerNames, setHidePlayerNames] = useState(false);
@@ -158,12 +167,6 @@ const ResultView = (props: ResultViewProps) => {
     }
     return " ";
   };
-  const formatWeapon = (weapon: VsWeapon) => {
-    return {
-      image: weapon.image2d.url,
-      cacheKey: getImageCacheKey(weapon.image2d.url),
-    };
-  };
   const formatWaterLevel = (waveResult: CoopWaveResult) => {
     switch (waveResult.waterLevel) {
       case 0:
@@ -187,6 +190,9 @@ const ResultView = (props: ResultViewProps) => {
   const onDisplayBattleClose = () => {
     setDisplayBattle(false);
   };
+  const onDisplayBattlePlayerClose = () => {
+    setDisplayBattlePlayer(false);
+  };
   const onDisplayCoopClose = () => {
     setDisplayCoop(false);
   };
@@ -196,16 +202,16 @@ const ResultView = (props: ResultViewProps) => {
     setDisplayCoop(false);
   };
   const onOpenInNintendoSwitchOnlinePress = () => {
-    if (display!.battle) {
+    if (result!.battle) {
       Linking.openURL(
         `com.nintendo.znca://znca/game/4834290508791808?p=/history/detail/${
-          display!.battle.vsHistoryDetail.id
+          result!.battle.vsHistoryDetail.id
         }`
       );
     } else {
       Linking.openURL(
         `com.nintendo.znca://znca/game/4834290508791808?p=/coop/${
-          display!.coop!.coopHistoryDetail.id
+          result!.coop!.coopHistoryDetail.id
         }`
       );
     }
@@ -246,7 +252,7 @@ const ResultView = (props: ResultViewProps) => {
                       : undefined
                   }
                   onPress={() => {
-                    setDisplay({ battle: result.battle! });
+                    setResult({ battle: result.battle! });
                     setDisplayBattle(true);
                   }}
                 />
@@ -272,7 +278,7 @@ const ResultView = (props: ResultViewProps) => {
                 powerEgg={getCoopPowerEgg(result.coop!)}
                 goldenEgg={getCoopGoldenEgg(result.coop!)}
                 onPress={() => {
-                  setDisplay({ coop: result.coop! });
+                  setResult({ coop: result.coop! });
                   setDisplayCoop(true);
                 }}
               />
@@ -328,11 +334,11 @@ const ResultView = (props: ResultViewProps) => {
           },
         ]}
       >
-        {display && (
+        {result && (
           <JSONTree
             theme="monokai"
             invertTheme={false}
-            data={display.battle?.vsHistoryDetail ?? display.coop!.coopHistoryDetail}
+            data={result.battle?.vsHistoryDetail ?? result.coop!.coopHistoryDetail}
             hideRoot
             skipKeys={[
               "__typename",
@@ -359,14 +365,14 @@ const ResultView = (props: ResultViewProps) => {
         onModalHide={onModalHide}
         style={ViewStyles.modal3d}
       >
-        {display?.battle && (
+        {result?.battle && (
           <TitledList
-            color={getVsModeColor(display.battle.vsHistoryDetail.vsMode)}
-            title={t(display.battle.vsHistoryDetail.vsMode.id)}
-            subtitle={formatAnnotation(display.battle)}
+            color={getVsModeColor(result.battle.vsHistoryDetail.vsMode)}
+            title={t(result.battle.vsHistoryDetail.vsMode.id)}
+            subtitle={formatAnnotation(result.battle)}
           >
             <VStack style={ViewStyles.wf}>
-              {formatTeams(display.battle).map((team, i) => (
+              {formatTeams(result.battle).map((team, i) => (
                 <VStack key={i} style={ViewStyles.mb2}>
                   <HStack center justify style={ViewStyles.mb1}>
                     <HStack center style={[ViewStyles.mr1, ViewStyles.f]}>
@@ -398,7 +404,7 @@ const ResultView = (props: ResultViewProps) => {
                       isFirst={i === 0}
                       isLast={i === players.length - 1}
                       name={formatName(player.name, player.species, player.isMyself)}
-                      weapon={formatWeapon(player.weapon)}
+                      weapon={getImageCacheSource(player.weapon.image2d.url)}
                       paint={player.paint}
                       kill={player.result?.kill}
                       assist={player.result?.assist}
@@ -407,6 +413,10 @@ const ResultView = (props: ResultViewProps) => {
                       ultraSignal={
                         team.tricolorRole !== "DEFENSE" ? player.result?.noroshiTry : undefined
                       }
+                      onPress={() => {
+                        setBattlePlayer({ color: getTeamColor(team), player });
+                        setDisplayBattlePlayer(true);
+                      }}
                       style={{ alignItems: "center" }}
                     />
                   ))}
@@ -428,6 +438,45 @@ const ResultView = (props: ResultViewProps) => {
                 </Text>
               </Button>
             </VStack>
+            <Modal
+              isVisible={displayBattlePlayer}
+              onClose={onDisplayBattlePlayerClose}
+              style={ViewStyles.modal1d}
+            >
+              {battlePlayer && (
+                <TitledList
+                  color={battlePlayer.color}
+                  title={`${battlePlayer.player.name} #${battlePlayer.player.nameId}`}
+                >
+                  <BattleWeaponBox
+                    image={getImageCacheSource(battlePlayer.player.weapon.image2d.url)}
+                    subWeapon={getImageCacheSource(battlePlayer.player.weapon.subWeapon.image.url)}
+                    specialWeapon={getImageCacheSource(
+                      battlePlayer.player.weapon.specialWeapon.image.url
+                    )}
+                    style={ViewStyles.mb2}
+                  />
+                  {[
+                    battlePlayer.player.headGear,
+                    battlePlayer.player.clothingGear,
+                    battlePlayer.player.shoesGear,
+                  ].map((gear, i, gears) => (
+                    <GearBox
+                      key={i}
+                      isFirst={i === 0}
+                      isLast={i === gears.length - 1}
+                      image={getImageCacheSource(gear.originalImage.url)}
+                      brand={getImageCacheSource(gear.brand.image.url)}
+                      primaryGearPower={getImageCacheSource(gear.primaryGearPower.image.url)}
+                      additionalGearPower={gear.additionalGearPowers.map((gearPower) =>
+                        getImageCacheSource(gearPower.image.url)
+                      )}
+                      paddingTo={getMaxAdditionalGearPowerCount(battlePlayer.player)}
+                    />
+                  ))}
+                </TitledList>
+              )}
+            </Modal>
           </TitledList>
         )}
       </Modal>
@@ -437,30 +486,30 @@ const ResultView = (props: ResultViewProps) => {
         onModalHide={onModalHide}
         style={[ViewStyles.modal3d, { paddingHorizontal: 0 }]}
       >
-        {display?.coop && (
+        {result?.coop && (
           <TitledList
-            color={getCoopRuleColor(display.coop.coopHistoryDetail.rule)}
-            title={t(display.coop.coopHistoryDetail.rule)}
-            subtitle={isCoopAnnotation(display.coop) ? t("penalty") : undefined}
+            color={getCoopRuleColor(result.coop.coopHistoryDetail.rule)}
+            title={t(result.coop.coopHistoryDetail.rule)}
+            subtitle={isCoopAnnotation(result.coop) ? t("penalty") : undefined}
           >
             <VStack style={ViewStyles.wf}>
               <VStack style={ViewStyles.mb2}>
-                {display.coop.coopHistoryDetail.waveResults.length > 0 && (
+                {result.coop.coopHistoryDetail.waveResults.length > 0 && (
                   <ScrollView
                     horizontal
                     showsHorizontalScrollIndicator={false}
                     style={ViewStyles.mb2}
                   >
                     <HStack center style={ViewStyles.px4}>
-                      {display.coop.coopHistoryDetail.waveResults.map(
+                      {result.coop.coopHistoryDetail.waveResults.map(
                         (waveResult, i, waveResults) => {
                           if (i < 3) {
                             return (
                               <WaveBox
                                 key={i}
                                 color={
-                                  getCoopIsWaveClear(display.coop!, i)
-                                    ? getCoopRuleColor(display.coop!.coopHistoryDetail.rule)!
+                                  getCoopIsWaveClear(result.coop!, i)
+                                    ? getCoopRuleColor(result.coop!.coopHistoryDetail.rule)!
                                     : undefined
                                 }
                                 waterLevel={formatWaterLevel(waveResult)!}
@@ -476,15 +525,15 @@ const ResultView = (props: ResultViewProps) => {
                             <WaveBox
                               key={i}
                               color={
-                                display.coop!.coopHistoryDetail.bossResult!.hasDefeatBoss
-                                  ? getCoopRuleColor(display.coop!.coopHistoryDetail.rule)!
+                                result.coop!.coopHistoryDetail.bossResult!.hasDefeatBoss
+                                  ? getCoopRuleColor(result.coop!.coopHistoryDetail.rule)!
                                   : undefined
                               }
                               isKingSalmonid
                               waterLevel={formatWaterLevel(waveResult)!}
-                              eventWave={t(display.coop!.coopHistoryDetail.bossResult!.boss.id)}
+                              eventWave={t(result.coop!.coopHistoryDetail.bossResult!.boss.id)}
                               deliver={
-                                display.coop!.coopHistoryDetail.bossResult!.hasDefeatBoss ? 1 : 0
+                                result.coop!.coopHistoryDetail.bossResult!.hasDefeatBoss ? 1 : 0
                               }
                               quota={1}
                               appearance={waveResult.goldenPopCount}
@@ -496,41 +545,41 @@ const ResultView = (props: ResultViewProps) => {
                     </HStack>
                   </ScrollView>
                 )}
-                {(display.coop.coopHistoryDetail.enemyResults.length > 0 ||
-                  display.coop.coopHistoryDetail.bossResult !== null) && (
+                {(result.coop.coopHistoryDetail.enemyResults.length > 0 ||
+                  result.coop.coopHistoryDetail.bossResult !== null) && (
                   <ScrollView
                     horizontal
                     showsHorizontalScrollIndicator={false}
                     style={ViewStyles.mb2}
                   >
                     <HStack center style={ViewStyles.px4}>
-                      {display.coop.coopHistoryDetail.bossResult !== null && (
+                      {result.coop.coopHistoryDetail.bossResult !== null && (
                         <BossSalmonidBox
                           color={
-                            display.coop.coopHistoryDetail.bossResult.hasDefeatBoss
-                              ? getCoopRuleColor(display.coop!.coopHistoryDetail.rule)!
+                            result.coop.coopHistoryDetail.bossResult.hasDefeatBoss
+                              ? getCoopRuleColor(result.coop!.coopHistoryDetail.rule)!
                               : undefined
                           }
-                          name={t(display.coop.coopHistoryDetail.bossResult.boss.id)}
+                          name={t(result.coop.coopHistoryDetail.bossResult.boss.id)}
                           defeat={0}
                           teamDefeat={
-                            display.coop.coopHistoryDetail.bossResult.hasDefeatBoss ? 1 : 0
+                            result.coop.coopHistoryDetail.bossResult.hasDefeatBoss ? 1 : 0
                           }
                           appearance={1}
                           style={
-                            display.coop.coopHistoryDetail.enemyResults.length > 0
+                            result.coop.coopHistoryDetail.enemyResults.length > 0
                               ? ViewStyles.mr2
                               : undefined
                           }
                         />
                       )}
-                      {display.coop.coopHistoryDetail.enemyResults.map(
+                      {result.coop.coopHistoryDetail.enemyResults.map(
                         (enemyResult, i, enemyResults) => (
                           <BossSalmonidBox
                             key={i}
                             color={
                               enemyResult.teamDefeatCount === enemyResult.popCount
-                                ? getCoopRuleColor(display.coop!.coopHistoryDetail.rule)!
+                                ? getCoopRuleColor(result.coop!.coopHistoryDetail.rule)!
                                 : undefined
                             }
                             name={t(enemyResult.enemy.id)}
@@ -546,8 +595,8 @@ const ResultView = (props: ResultViewProps) => {
                 )}
                 <VStack style={ViewStyles.px4}>
                   {[
-                    display.coop.coopHistoryDetail.myResult,
-                    ...display.coop.coopHistoryDetail.memberResults,
+                    result.coop.coopHistoryDetail.myResult,
+                    ...result.coop.coopHistoryDetail.memberResults,
                   ].map((memberResult, i, memberResults) => (
                     <CoopPlayerButton
                       key={i}

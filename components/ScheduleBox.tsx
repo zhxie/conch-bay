@@ -1,13 +1,12 @@
 import { StyleProp, StyleSheet, ViewStyle } from "react-native";
-import Image from "./Image";
+import Image, { SourceProps } from "./Image";
 import { HStack, VStack } from "./Stack";
 import { TextStyles, ViewStyles } from "./Styles";
 import Text from "./Text";
 
 interface StageProps {
   title: string;
-  image: string;
-  cacheKey: string;
+  image: SourceProps;
 }
 interface ScheduleBoxProps {
   rule: string;
@@ -36,11 +35,7 @@ const ScheduleBox = (props: ScheduleBoxProps) => {
               key={i}
               style={i !== stages.length - 1 ? ViewStyles.mr2 : undefined}
             >
-              <Image
-                uri={stage.image}
-                cacheKey={stage.cacheKey}
-                style={[ViewStyles.mb1, ViewStyles.r, styles.image]}
-              />
+              <Image source={stage.image} style={[ViewStyles.mb1, ViewStyles.r, styles.image]} />
               <Text numberOfLines={1}>{stage.title}</Text>
             </VStack>
           ))}

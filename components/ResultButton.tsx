@@ -1,21 +1,17 @@
 import { Feather } from "@expo/vector-icons";
 import { StyleProp, ViewStyle } from "react-native";
-import Image from "./Image";
+import Image, { SourceProps } from "./Image";
 import Pressable from "./Pressable";
 import { Center, HStack, VStack } from "./Stack";
 import { Color, TextStyles, ViewStyles } from "./Styles";
 import Text from "./Text";
 
-interface ImageProps {
-  uri: string;
-  cacheKey: string;
-}
 interface ResultButtonProps {
   color?: string;
   isLoading?: boolean;
   isFirst?: boolean;
   isLast?: boolean;
-  image?: ImageProps;
+  image?: SourceProps;
   result?: number;
   title: string;
   subtitle: string;
@@ -68,11 +64,7 @@ const ResultButton = (props: ResultButtonProps) => {
           </Center>
         )}
         {!!props.image && (
-          <Image
-            uri={props.image.uri}
-            cacheKey={props.image.cacheKey}
-            style={[ViewStyles.mr3, { width: 32, height: 32 }]}
-          />
+          <Image source={props.image} style={[ViewStyles.mr3, { width: 32, height: 32 }]} />
         )}
         <VStack flex>
           <HStack flex center justify>

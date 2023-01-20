@@ -7,6 +7,7 @@ import {
   CoopHistoryDetail,
   CoopResult,
   Friends,
+  Gears,
   GraphQlResponse,
   PrivateBattleHistories,
   RegularBattleHistories,
@@ -270,6 +271,7 @@ export const fetchCatalog = async (bulletToken: string, language?: string) => {
   }
   return catalog.data!;
 };
+
 export const fetchWeaponRecords = async (bulletToken: string, language?: string) => {
   const res = await fetchGraphQl(bulletToken, "5f279779e7081f2d14ae1ddca0db2b6e", language);
   const json = await res.json();
@@ -278,6 +280,15 @@ export const fetchWeaponRecords = async (bulletToken: string, language?: string)
     throw new Error(weaponRecords.errors[0].message);
   }
   return weaponRecords.data!;
+};
+export const fetchGears = async (bulletToken: string, language?: string) => {
+  const res = await fetchGraphQl(bulletToken, "d29cd0c2b5e6bac90dd5b817914832f8", language);
+  const json = await res.json();
+  const gears = json as GraphQlResponse<Gears>;
+  if (gears.errors) {
+    throw new Error(gears.errors[0].message);
+  }
+  return gears.data!;
 };
 
 export const fetchBattleHistories = async (bulletToken: string, language?: string) => {

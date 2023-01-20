@@ -1,23 +1,18 @@
 import { StyleProp, StyleSheet, ViewStyle } from "react-native";
-import Image from "./Image";
+import Image, { SourceProps } from "./Image";
 import { HStack, VStack } from "./Stack";
 import { TextStyles, ViewStyles } from "./Styles";
 import Text from "./Text";
 
 interface StageProps {
   title: string;
-  image: string;
-  cacheKey: string;
-}
-interface WeaponProps {
-  image: string;
-  cacheKey: string;
+  image: SourceProps;
 }
 interface ScheduleBoxProps {
   rule: string;
   time: string;
   stage: StageProps;
-  weapons: WeaponProps[];
+  weapons: SourceProps[];
   style?: StyleProp<ViewStyle>;
 }
 
@@ -36,8 +31,7 @@ const ShiftBox = (props: ScheduleBoxProps) => {
         <HStack flex center>
           <VStack flex center style={ViewStyles.mr2}>
             <Image
-              uri={props.stage.image}
-              cacheKey={props.stage.cacheKey}
+              source={props.stage.image}
               style={[ViewStyles.mb1, ViewStyles.r, styles.stage]}
             />
             <Text numberOfLines={1}>{props.stage.title}</Text>
@@ -47,8 +41,7 @@ const ShiftBox = (props: ScheduleBoxProps) => {
               {props.weapons.map((weapon, i, weapons) => (
                 <Image
                   key={i}
-                  uri={weapon.image}
-                  cacheKey={weapon.cacheKey}
+                  source={weapon}
                   style={[
                     i !== weapons.length - 1 ? ViewStyles.mr1 : undefined,
                     ViewStyles.f,

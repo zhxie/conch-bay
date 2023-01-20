@@ -3,9 +3,12 @@ import { ImageStyle, StyleProp, useColorScheme } from "react-native";
 import { Center } from "./Stack";
 import { ViewStyles } from "./Styles";
 
-interface ImageProps {
+export interface SourceProps {
   uri: string;
   cacheKey: string;
+}
+interface ImageProps {
+  source: SourceProps;
   style?: StyleProp<ImageStyle>;
 }
 
@@ -15,8 +18,8 @@ const Image = (props: ImageProps) => {
 
   return (
     <CachedImage
-      source={{ uri: props.uri }}
-      cacheKey={props.cacheKey}
+      source={{ uri: props.source.uri }}
+      cacheKey={props.source.cacheKey}
       placeholderContent={<Center style={[imageStyle, { overflow: "hidden" }, props.style]} />}
       style={[imageStyle, { overflow: "hidden" }, props.style]}
     />

@@ -38,19 +38,14 @@ import {
   VStack,
   ViewStyles,
 } from "../components";
-import {
-  CoopHistoryDetail,
-  Friends,
-  Schedules,
-  VsHistoryDetail,
-  WeaponRecords,
-} from "../models/types";
+import { CoopHistoryDetail, Friends, Schedules, VsHistoryDetail } from "../models/types";
 import {
   fetchBattleHistories,
   fetchCatalog,
   fetchCoopHistoryDetail,
   fetchCoopResult,
   fetchFriends,
+  fetchGears,
   fetchSchedules,
   fetchSummary,
   fetchVsHistoryDetail,
@@ -63,7 +58,7 @@ import {
   updateSplatnetVersion,
 } from "../utils/api";
 import * as Database from "../utils/database";
-import { getImageCacheKey, getUserIconCacheKey, getVsSelfPlayer } from "../utils/ui";
+import { getImageCacheKey, getUserIconCacheSource, getVsSelfPlayer } from "../utils/ui";
 import FriendView from "./FriendView";
 import ResultView from "./ResultView";
 import ScheduleView from "./ScheduleView";
@@ -827,12 +822,33 @@ const MainView = (props: MainViewProps) => {
       const res = await getWebServiceToken(sessionToken);
       const bulletToken = await getBulletToken(res.webServiceToken, res.country);
 
-      const weaponRecords = await fetchWeaponRecords(bulletToken);
-      // Pre-download weapon images.
+      const [weaponRecords, gears] = await Promise.all([
+        fetchWeaponRecords(bulletToken),
+        fetchGears(bulletToken),
+      ]);
+      // Preload images.
       const resources = new Map<string, string>();
       weaponRecords.weaponRecords.nodes.forEach((record) => {
         resources.set(getImageCacheKey(record.image2d.url), record.image2d.url);
+        resources.set(getImageCacheKey(record.subWeapon.image.url), record.subWeapon.image.url);
+        resources.set(
+          getImageCacheKey(record.specialWeapon.image.url),
+          record.specialWeapon.image.url
+        );
       });
+      [...gears.headGears.nodes, ...gears.clothingGears.nodes, ...gears.shoesGears.nodes].forEach(
+        (gear) => {
+          resources.set(getImageCacheKey(gear.image.url), gear.image.url);
+          resources.set(getImageCacheKey(gear.brand.image.url), gear.brand.image.url);
+          resources.set(
+            getImageCacheKey(gear.primaryGearPower.image.url),
+            gear.primaryGearPower.image.url
+          );
+          gear.additionalGearPowers.forEach((gearPower) => {
+            resources.set(getImageCacheKey(gearPower.image.url), gearPower.image.url);
+          });
+        }
+      );
       const resourcesArray = Array.from(resources);
       const resourcesInfo = await Promise.all(
         resourcesArray.map((resource) =>
@@ -944,8 +960,7 @@ const MainView = (props: MainViewProps) => {
               <VStack center style={[ViewStyles.px4, ViewStyles.mb4]}>
                 <Avatar
                   size={64}
-                  uri={icon.length > 0 ? icon : undefined}
-                  cacheKey={icon.length > 0 ? getUserIconCacheKey(icon) : undefined}
+                  image={icon.length > 0 ? getUserIconCacheSource(icon) : undefined}
                   onPress={onLogOutPress}
                   style={ViewStyles.mb2}
                 />
@@ -1333,14 +1348,18 @@ const MainView = (props: MainViewProps) => {
           <HStack center>
             <Avatar
               size={48}
-              uri="https://cdn-image-e0d67c509fb203858ebcb2fe3f88c2aa.baas.nintendo.com/1/1afd1450a5a5ebec"
-              cacheKey="1afd1450a5a5ebec"
+              image={{
+                uri: "https://cdn-image-e0d67c509fb203858ebcb2fe3f88c2aa.baas.nintendo.com/1/1afd1450a5a5ebec",
+                cacheKey: "1afd1450a5a5ebec",
+              }}
               style={ViewStyles.mr2}
             />
             <Avatar
               size={48}
-              uri="https://cdn-image-e0d67c509fb203858ebcb2fe3f88c2aa.baas.nintendo.com/1/4b98d8291ae60b8c"
-              cacheKey="4b98d8291ae60b8c"
+              image={{
+                uri: "https://cdn-image-e0d67c509fb203858ebcb2fe3f88c2aa.baas.nintendo.com/1/4b98d8291ae60b8c",
+                cacheKey: "4b98d8291ae60b8c",
+              }}
               style={ViewStyles.mr2}
             />
           </HStack>

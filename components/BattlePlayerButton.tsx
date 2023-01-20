@@ -1,19 +1,16 @@
 import { StyleProp, ViewStyle } from "react-native";
+import { SourceProps } from "./Image";
 import ResultButton from "./ResultButton";
 import { Circle } from "./Shape";
 import { HStack } from "./Stack";
 import { Color, ViewStyles } from "./Styles";
 import Text from "./Text";
 
-interface WeaponProps {
-  image: string;
-  cacheKey: string;
-}
 interface BattlePlayerButtonProps {
   isFirst?: boolean;
   isLast?: boolean;
   name: string;
-  weapon: WeaponProps;
+  weapon: SourceProps;
   paint: number;
   kill?: number;
   assist?: number;
@@ -36,7 +33,7 @@ const BattlePlayerButton = (props: BattlePlayerButtonProps) => {
     <ResultButton
       isFirst={props.isFirst}
       isLast={props.isLast}
-      image={{ uri: props.weapon.image, cacheKey: props.weapon.cacheKey }}
+      image={props.weapon}
       title={props.name}
       subtitle={`${props.paint} pt`}
       style={props.style}

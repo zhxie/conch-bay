@@ -75,6 +75,9 @@ export const TextStyles = StyleSheet.create({
 });
 
 export const ViewStyles = StyleSheet.create({
+  transparent: {
+    backgroundColor: "transparent",
+  },
   light: {
     backgroundColor: Color.LightBackground,
   },
