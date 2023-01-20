@@ -1285,7 +1285,12 @@ const MainView = (props: MainViewProps) => {
       </Modal>
       <Modal isVisible={support} onClose={onSupportClose} style={ViewStyles.modal1d}>
         <VStack center>
-          <Feather name="tool" size={48} color={Color.MiddleTerritory} style={ViewStyles.mb4} />
+          <Feather
+            name="help-circle"
+            size={48}
+            color={Color.MiddleTerritory}
+            style={ViewStyles.mb4}
+          />
           {sessionToken.length > 0 && (
             <VStack style={[ViewStyles.mb4, ViewStyles.wf]}>
               <VStack center>

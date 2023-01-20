@@ -7,6 +7,7 @@ export { default as BossSalmonidBox } from "./BossSalmonidBox";
 export { default as Button } from "./Button";
 export { default as CoopButton } from "./CoopButton";
 export { default as CoopPlayerButton } from "./CoopPlayerButton";
+export { default as CoopWeaponBox } from "./CoopWeaponBox";
 export { default as Display } from "./Display";
 export { default as FilterButton } from "./FilterButton";
 export { default as FloatingActionButton } from "./FloatingActionButton";
@@ -22,5 +23,6 @@ export { default as Text } from "./Text";
 export { default as TitledList } from "./TitledList";
 export { default as ToolButton } from "./ToolButton";
 export { default as WaveBox } from "./WaveBox";
+export { default as WorkSuitBox } from "./WorkSuitBox";
 
 export * from "./Styles";

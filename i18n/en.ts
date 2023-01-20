@@ -189,6 +189,14 @@ const en = {
   "V2VhcG9uLTcwMjA=": "REEF-LUX 450",
   "V2VhcG9uLTgwMDA=": "Splatana Stamper",
   "V2VhcG9uLTgwMTA=": "Splatana Wiper",
+  // Work suits.
+  "Q29vcFVuaWZvcm0tMQ==": "Orange Slopsuit",
+  "Q29vcFVuaWZvcm0tMg==": "Green Slopsuit",
+  "Q29vcFVuaWZvcm0tMw==": "Yellow Slopsuit",
+  "Q29vcFVuaWZvcm0tNA==": "Pink Slopsuit",
+  "Q29vcFVuaWZvcm0tNQ==": "Blue Slopsuit",
+  "Q29vcFVuaWZvcm0tNg==": "Black Slopsuit",
+  "Q29vcFVuaWZvcm0tNw==": "White Slopsuit",
   // Grades.
   "Q29vcEdyYWRlLTA=": "Apprentice",
   "Q29vcEdyYWRlLTE=": "Part-Timer",

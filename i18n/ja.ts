@@ -189,6 +189,14 @@ const ja = {
   "V2VhcG9uLTcwMjA=": "LACT-450",
   "V2VhcG9uLTgwMDA=": "ジムワイパー",
   "V2VhcG9uLTgwMTA=": "ドライブワイパー",
+  // Work suits.
+  "Q29vcFVuaWZvcm0tMQ==": "バイトツナギ オレンジ",
+  "Q29vcFVuaWZvcm0tMg==": "バイトツナギ グリーン",
+  "Q29vcFVuaWZvcm0tMw==": "バイトツナギ イエロー",
+  "Q29vcFVuaWZvcm0tNA==": "バイトツナギ ピンク",
+  "Q29vcFVuaWZvcm0tNQ==": "バイトツナギ ブルー",
+  "Q29vcFVuaWZvcm0tNg==": "バイトツナギ ブラック",
+  "Q29vcFVuaWZvcm0tNw==": "バイトツナギ ホワイト",
   // Grades.
   "Q29vcEdyYWRlLTA=": "かけだし",
   "Q29vcEdyYWRlLTE=": "はんにんまえ",

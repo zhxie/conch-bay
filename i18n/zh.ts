@@ -184,6 +184,14 @@ const zh = {
   "V2VhcG9uLTcwMjA=": "LACT-450",
   "V2VhcG9uLTgwMDA=": "工作刮水刀",
   "V2VhcG9uLTgwMTA=": "雨刷刮水刀",
+  // Work suits.
+  "Q29vcFVuaWZvcm0tMQ==": "打工连身工作服 橘色",
+  "Q29vcFVuaWZvcm0tMg==": "打工连身工作服 绿色",
+  "Q29vcFVuaWZvcm0tMw==": "打工连身工作服 黄色",
+  "Q29vcFVuaWZvcm0tNA==": "打工连身工作服 粉红色",
+  "Q29vcFVuaWZvcm0tNQ==": "打工连身工作服 蓝色",
+  "Q29vcFVuaWZvcm0tNg==": "打工连身工作服 黑色",
+  "Q29vcFVuaWZvcm0tNw==": "打工连身工作服 白色",
   // Grades.
   "Q29vcEdyYWRlLTA=": "新手",
   "Q29vcEdyYWRlLTE=": "半吊子",

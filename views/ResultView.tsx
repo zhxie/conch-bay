@@ -11,6 +11,7 @@ import {
   Color,
   CoopButton,
   CoopPlayerButton,
+  CoopWeaponBox,
   GearBox,
   HStack,
   Modal,
@@ -20,9 +21,11 @@ import {
   VStack,
   ViewStyles,
   WaveBox,
+  WorkSuitBox,
 } from "../components";
 import {
   CoopHistoryDetail,
+  CoopPlayerResult,
   CoopWaveResult,
   Species,
   VsHistoryDetail,
@@ -71,6 +74,8 @@ const ResultView = (props: ResultViewProps) => {
   const [battlePlayer, setBattlePlayer] = useState<BattlePlayerProps>();
   const [displayBattlePlayer, setDisplayBattlePlayer] = useState(false);
   const [displayCoop, setDisplayCoop] = useState(false);
+  const [coopPlayer, setCoopPlayer] = useState<CoopPlayerResult>();
+  const [displayCoopPlayer, setDisplayCoopPlayer] = useState(false);
   const willDisplayResult = useRef(false);
   const [hidePlayerNames, setHidePlayerNames] = useState(false);
 
@@ -195,6 +200,9 @@ const ResultView = (props: ResultViewProps) => {
   };
   const onDisplayCoopClose = () => {
     setDisplayCoop(false);
+  };
+  const onDisplayCoopPlayerClose = () => {
+    setDisplayCoopPlayer(false);
   };
   const onShowRawResultPress = () => {
     willDisplayResult.current = true;
@@ -344,7 +352,6 @@ const ResultView = (props: ResultViewProps) => {
               "__typename",
               "__isGear",
               "__isPlayer",
-              "id",
               "image",
               "image2d",
               "image2dThumbnail",
@@ -613,6 +620,10 @@ const ResultView = (props: ResultViewProps) => {
                       powerEgg={memberResult.deliverCount}
                       rescue={memberResult.rescueCount}
                       rescued={memberResult.rescuedCount}
+                      onPress={() => {
+                        setCoopPlayer(memberResult);
+                        setDisplayCoopPlayer(true);
+                      }}
                     />
                   ))}
                 </VStack>
@@ -638,6 +649,32 @@ const ResultView = (props: ResultViewProps) => {
                 </Button>
               </VStack>
             </VStack>
+            <Modal
+              isVisible={displayCoopPlayer}
+              onClose={onDisplayCoopPlayerClose}
+              style={ViewStyles.modal1d}
+            >
+              {coopPlayer && (
+                <TitledList
+                  color={getCoopRuleColor(result.coop.coopHistoryDetail.rule)}
+                  title={`${coopPlayer.player.name} #${coopPlayer.player.nameId}`}
+                >
+                  {coopPlayer.specialWeapon && (
+                    <CoopWeaponBox
+                      mainWeapons={coopPlayer.weapons.map((weapon) =>
+                        getImageCacheSource(weapon.image.url)
+                      )}
+                      specialWeapon={getImageCacheSource(coopPlayer.specialWeapon.image.url)}
+                      style={ViewStyles.mb2}
+                    />
+                  )}
+                  <WorkSuitBox
+                    image={getImageCacheSource(coopPlayer.player.uniform.image.url)}
+                    name={t(coopPlayer.player.uniform.id)}
+                  />
+                </TitledList>
+              )}
+            </Modal>
           </TitledList>
         )}
       </Modal>

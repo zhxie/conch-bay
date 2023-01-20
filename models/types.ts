@@ -307,14 +307,28 @@ export interface CoopResult {
 export interface CoopGrade {
   id: string;
 }
+export interface Uniform {
+  image: {
+    url: string;
+  };
+  id: string;
+}
 export interface CoopPlayer {
   name: string;
+  nameId: string;
+  uniform: Uniform;
   id: string;
   species: Species;
+}
+export interface CoopSpecialWeapon {
+  image: {
+    url: string;
+  };
 }
 export interface CoopPlayerResult {
   player: CoopPlayer;
   weapons: CoopWeapon[];
+  specialWeapon: CoopSpecialWeapon | null;
   defeatEnemyCount: number;
   deliverCount: number;
   goldenAssistCount: number;

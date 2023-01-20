@@ -42,9 +42,7 @@ const GearBox = (props: GearBoxProps) => {
           },
         ]}
       >
-        <HStack center>
-          <Image source={props.image} style={[ViewStyles.mr1, { width: 32, height: 32 }]} />
-        </HStack>
+        <Image source={props.image} style={[ViewStyles.mr1, { width: 32, height: 32 }]} />
         <HStack center>
           <Center style={ViewStyles.mr1}>
             <Circle size={30} color={Color.DarkBackground} />
