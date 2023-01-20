@@ -1182,7 +1182,7 @@ const MainView = (props: MainViewProps) => {
           </VStack>
         </VStack>
       </Modal>
-      <Modal isVisible={stats} onClose={onStatsClose} style={ViewStyles.modal1d}>
+      <Modal isVisible={stats} onClose={onStatsClose} style={ViewStyles.modal2d}>
         {!!count && (
           <VStack style={[ViewStyles.mb2, ViewStyles.wf]}>
             <VStack style={ViewStyles.mb2}>
