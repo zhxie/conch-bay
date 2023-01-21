@@ -18,6 +18,7 @@ export { default as ScheduleButton } from "./ScheduleButton";
 export { default as ScheduleBox } from "./ScheduleBox";
 export * from "./Shape";
 export { default as ShiftBox } from "./ShiftBox";
+export { default as Splashtag } from "./Splashtag";
 export * from "./Stack";
 export { default as Text } from "./Text";
 export { default as TitledList } from "./TitledList";

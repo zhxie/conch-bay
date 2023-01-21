@@ -45,11 +45,17 @@ export const TextStyles = StyleSheet.create({
     fontSize: 14,
   },
   b: {
-    fontSize: 14,
     fontWeight: "bold",
+  },
+  i: {
+    fontStyle: "italic",
   },
   link: {
     textDecorationLine: "underline",
+  },
+  h0: {
+    fontSize: 24,
+    fontWeight: "bold",
   },
   h1: {
     fontSize: 18,
@@ -68,6 +74,10 @@ export const TextStyles = StyleSheet.create({
   },
   h6: {
     fontSize: 12,
+  },
+  h7: {
+    fontSize: 10,
+    fontWeight: "bold",
   },
   c: {
     textAlign: "center",

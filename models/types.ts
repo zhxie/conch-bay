@@ -97,9 +97,16 @@ export interface Player {
     url: string;
   };
 }
+export interface Badge {
+  image: {
+    url: string;
+  };
+}
 export interface PlayHistory {
   rank: number;
   udemae: string;
+  // TODO: nullable?
+  allBadges: Badge[];
 }
 export interface Summary {
   currentPlayer: Player;
@@ -172,6 +179,26 @@ export interface Gears {
   };
 }
 
+export interface PlayerBadge {
+  image: {
+    url: string;
+  };
+}
+export interface Nameplate {
+  badges: (PlayerBadge | null)[];
+  background: {
+    textColor: {
+      a: number;
+      b: number;
+      g: number;
+      r: number;
+    };
+    image: {
+      url: string;
+    };
+  };
+}
+
 export interface BattleHistoryDetail {
   id: string;
 }
@@ -239,11 +266,13 @@ export interface VsGear {
 }
 export interface VsPlayer {
   id: string;
-  nameId: string;
   name: string;
   isMyself: boolean;
+  byname: string;
   weapon: VsWeapon;
   species: Species;
+  nameId: string;
+  nameplate: Nameplate;
   headGear: VsGear;
   clothingGear: VsGear;
   shoesGear: VsGear;
@@ -314,8 +343,10 @@ export interface Uniform {
   id: string;
 }
 export interface CoopPlayer {
+  byname: string;
   name: string;
   nameId: string;
+  nameplate: Nameplate;
   uniform: Uniform;
   id: string;
   species: Species;

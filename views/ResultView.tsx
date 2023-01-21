@@ -15,6 +15,7 @@ import {
   GearBox,
   HStack,
   Modal,
+  Splashtag,
   Text,
   TextStyles,
   TitledList,
@@ -27,6 +28,7 @@ import {
   CoopHistoryDetail,
   CoopPlayerResult,
   CoopWaveResult,
+  PlayerBadge,
   Species,
   VsHistoryDetail,
   VsPlayer,
@@ -40,7 +42,7 @@ import {
   getCoopRuleColor,
   getImageCacheSource,
   getMaxAdditionalGearPowerCount,
-  getTeamColor,
+  getColor,
   getVsModeColor,
   getVsSelfPlayer,
   isCoopAnnotation,
@@ -102,6 +104,13 @@ const ResultView = (props: ResultViewProps) => {
       }
     }
     return name;
+  };
+  const formatBadge = (badge: PlayerBadge | null) => {
+    if (badge) {
+      return getImageCacheSource(badge.image.url);
+    }
+
+    return null;
   };
   const formatWave = (coop: CoopHistoryDetail) => {
     switch (coop.coopHistoryDetail.resultWave) {
@@ -383,8 +392,11 @@ const ResultView = (props: ResultViewProps) => {
                 <VStack key={i} style={ViewStyles.mb2}>
                   <HStack center justify style={ViewStyles.mb1}>
                     <HStack center style={[ViewStyles.mr1, ViewStyles.f]}>
-                      <Circle size={12} color={getTeamColor(team)} style={ViewStyles.mr1} />
-                      <Text numberOfLines={1} style={[TextStyles.b, { color: getTeamColor(team) }]}>
+                      <Circle size={12} color={getColor(team.color)} style={ViewStyles.mr1} />
+                      <Text
+                        numberOfLines={1}
+                        style={[TextStyles.b, { color: getColor(team.color) }]}
+                      >
                         {team.festTeamName ?? ""}
                       </Text>
                     </HStack>
@@ -396,11 +408,14 @@ const ResultView = (props: ResultViewProps) => {
                             <Circle
                               key={i}
                               size={10}
-                              color={getTeamColor(team)}
+                              color={getColor(team.color)}
                               style={ViewStyles.mr1}
                             />
                           ))}
-                      <Text numberOfLines={1} style={[TextStyles.b, { color: getTeamColor(team) }]}>
+                      <Text
+                        numberOfLines={1}
+                        style={[TextStyles.b, { color: getColor(team.color) }]}
+                      >
                         {formatTeamResult(team)}
                       </Text>
                     </HStack>
@@ -421,7 +436,7 @@ const ResultView = (props: ResultViewProps) => {
                         team.tricolorRole !== "DEFENSE" ? player.result?.noroshiTry : undefined
                       }
                       onPress={() => {
-                        setBattlePlayer({ color: getTeamColor(team), player });
+                        setBattlePlayer({ color: getColor(team.color), player });
                         setDisplayBattlePlayer(true);
                       }}
                       style={{ alignItems: "center" }}
@@ -451,10 +466,16 @@ const ResultView = (props: ResultViewProps) => {
               style={ViewStyles.modal1d}
             >
               {battlePlayer && (
-                <TitledList
-                  color={battlePlayer.color}
-                  title={`${battlePlayer.player.name} #${battlePlayer.player.nameId}`}
-                >
+                <VStack center>
+                  <Splashtag
+                    color={getColor(battlePlayer.player.nameplate.background.textColor)}
+                    name={battlePlayer.player.name}
+                    nameId={battlePlayer.player.nameId}
+                    title={battlePlayer.player.byname}
+                    banner={getImageCacheSource(battlePlayer.player.nameplate.background.image.url)}
+                    badges={battlePlayer.player.nameplate.badges.map(formatBadge)}
+                    style={ViewStyles.mb2}
+                  />
                   <BattleWeaponBox
                     image={getImageCacheSource(battlePlayer.player.weapon.image2d.url)}
                     name={t(battlePlayer.player.weapon.id)}
@@ -482,7 +503,7 @@ const ResultView = (props: ResultViewProps) => {
                       paddingTo={getMaxAdditionalGearPowerCount(battlePlayer.player)}
                     />
                   ))}
-                </TitledList>
+                </VStack>
               )}
             </Modal>
           </TitledList>
@@ -656,10 +677,16 @@ const ResultView = (props: ResultViewProps) => {
               style={ViewStyles.modal1d}
             >
               {coopPlayer && (
-                <TitledList
-                  color={getCoopRuleColor(result.coop.coopHistoryDetail.rule)}
-                  title={`${coopPlayer.player.name} #${coopPlayer.player.nameId}`}
-                >
+                <VStack center>
+                  <Splashtag
+                    color={getColor(coopPlayer.player.nameplate.background.textColor)}
+                    name={coopPlayer.player.name}
+                    nameId={coopPlayer.player.nameId}
+                    title={coopPlayer.player.byname}
+                    banner={getImageCacheSource(coopPlayer.player.nameplate.background.image.url)}
+                    badges={coopPlayer.player.nameplate.badges.map(formatBadge)}
+                    style={ViewStyles.mb2}
+                  />
                   {coopPlayer.specialWeapon && (
                     <CoopWeaponBox
                       mainWeapons={coopPlayer.weapons.map((weapon) =>
@@ -673,7 +700,7 @@ const ResultView = (props: ResultViewProps) => {
                     image={getImageCacheSource(coopPlayer.player.uniform.image.url)}
                     name={t(coopPlayer.player.uniform.id)}
                   />
-                </TitledList>
+                </VStack>
               )}
             </Modal>
           </TitledList>

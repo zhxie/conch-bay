@@ -13,10 +13,36 @@ import {
   VsMode,
   VsPlayer,
   VsStage,
-  VsTeam,
   XMatchSetting,
 } from "../models/types";
 import { getAuthorityAndPath } from "./url";
+
+export const getImageCacheKey = (image: string) => {
+  const regex = /\/([0-9|a-f]{64}_\d)\./;
+  const match = regex.exec(image)!;
+  return match[1];
+};
+export const getImageCacheSource = (image: string) => {
+  return {
+    uri: image,
+    cacheKey: getImageCacheKey(image),
+  };
+};
+export const getUserIconCacheKey = (userIcon: string) => {
+  const components = userIcon.split("/");
+  return components[components.length - 1];
+};
+export const getUserIconCacheSource = (userIcon: string) => {
+  return {
+    uri: userIcon,
+    cacheKey: getUserIconCacheKey(userIcon),
+  };
+};
+export const getColor = (color: { a: number; b: number; g: number; r: number }) => {
+  return `rgba(${Math.round(color.r * 255)}, ${Math.round(color.g * 255)}, ${Math.round(
+    color.b * 255
+  )}, ${Math.round(color.a * 255)})`;
+};
 
 export const getMatchSetting = (schedule: Schedule, index?: number) => {
   const regularMatchSetting = schedule["regularMatchSetting"];
@@ -105,16 +131,11 @@ export const getCoopWeapons = (shift: Shift) => {
   const setting = getShiftSetting(shift);
   return setting.weapons;
 };
-export const getImageCacheKey = (image: string) => {
-  const regex = /\/([0-9|a-f]{64}_\d)\./;
-  const match = regex.exec(image)!;
-  return match[1];
-};
-export const getImageCacheSource = (image: string) => {
-  return {
-    uri: image,
-    cacheKey: getImageCacheKey(image),
-  };
+export const convertStageImageUrl = (stage: VsStage) => {
+  const url = getAuthorityAndPath(stage.image.url);
+  const pathComponents = url.split("/");
+  const imageId = pathComponents[pathComponents.length - 1].split("_")[0];
+  return `https://splatoon3.ink/assets/splatnet/stage_img/icon/high_resolution/${imageId}_0.png`;
 };
 
 export const getVsModeColor = (mode: VsMode) => {
@@ -161,23 +182,7 @@ export const getFriendColor = (friend: Friend) => {
       return "transparent";
   }
 };
-export const getUserIconCacheKey = (userIcon: string) => {
-  const components = userIcon.split("/");
-  return components[components.length - 1];
-};
-export const getUserIconCacheSource = (userIcon: string) => {
-  return {
-    uri: userIcon,
-    cacheKey: getUserIconCacheKey(userIcon),
-  };
-};
 
-export const convertStageImageUrl = (stage: VsStage) => {
-  const url = getAuthorityAndPath(stage.image.url);
-  const pathComponents = url.split("/");
-  const imageId = pathComponents[pathComponents.length - 1].split("_")[0];
-  return `https://splatoon3.ink/assets/splatnet/stage_img/icon/high_resolution/${imageId}_0.png`;
-};
 export const isVsAnnotation = (battle: VsHistoryDetail) => {
   switch (battle.vsHistoryDetail.judgement) {
     case "WIN":
@@ -191,11 +196,6 @@ export const isVsAnnotation = (battle: VsHistoryDetail) => {
 };
 export const getVsSelfPlayer = (battle: VsHistoryDetail) => {
   return battle.vsHistoryDetail.myTeam.players.find((player) => player.isMyself)!;
-};
-export const getTeamColor = (team: VsTeam) => {
-  return `rgba(${Math.round(team.color.r * 255)}, ${Math.round(team.color.g * 255)}, ${Math.round(
-    team.color.b * 255
-  )}, ${Math.round(team.color.a * 255)})`;
 };
 export const getMaxAdditionalGearPowerCount = (player: VsPlayer) => {
   return Math.max(

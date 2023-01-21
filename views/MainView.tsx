@@ -838,6 +838,7 @@ const MainView = (props: MainViewProps) => {
 
           [coop.coopHistoryDetail.myResult, ...coop.coopHistoryDetail.memberResults].forEach(
             (memberResult) => {
+              // Weapons.
               memberResult.weapons.forEach((weapon) => {
                 resources.set(getImageCacheKey(weapon.image.url), weapon.image.url);
               });
@@ -848,10 +849,22 @@ const MainView = (props: MainViewProps) => {
                 );
               }
 
+              // Work suits.
               resources.set(
                 getImageCacheKey(memberResult.player.uniform.image.url),
                 memberResult.player.uniform.image.url
               );
+
+              // Splashtags.
+              resources.set(
+                getImageCacheKey(memberResult.player.nameplate.background.image.url),
+                memberResult.player.nameplate.background.image.url
+              );
+              memberResult.player.nameplate.badges.forEach((badge) => {
+                if (badge) {
+                  resources.set(getImageCacheKey(badge.image.url), badge.image.url);
+                }
+              });
             }
           );
         } else {
@@ -861,6 +874,7 @@ const MainView = (props: MainViewProps) => {
 
           [battle.vsHistoryDetail.myTeam, ...battle.vsHistoryDetail.otherTeams].forEach((team) => {
             team.players.forEach((player) => {
+              // Weapons.
               resources.set(getImageCacheKey(player.weapon.image2d.url), player.weapon.image2d.url);
               resources.set(
                 getImageCacheKey(player.weapon.subWeapon.image.url),
@@ -871,6 +885,7 @@ const MainView = (props: MainViewProps) => {
                 player.weapon.specialWeapon.image.url
               );
 
+              // Gears.
               [player.headGear, player.clothingGear, player.shoesGear].forEach((gear) => {
                 resources.set(getImageCacheKey(gear.originalImage.url), gear.originalImage.url);
                 resources.set(getImageCacheKey(gear.brand.image.url), gear.brand.image.url);
@@ -882,15 +897,27 @@ const MainView = (props: MainViewProps) => {
                   resources.set(getImageCacheKey(gearPower.image.url), gearPower.image.url);
                 });
               });
+
+              // Splashtags.
+              resources.set(
+                getImageCacheKey(player.nameplate.background.image.url),
+                player.nameplate.background.image.url
+              );
+              player.nameplate.badges.forEach((badge) => {
+                if (badge) {
+                  resources.set(getImageCacheKey(badge.image.url), badge.image.url);
+                }
+              });
             });
           });
         }
       });
 
       // Preload images from API.
-      const [weaponRecords, gears] = await Promise.all([
+      const [weaponRecords, gears, summary] = await Promise.all([
         fetchWeaponRecords(bulletToken),
         fetchGears(bulletToken),
+        fetchSummary(bulletToken),
       ]);
       weaponRecords.weaponRecords.nodes.forEach((record) => {
         resources.set(getImageCacheKey(record.image2d.url), record.image2d.url);
@@ -913,6 +940,9 @@ const MainView = (props: MainViewProps) => {
           });
         }
       );
+      summary.playHistory.allBadges.forEach((badge) => {
+        resources.set(getImageCacheKey(badge.image.url), badge.image.url);
+      });
 
       // Preload images.
       const resourcesArray = Array.from(resources);
