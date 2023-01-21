@@ -5,6 +5,7 @@ import { CacheManager } from "expo-cached-image";
 import * as Clipboard from "expo-clipboard";
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
+import * as Font from "expo-font";
 import { activateKeepAwake, deactivateKeepAwake } from "expo-keep-awake";
 import * as Sharing from "expo-sharing";
 import * as WebBrowser from "expo-web-browser";
@@ -153,6 +154,9 @@ const MainView = (props: MainViewProps) => {
         await loadPersistence();
         await Database.open();
         await loadResults(20, false);
+        Font.loadAsync({
+          Splatfont: require("../assets/fonts/Splatfont.otf"),
+        });
         setReady(true);
       } catch (e) {
         showToast(e);

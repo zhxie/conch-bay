@@ -21,7 +21,7 @@ const Splashtag = (props: SplashtagProps) => {
         source={props.banner}
         style={[ViewStyles.r, { width: "100%", aspectRatio: 700 / 200 }]}
       />
-      <HStack center style={{ height: "30%", position: "absolute", right: 5, bottom: 5 }}>
+      <HStack center style={{ height: "35%", position: "absolute", right: 1, bottom: 1 }}>
         {props.badges.map((badge, i, badges) => {
           if (badge) {
             return (
@@ -29,7 +29,7 @@ const Splashtag = (props: SplashtagProps) => {
                 key={i}
                 source={badge}
                 style={[
-                  i === badges.length - 1 ? undefined : ViewStyles.mr1,
+                  i === badges.length - 1 ? undefined : ViewStyles.mr0_5,
                   styles.badge,
                   { backgroundColor: "transparent" },
                 ]}
@@ -39,7 +39,7 @@ const Splashtag = (props: SplashtagProps) => {
             return (
               <View
                 key={i}
-                style={[i === badges.length - 1 ? undefined : ViewStyles.mr1, styles.badge]}
+                style={[i === badges.length - 1 ? undefined : ViewStyles.mr0_5, styles.badge]}
               />
             );
           }
@@ -66,7 +66,13 @@ const Splashtag = (props: SplashtagProps) => {
       >
         {`#${props.nameId}`}
       </Text>
-      <Text numberOfLines={1} style={[TextStyles.h0, { position: "absolute", color: props.color }]}>
+      <Text
+        numberOfLines={1}
+        style={[
+          TextStyles.h0,
+          { position: "absolute", color: props.color, fontFamily: "Splatfont" },
+        ]}
+      >
         {props.name}
       </Text>
     </Center>

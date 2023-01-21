@@ -54,7 +54,7 @@ export const TextStyles = StyleSheet.create({
     textDecorationLine: "underline",
   },
   h0: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: "bold",
   },
   h1: {
@@ -193,6 +193,9 @@ export const ViewStyles = StyleSheet.create({
     shadowRadius: 1.41,
     elevation: 2,
   },
+  mr0_5: {
+    marginRight: 2,
+  },
   mr1: {
     marginRight: 4,
   },
@@ -204,6 +207,9 @@ export const ViewStyles = StyleSheet.create({
   },
   mr4: {
     marginRight: 16,
+  },
+  mb0_5: {
+    marginBottom: 2,
   },
   mb1: {
     marginBottom: 4,
