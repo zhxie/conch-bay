@@ -457,6 +457,7 @@ const ResultView = (props: ResultViewProps) => {
                 >
                   <BattleWeaponBox
                     image={getImageCacheSource(battlePlayer.player.weapon.image2d.url)}
+                    name={t(battlePlayer.player.weapon.id)}
                     subWeapon={getImageCacheSource(battlePlayer.player.weapon.subWeapon.image.url)}
                     specialWeapon={getImageCacheSource(
                       battlePlayer.player.weapon.specialWeapon.image.url

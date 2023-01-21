@@ -22,6 +22,7 @@ const BattleWeaponBox = (props: BattleWeaponBoxProps) => {
         <HStack center style={ViewStyles.mr1}>
           {props.mainWeapons.map((weapon, i, weapons) => (
             <Image
+              key={i}
               source={weapon}
               style={[
                 i === weapons.length - 1 ? undefined : ViewStyles.mr1,
@@ -34,10 +35,7 @@ const BattleWeaponBox = (props: BattleWeaponBoxProps) => {
           <Circle size={25} color={Color.DarkBackground} style={ViewStyles.r} />
           <Image
             source={props.specialWeapon}
-            style={[
-              ViewStyles.transparent,
-              { width: 19, height: 19, position: "absolute", left: 3, top: 3 },
-            ]}
+            style={[ViewStyles.transparent, { width: 19, height: 19, position: "absolute" }]}
           />
         </Center>
       </HStack>

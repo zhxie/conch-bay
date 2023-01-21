@@ -12,7 +12,7 @@ export { default as Display } from "./Display";
 export { default as FilterButton } from "./FilterButton";
 export { default as FloatingActionButton } from "./FloatingActionButton";
 export { default as GearBox } from "./GearBox";
-export { default as Image, SourceProps as ImageProps } from "./Image";
+export { default as Image, SourceProps } from "./Image";
 export { default as Modal } from "./Modal";
 export { default as ScheduleButton } from "./ScheduleButton";
 export { default as ScheduleBox } from "./ScheduleBox";

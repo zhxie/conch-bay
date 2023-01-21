@@ -48,10 +48,7 @@ const GearBox = (props: GearBoxProps) => {
             <Circle size={30} color={Color.DarkBackground} />
             <Image
               source={props.primaryGearPower}
-              style={[
-                ViewStyles.transparent,
-                { width: 26, height: 26, position: "absolute", left: 2, top: 2 },
-              ]}
+              style={[ViewStyles.transparent, { width: 26, height: 26, position: "absolute" }]}
             />
           </Center>
           {props.additionalGearPower.map((gearPower, i, gearPowers) => (
@@ -59,10 +56,7 @@ const GearBox = (props: GearBoxProps) => {
               <Circle size={20} color={Color.DarkBackground} />
               <Image
                 source={gearPower}
-                style={[
-                  ViewStyles.transparent,
-                  { width: 18, height: 18, position: "absolute", left: 1, top: 1 },
-                ]}
+                style={[ViewStyles.transparent, { width: 18, height: 18, position: "absolute" }]}
               />
             </Center>
           ))}
