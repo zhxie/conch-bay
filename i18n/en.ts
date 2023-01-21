@@ -24,7 +24,7 @@ const en = {
     "This app is an unofficial app which uses the information of SplatNet 3, and is not related to Nintendo Co., Ltd.",
   support: "Support",
   resource_notice:
-    "If Conch Bay cannot load images, you can preload them in advance. Please note, due to SplatNet 3 restrictions, Conch Bay can only preload images of gear and weapons you already own.",
+    "If Conch Bay cannot load images, you can preload them in advance. Please note, due to SplatNet 3 restrictions, Conch Bay can only preload some images.",
   preload_resources: "Preload Resources",
   preloading_resources: "Preloading Resources",
   feedback_notice:

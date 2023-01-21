@@ -58,7 +58,12 @@ import {
   updateSplatnetVersion,
 } from "../utils/api";
 import * as Database from "../utils/database";
-import { getImageCacheKey, getUserIconCacheSource, getVsSelfPlayer } from "../utils/ui";
+import {
+  convertStageImageUrl,
+  getImageCacheKey,
+  getUserIconCacheSource,
+  getVsSelfPlayer,
+} from "../utils/ui";
 import FriendView from "./FriendView";
 import ResultView from "./ResultView";
 import ScheduleView from "./ScheduleView";
@@ -780,7 +785,7 @@ const MainView = (props: MainViewProps) => {
     try {
       const battles: VsHistoryDetail[] = [];
       const coops: CoopHistoryDetail[] = [];
-      const records = await Database.queryAll();
+      const records = await Database.queryAll(false);
       records.forEach((record) => {
         if (record.mode === "salmon_run") {
           coops.push(JSON.parse(record.detail) as CoopHistoryDetail);
@@ -822,12 +827,71 @@ const MainView = (props: MainViewProps) => {
       const res = await getWebServiceToken(sessionToken);
       const bulletToken = await getBulletToken(res.webServiceToken, res.country);
 
+      // Preload images from saved results.
+      const resources = new Map<string, string>();
+      const records = await Database.queryAll(true);
+      records.forEach((record) => {
+        if (record.mode === "salmon_run") {
+          const coop = JSON.parse(record.detail) as CoopHistoryDetail;
+          const stage = convertStageImageUrl(coop.coopHistoryDetail.coopStage);
+          resources.set(getImageCacheKey(stage), stage);
+
+          [coop.coopHistoryDetail.myResult, ...coop.coopHistoryDetail.memberResults].forEach(
+            (memberResult) => {
+              memberResult.weapons.forEach((weapon) => {
+                resources.set(getImageCacheKey(weapon.image.url), weapon.image.url);
+              });
+              if (memberResult.specialWeapon) {
+                resources.set(
+                  getImageCacheKey(memberResult.specialWeapon.image.url),
+                  memberResult.specialWeapon.image.url
+                );
+              }
+
+              resources.set(
+                getImageCacheKey(memberResult.player.uniform.image.url),
+                memberResult.player.uniform.image.url
+              );
+            }
+          );
+        } else {
+          const battle = JSON.parse(record.detail) as VsHistoryDetail;
+          const stage = convertStageImageUrl(battle.vsHistoryDetail.vsStage);
+          resources.set(getImageCacheKey(stage), stage);
+
+          [battle.vsHistoryDetail.myTeam, ...battle.vsHistoryDetail.otherTeams].forEach((team) => {
+            team.players.forEach((player) => {
+              resources.set(getImageCacheKey(player.weapon.image2d.url), player.weapon.image2d.url);
+              resources.set(
+                getImageCacheKey(player.weapon.subWeapon.image.url),
+                player.weapon.subWeapon.image.url
+              );
+              resources.set(
+                getImageCacheKey(player.weapon.specialWeapon.image.url),
+                player.weapon.specialWeapon.image.url
+              );
+
+              [player.headGear, player.clothingGear, player.shoesGear].forEach((gear) => {
+                resources.set(getImageCacheKey(gear.originalImage.url), gear.originalImage.url);
+                resources.set(getImageCacheKey(gear.brand.image.url), gear.brand.image.url);
+                resources.set(
+                  getImageCacheKey(gear.primaryGearPower.image.url),
+                  gear.primaryGearPower.image.url
+                );
+                gear.additionalGearPowers.forEach((gearPower) => {
+                  resources.set(getImageCacheKey(gearPower.image.url), gearPower.image.url);
+                });
+              });
+            });
+          });
+        }
+      });
+
+      // Preload images from API.
       const [weaponRecords, gears] = await Promise.all([
         fetchWeaponRecords(bulletToken),
         fetchGears(bulletToken),
       ]);
-      // Preload images.
-      const resources = new Map<string, string>();
       weaponRecords.weaponRecords.nodes.forEach((record) => {
         resources.set(getImageCacheKey(record.image2d.url), record.image2d.url);
         resources.set(getImageCacheKey(record.subWeapon.image.url), record.subWeapon.image.url);
@@ -849,6 +913,8 @@ const MainView = (props: MainViewProps) => {
           });
         }
       );
+
+      // Preload images.
       const resourcesArray = Array.from(resources);
       const resourcesInfo = await Promise.all(
         resourcesArray.map((resource) =>

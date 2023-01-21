@@ -89,8 +89,8 @@ export const query = async (offset: number, limit: number, condition?: string) =
     stage: row["stage"],
   }));
 };
-export const queryAll = async () => {
-  const record = await exec(`SELECT * FROM result`, true);
+export const queryAll = async (order: boolean) => {
+  const record = await exec("SELECT * FROM result" + (order ? " ORDER BY time" : ""), true);
   return record.rows.map((row) => ({
     id: row["id"],
     time: row["time"],
