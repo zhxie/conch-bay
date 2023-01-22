@@ -655,6 +655,10 @@ const MainView = (props: MainViewProps) => {
   const onLoadMorePress = async () => {
     await loadResults(results!.length + 20, true);
   };
+  const onLoadAllPress = async () => {
+    const count = await Database.count();
+    await loadResults(count, true);
+  };
   const onStatsPress = async () => {
     setCounting(true);
     const count = await Database.count();
@@ -1154,6 +1158,7 @@ const MainView = (props: MainViewProps) => {
                   t={t}
                   isLoading={refreshing || loadingMore}
                   loadMore={onLoadMorePress}
+                  loadAll={onLoadAllPress}
                   results={results}
                 />
               </VStack>

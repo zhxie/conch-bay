@@ -52,6 +52,7 @@ interface ResultViewProps {
   t: (f: string, params?: Record<string, any>) => string;
   isLoading: boolean;
   loadMore: () => void;
+  loadAll: () => void;
   results?: { battle?: VsHistoryDetail; coop?: CoopHistoryDetail }[];
   style?: StyleProp<ViewStyle>;
 }
@@ -335,6 +336,7 @@ const ResultView = (props: ResultViewProps) => {
           ]}
           textStyle={TextStyles.h3}
           onPress={props.loadMore}
+          onLongPress={props.loadAll}
         >
           <Text numberOfLines={1} style={TextStyles.h3}>
             {t("load_more")}

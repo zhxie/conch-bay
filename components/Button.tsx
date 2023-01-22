@@ -11,6 +11,7 @@ interface ButtonProps {
   style?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
   onPress?: () => void;
+  onLongPress?: () => void;
   children?: React.ReactNode;
 }
 
@@ -20,6 +21,7 @@ const Button = (props: ButtonProps) => {
       isDisabled={props.isDisabled || props.isLoading}
       style={[ViewStyles.c, ViewStyles.px3, { borderRadius: 4 }, props.style]}
       onPress={props.onPress}
+      onLongPress={props.onLongPress}
     >
       {props.isLoading && (
         <Center flex>
