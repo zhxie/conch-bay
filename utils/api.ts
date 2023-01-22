@@ -20,8 +20,6 @@ import {
 import { base64, base64url } from "./encode";
 import { formUrlEncoded, getParam, parameterize } from "./url";
 
-const USER_AGENT = "Conch Bay/1.1.0";
-
 let NSO_VERSION = "2.4.0";
 let SPLATNET_VERSION = "2.0.0-bd36a652";
 
@@ -34,11 +32,7 @@ const fetchRetry = async (input: RequestInfo, init?: RequestInit) => {
   );
 };
 export const fetchSchedules = async () => {
-  const res = await fetchRetry("https://splatoon3.ink/data/schedules.json", {
-    headers: {
-      "User-Agent": USER_AGENT,
-    },
-  });
+  const res = await fetchRetry("https://splatoon3.ink/data/schedules.json", {});
   const json = await res.json();
   return (json as GraphQlResponse<Schedules>).data!;
 };
@@ -68,7 +62,6 @@ const callIminkFApi = async (idToken: string, step: number) => {
     method: "POST",
     headers: {
       "Content-Type": "application/json; charset=utf-8",
-      "User-Agent": USER_AGENT,
     },
     body: JSON.stringify({
       token: idToken,
