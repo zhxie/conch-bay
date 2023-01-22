@@ -471,6 +471,7 @@ const ResultView = (props: ResultViewProps) => {
                     color={getColor(battlePlayer.player.nameplate.background.textColor)}
                     name={battlePlayer.player.name}
                     nameId={battlePlayer.player.nameId}
+                    // TODO: need translation.
                     title={battlePlayer.player.byname}
                     banner={getImageCacheSource(battlePlayer.player.nameplate.background.image.url)}
                     badges={battlePlayer.player.nameplate.badges.map(formatBadge)}
@@ -490,14 +491,17 @@ const ResultView = (props: ResultViewProps) => {
                     battlePlayer.player.clothingGear,
                     battlePlayer.player.shoesGear,
                   ].map((gear, i, gears) => (
+                    // TODO: show brands with its image, name and favorite.
                     <GearBox
                       key={i}
                       isFirst={i === 0}
                       isLast={i === gears.length - 1}
                       image={getImageCacheSource(gear.originalImage.url)}
                       brand={getImageCacheSource(gear.brand.image.url)}
-                      primaryGearPower={getImageCacheSource(gear.primaryGearPower.image.url)}
-                      additionalGearPower={gear.additionalGearPowers.map((gearPower) =>
+                      // TODO: need translation.
+                      name={gear.name}
+                      primaryAbility={getImageCacheSource(gear.primaryGearPower.image.url)}
+                      additionalAbility={gear.additionalGearPowers.map((gearPower) =>
                         getImageCacheSource(gearPower.image.url)
                       )}
                       paddingTo={getMaxAdditionalGearPowerCount(battlePlayer.player)}
@@ -682,6 +686,7 @@ const ResultView = (props: ResultViewProps) => {
                     color={getColor(coopPlayer.player.nameplate.background.textColor)}
                     name={coopPlayer.player.name}
                     nameId={coopPlayer.player.nameId}
+                    // TODO: need translation.
                     title={coopPlayer.player.byname}
                     banner={getImageCacheSource(coopPlayer.player.nameplate.background.image.url)}
                     badges={coopPlayer.player.nameplate.badges.map(formatBadge)}

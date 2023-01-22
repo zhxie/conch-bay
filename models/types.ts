@@ -105,7 +105,6 @@ export interface Badge {
 export interface PlayHistory {
   rank: number;
   udemae: string;
-  // TODO: nullable?
   allBadges: Badge[];
 }
 export interface Summary {
@@ -257,6 +256,7 @@ export interface VsWeapon {
 }
 export type Species = "INKLING" | "OCTOLING";
 export interface VsGear {
+  name: string;
   primaryGearPower: GearPower;
   additionalGearPowers: GearPower[];
   originalImage: {
