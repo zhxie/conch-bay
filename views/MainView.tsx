@@ -39,7 +39,13 @@ import {
   VStack,
   ViewStyles,
 } from "../components";
-import { CoopHistoryDetail, Friends, Schedules, VsHistoryDetail } from "../models/types";
+import {
+  CoopHistoryDetail,
+  Friends,
+  Schedules,
+  VsHistoryDetail,
+  WeaponRecords,
+} from "../models/types";
 import {
   fetchBattleHistories,
   fetchCatalog,
@@ -315,6 +321,21 @@ const MainView = (props: MainViewProps) => {
       return -1;
     }
   };
+  const generateBulletToken = async () => {
+    if (bulletToken.length > 0) {
+      showToast(t("reacquiring_tokens"));
+    }
+
+    const res = await getWebServiceToken(sessionToken);
+    const newBulletToken = await getBulletToken(res.webServiceToken, res.country);
+
+    setBulletToken(newBulletToken);
+    await savePersistence({
+      bulletToken: newBulletToken,
+    });
+
+    return newBulletToken;
+  };
   const refresh = async () => {
     setRefreshing(true);
     try {
@@ -343,17 +364,7 @@ const MainView = (props: MainViewProps) => {
 
         // Regenerate bullet token if necessary.
         if (!newBulletToken) {
-          if (bulletToken.length > 0) {
-            showToast(t("reacquiring_tokens"));
-          }
-
-          const res = await getWebServiceToken(sessionToken);
-          newBulletToken = await getBulletToken(res.webServiceToken, res.country);
-
-          setBulletToken(newBulletToken);
-          await savePersistence({
-            bulletToken: newBulletToken,
-          });
+          newBulletToken = await generateBulletToken();
         }
 
         // Fetch friends, summary, catalog and results.
@@ -826,11 +837,6 @@ const MainView = (props: MainViewProps) => {
   const onPreloadResourcesPress = async () => {
     setPreloadingResources(true);
     try {
-      // Generate tokens.
-      // TODO: request update instead generating a one-time-use token.
-      const res = await getWebServiceToken(sessionToken);
-      const bulletToken = await getBulletToken(res.webServiceToken, res.country);
-
       // Preload images from saved results.
       const resources = new Map<string, string>();
       const records = await Database.queryAll(true);
@@ -917,11 +923,28 @@ const MainView = (props: MainViewProps) => {
         }
       });
 
-      // Preload images from API.
+      // Attempt to preload weapon images from API.
+      let newBulletToken = "";
+      let weaponRecordsAttempt: WeaponRecords | undefined;
+      if (bulletToken.length > 0) {
+        try {
+          weaponRecordsAttempt = await fetchWeaponRecords(bulletToken);
+          newBulletToken = bulletToken;
+        } catch {
+          /* empty */
+        }
+      }
+
+      // Regenerate bullet token if necessary.
+      if (!newBulletToken) {
+        newBulletToken = await generateBulletToken();
+      }
+
+      // Preload weapon, gear, badge images from API.
       const [weaponRecords, gears, summary] = await Promise.all([
-        fetchWeaponRecords(bulletToken),
-        fetchGears(bulletToken),
-        fetchSummary(bulletToken),
+        weaponRecordsAttempt || fetchWeaponRecords(newBulletToken),
+        fetchGears(newBulletToken),
+        fetchSummary(newBulletToken),
       ]);
       weaponRecords.weaponRecords.nodes.forEach((record) => {
         resources.set(getImageCacheKey(record.image2d.url), record.image2d.url);
