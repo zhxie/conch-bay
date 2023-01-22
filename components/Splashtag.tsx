@@ -47,6 +47,7 @@ const Splashtag = (props: SplashtagProps) => {
       </HStack>
       <Text
         numberOfLines={1}
+        // TODO: use Splatfont 2. In certain locales, Splatfont 2 is replaced with other fonts.
         style={[
           TextStyles.h5,
           {
@@ -62,16 +63,14 @@ const Splashtag = (props: SplashtagProps) => {
       </Text>
       <Text
         numberOfLines={1}
+        // TODO: use Splatfont 2. In certain locales, Splatfont 2 is replaced with other fonts.
         style={[TextStyles.h7, { position: "absolute", left: 10, bottom: 5, color: props.color }]}
       >
         {`#${props.nameId}`}
       </Text>
       <Text
         numberOfLines={1}
-        style={[
-          TextStyles.h0,
-          { position: "absolute", color: props.color, fontFamily: "Splatfont" },
-        ]}
+        style={{ position: "absolute", color: props.color, fontFamily: "Splatfont", fontSize: 26 }}
       >
         {props.name}
       </Text>
