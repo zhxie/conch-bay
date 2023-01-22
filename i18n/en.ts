@@ -23,6 +23,8 @@ const en = {
   disclaimer:
     "This app is an unofficial app which uses the information of SplatNet 3, and is not related to Nintendo Co., Ltd.",
   support: "Support",
+  relog_in_notice: "If Conch Bay cannot acquire tokens, you can relog in.",
+  relog_in: "Relog In",
   resource_notice:
     "If Conch Bay cannot load images, you can preload them in advance. Please note, due to SplatNet 3 restrictions, Conch Bay can only preload some images.",
   preload_resources: "Preload Resources",

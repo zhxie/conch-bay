@@ -21,6 +21,8 @@ const zh = {
   exporting: "导出中",
   disclaimer: "本应用是使用鱿鱼圈3的信息的非官方应用，与任天堂有限公司无关。",
   support: "支持",
+  relog_in_notice: "如果法螺湾无法获取令牌，您可以重新登录。",
+  relog_in: "重新登录",
   resource_notice:
     "如果法螺湾无法载入图片，您可以提前进行预加载。请注意，由于鱿鱼圈3的限制，法螺湾仅能预加载部分图片。",
   preload_resources: "预加载资源",

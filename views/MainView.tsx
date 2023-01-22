@@ -1417,6 +1417,24 @@ const MainView = (props: MainViewProps) => {
           {sessionToken.length > 0 && (
             <VStack style={[ViewStyles.mb4, ViewStyles.wf]}>
               <VStack center>
+                <Text style={ViewStyles.mb2}>{t("relog_in_notice")}</Text>
+              </VStack>
+              <Button
+                isLoading={loggingIn}
+                isLoadingText={t("logging_in")}
+                style={ViewStyles.accent}
+                textStyle={reverseTextColor}
+                onPress={onLogInContinuePress}
+              >
+                <Text numberOfLines={1} style={reverseTextColor}>
+                  {t("relog_in")}
+                </Text>
+              </Button>
+            </VStack>
+          )}
+          {sessionToken.length > 0 && (
+            <VStack style={[ViewStyles.mb4, ViewStyles.wf]}>
+              <VStack center>
                 <Text style={ViewStyles.mb2}>{t("resource_notice")}</Text>
               </VStack>
               <Button
