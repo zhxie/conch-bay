@@ -74,34 +74,10 @@ import {
 import FriendView from "./FriendView";
 import ResultView from "./ResultView";
 import ScheduleView from "./ScheduleView";
+import StatsView from "./StatsView";
 
 interface MainViewProps {
   t: (f: string, params?: Record<string, any>) => string;
-}
-interface CountProps {
-  database: {
-    count: number;
-  };
-  battle: {
-    count: number;
-    win: number;
-    lose: number;
-    kill: number;
-    assist: number;
-    death: number;
-    special: number;
-  };
-  coop: {
-    count: number;
-    clear: number;
-    wave: number;
-    defeat: number;
-    deliverGoldenEgg: number;
-    assistGoldenEgg: number;
-    powerEgg: number;
-    rescue: number;
-    rescued: number;
-  };
 }
 
 let autoRefreshTimeout: NodeJS.Timeout | undefined;
@@ -123,9 +99,6 @@ const MainView = (props: MainViewProps) => {
   const [refreshing, setRefreshing] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [filter, setFilter] = useState("");
-  const [stats, setStats] = useState(false);
-  const [count, setCount] = useState<CountProps>();
-  const [counting, setCounting] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [support, setSupport] = useState(false);
   const [preloadingResources, setPreloadingResources] = useState(false);
@@ -659,93 +632,6 @@ const MainView = (props: MainViewProps) => {
     const count = await Database.count();
     await loadResults(count, true);
   };
-  const onStatsPress = async () => {
-    setCounting(true);
-    const count = await Database.count();
-    let battle = 0,
-      win = 0,
-      lose = 0,
-      kill = 0,
-      assist = 0,
-      death = 0,
-      special = 0,
-      coop = 0,
-      clear = 0,
-      wave = 0,
-      defeat = 0,
-      deliverGoldenEgg = 0,
-      assistGoldenEgg = 0,
-      powerEgg = 0,
-      rescue = 0,
-      rescued = 0;
-    results?.forEach((result) => {
-      if (result.battle) {
-        battle += 1;
-        switch (result.battle.vsHistoryDetail.judgement) {
-          case "WIN":
-            win += 1;
-            break;
-          case "LOSE":
-          case "DEEMED_LOSE":
-          case "EXEMPTED_LOSE":
-            lose += 1;
-            break;
-          case "DRAW":
-            break;
-        }
-        kill += getVsSelfPlayer(result.battle).result?.kill ?? 0;
-        assist += getVsSelfPlayer(result.battle).result?.assist ?? 0;
-        death += getVsSelfPlayer(result.battle).result?.death ?? 0;
-        special += getVsSelfPlayer(result.battle).result?.special ?? 0;
-      } else {
-        coop += 1;
-        const resultWave = result.coop!.coopHistoryDetail.resultWave;
-        if (resultWave >= 0) {
-          if (resultWave === 0) {
-            clear += 1;
-            wave += 3;
-          }
-          wave += resultWave - 1;
-        }
-        defeat += result.coop!.coopHistoryDetail.myResult.defeatEnemyCount;
-        deliverGoldenEgg += result.coop!.coopHistoryDetail.myResult.goldenDeliverCount;
-        assistGoldenEgg += result.coop!.coopHistoryDetail.myResult.goldenAssistCount;
-        powerEgg += result.coop!.coopHistoryDetail.myResult.deliverCount;
-        rescue += result.coop!.coopHistoryDetail.myResult.rescueCount;
-        rescued += result.coop!.coopHistoryDetail.myResult.rescuedCount;
-      }
-    });
-    setCount({
-      database: {
-        count: count,
-      },
-      battle: {
-        count: battle,
-        win,
-        lose,
-        kill,
-        assist,
-        death,
-        special,
-      },
-      coop: {
-        count: coop,
-        clear,
-        wave,
-        defeat,
-        deliverGoldenEgg,
-        assistGoldenEgg,
-        powerEgg,
-        rescue,
-        rescued,
-      },
-    });
-    setCounting(false);
-    setStats(true);
-  };
-  const onStatsClose = async () => {
-    setStats(false);
-  };
   const onImportPress = async () => {
     let uri = "";
     try {
@@ -1039,25 +925,6 @@ const MainView = (props: MainViewProps) => {
     setAutoRefresh(!autoRefresh);
   };
 
-  const formatTotalAndAverage = (total: number, count: number) => {
-    if (count === 0) {
-      return total;
-    }
-    return `${total} (${(total / count).toFixed(1)})`;
-  };
-  const formatTotalAndAverageKillAndAssist = (kill: number, assist: number, count: number) => {
-    if (count === 0) {
-      if (assist > 0) {
-        return `${kill}(${assist})`;
-      }
-      return kill;
-    }
-    if (assist > 0) {
-      return `${kill}(${assist}) (${(kill / count).toFixed(1)}(${(assist / count).toFixed(1)}))`;
-    }
-    return formatTotalAndAverage(kill, count);
-  };
-
   return (
     <VStack flex style={backgroundStyle}>
       <Animated.View style={{ opacity: fade }}>
@@ -1170,14 +1037,11 @@ const MainView = (props: MainViewProps) => {
                 style={[ViewStyles.mb4, ViewStyles.wf]}
               >
                 <HStack flex center style={ViewStyles.px4}>
-                  <ToolButton
-                    isLoading={counting}
-                    isLoadingText={t("stats")}
+                  <StatsView
+                    t={t}
                     isDisabled={refreshing}
-                    icon="bar-chart-2"
-                    title={t("stats")}
+                    results={results}
                     style={ViewStyles.mr2}
-                    onPress={onStatsPress}
                   />
                   <ToolButton
                     isLoading={false}
@@ -1309,107 +1173,6 @@ const MainView = (props: MainViewProps) => {
             </Button>
           </VStack>
         </VStack>
-      </Modal>
-      <Modal isVisible={stats} onClose={onStatsClose} style={ViewStyles.modal2d}>
-        {!!count && (
-          <VStack style={[ViewStyles.mb2, ViewStyles.wf]}>
-            <VStack style={ViewStyles.mb2}>
-              <Display isFirst isLast title={t("database")}>
-                <Text numberOfLines={1}>{count.database.count}</Text>
-              </Display>
-            </VStack>
-            <VStack style={ViewStyles.mb2}>
-              <Display isFirst isLast={count.battle.count === 0} title={t("battle")}>
-                <Text numberOfLines={1}>{count.battle.count}</Text>
-              </Display>
-              {count.battle.count > 0 && (
-                <VStack>
-                  <Display title={t("victory")}>
-                    <Text numberOfLines={1}>{count.battle.win}</Text>
-                  </Display>
-                  <Display title={t("defeat")}>
-                    <Text numberOfLines={1}>{count.battle.lose}</Text>
-                  </Display>
-                  <Display title={t("splatted_by_you")}>
-                    <Text numberOfLines={1}>
-                      {formatTotalAndAverageKillAndAssist(
-                        count.battle.kill,
-                        count.battle.assist,
-                        count.battle.count
-                      )}
-                    </Text>
-                  </Display>
-                  <Display title={t("splatted")}>
-                    <Text numberOfLines={1}>
-                      {formatTotalAndAverage(count.battle.death, count.battle.count)}
-                    </Text>
-                  </Display>
-                  <Display isLast title={t("special_weapon_uses")}>
-                    <Text numberOfLines={1}>
-                      {formatTotalAndAverage(count.battle.special, count.battle.count)}
-                    </Text>
-                  </Display>
-                </VStack>
-              )}
-            </VStack>
-            <VStack>
-              <Display isFirst isLast={count.coop.count === 0} title={t("salmon_run")}>
-                <Text numberOfLines={1}>{count.coop.count}</Text>
-              </Display>
-              {count.coop.count > 0 && (
-                <VStack>
-                  <Display title={t("clear")}>
-                    <Text numberOfLines={1}>{count.coop.clear}</Text>
-                  </Display>
-                  <Display title={t("failure")}>
-                    <Text numberOfLines={1}>{count.coop.count - count.coop.clear}</Text>
-                  </Display>
-                  <Display title={t("waves_cleared")}>
-                    <Text numberOfLines={1}>
-                      {formatTotalAndAverage(count.coop.wave, count.coop.count)}
-                    </Text>
-                  </Display>
-                  <Display title={t("boss_salmonids_defeated")}>
-                    <Text numberOfLines={1}>
-                      {formatTotalAndAverage(count.coop.defeat, count.coop.count)}
-                    </Text>
-                  </Display>
-                  <Display title={t("golden_eggs_collected")}>
-                    <HStack style={{ alignItems: "baseline" }}>
-                      <Text numberOfLines={1}>
-                        {formatTotalAndAverage(count.coop.deliverGoldenEgg, count.coop.count)}
-                      </Text>
-                      {count.coop.assistGoldenEgg > 0 && (
-                        <Text numberOfLines={1} style={TextStyles.h6}>
-                          {`+${formatTotalAndAverage(
-                            count.coop.assistGoldenEgg,
-                            count.coop.count
-                          )}`}
-                        </Text>
-                      )}
-                    </HStack>
-                  </Display>
-                  <Display title={t("power_eggs_collected")}>
-                    <Text numberOfLines={1}>
-                      {formatTotalAndAverage(count.coop.powerEgg, count.coop.count)}
-                    </Text>
-                  </Display>
-                  <Display title={t("crew_members_rescued")}>
-                    <Text numberOfLines={1}>
-                      {formatTotalAndAverage(count.coop.rescue, count.coop.count)}
-                    </Text>
-                  </Display>
-                  <Display isLast title={t("rescued")}>
-                    <Text numberOfLines={1}>
-                      {formatTotalAndAverage(count.coop.rescued, count.coop.count)}
-                    </Text>
-                  </Display>
-                </VStack>
-              )}
-            </VStack>
-          </VStack>
-        )}
-        <Text center>{t("stats_notice")}</Text>
       </Modal>
       <Modal isVisible={support} onClose={onSupportClose} style={ViewStyles.modal1d}>
         <VStack center>

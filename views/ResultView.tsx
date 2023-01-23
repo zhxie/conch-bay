@@ -48,17 +48,17 @@ import {
   isCoopAnnotation,
 } from "../utils/ui";
 
+export interface ResultProps {
+  battle?: VsHistoryDetail;
+  coop?: CoopHistoryDetail;
+}
 interface ResultViewProps {
   t: (f: string, params?: Record<string, any>) => string;
   isLoading: boolean;
   loadMore: () => void;
   loadAll: () => void;
-  results?: { battle?: VsHistoryDetail; coop?: CoopHistoryDetail }[];
+  results?: ResultProps[];
   style?: StyleProp<ViewStyle>;
-}
-interface ResultProps {
-  battle?: VsHistoryDetail;
-  coop?: CoopHistoryDetail;
 }
 interface BattlePlayerProps {
   color: string;
