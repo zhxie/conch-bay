@@ -1,5 +1,15 @@
+import { FlashList } from "@shopify/flash-list";
 import { useRef, useState } from "react";
-import { Linking, ScrollView, StyleProp, ViewStyle, useColorScheme } from "react-native";
+import {
+  Linking,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  RefreshControlProps,
+  ScrollView,
+  StyleProp,
+  ViewStyle,
+  useColorScheme,
+} from "react-native";
 import JSONTree from "react-native-json-tree";
 import {
   BattleButton,
@@ -54,10 +64,11 @@ export interface ResultProps {
 }
 interface ResultViewProps {
   t: (f: string, params?: Record<string, any>) => string;
-  isLoading: boolean;
-  loadMore: () => void;
-  loadAll: () => void;
   results?: ResultProps[];
+  refreshControl: React.ReactElement<RefreshControlProps>;
+  header: React.ReactElement;
+  footer: React.ReactElement;
+  onScrollEndDrag: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
   style?: StyleProp<ViewStyle>;
 }
 
@@ -240,105 +251,99 @@ const ResultView = (props: ResultViewProps) => {
     setHidePlayerNames(!hidePlayerNames);
   };
 
-  return (
-    <VStack style={[ViewStyles.px4, ViewStyles.wf, props.style]}>
-      {(() => {
-        if (props.results) {
-          return props.results.map((result, i) => {
-            if (result.battle) {
-              return (
-                <BattleButton
-                  key={result.battle.vsHistoryDetail.id}
-                  isFirst={i === 0}
-                  isLast={false}
-                  color={getVsModeColor(result.battle.vsHistoryDetail.vsMode)!}
-                  result={formatJudgement(result.battle)}
-                  rule={t(result.battle.vsHistoryDetail.vsRule.id)}
-                  stage={t(result.battle.vsHistoryDetail.vsStage.id)}
-                  weapon={t(getVsSelfPlayer(result.battle).weapon.id)}
-                  kill={getVsSelfPlayer(result.battle).result?.kill}
-                  assist={getVsSelfPlayer(result.battle).result?.assist}
-                  death={getVsSelfPlayer(result.battle).result?.death}
-                  special={getVsSelfPlayer(result.battle).result?.special}
-                  ultraSignal={
-                    result.battle.vsHistoryDetail.myTeam.tricolorRole !== "DEFENSE"
-                      ? getVsSelfPlayer(result.battle).result?.noroshiTry
-                      : undefined
-                  }
-                  onPress={() => {
-                    setResult({ battle: result.battle! });
-                    setDisplayBattle(true);
-                  }}
-                />
-              );
+  const renderItem = (result: { item: ResultProps | number; index: number }) => {
+    if (typeof result.item === "number") {
+      return (
+        <VStack flex style={ViewStyles.px4}>
+          <BattleButton
+            isLoading={true}
+            isFirst={result.index === 0}
+            color={Color.MiddleTerritory}
+            rule=""
+            stage=""
+            weapon=""
+          />
+        </VStack>
+      );
+    }
+    if (result.item.battle) {
+      return (
+        <VStack flex style={ViewStyles.px4}>
+          <BattleButton
+            key={result.item.battle.vsHistoryDetail.id}
+            isFirst={result.index === 0}
+            isLast={false}
+            color={getVsModeColor(result.item.battle.vsHistoryDetail.vsMode)!}
+            result={formatJudgement(result.item.battle)}
+            rule={t(result.item.battle.vsHistoryDetail.vsRule.id)}
+            stage={t(result.item.battle.vsHistoryDetail.vsStage.id)}
+            weapon={t(getVsSelfPlayer(result.item.battle).weapon.id)}
+            kill={getVsSelfPlayer(result.item.battle).result?.kill}
+            assist={getVsSelfPlayer(result.item.battle).result?.assist}
+            death={getVsSelfPlayer(result.item.battle).result?.death}
+            special={getVsSelfPlayer(result.item.battle).result?.special}
+            ultraSignal={
+              result.item.battle.vsHistoryDetail.myTeam.tricolorRole !== "DEFENSE"
+                ? getVsSelfPlayer(result.item.battle).result?.noroshiTry
+                : undefined
             }
-            return (
-              <CoopButton
-                key={result.coop!.coopHistoryDetail.id}
-                isFirst={i === 0}
-                isLast={false}
-                color={getCoopRuleColor(result.coop!.coopHistoryDetail.rule)!}
-                result={result.coop!.coopHistoryDetail.resultWave === 0 ? 1 : -1}
-                rule={t(result.coop!.coopHistoryDetail.rule)}
-                stage={t(result.coop!.coopHistoryDetail.coopStage.id)}
-                kingSalmonid={
-                  result.coop!.coopHistoryDetail.bossResult !== null
-                    ? t(result.coop!.coopHistoryDetail.bossResult.boss.id)
-                    : undefined
-                }
-                wave={formatWave(result.coop!)!}
-                isClear={getCoopIsClear(result.coop!)}
-                hazardLevel={formatHazardLevel(result.coop!)}
-                powerEgg={getCoopPowerEgg(result.coop!)}
-                goldenEgg={getCoopGoldenEgg(result.coop!)}
-                onPress={() => {
-                  setResult({ coop: result.coop! });
-                  setDisplayCoop(true);
-                }}
-              />
-            );
-          });
-        } else {
-          return Array(8)
-            .fill(0)
-            .map((_, i) => {
-              return (
-                <BattleButton
-                  key={i}
-                  isLoading={true}
-                  isFirst={i === 0}
-                  color={Color.MiddleTerritory}
-                  rule=""
-                  stage=""
-                  weapon=""
-                />
-              );
-            });
-        }
-      })()}
-      {
-        <Button
-          isLoading={props.isLoading}
-          isLoadingText={t("loading_more")}
-          style={[
-            props.results?.length ?? 0 > 0
-              ? {
-                  borderTopLeftRadius: 0,
-                  borderTopRightRadius: 0,
-                }
-              : ViewStyles.rt,
-            ViewStyles.rb,
-            { height: 64 },
-          ]}
-          textStyle={TextStyles.h3}
-          onPress={props.loadMore}
-          onLongPress={props.loadAll}
-        >
-          <Text numberOfLines={1} style={TextStyles.h3}>
-            {t("load_more")}
-          </Text>
-        </Button>
-      }
+            onPress={() => {
+              setResult({ battle: (result.item as ResultProps).battle });
+              setDisplayBattle(true);
+            }}
+          />
+        </VStack>
+      );
+    }
+    return (
+      <VStack flex style={ViewStyles.px4}>
+        <CoopButton
+          key={result.item.coop!.coopHistoryDetail.id}
+          isLast={false}
+          color={getCoopRuleColor(result.item.coop!.coopHistoryDetail.rule)!}
+          result={result.item.coop!.coopHistoryDetail.resultWave === 0 ? 1 : -1}
+          rule={t(result.item.coop!.coopHistoryDetail.rule)}
+          stage={t(result.item.coop!.coopHistoryDetail.coopStage.id)}
+          kingSalmonid={
+            result.item.coop!.coopHistoryDetail.bossResult !== null
+              ? t(result.item.coop!.coopHistoryDetail.bossResult.boss.id)
+              : undefined
+          }
+          wave={formatWave(result.item.coop!)!}
+          isClear={getCoopIsClear(result.item.coop!)}
+          hazardLevel={formatHazardLevel(result.item.coop!)}
+          powerEgg={getCoopPowerEgg(result.item.coop!)}
+          goldenEgg={getCoopGoldenEgg(result.item.coop!)}
+          onPress={() => {
+            setResult({ coop: (result.item as ResultProps).coop });
+            setDisplayCoop(true);
+          }}
+        />
+      </VStack>
+    );
+  };
+
+  return (
+    <VStack flex>
+      <FlashList
+        refreshControl={props.refreshControl}
+        data={props.results ?? new Array(8).fill(0)}
+        keyExtractor={(result, i) => {
+          if (typeof result === "number") {
+            return String(i);
+          }
+          if (result.battle) {
+            return result.battle.vsHistoryDetail.id;
+          }
+          return result.coop!.coopHistoryDetail.id;
+        }}
+        renderItem={renderItem}
+        estimatedItemSize={64}
+        ListHeaderComponent={props.header}
+        ListFooterComponent={props.footer}
+        onScrollEndDrag={props.onScrollEndDrag}
+        showsVerticalScrollIndicator={false}
+      />
       <Modal
         isVisible={displayResult}
         onClose={onDisplayResultClose}

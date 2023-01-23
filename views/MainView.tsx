@@ -921,8 +921,11 @@ const MainView = (props: MainViewProps) => {
 
   return (
     <VStack flex style={backgroundStyle}>
-      <Animated.View style={{ opacity: fade }}>
-        <ScrollView
+      <Animated.View style={[ViewStyles.f, { opacity: fade }]}>
+        {/* TODO: it is a little bit weird concentrating on result list. */}
+        <ResultView
+          t={t}
+          results={sessionToken.length > 0 ? results : []}
           refreshControl={
             <RefreshControl
               progressViewOffset={insets.top}
@@ -930,165 +933,186 @@ const MainView = (props: MainViewProps) => {
               onRefresh={refresh}
             />
           }
-          showsVerticalScrollIndicator={false}
-          onScrollEndDrag={onScrollEndDrag}
-          style={{ height: "100%" }}
-        >
-          <SafeAreaView style={{ alignItems: "center" }}>
-            {!sessionToken && (
-              <Center flex style={[ViewStyles.px4, ViewStyles.mb4]}>
-                <Button style={ViewStyles.accent} onPress={onLogInPress}>
-                  <Text numberOfLines={1} style={reverseTextColor}>
-                    {t("log_in")}
-                  </Text>
-                </Button>
-              </Center>
-            )}
-            {sessionToken.length > 0 && (
-              <VStack center style={[ViewStyles.px4, ViewStyles.mb4]}>
-                <Avatar
-                  size={64}
-                  image={icon.length > 0 ? getUserIconCacheSource(icon) : undefined}
-                  onPress={onLogOutPress}
-                  style={ViewStyles.mb2}
-                />
-                <HStack>
-                  {catalogLevel.length > 0 && (
-                    <Badge color={Color.AccentColor} title={catalogLevel} style={ViewStyles.mr1} />
-                  )}
-                  {level.length > 0 && (
-                    <Badge color={Color.RegularBattle} title={level} style={ViewStyles.mr1} />
-                  )}
-                  {rank.length > 0 && (
-                    <Badge color={Color.AnarchyBattle} title={rank} style={ViewStyles.mr1} />
-                  )}
-                  {grade.length > 0 && <Badge color={Color.SalmonRun} title={t(grade)} />}
-                </HStack>
-              </VStack>
-            )}
-            <ScheduleView t={t} schedules={schedules} style={ViewStyles.mb4} />
-            {sessionToken.length > 0 &&
-              (friends === undefined || friends.friends.nodes.length > 0) && (
-                <FriendView friends={friends} style={ViewStyles.mb4} />
+          header={
+            <SafeAreaView edges={["top", "left", "right"]} style={{ alignItems: "center" }}>
+              {!sessionToken && (
+                <Center flex style={[ViewStyles.px4, ViewStyles.mb4]}>
+                  <Button style={ViewStyles.accent} onPress={onLogInPress}>
+                    <Text numberOfLines={1} style={reverseTextColor}>
+                      {t("log_in")}
+                    </Text>
+                  </Button>
+                </Center>
               )}
-            {sessionToken.length > 0 && (
-              <VStack style={[ViewStyles.mb4, ViewStyles.wf]}>
+              {sessionToken.length > 0 && (
+                <VStack center style={[ViewStyles.px4, ViewStyles.mb4]}>
+                  <Avatar
+                    size={64}
+                    image={icon.length > 0 ? getUserIconCacheSource(icon) : undefined}
+                    onPress={onLogOutPress}
+                    style={ViewStyles.mb2}
+                  />
+                  <HStack>
+                    {catalogLevel.length > 0 && (
+                      <Badge
+                        color={Color.AccentColor}
+                        title={catalogLevel}
+                        style={ViewStyles.mr1}
+                      />
+                    )}
+                    {level.length > 0 && (
+                      <Badge color={Color.RegularBattle} title={level} style={ViewStyles.mr1} />
+                    )}
+                    {rank.length > 0 && (
+                      <Badge color={Color.AnarchyBattle} title={rank} style={ViewStyles.mr1} />
+                    )}
+                    {grade.length > 0 && <Badge color={Color.SalmonRun} title={t(grade)} />}
+                  </HStack>
+                </VStack>
+              )}
+              <ScheduleView t={t} schedules={schedules} style={ViewStyles.mb4} />
+              {sessionToken.length > 0 &&
+                (friends === undefined || friends.friends.nodes.length > 0) && (
+                  <FriendView friends={friends} style={ViewStyles.mb4} />
+                )}
+              {sessionToken.length > 0 && (
+                <VStack style={[ViewStyles.mb2, ViewStyles.wf]}>
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                    <HStack flex center style={ViewStyles.px4}>
+                      <FilterButton
+                        isDisabled={refreshing || loadingMore}
+                        color={filter === "regular_battle" ? Color.RegularBattle : undefined}
+                        title={t("regular_battle")}
+                        style={ViewStyles.mr2}
+                        onPress={onFilterRegularBattlePress}
+                      />
+                      <FilterButton
+                        isDisabled={refreshing || loadingMore}
+                        color={filter === "anarchy_battle" ? Color.AnarchyBattle : undefined}
+                        title={t("anarchy_battle")}
+                        style={ViewStyles.mr2}
+                        onPress={onFilterAnarchyBattlePress}
+                      />
+                      <FilterButton
+                        isDisabled={refreshing || loadingMore}
+                        color={filter === "x_battle" ? Color.XBattle : undefined}
+                        title={t("x_battle")}
+                        style={ViewStyles.mr2}
+                        onPress={onFilterXBattlePress}
+                      />
+                      <FilterButton
+                        isDisabled={refreshing || loadingMore}
+                        color={filter === "private_battle" ? Color.PrivateBattle : undefined}
+                        title={t("private_battle")}
+                        style={ViewStyles.mr2}
+                        onPress={onFilterPrivateBattlePress}
+                      />
+                      <FilterButton
+                        isDisabled={refreshing || loadingMore}
+                        color={filter === "salmon_run" ? Color.SalmonRun : undefined}
+                        title={t("salmon_run")}
+                        onPress={onFilterSalmonRunPress}
+                      />
+                    </HStack>
+                  </ScrollView>
+                </VStack>
+              )}
+            </SafeAreaView>
+          }
+          footer={
+            <SafeAreaView edges={["bottom", "left", "right"]} style={{ alignItems: "center" }}>
+              {sessionToken.length > 0 && (
+                <VStack style={[ViewStyles.mb4, ViewStyles.wf, ViewStyles.px4]}>
+                  <Button
+                    isLoading={refreshing || loadingMore}
+                    isLoadingText={t("loading_more")}
+                    style={[
+                      results === undefined || results.length > 0
+                        ? {
+                            borderTopLeftRadius: 0,
+                            borderTopRightRadius: 0,
+                          }
+                        : ViewStyles.rt,
+                      ViewStyles.rb,
+                      { height: 64 },
+                    ]}
+                    textStyle={TextStyles.h3}
+                    onPress={onLoadMorePress}
+                    onLongPress={onLoadAllPress}
+                  >
+                    <Text numberOfLines={1} style={TextStyles.h3}>
+                      {t("load_more")}
+                    </Text>
+                  </Button>
+                </VStack>
+              )}
+              {sessionToken.length > 0 && (
                 <ScrollView
                   horizontal
                   showsHorizontalScrollIndicator={false}
-                  style={ViewStyles.mb2}
+                  style={[ViewStyles.mb4, ViewStyles.wf]}
                 >
                   <HStack flex center style={ViewStyles.px4}>
-                    <FilterButton
-                      isDisabled={refreshing || loadingMore}
-                      color={filter === "regular_battle" ? Color.RegularBattle : undefined}
-                      title={t("regular_battle")}
+                    <StatsView
+                      t={t}
+                      isDisabled={refreshing}
+                      results={results}
                       style={ViewStyles.mr2}
-                      onPress={onFilterRegularBattlePress}
                     />
-                    <FilterButton
-                      isDisabled={refreshing || loadingMore}
-                      color={filter === "anarchy_battle" ? Color.AnarchyBattle : undefined}
-                      title={t("anarchy_battle")}
+                    <ToolButton
+                      isLoading={false}
+                      isLoadingText=""
+                      isDisabled={refreshing}
+                      icon="download"
+                      title={t("import")}
                       style={ViewStyles.mr2}
-                      onPress={onFilterAnarchyBattlePress}
+                      onPress={onImportPress}
                     />
-                    <FilterButton
-                      isDisabled={refreshing || loadingMore}
-                      color={filter === "x_battle" ? Color.XBattle : undefined}
-                      title={t("x_battle")}
-                      style={ViewStyles.mr2}
-                      onPress={onFilterXBattlePress}
-                    />
-                    <FilterButton
-                      isDisabled={refreshing || loadingMore}
-                      color={filter === "private_battle" ? Color.PrivateBattle : undefined}
-                      title={t("private_battle")}
-                      style={ViewStyles.mr2}
-                      onPress={onFilterPrivateBattlePress}
-                    />
-                    <FilterButton
-                      isDisabled={refreshing || loadingMore}
-                      color={filter === "salmon_run" ? Color.SalmonRun : undefined}
-                      title={t("salmon_run")}
-                      onPress={onFilterSalmonRunPress}
+                    <ToolButton
+                      isLoading={exporting}
+                      isLoadingText={t("exporting")}
+                      isDisabled={refreshing}
+                      icon="share"
+                      title={t("export")}
+                      onPress={onExportPress}
                     />
                   </HStack>
                 </ScrollView>
-                <ResultView
-                  t={t}
-                  isLoading={refreshing || loadingMore}
-                  loadMore={onLoadMorePress}
-                  loadAll={onLoadAllPress}
-                  results={results}
-                />
+              )}
+              <VStack center style={ViewStyles.px4}>
+                <Text center style={[TextStyles.subtle, ViewStyles.mb2]}>
+                  {t("disclaimer")}
+                </Text>
+                <VStack center>
+                  <Text
+                    style={TextStyles.subtle}
+                  >{`${Application.applicationName} ${Application.nativeApplicationVersion} (${Application.nativeBuildVersion})`}</Text>
+                  <HStack center>
+                    <Text
+                      style={[TextStyles.link, TextStyles.subtle, ViewStyles.mr2]}
+                      onPress={onSupportPress}
+                    >
+                      {t("support")}
+                    </Text>
+                    <Text
+                      style={[TextStyles.link, TextStyles.subtle, ViewStyles.mr2]}
+                      onPress={onPrivacyPolicyPress}
+                    >
+                      {t("privacy_policy")}
+                    </Text>
+                    <Text
+                      style={[TextStyles.link, TextStyles.subtle]}
+                      onPress={onAcknowledgmentsPress}
+                    >
+                      {t("acknowledgments")}
+                    </Text>
+                  </HStack>
+                </VStack>
               </VStack>
-            )}
-            {sessionToken.length > 0 && (
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                style={[ViewStyles.mb4, ViewStyles.wf]}
-              >
-                <HStack flex center style={ViewStyles.px4}>
-                  <StatsView
-                    t={t}
-                    isDisabled={refreshing}
-                    results={results}
-                    style={ViewStyles.mr2}
-                  />
-                  <ToolButton
-                    isLoading={false}
-                    isLoadingText=""
-                    isDisabled={refreshing}
-                    icon="download"
-                    title={t("import")}
-                    style={ViewStyles.mr2}
-                    onPress={onImportPress}
-                  />
-                  <ToolButton
-                    isLoading={exporting}
-                    isLoadingText={t("exporting")}
-                    isDisabled={refreshing}
-                    icon="share"
-                    title={t("export")}
-                    onPress={onExportPress}
-                  />
-                </HStack>
-              </ScrollView>
-            )}
-            <VStack center style={ViewStyles.px4}>
-              <Text center style={[TextStyles.subtle, ViewStyles.mb2]}>
-                {t("disclaimer")}
-              </Text>
-              <VStack center>
-                <Text
-                  style={TextStyles.subtle}
-                >{`${Application.applicationName} ${Application.nativeApplicationVersion} (${Application.nativeBuildVersion})`}</Text>
-                <HStack center>
-                  <Text
-                    style={[TextStyles.link, TextStyles.subtle, ViewStyles.mr2]}
-                    onPress={onSupportPress}
-                  >
-                    {t("support")}
-                  </Text>
-                  <Text
-                    style={[TextStyles.link, TextStyles.subtle, ViewStyles.mr2]}
-                    onPress={onPrivacyPolicyPress}
-                  >
-                    {t("privacy_policy")}
-                  </Text>
-                  <Text
-                    style={[TextStyles.link, TextStyles.subtle]}
-                    onPress={onAcknowledgmentsPress}
-                  >
-                    {t("acknowledgments")}
-                  </Text>
-                </HStack>
-              </VStack>
-            </VStack>
-          </SafeAreaView>
-        </ScrollView>
+            </SafeAreaView>
+          }
+          onScrollEndDrag={onScrollEndDrag}
+        />
         {sessionToken.length > 0 && (
           <FloatingActionButton
             size={50}
