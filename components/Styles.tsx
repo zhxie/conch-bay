@@ -189,6 +189,14 @@ export const ViewStyles = StyleSheet.create({
     shadowRadius: 1.41,
     elevation: 2,
   },
+  sept: {
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: `${Color.MiddleTerritory}3f`,
+  },
+  sepb: {
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: `${Color.MiddleTerritory}3f`,
+  },
   mr0_5: {
     marginRight: 2,
   },

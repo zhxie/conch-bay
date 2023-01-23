@@ -38,10 +38,8 @@ const GearBox = (props: GearBoxProps) => {
         justify
         style={[
           ViewStyles.py2,
-          !props.isLast && {
-            borderBottomWidth: 1,
-            borderBottomColor: `${Color.MiddleTerritory}3f`,
-          },
+          !props.isFirst && ViewStyles.sept,
+          !props.isLast && ViewStyles.sepb,
         ]}
       >
         <HStack flex center style={ViewStyles.mr1}>

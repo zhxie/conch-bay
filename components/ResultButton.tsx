@@ -39,10 +39,8 @@ const ResultButton = (props: ResultButtonProps) => {
         center
         style={[
           ViewStyles.py2,
-          !props.isLast && {
-            borderBottomWidth: 1,
-            borderBottomColor: `${Color.MiddleTerritory}3f`,
-          },
+          !props.isFirst && ViewStyles.sept,
+          !props.isLast && ViewStyles.sepb,
         ]}
       >
         {props.result !== undefined && (

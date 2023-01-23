@@ -1,7 +1,7 @@
 import { StyleProp, ViewStyle } from "react-native";
 import Pressable from "./Pressable";
 import { HStack } from "./Stack";
-import { Color, TextStyles, ViewStyles } from "./Styles";
+import { TextStyles, ViewStyles } from "./Styles";
 import Text from "./Text";
 
 interface DisplayProps {
@@ -29,12 +29,7 @@ const Display = (props: DisplayProps) => {
         flex
         center
         justify
-        style={[
-          !props.isLast && {
-            borderBottomWidth: 1,
-            borderBottomColor: `${Color.MiddleTerritory}3f`,
-          },
-        ]}
+        style={[!props.isFirst && ViewStyles.sept, !props.isLast && ViewStyles.sepb]}
       >
         <HStack flex center style={ViewStyles.mr1}>
           <Text numberOfLines={1} style={TextStyles.b}>
