@@ -406,5 +406,6 @@ export interface CoopHistoryDetail {
     rule: "REGULAR" | "BIG_RUN";
     coopStage: CoopStage;
     dangerRate: number;
+    scale: { gold: number; silver: number; bronze: number } | null;
   };
 }

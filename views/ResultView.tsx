@@ -24,6 +24,7 @@ import {
   CoopWeaponBox,
   GearBox,
   HStack,
+  KingSalmonidBox,
   Modal,
   Splashtag,
   Text,
@@ -586,18 +587,16 @@ const ResultView = (props: ResultViewProps) => {
                   >
                     <HStack center style={ViewStyles.px4}>
                       {result.coop.coopHistoryDetail.bossResult !== null && (
-                        <BossSalmonidBox
+                        <KingSalmonidBox
                           color={
                             result.coop.coopHistoryDetail.bossResult.hasDefeatBoss
                               ? getCoopRuleColor(result.coop!.coopHistoryDetail.rule)!
                               : undefined
                           }
                           name={t(result.coop.coopHistoryDetail.bossResult.boss.id)}
-                          defeat={0}
-                          teamDefeat={
-                            result.coop.coopHistoryDetail.bossResult.hasDefeatBoss ? 1 : 0
-                          }
-                          appearance={1}
+                          bronzeScale={result.coop.coopHistoryDetail.scale!.bronze}
+                          silverScale={result.coop.coopHistoryDetail.scale!.silver}
+                          goldScale={result.coop.coopHistoryDetail.scale!.gold}
                           style={
                             result.coop.coopHistoryDetail.enemyResults.length > 0
                               ? ViewStyles.mr2

@@ -29,6 +29,9 @@ export enum Color {
   Working = "#f02d7d",
   PowerEgg = "#ff6200",
   GoldenEgg = "#ffce00",
+  GoldScale = "#e4b23e",
+  SilverScale = "#9c9c9c",
+  BronzeScale = "#c6702f",
 }
 
 export const TextStyles = StyleSheet.create({
