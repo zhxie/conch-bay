@@ -60,10 +60,6 @@ interface ResultViewProps {
   results?: ResultProps[];
   style?: StyleProp<ViewStyle>;
 }
-interface BattlePlayerProps {
-  color: string;
-  player: VsPlayer;
-}
 
 const ResultView = (props: ResultViewProps) => {
   const { t } = props;
@@ -74,7 +70,7 @@ const ResultView = (props: ResultViewProps) => {
   const [result, setResult] = useState<ResultProps>();
   const [displayResult, setDisplayResult] = useState(false);
   const [displayBattle, setDisplayBattle] = useState(false);
-  const [battlePlayer, setBattlePlayer] = useState<BattlePlayerProps>();
+  const [battlePlayer, setBattlePlayer] = useState<VsPlayer>();
   const [displayBattlePlayer, setDisplayBattlePlayer] = useState(false);
   const [displayCoop, setDisplayCoop] = useState(false);
   const [coopPlayer, setCoopPlayer] = useState<CoopPlayerResult>();
@@ -438,7 +434,7 @@ const ResultView = (props: ResultViewProps) => {
                         team.tricolorRole !== "DEFENSE" ? player.result?.noroshiTry : undefined
                       }
                       onPress={() => {
-                        setBattlePlayer({ color: getColor(team.color), player });
+                        setBattlePlayer(player);
                         setDisplayBattlePlayer(true);
                       }}
                       style={{ alignItems: "center" }}
@@ -470,45 +466,41 @@ const ResultView = (props: ResultViewProps) => {
               {battlePlayer && (
                 <VStack center>
                   <Splashtag
-                    color={getColor(battlePlayer.player.nameplate.background.textColor)}
-                    name={battlePlayer.player.name}
-                    nameId={battlePlayer.player.nameId}
+                    color={getColor(battlePlayer.nameplate.background.textColor)}
+                    name={battlePlayer.name}
+                    nameId={battlePlayer.nameId}
                     // TODO: need translation.
-                    title={battlePlayer.player.byname}
-                    banner={getImageCacheSource(battlePlayer.player.nameplate.background.image.url)}
-                    badges={battlePlayer.player.nameplate.badges.map(formatBadge)}
+                    title={battlePlayer.byname}
+                    banner={getImageCacheSource(battlePlayer.nameplate.background.image.url)}
+                    badges={battlePlayer.nameplate.badges.map(formatBadge)}
                     style={ViewStyles.mb2}
                   />
                   <BattleWeaponBox
-                    image={getImageCacheSource(battlePlayer.player.weapon.image2d.url)}
-                    name={t(battlePlayer.player.weapon.id)}
-                    subWeapon={getImageCacheSource(battlePlayer.player.weapon.subWeapon.image.url)}
-                    specialWeapon={getImageCacheSource(
-                      battlePlayer.player.weapon.specialWeapon.image.url
-                    )}
+                    image={getImageCacheSource(battlePlayer.weapon.image2d.url)}
+                    name={t(battlePlayer.weapon.id)}
+                    subWeapon={getImageCacheSource(battlePlayer.weapon.subWeapon.image.url)}
+                    specialWeapon={getImageCacheSource(battlePlayer.weapon.specialWeapon.image.url)}
                     style={ViewStyles.mb2}
                   />
-                  {[
-                    battlePlayer.player.headGear,
-                    battlePlayer.player.clothingGear,
-                    battlePlayer.player.shoesGear,
-                  ].map((gear, i, gears) => (
-                    // TODO: show brands with its image, name and favorite.
-                    <GearBox
-                      key={i}
-                      isFirst={i === 0}
-                      isLast={i === gears.length - 1}
-                      image={getImageCacheSource(gear.originalImage.url)}
-                      brand={getImageCacheSource(gear.brand.image.url)}
-                      // TODO: need translation.
-                      name={gear.name}
-                      primaryAbility={getImageCacheSource(gear.primaryGearPower.image.url)}
-                      additionalAbility={gear.additionalGearPowers.map((gearPower) =>
-                        getImageCacheSource(gearPower.image.url)
-                      )}
-                      paddingTo={getMaxAdditionalGearPowerCount(battlePlayer.player)}
-                    />
-                  ))}
+                  {[battlePlayer.headGear, battlePlayer.clothingGear, battlePlayer.shoesGear].map(
+                    (gear, i, gears) => (
+                      // TODO: show brands with its image, name and favorite.
+                      <GearBox
+                        key={i}
+                        isFirst={i === 0}
+                        isLast={i === gears.length - 1}
+                        image={getImageCacheSource(gear.originalImage.url)}
+                        brand={getImageCacheSource(gear.brand.image.url)}
+                        // TODO: need translation.
+                        name={gear.name}
+                        primaryAbility={getImageCacheSource(gear.primaryGearPower.image.url)}
+                        additionalAbility={gear.additionalGearPowers.map((gearPower) =>
+                          getImageCacheSource(gearPower.image.url)
+                        )}
+                        paddingTo={getMaxAdditionalGearPowerCount(battlePlayer)}
+                      />
+                    )
+                  )}
                 </VStack>
               )}
             </Modal>

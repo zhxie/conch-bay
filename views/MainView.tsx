@@ -28,7 +28,6 @@ import {
   Button,
   Center,
   Color,
-  Display,
   FilterButton,
   FloatingActionButton,
   HStack,
@@ -65,12 +64,7 @@ import {
   updateSplatnetVersion,
 } from "../utils/api";
 import * as Database from "../utils/database";
-import {
-  convertStageImageUrl,
-  getImageCacheKey,
-  getUserIconCacheSource,
-  getVsSelfPlayer,
-} from "../utils/ui";
+import { convertStageImageUrl, getImageCacheKey, getUserIconCacheSource } from "../utils/ui";
 import FriendView from "./FriendView";
 import ResultView from "./ResultView";
 import ScheduleView from "./ScheduleView";
