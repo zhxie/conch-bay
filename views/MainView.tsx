@@ -1,5 +1,4 @@
 import { Feather } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Application from "expo-application";
 import { CacheManager } from "expo-cached-image";
 import * as Clipboard from "expo-clipboard";
@@ -64,6 +63,7 @@ import {
   updateSplatnetVersion,
 } from "../utils/api";
 import * as Database from "../utils/database";
+import useAsyncStorage from "../utils/hooks";
 import { convertStageImageUrl, getImageCacheKey, getUserIconCacheSource } from "../utils/ui";
 import FriendView from "./FriendView";
 import ResultView from "./ResultView";
@@ -100,13 +100,14 @@ const MainView = (props: MainViewProps) => {
   const [firstAid, setFirstAid] = useState(false);
   const [autoRefresh, setAutoRefresh] = useState(false);
 
-  const [sessionToken, setSessionToken] = useState("");
-  const [bulletToken, setBulletToken] = useState("");
-  const [icon, setIcon] = useState("");
-  const [catalogLevel, setCatalogLevel] = useState("");
-  const [level, setLevel] = useState("");
-  const [rank, setRank] = useState("");
-  const [grade, setGrade] = useState("");
+  const [sessionToken, setSessionToken, clearSessionToken, sessionTokenReady] =
+    useAsyncStorage("sessionToken");
+  const [bulletToken, setBulletToken, clearBulletToken] = useAsyncStorage("bulletToken");
+  const [icon, setIcon, clearIcon] = useAsyncStorage("icon");
+  const [catalogLevel, setCatalogLevel, clearCatalogLevel] = useAsyncStorage("catalogLevel");
+  const [level, setLevel, clearLevel] = useAsyncStorage("level");
+  const [rank, setRank, clearRank] = useAsyncStorage("rank");
+  const [grade, setGrade, clearGrade] = useAsyncStorage("grade");
 
   const [schedules, setSchedules] = useState<Schedules>();
   const [friends, setFriends] = useState<Friends>();
@@ -122,9 +123,8 @@ const MainView = (props: MainViewProps) => {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
+    (async () => {
       try {
-        await loadPersistence();
         await Database.open();
         await loadResults(20, false);
         Font.loadAsync({
@@ -135,9 +135,8 @@ const MainView = (props: MainViewProps) => {
         showToast(e);
         setFirstAid(true);
       }
-    };
-    fetchData();
-  }, []);
+    })();
+  }, [sessionTokenReady]);
   const fade = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     if (ready) {
@@ -182,43 +181,6 @@ const MainView = (props: MainViewProps) => {
     }
   }, [refreshing, autoRefresh]);
 
-  const loadPersistence = async () => {
-    const [sessionToken, bulletToken, icon, catalogLevel, level, rank, grade] = await Promise.all([
-      AsyncStorage.getItem("sessionToken"),
-      AsyncStorage.getItem("bulletToken"),
-      AsyncStorage.getItem("icon"),
-      AsyncStorage.getItem("catalogLevel"),
-      AsyncStorage.getItem("level"),
-      AsyncStorage.getItem("rank"),
-      AsyncStorage.getItem("grade"),
-    ]);
-
-    setSessionToken(sessionToken ?? "");
-    setBulletToken(bulletToken ?? "");
-    setIcon(icon ?? "");
-    setCatalogLevel(catalogLevel ?? "");
-    setLevel(level ?? "");
-    setRank(rank ?? "");
-    setGrade(grade ?? "");
-  };
-  const savePersistence = async (persistence: Record<string, string>) => {
-    for (const key of [
-      "sessionToken",
-      "bulletToken",
-      "icon",
-      "catalogLevel",
-      "level",
-      "rank",
-      "grade",
-    ]) {
-      if (persistence[key]) {
-        await AsyncStorage.setItem(key, persistence[key]);
-      }
-    }
-  };
-  const clearPersistence = async () => {
-    await AsyncStorage.clear();
-  };
   const loadResults = async (length: number, forceUpdate: boolean) => {
     setLoadingMore(true);
     let offset: number, limit: number;
@@ -296,10 +258,7 @@ const MainView = (props: MainViewProps) => {
     const res = await getWebServiceToken(sessionToken);
     const newBulletToken = await getBulletToken(res.webServiceToken, res.country);
 
-    setBulletToken(newBulletToken);
-    await savePersistence({
-      bulletToken: newBulletToken,
-    });
+    await setBulletToken(newBulletToken);
 
     return newBulletToken;
   };
@@ -347,21 +306,12 @@ const MainView = (props: MainViewProps) => {
         const catalogLevel = String(catalog.catalog.progress?.level ?? 0);
         const level = String(summary.playHistory.rank);
         const rank = summary.playHistory.udemae;
-        setIcon(icon);
-        setCatalogLevel(catalogLevel);
-        setLevel(level);
-        setRank(rank);
-        await savePersistence({
-          icon: icon,
-          catalogLevel: catalogLevel,
-          level: level,
-          rank: rank,
-        });
+        await setIcon(icon);
+        await setCatalogLevel(catalogLevel);
+        await setLevel(level);
+        await setRank(rank);
         if (coopResult.coopResult.regularGrade) {
-          setGrade(coopResult.coopResult.regularGrade.id);
-          await savePersistence({
-            grade: coopResult.coopResult.regularGrade.id,
-          });
+          await setGrade(coopResult.coopResult.regularGrade.id);
         }
 
         // Fetch details.
@@ -549,8 +499,7 @@ const MainView = (props: MainViewProps) => {
         setLoggingIn(false);
         return;
       }
-      setSessionToken(res3);
-      await savePersistence({ sessionToken: res3 });
+      await setSessionToken(res3);
 
       setLoggingIn(false);
       setLogIn(false);
@@ -573,10 +522,18 @@ const MainView = (props: MainViewProps) => {
       if (autoRefresh) {
         onAutoRefreshPress();
       }
-      await Promise.all([clearPersistence(), Database.clear()]);
+      await Promise.all([
+        clearSessionToken(),
+        clearBulletToken(),
+        clearIcon(),
+        clearCatalogLevel(),
+        clearLevel(),
+        clearRank(),
+        clearGrade(),
+        Database.clear(),
+      ]);
       setResults(undefined);
       setFriends(undefined);
-      await loadPersistence();
       setLoggingOut(false);
       setLogOut(false);
     } catch (e) {

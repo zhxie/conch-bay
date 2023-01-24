@@ -16,12 +16,12 @@ Run the following command and all outputs will be merged into `conch-bay-import.
 python3 tools/convert_s3s_outputs.py <PATH_TO_S3S>
 ```
 
-### Analyze data
+### Validate data
 
 Run the following command to validate a results JSON.
 
 ```sh
-python3 tools/analyze.py <PATH_TO_JSON>
+python3 tools/validate.py <PATH_TO_JSON>
 ```
 
 ## License

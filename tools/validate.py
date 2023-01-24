@@ -34,7 +34,7 @@ def main():
                 pass
 
     print(
-        f'"{sys.argv[1]}" contains {valid_battles} (of {battles}) battles and {valid_coops} (of {coops}) coops.'
+        f'"{sys.argv[1]}" contains {valid_battles} (of {battles}) valid battles and {valid_coops} (of {coops}) valid coops.'
     )
 
 
