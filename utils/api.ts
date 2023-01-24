@@ -1,8 +1,9 @@
+import { fromByteArray as encode64 } from "base64-js";
 import * as Crypto from "expo-crypto";
 import * as Random from "expo-random";
 import pRetry from "p-retry";
 import {
-  AnarchyBattleHistories,
+  BankaraBattleHistories,
   Catalog,
   CoopHistoryDetail,
   CoopResult,
@@ -17,7 +18,7 @@ import {
   WeaponRecords,
   XBattleHistories,
 } from "../models/types";
-import { base64, base64url } from "./encode";
+import { encode64Url } from "./codec";
 import { formUrlEncoded, getParam, parameterize } from "./url";
 
 let NSO_VERSION = "2.4.0";
@@ -72,12 +73,12 @@ const callIminkFApi = async (idToken: string, step: number) => {
   return json as { f: string; request_id: string; timestamp: string };
 };
 export const generateLogIn = async () => {
-  const state = base64url(base64(Random.getRandomBytes(36)));
-  const cv = base64url(base64(Random.getRandomBytes(32)));
+  const state = encode64Url(encode64(Random.getRandomBytes(36)));
+  const cv = encode64Url(encode64(Random.getRandomBytes(32)));
   const cvHash = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, cv, {
     encoding: Crypto.CryptoEncoding.BASE64,
   });
-  const codeChallenge = base64url(cvHash);
+  const codeChallenge = encode64Url(cvHash);
 
   const body = {
     state: state,
@@ -299,7 +300,7 @@ export const fetchBattleHistories = async (bulletToken: string, language?: strin
   ]);
   const histories = {
     regular: regularJson as GraphQlResponse<RegularBattleHistories>,
-    anarchy: anarchyJson as GraphQlResponse<AnarchyBattleHistories>,
+    anarchy: anarchyJson as GraphQlResponse<BankaraBattleHistories>,
     x: xJson as GraphQlResponse<XBattleHistories>,
     private: privateJson as GraphQlResponse<PrivateBattleHistories>,
   };

@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import { Color } from "../components";
 import {
-  AnarchyMatchSetting,
+  BankaraMatchSetting,
   CoopHistoryDetail,
   Friend,
   RegularMatchSetting,
@@ -54,7 +54,7 @@ export const getMatchSetting = (schedule: Schedule, index?: number) => {
     if (anarchyMatchSettings === null) {
       return null;
     }
-    return (anarchyMatchSettings as AnarchyMatchSetting[])[index ?? 0];
+    return (anarchyMatchSettings as BankaraMatchSetting[])[index ?? 0];
   }
   const xMatchSetting = schedule["xMatchSetting"];
   if (xMatchSetting !== undefined) {

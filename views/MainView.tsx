@@ -63,7 +63,7 @@ import {
   updateSplatnetVersion,
 } from "../utils/api";
 import * as Database from "../utils/database";
-import useAsyncStorage from "../utils/hooks";
+import { useAsyncStorage } from "../utils/hooks";
 import { convertStageImageUrl, getImageCacheKey, getUserIconCacheSource } from "../utils/ui";
 import FriendView from "./FriendView";
 import ResultView from "./ResultView";

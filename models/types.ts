@@ -34,11 +34,11 @@ export type RegularMatchSetting = MatchSetting;
 export interface RegularSchedule extends Schedule {
   regularMatchSetting: RegularMatchSetting | null;
 }
-export interface AnarchyMatchSetting extends MatchSetting {
+export interface BankaraMatchSetting extends MatchSetting {
   mode: "CHALLENGE" | "OPEN";
 }
-export interface AnarchySchedule extends Schedule {
-  bankaraMatchSettings: AnarchyMatchSetting[] | null;
+export interface BankaraSchedule extends Schedule {
+  bankaraMatchSettings: BankaraMatchSetting[] | null;
 }
 export type XMatchSetting = MatchSetting;
 export interface XSchedule extends Schedule {
@@ -61,7 +61,7 @@ export interface Shift extends Schedule {
 }
 export interface Schedules {
   regularSchedules: { nodes: RegularSchedule[] };
-  bankaraSchedules: { nodes: AnarchySchedule[] };
+  bankaraSchedules: { nodes: BankaraSchedule[] };
   xSchedules: { nodes: XSchedule[] };
   coopGroupingSchedule: {
     regularSchedules: { nodes: Shift[] };
@@ -213,7 +213,7 @@ export interface RegularBattleHistories {
     };
   };
 }
-export interface AnarchyBattleHistories {
+export interface BankaraBattleHistories {
   bankaraBattleHistories: {
     historyGroups: {
       nodes: BattleHistoryGroup[];
