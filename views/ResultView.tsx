@@ -343,7 +343,6 @@ const ResultView = (props: ResultViewProps) => {
         ListHeaderComponent={props.header}
         ListFooterComponent={props.footer}
         onScrollEndDrag={props.onScrollEndDrag}
-        showsVerticalScrollIndicator={false}
       />
       <Modal
         isVisible={displayResult}
