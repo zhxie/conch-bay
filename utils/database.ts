@@ -23,7 +23,7 @@ export const open = async () => {
     case 0:
       {
         await exec('ALTER TABLE result ADD COLUMN stage TEXT NOT NULL DEFAULT ""', false);
-        const records = await queryAll();
+        const records = await queryAll(false);
         await Promise.all(
           records.map((record) => {
             if (record.mode === "salmon_run") {

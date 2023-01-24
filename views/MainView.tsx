@@ -984,6 +984,7 @@ const MainView = (props: MainViewProps) => {
                     isLoading={refreshing || loadingMore}
                     isLoadingText={t("loading_more")}
                     style={[
+                      (results?.length ?? 0) > 40 && (results?.length ?? 0) <= 60 && ViewStyles.mb2,
                       results === undefined || results.length > 0
                         ? {
                             borderTopLeftRadius: 0,
@@ -1001,6 +1002,19 @@ const MainView = (props: MainViewProps) => {
                       {t("load_more")}
                     </Text>
                   </Button>
+                  {(results?.length ?? 0) > 40 && (results?.length ?? 0) <= 60 && (
+                    <HStack style={ViewStyles.c}>
+                      <Feather
+                        name="info"
+                        size={14}
+                        color={Color.MiddleTerritory}
+                        style={ViewStyles.mr1}
+                      />
+                      <Text center style={TextStyles.subtle}>
+                        {t("load_more_notice")}
+                      </Text>
+                    </HStack>
+                  )}
                 </VStack>
               )}
               {sessionToken.length > 0 && (
