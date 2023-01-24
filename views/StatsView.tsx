@@ -16,7 +16,6 @@ import { ResultProps } from "./ResultView";
 
 interface StatsViewProps {
   t: (f: string, params?: Record<string, any>) => string;
-  isDisabled: boolean;
   results?: ResultProps[];
   style?: StyleProp<ViewStyle>;
 }
@@ -158,7 +157,6 @@ const StatsView = (props: StatsViewProps) => {
       <ToolButton
         isLoading={counting}
         isLoadingText={t("stats")}
-        isDisabled={props.isDisabled}
         icon="bar-chart-2"
         title={t("stats")}
         onPress={onStatsPress}

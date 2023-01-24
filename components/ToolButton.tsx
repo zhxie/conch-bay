@@ -6,7 +6,7 @@ import { Color, TextStyles, ViewStyles } from "./Styles";
 import Text from "./Text";
 
 interface ToolButtonProps {
-  isDisabled: boolean;
+  isDisabled?: boolean;
   isLoading: boolean;
   isLoadingText: string;
   color?: string;

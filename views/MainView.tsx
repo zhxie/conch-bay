@@ -1053,12 +1053,7 @@ const MainView = (props: MainViewProps) => {
                   style={[ViewStyles.mb4, ViewStyles.wf]}
                 >
                   <HStack flex center style={ViewStyles.px4}>
-                    <StatsView
-                      t={t}
-                      isDisabled={refreshing}
-                      results={results}
-                      style={ViewStyles.mr2}
-                    />
+                    <StatsView t={t} results={results} style={ViewStyles.mr2} />
                     <ToolButton
                       isLoading={false}
                       isLoadingText=""
@@ -1167,18 +1162,19 @@ const MainView = (props: MainViewProps) => {
           <Text style={ViewStyles.mb4}>{t("log_out_notice")}</Text>
           <VStack style={ViewStyles.wf}>
             <Button
-              isLoading={exporting}
-              isLoadingText={t("exporting")}
+              isDisabled={refreshing}
+              isLoading={loggingIn}
+              isLoadingText={t("logging_in")}
               style={[ViewStyles.mb2, ViewStyles.accent]}
               textStyle={reverseTextColor}
-              onPress={onExportPress}
+              onPress={onLogInContinuePress}
             >
               <Text numberOfLines={1} style={reverseTextColor}>
-                {t("export_results")}
+                {t("relog_in")}
               </Text>
             </Button>
             <Button
-              isDisabled={exporting}
+              isDisabled={loggingIn || refreshing || loadingMore || exporting}
               isLoading={loggingOut}
               isLoadingText={t("logging_out")}
               style={ViewStyles.accent}
@@ -1206,6 +1202,7 @@ const MainView = (props: MainViewProps) => {
                 <Text style={ViewStyles.mb2}>{t("relog_in_notice")}</Text>
               </VStack>
               <Button
+                isDisabled={refreshing}
                 isLoading={loggingIn}
                 isLoadingText={t("logging_in")}
                 style={ViewStyles.accent}

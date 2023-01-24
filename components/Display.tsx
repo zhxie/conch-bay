@@ -1,5 +1,4 @@
-import { StyleProp, ViewStyle } from "react-native";
-import Pressable from "./Pressable";
+import { StyleProp, ViewStyle, useColorScheme } from "react-native";
 import { HStack } from "./Stack";
 import { TextStyles, ViewStyles } from "./Styles";
 import Text from "./Text";
@@ -9,21 +8,23 @@ interface DisplayProps {
   isLast?: boolean;
   title: string;
   style?: StyleProp<ViewStyle>;
-  onPress?: () => void;
   children?: React.ReactNode;
 }
 
 const Display = (props: DisplayProps) => {
+  const colorScheme = useColorScheme();
+  const style = colorScheme === "light" ? ViewStyles.lightTerritory : ViewStyles.darkTerritory;
+
   return (
-    <Pressable
+    <HStack
       style={[
         ViewStyles.px3,
         { height: 32 },
         props.isFirst && ViewStyles.rt,
         props.isLast && ViewStyles.rb,
+        style,
         props.style,
       ]}
-      onPress={props.onPress}
     >
       <HStack
         flex
@@ -38,7 +39,7 @@ const Display = (props: DisplayProps) => {
         </HStack>
         <HStack center>{props.children}</HStack>
       </HStack>
-    </Pressable>
+    </HStack>
   );
 };
 
