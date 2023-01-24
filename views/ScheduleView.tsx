@@ -11,7 +11,7 @@ import {
   TitledList,
   ViewStyles,
 } from "../components";
-import { CoopWeapon, Schedule, Schedules, Shift, Splatfest, VsStage } from "../models/types";
+import { SplatNet } from "../models";
 import {
   getCoopStage,
   getCoopStageId,
@@ -30,15 +30,15 @@ import {
 
 interface ScheduleViewProps {
   t: (f: string, params?: Record<string, any>) => string;
-  schedules?: Schedules;
+  schedules?: SplatNet.Schedules;
   style?: StyleProp<ViewStyle>;
 }
 interface DisplayProps {
   title: string;
   color: string;
-  splatfest?: Splatfest;
-  schedules?: Schedule[];
-  shifts?: Shift[];
+  splatfest?: SplatNet.Splatfest;
+  schedules?: SplatNet.Schedule[];
+  shifts?: SplatNet.Shift[];
   index?: number;
 }
 
@@ -66,7 +66,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
   const bigRunShifts = props.schedules?.coopGroupingSchedule.bigRunSchedules.nodes;
   const regularShifts = props.schedules?.coopGroupingSchedule.regularSchedules.nodes;
 
-  const formatScheduleTimeRange = (schedule: Schedule, withDate: boolean) => {
+  const formatScheduleTimeRange = (schedule: SplatNet.Schedule, withDate: boolean) => {
     let format = "HH:mm";
     if (withDate) {
       format = "M/DD HH:mm";
@@ -77,7 +77,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
 
     return `${startTime} - ${endTime}`;
   };
-  const formatSplatfestTimeRange = (splatfest: Splatfest, withDate: boolean) => {
+  const formatSplatfestTimeRange = (splatfest: SplatNet.Splatfest, withDate: boolean) => {
     let format = "HH:mm";
     if (withDate) {
       format = "M/DD HH:mm";
@@ -88,13 +88,13 @@ const ScheduleView = (props: ScheduleViewProps) => {
 
     return `${startTime} - ${endTime}`;
   };
-  const formatStage = (stage: VsStage) => {
+  const formatStage = (stage: SplatNet.VsStage) => {
     return {
       title: t(stage.id),
       image: getImageCacheSource(stage.image.url),
     };
   };
-  const formatWeapon = (weapon: CoopWeapon) => {
+  const formatWeapon = (weapon: SplatNet.CoopWeapon) => {
     return getImageCacheSource(weapon.image.url);
   };
 

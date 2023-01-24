@@ -37,31 +37,8 @@ import {
   VStack,
   ViewStyles,
 } from "../components";
-import {
-  CoopHistoryDetail,
-  Friends,
-  Schedules,
-  VsHistoryDetail,
-  WeaponRecords,
-} from "../models/types";
-import {
-  fetchBattleHistories,
-  fetchCatalog,
-  fetchCoopHistoryDetail,
-  fetchCoopResult,
-  fetchFriends,
-  fetchGears,
-  fetchSchedules,
-  fetchSummary,
-  fetchVsHistoryDetail,
-  fetchWeaponRecords,
-  generateLogIn,
-  getBulletToken,
-  getSessionToken,
-  getWebServiceToken,
-  updateNsoVersion,
-  updateSplatnetVersion,
-} from "../utils/api";
+import { SplatNet } from "../models";
+import { SplatNet as SplatNetApi, Splatoon3Ink as Splatoon3InkApi } from "../utils/api";
 import * as Database from "../utils/database";
 import { useAsyncStorage } from "../utils/hooks";
 import { convertStageImageUrl, getImageCacheKey, getUserIconCacheSource } from "../utils/ui";
@@ -110,10 +87,10 @@ const MainView = (props: MainViewProps) => {
   const [grade, setGrade, clearGrade] = useAsyncStorage("grade");
 
   const [apiUpdated, setApiUpdated] = useState(false);
-  const [schedules, setSchedules] = useState<Schedules>();
-  const [friends, setFriends] = useState<Friends>();
+  const [schedules, setSchedules] = useState<SplatNet.Schedules>();
+  const [friends, setFriends] = useState<SplatNet.Friends>();
   const [results, setResults] =
-    useState<{ battle?: VsHistoryDetail; coop?: CoopHistoryDetail }[]>();
+    useState<{ battle?: SplatNet.VsHistoryDetail; coop?: SplatNet.CoopHistoryDetail }[]>();
 
   const showToast = (e: any) => {
     if (e instanceof Error) {
@@ -215,10 +192,10 @@ const MainView = (props: MainViewProps) => {
     const details = (await Database.query(offset, limit, condition)).map((record) => {
       if (record.mode === "salmon_run") {
         return {
-          coop: JSON.parse(record.detail) as CoopHistoryDetail,
+          coop: JSON.parse(record.detail) as SplatNet.CoopHistoryDetail,
         };
       }
-      return { battle: JSON.parse(record.detail) as VsHistoryDetail };
+      return { battle: JSON.parse(record.detail) as SplatNet.VsHistoryDetail };
     });
     if (results !== undefined && results.length >= 20 && length > results.length) {
       setResults((results ?? []).concat(details));
@@ -229,7 +206,7 @@ const MainView = (props: MainViewProps) => {
     }
     setLoadingMore(false);
   };
-  const addBattle = async (battle: VsHistoryDetail, check: boolean) => {
+  const addBattle = async (battle: SplatNet.VsHistoryDetail, check: boolean) => {
     try {
       if (check && (await Database.isExist(battle.vsHistoryDetail.id))) {
         return 0;
@@ -240,7 +217,7 @@ const MainView = (props: MainViewProps) => {
       return -1;
     }
   };
-  const addCoop = async (coop: CoopHistoryDetail, check: boolean) => {
+  const addCoop = async (coop: SplatNet.CoopHistoryDetail, check: boolean) => {
     try {
       if (check && (await Database.isExist(coop.coopHistoryDetail.id))) {
         return 0;
@@ -256,8 +233,8 @@ const MainView = (props: MainViewProps) => {
       showToast(t("reacquiring_tokens"));
     }
 
-    const res = await getWebServiceToken(sessionToken);
-    const newBulletToken = await getBulletToken(res.webServiceToken, res.country);
+    const res = await SplatNetApi.getWebServiceToken(sessionToken);
+    const newBulletToken = await SplatNetApi.getBulletToken(res.webServiceToken, res.country);
 
     await setBulletToken(newBulletToken);
 
@@ -267,13 +244,16 @@ const MainView = (props: MainViewProps) => {
     setRefreshing(true);
     try {
       // Fetch schedules.
-      const schedules = await fetchSchedules();
+      const schedules = await Splatoon3InkApi.fetchSchedules();
       setSchedules(schedules);
       if (sessionToken) {
         // Update versions.
         if (!apiUpdated) {
           try {
-            await Promise.all([await updateNsoVersion(), await updateSplatnetVersion()]);
+            await Promise.all([
+              await SplatNetApi.updateNsoVersion(),
+              await SplatNetApi.updateSplatnetVersion(),
+            ]);
             setApiUpdated(true);
           } catch {
             showToast(t("failed_to_check_api_update"));
@@ -282,10 +262,10 @@ const MainView = (props: MainViewProps) => {
 
         // Attempt to friends.
         let newBulletToken = "";
-        let friendsAttempt: Friends | undefined;
+        let friendsAttempt: SplatNet.Friends | undefined;
         if (bulletToken.length > 0) {
           try {
-            friendsAttempt = await fetchFriends(bulletToken);
+            friendsAttempt = await SplatNetApi.fetchFriends(bulletToken);
             newBulletToken = bulletToken;
           } catch {
             /* empty */
@@ -299,11 +279,11 @@ const MainView = (props: MainViewProps) => {
 
         // Fetch friends, summary, catalog and results.
         const [friends, summary, catalog, battleHistories, coopResult] = await Promise.all([
-          friendsAttempt || fetchFriends(newBulletToken),
-          fetchSummary(newBulletToken),
-          fetchCatalog(newBulletToken),
-          fetchBattleHistories(newBulletToken),
-          fetchCoopResult(newBulletToken),
+          friendsAttempt || SplatNetApi.fetchFriends(newBulletToken),
+          SplatNetApi.fetchSummary(newBulletToken),
+          SplatNetApi.fetchCatalog(newBulletToken),
+          SplatNetApi.fetchBattleHistories(newBulletToken),
+          SplatNetApi.fetchCoopResult(newBulletToken),
         ]);
         setFriends(friends);
         const icon = summary.currentPlayer.userIcon.url;
@@ -356,18 +336,18 @@ const MainView = (props: MainViewProps) => {
           const details = await Promise.all(
             newResults.map((result) => {
               if (!result.isCoop) {
-                return fetchVsHistoryDetail(result.id, newBulletToken, t("lang"));
+                return SplatNetApi.fetchVsHistoryDetail(result.id, newBulletToken, t("lang"));
               }
-              return fetchCoopHistoryDetail(result.id, newBulletToken, t("lang"));
+              return SplatNetApi.fetchCoopHistoryDetail(result.id, newBulletToken, t("lang"));
             })
           );
           let fail = 0;
           for (let i = 0; i < newResults.length; i++) {
             let result: number;
             if (!newResults[i].isCoop) {
-              result = await addBattle(details[i] as VsHistoryDetail, false);
+              result = await addBattle(details[i] as SplatNet.VsHistoryDetail, false);
             } else {
-              result = await addCoop(details[i] as CoopHistoryDetail, false);
+              result = await addCoop(details[i] as SplatNet.CoopHistoryDetail, false);
             }
             if (result < 0) {
               fail++;
@@ -393,8 +373,8 @@ const MainView = (props: MainViewProps) => {
       if (sessionToken) {
         // Fetch results.
         const [battleHistories, coopResult] = await Promise.all([
-          fetchBattleHistories(bulletToken),
-          fetchCoopResult(bulletToken),
+          SplatNetApi.fetchBattleHistories(bulletToken),
+          SplatNetApi.fetchCoopResult(bulletToken),
         ]);
 
         // Fetch details.
@@ -435,18 +415,18 @@ const MainView = (props: MainViewProps) => {
           const details = await Promise.all(
             newResults.map((result) => {
               if (!result.isCoop) {
-                return fetchVsHistoryDetail(result.id, bulletToken, t("lang"));
+                return SplatNetApi.fetchVsHistoryDetail(result.id, bulletToken, t("lang"));
               }
-              return fetchCoopHistoryDetail(result.id, bulletToken, t("lang"));
+              return SplatNetApi.fetchCoopHistoryDetail(result.id, bulletToken, t("lang"));
             })
           );
           let fail = 0;
           for (let i = 0; i < newResults.length; i++) {
             let result: number;
             if (!newResults[i].isCoop) {
-              result = await addBattle(details[i] as VsHistoryDetail, false);
+              result = await addBattle(details[i] as SplatNet.VsHistoryDetail, false);
             } else {
-              result = await addCoop(details[i] as CoopHistoryDetail, false);
+              result = await addCoop(details[i] as SplatNet.CoopHistoryDetail, false);
             }
             if (result < 0) {
               fail++;
@@ -490,14 +470,14 @@ const MainView = (props: MainViewProps) => {
   const onLogInContinuePress = async () => {
     try {
       setLoggingIn(true);
-      const res = await generateLogIn();
+      const res = await SplatNetApi.generateLogIn();
       WebBrowser.maybeCompleteAuthSession();
       const res2 = await WebBrowser.openAuthSessionAsync(res.url, "npf71b963c1b7b6d119://");
       if (res2.type !== "success") {
         setLoggingIn(false);
         return;
       }
-      const res3 = await getSessionToken(res2.url, res.cv);
+      const res3 = await SplatNetApi.getSessionToken(res2.url, res.cv);
       if (!res3) {
         setLoggingIn(false);
         return;
@@ -642,14 +622,14 @@ const MainView = (props: MainViewProps) => {
     setExporting(true);
     const uri = FileSystem.documentDirectory + "conch-bay-export.json";
     try {
-      const battles: VsHistoryDetail[] = [];
-      const coops: CoopHistoryDetail[] = [];
+      const battles: SplatNet.VsHistoryDetail[] = [];
+      const coops: SplatNet.CoopHistoryDetail[] = [];
       const records = await Database.queryAll(false);
       records.forEach((record) => {
         if (record.mode === "salmon_run") {
-          coops.push(JSON.parse(record.detail) as CoopHistoryDetail);
+          coops.push(JSON.parse(record.detail) as SplatNet.CoopHistoryDetail);
         } else {
-          battles.push(JSON.parse(record.detail) as VsHistoryDetail);
+          battles.push(JSON.parse(record.detail) as SplatNet.VsHistoryDetail);
         }
       });
 
@@ -686,7 +666,7 @@ const MainView = (props: MainViewProps) => {
       const records = await Database.queryAll(true);
       records.forEach((record) => {
         if (record.mode === "salmon_run") {
-          const coop = JSON.parse(record.detail) as CoopHistoryDetail;
+          const coop = JSON.parse(record.detail) as SplatNet.CoopHistoryDetail;
           const stage = convertStageImageUrl(coop.coopHistoryDetail.coopStage);
           resources.set(getImageCacheKey(stage), stage);
 
@@ -722,7 +702,7 @@ const MainView = (props: MainViewProps) => {
             }
           );
         } else {
-          const battle = JSON.parse(record.detail) as VsHistoryDetail;
+          const battle = JSON.parse(record.detail) as SplatNet.VsHistoryDetail;
           const stage = convertStageImageUrl(battle.vsHistoryDetail.vsStage);
           resources.set(getImageCacheKey(stage), stage);
 
@@ -769,10 +749,10 @@ const MainView = (props: MainViewProps) => {
 
       // Attempt to preload weapon images from API.
       let newBulletToken = "";
-      let weaponRecordsAttempt: WeaponRecords | undefined;
+      let weaponRecordsAttempt: SplatNet.WeaponRecords | undefined;
       if (bulletToken.length > 0) {
         try {
-          weaponRecordsAttempt = await fetchWeaponRecords(bulletToken);
+          weaponRecordsAttempt = await SplatNetApi.fetchWeaponRecords(bulletToken);
           newBulletToken = bulletToken;
         } catch {
           /* empty */
@@ -786,9 +766,9 @@ const MainView = (props: MainViewProps) => {
 
       // Preload weapon, gear, badge images from API.
       const [weaponRecords, gears, summary] = await Promise.all([
-        weaponRecordsAttempt || fetchWeaponRecords(newBulletToken),
-        fetchGears(newBulletToken),
-        fetchSummary(newBulletToken),
+        weaponRecordsAttempt || SplatNetApi.fetchWeaponRecords(newBulletToken),
+        SplatNetApi.fetchGears(newBulletToken),
+        SplatNetApi.fetchSummary(newBulletToken),
       ]);
       weaponRecords.weaponRecords.nodes.forEach((record) => {
         resources.set(getImageCacheKey(record.image2d.url), record.image2d.url);

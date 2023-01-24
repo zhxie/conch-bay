@@ -35,16 +35,7 @@ import {
   WaveBox,
   WorkSuitBox,
 } from "../components";
-import {
-  CoopHistoryDetail,
-  CoopPlayerResult,
-  CoopWaveResult,
-  PlayerBadge,
-  Species,
-  VsHistoryDetail,
-  VsPlayer,
-  VsTeam,
-} from "../models/types";
+import { SplatNet } from "../models";
 import {
   getCoopGoldenEgg,
   getCoopIsClear,
@@ -60,8 +51,8 @@ import {
 } from "../utils/ui";
 
 export interface ResultProps {
-  battle?: VsHistoryDetail;
-  coop?: CoopHistoryDetail;
+  battle?: SplatNet.VsHistoryDetail;
+  coop?: SplatNet.CoopHistoryDetail;
 }
 interface ResultViewProps {
   t: (f: string, params?: Record<string, any>) => string;
@@ -82,15 +73,15 @@ const ResultView = (props: ResultViewProps) => {
   const [result, setResult] = useState<ResultProps>();
   const [displayResult, setDisplayResult] = useState(false);
   const [displayBattle, setDisplayBattle] = useState(false);
-  const [battlePlayer, setBattlePlayer] = useState<VsPlayer>();
+  const [battlePlayer, setBattlePlayer] = useState<SplatNet.VsPlayer>();
   const [displayBattlePlayer, setDisplayBattlePlayer] = useState(false);
   const [displayCoop, setDisplayCoop] = useState(false);
-  const [coopPlayer, setCoopPlayer] = useState<CoopPlayerResult>();
+  const [coopPlayer, setCoopPlayer] = useState<SplatNet.CoopPlayerResult>();
   const [displayCoopPlayer, setDisplayCoopPlayer] = useState(false);
   const willDisplayResult = useRef(false);
   const [hidePlayerNames, setHidePlayerNames] = useState(false);
 
-  const formatJudgement = (battle: VsHistoryDetail) => {
+  const formatJudgement = (battle: SplatNet.VsHistoryDetail) => {
     switch (battle.vsHistoryDetail.judgement) {
       case "WIN":
         return 1;
@@ -103,7 +94,7 @@ const ResultView = (props: ResultViewProps) => {
         return -2;
     }
   };
-  const formatName = (name: string, species: Species, isSelf: boolean) => {
+  const formatName = (name: string, species: SplatNet.Species, isSelf: boolean) => {
     if (hidePlayerNames && !isSelf) {
       switch (species) {
         case "INKLING":
@@ -114,13 +105,13 @@ const ResultView = (props: ResultViewProps) => {
     }
     return name;
   };
-  const formatBadge = (badge: PlayerBadge | null) => {
+  const formatBadge = (badge: SplatNet.PlayerBadge | null) => {
     if (badge) {
       return getImageCacheSource(badge.image.url);
     }
     return null;
   };
-  const formatWave = (coop: CoopHistoryDetail) => {
+  const formatWave = (coop: SplatNet.CoopHistoryDetail) => {
     switch (coop.coopHistoryDetail.resultWave) {
       case -1:
         return "";
@@ -137,13 +128,13 @@ const ResultView = (props: ResultViewProps) => {
         return t("wave_3");
     }
   };
-  const formatHazardLevel = (coop: CoopHistoryDetail) => {
+  const formatHazardLevel = (coop: SplatNet.CoopHistoryDetail) => {
     if (coop.coopHistoryDetail.dangerRate > 0) {
       return `(${parseInt(String(coop.coopHistoryDetail.dangerRate * 100))}%)`;
     }
     return "";
   };
-  const formatAnnotation = (battle: VsHistoryDetail) => {
+  const formatAnnotation = (battle: SplatNet.VsHistoryDetail) => {
     switch (battle.vsHistoryDetail.judgement) {
       case "WIN":
       case "LOSE":
@@ -156,7 +147,7 @@ const ResultView = (props: ResultViewProps) => {
         return t("no_contest");
     }
   };
-  const formatTeams = (battle: VsHistoryDetail) => {
+  const formatTeams = (battle: SplatNet.VsHistoryDetail) => {
     const teams = [battle.vsHistoryDetail.myTeam, ...battle.vsHistoryDetail.otherTeams];
     teams.sort((a, b) => {
       if (a.judgement === "WIN" && b.judgement === "LOSE") {
@@ -175,7 +166,7 @@ const ResultView = (props: ResultViewProps) => {
     });
     return teams;
   };
-  const formatTeamResult = (team: VsTeam) => {
+  const formatTeamResult = (team: SplatNet.VsTeam) => {
     if (team.result) {
       if (team.result.paintRatio) {
         return `${(team.result.paintRatio * 100).toFixed(1)}%`;
@@ -189,7 +180,7 @@ const ResultView = (props: ResultViewProps) => {
     }
     return " ";
   };
-  const formatWaterLevel = (waveResult: CoopWaveResult) => {
+  const formatWaterLevel = (waveResult: SplatNet.CoopWaveResult) => {
     switch (waveResult.waterLevel) {
       case 0:
         return t("low_tide");
@@ -199,7 +190,7 @@ const ResultView = (props: ResultViewProps) => {
         return t("high_tide");
     }
   };
-  const formatEventWave = (waveResult: CoopWaveResult) => {
+  const formatEventWave = (waveResult: SplatNet.CoopWaveResult) => {
     if (!waveResult.eventWave) {
       return "-";
     }

@@ -1,10 +1,10 @@
 import { ScrollView, StyleProp, ViewStyle } from "react-native";
 import { Avatar, HStack, ViewStyles } from "../components";
-import { Friends } from "../models/types";
+import { SplatNet } from "../models";
 import { getFriendColor, getUserIconCacheSource } from "../utils/ui";
 
 interface FriendViewProps {
-  friends?: Friends;
+  friends?: SplatNet.Friends;
   style?: StyleProp<ViewStyle>;
 }
 

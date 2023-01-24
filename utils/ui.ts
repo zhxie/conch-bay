@@ -1,19 +1,5 @@
 import { Color } from "../components";
-import {
-  BankaraMatchSetting,
-  CoopHistoryDetail,
-  Friend,
-  RegularMatchSetting,
-  Schedule,
-  Shift,
-  Splatfest,
-  SplatfestMatchSetting,
-  VsHistoryDetail,
-  VsMode,
-  VsPlayer,
-  VsStage,
-  XMatchSetting,
-} from "../models/types";
+import { SplatNet } from "../models";
 import { getAuthorityAndPath } from "./url";
 
 export const getImageCacheKey = (image: string) => {
@@ -42,80 +28,80 @@ export const getColor = (color: { a: number; b: number; g: number; r: number }) 
     color.b * 255
   )}, ${Math.round(color.a * 255)})`;
 };
-export const convertStageImageUrl = (stage: VsStage) => {
+export const convertStageImageUrl = (stage: SplatNet.VsStage) => {
   const url = getAuthorityAndPath(stage.image.url);
   const pathComponents = url.split("/");
   const imageId = pathComponents[pathComponents.length - 1].split("_")[0];
   return `https://splatoon3.ink/assets/splatnet/stage_img/icon/high_resolution/${imageId}_0.png`;
 };
 
-export const getMatchSetting = (schedule: Schedule, index?: number) => {
+export const getMatchSetting = (schedule: SplatNet.Schedule, index?: number) => {
   const regularMatchSetting = schedule["regularMatchSetting"];
   if (regularMatchSetting !== undefined) {
-    return regularMatchSetting as RegularMatchSetting | null;
+    return regularMatchSetting as SplatNet.RegularMatchSetting | null;
   }
   const anarchyMatchSettings = schedule["bankaraMatchSettings"];
   if (anarchyMatchSettings !== undefined) {
     if (anarchyMatchSettings === null) {
       return null;
     }
-    return (anarchyMatchSettings as BankaraMatchSetting[])[index ?? 0];
+    return (anarchyMatchSettings as SplatNet.BankaraMatchSetting[])[index ?? 0];
   }
   const xMatchSetting = schedule["xMatchSetting"];
   if (xMatchSetting !== undefined) {
-    return xMatchSetting as XMatchSetting | null;
+    return xMatchSetting as SplatNet.XMatchSetting | null;
   }
   const splatfestMatchSetting = schedule["festMatchSetting"];
   if (splatfestMatchSetting !== undefined) {
-    return splatfestMatchSetting as SplatfestMatchSetting | null;
+    return splatfestMatchSetting as SplatNet.SplatfestMatchSetting | null;
   }
   throw "unexpected match setting";
 };
-export const getShiftSetting = (shift: Shift) => {
+export const getShiftSetting = (shift: SplatNet.Shift) => {
   return shift.setting;
 };
-export const isScheduleStarted = (schedule: Schedule) => {
+export const isScheduleStarted = (schedule: SplatNet.Schedule) => {
   const now = new Date().getTime();
   const date = new Date(schedule.startTime);
   const timestamp = date.getTime();
   return timestamp <= now;
 };
-export const isSplatfestStarted = (splatfest: Splatfest) => {
+export const isSplatfestStarted = (splatfest: SplatNet.Splatfest) => {
   const now = new Date().getTime();
   const date = new Date(splatfest.midtermTime);
   const timestamp = date.getTime();
   return timestamp <= now;
 };
 
-export const getSplatfestStage = (splatfest: Splatfest) => {
+export const getSplatfestStage = (splatfest: SplatNet.Splatfest) => {
   return splatfest.tricolorStage!;
 };
-export const getSplatfestStageId = (splatfest: Splatfest) => {
+export const getSplatfestStageId = (splatfest: SplatNet.Splatfest) => {
   const stage = getSplatfestStage(splatfest);
   return stage.id;
 };
-export const getVsStages = (schedule: Schedule, index?: number) => {
+export const getVsStages = (schedule: SplatNet.Schedule, index?: number) => {
   const setting = getMatchSetting(schedule, index)!;
   return setting.vsStages;
 };
-export const getVsStageIds = (schedule: Schedule, index?: number) => {
+export const getVsStageIds = (schedule: SplatNet.Schedule, index?: number) => {
   const stages = getVsStages(schedule, index);
   return stages.map((stage) => stage.id);
 };
-export const getCoopStage = (shift: Shift) => {
+export const getCoopStage = (shift: SplatNet.Shift) => {
   const setting = getShiftSetting(shift);
   return setting["coopStage"];
 };
-export const getCoopStageId = (shift: Shift) => {
+export const getCoopStageId = (shift: SplatNet.Shift) => {
   const stage = getCoopStage(shift);
   return stage["id"];
 };
-export const getCoopWeapons = (shift: Shift) => {
+export const getCoopWeapons = (shift: SplatNet.Shift) => {
   const setting = getShiftSetting(shift);
   return setting.weapons;
 };
 
-export const getVsModeColor = (mode: VsMode) => {
+export const getVsModeColor = (mode: SplatNet.VsMode) => {
   switch (mode.id) {
     case "VnNNb2RlLTE=":
       return Color.RegularBattle;
@@ -132,7 +118,7 @@ export const getVsModeColor = (mode: VsMode) => {
       return Color.AccentColor;
   }
 };
-export const getVsRuleId = (schedule: Schedule, index?: number) => {
+export const getVsRuleId = (schedule: SplatNet.Schedule, index?: number) => {
   const setting = getMatchSetting(schedule, index)!;
   return setting.vsRule.id;
 };
@@ -145,7 +131,7 @@ export const getCoopRuleColor = (rule: string) => {
   }
 };
 
-export const getFriendColor = (friend: Friend) => {
+export const getFriendColor = (friend: SplatNet.Friend) => {
   switch (friend.onlineState) {
     case "VS_MODE_FIGHTING":
     case "VS_MODE_MATCHING":
@@ -160,7 +146,7 @@ export const getFriendColor = (friend: Friend) => {
   }
 };
 
-export const isVsAnnotation = (battle: VsHistoryDetail) => {
+export const isVsAnnotation = (battle: SplatNet.VsHistoryDetail) => {
   switch (battle.vsHistoryDetail.judgement) {
     case "WIN":
     case "LOSE":
@@ -171,20 +157,20 @@ export const isVsAnnotation = (battle: VsHistoryDetail) => {
       return true;
   }
 };
-export const getVsSelfPlayer = (battle: VsHistoryDetail) => {
+export const getVsSelfPlayer = (battle: SplatNet.VsHistoryDetail) => {
   return battle.vsHistoryDetail.myTeam.players.find((player) => player.isMyself)!;
 };
-export const getMaxAdditionalGearPowerCount = (player: VsPlayer) => {
+export const getMaxAdditionalGearPowerCount = (player: SplatNet.VsPlayer) => {
   return Math.max(
     player.headGear.additionalGearPowers.length,
     player.clothingGear.additionalGearPowers.length,
     player.shoesGear.additionalGearPowers.length
   );
 };
-export const isCoopAnnotation = (coop: CoopHistoryDetail) => {
+export const isCoopAnnotation = (coop: SplatNet.CoopHistoryDetail) => {
   return coop.coopHistoryDetail.resultWave === -1;
 };
-export const getCoopIsClear = (coop: CoopHistoryDetail) => {
+export const getCoopIsClear = (coop: SplatNet.CoopHistoryDetail) => {
   if (coop.coopHistoryDetail.resultWave === 0) {
     if (coop.coopHistoryDetail.bossResult) {
       return coop.coopHistoryDetail.bossResult.hasDefeatBoss;
@@ -193,19 +179,19 @@ export const getCoopIsClear = (coop: CoopHistoryDetail) => {
   }
   return false;
 };
-export const getCoopIsWaveClear = (coop: CoopHistoryDetail, wave: number) => {
+export const getCoopIsWaveClear = (coop: SplatNet.CoopHistoryDetail, wave: number) => {
   if (coop.coopHistoryDetail.resultWave === 0) {
     return true;
   }
   return wave + 1 < coop.coopHistoryDetail.resultWave;
 };
-export const getCoopPowerEgg = (coop: CoopHistoryDetail) => {
+export const getCoopPowerEgg = (coop: SplatNet.CoopHistoryDetail) => {
   return coop.coopHistoryDetail.memberResults.reduce(
     (sum, result) => sum + result.deliverCount,
     coop.coopHistoryDetail.myResult.deliverCount
   );
 };
-export const getCoopGoldenEgg = (coop: CoopHistoryDetail) => {
+export const getCoopGoldenEgg = (coop: SplatNet.CoopHistoryDetail) => {
   return coop.coopHistoryDetail.memberResults.reduce(
     (sum, result) => sum + result.goldenDeliverCount,
     coop.coopHistoryDetail.myResult.goldenDeliverCount

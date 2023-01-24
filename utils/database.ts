@@ -1,5 +1,5 @@
 import * as SQLite from "expo-sqlite";
-import { CoopHistoryDetail, VsHistoryDetail } from "../models/types";
+import { SplatNet } from "../models";
 import { getVsSelfPlayer } from "./ui";
 
 let db: SQLite.WebSQLDatabase | undefined = undefined;
@@ -29,14 +29,15 @@ export const open = async () => {
             if (record.mode === "salmon_run") {
               return exec(
                 `UPDATE result SET stage = '${
-                  (JSON.parse(record.detail) as CoopHistoryDetail).coopHistoryDetail.coopStage.id
+                  (JSON.parse(record.detail) as SplatNet.CoopHistoryDetail).coopHistoryDetail
+                    .coopStage.id
                 }' WHERE id = '${record.id}'`,
                 false
               );
             }
             return exec(
               `UPDATE result SET stage = '${
-                (JSON.parse(record.detail) as VsHistoryDetail).vsHistoryDetail.vsStage.id
+                (JSON.parse(record.detail) as SplatNet.VsHistoryDetail).vsHistoryDetail.vsStage.id
               }' WHERE id = '${record.id}'`,
               false
             );
@@ -127,7 +128,7 @@ export const add = async (
     false
   );
 };
-export const addBattle = (battle: VsHistoryDetail) => {
+export const addBattle = async (battle: SplatNet.VsHistoryDetail) => {
   return add(
     battle.vsHistoryDetail.id,
     new Date(battle.vsHistoryDetail.playedTime).valueOf(),
@@ -145,7 +146,7 @@ export const addBattle = (battle: VsHistoryDetail) => {
     battle.vsHistoryDetail.vsStage.id
   );
 };
-export const addCoop = (coop: CoopHistoryDetail) => {
+export const addCoop = async (coop: SplatNet.CoopHistoryDetail) => {
   return add(
     coop.coopHistoryDetail.id,
     new Date(coop.coopHistoryDetail.playedTime).valueOf(),

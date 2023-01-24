@@ -1,42 +1,13 @@
 import { fromByteArray as encode64 } from "base64-js";
 import * as Crypto from "expo-crypto";
 import * as Random from "expo-random";
-import pRetry from "p-retry";
-import {
-  BankaraBattleHistories,
-  Catalog,
-  CoopHistoryDetail,
-  CoopResult,
-  Friends,
-  Gears,
-  GraphQlResponse,
-  PrivateBattleHistories,
-  RegularBattleHistories,
-  Schedules,
-  Summary,
-  VsHistoryDetail,
-  WeaponRecords,
-  XBattleHistories,
-} from "../models/types";
-import { encode64Url } from "./codec";
-import { formUrlEncoded, getParam, parameterize } from "./url";
+import { SplatNet } from "../../models";
+import { encode64Url } from "../codec";
+import { fetchRetry } from "../fetch";
+import { formUrlEncoded, getParam, parameterize } from "../url";
 
 let NSO_VERSION = "2.4.0";
 let SPLATNET_VERSION = "2.0.0-bd36a652";
-
-const fetchRetry = async (input: RequestInfo, init?: RequestInit) => {
-  return await pRetry(
-    async () => {
-      return await fetch(input, init);
-    },
-    { retries: 3 }
-  );
-};
-export const fetchSchedules = async () => {
-  const res = await fetchRetry("https://splatoon3.ink/data/schedules.json", {});
-  const json = await res.json();
-  return (json as GraphQlResponse<Schedules>).data!;
-};
 
 export const updateNsoVersion = async () => {
   const res = await fetchRetry("https://itunes.apple.com/lookup?id=1234806557");
@@ -241,7 +212,7 @@ const fetchGraphQl = async (
 export const fetchFriends = async (bulletToken: string, language?: string) => {
   const res = await fetchGraphQl(bulletToken, "f0a8ebc384cf5fbac01e8085fbd7c898", language);
   const json = await res.json();
-  const friends = json as GraphQlResponse<Friends>;
+  const friends = json as SplatNet.GraphQlResponse<SplatNet.Friends>;
   if (friends.errors) {
     throw new Error(friends.errors[0].message);
   }
@@ -250,7 +221,7 @@ export const fetchFriends = async (bulletToken: string, language?: string) => {
 export const fetchSummary = async (bulletToken: string, language?: string) => {
   const res = await fetchGraphQl(bulletToken, "32b6771f94083d8f04848109b7300af5", language);
   const json = await res.json();
-  const summary = json as GraphQlResponse<Summary>;
+  const summary = json as SplatNet.GraphQlResponse<SplatNet.Summary>;
   if (summary.errors) {
     throw new Error(summary.errors[0].message);
   }
@@ -259,7 +230,7 @@ export const fetchSummary = async (bulletToken: string, language?: string) => {
 export const fetchCatalog = async (bulletToken: string, language?: string) => {
   const res = await fetchGraphQl(bulletToken, "52504060c81ff2f2d618c4e5377e6e7c", language);
   const json = await res.json();
-  const catalog = json as GraphQlResponse<Catalog>;
+  const catalog = json as SplatNet.GraphQlResponse<SplatNet.Catalog>;
   if (catalog.errors) {
     throw new Error(catalog.errors[0].message);
   }
@@ -269,7 +240,7 @@ export const fetchCatalog = async (bulletToken: string, language?: string) => {
 export const fetchWeaponRecords = async (bulletToken: string, language?: string) => {
   const res = await fetchGraphQl(bulletToken, "5f279779e7081f2d14ae1ddca0db2b6e", language);
   const json = await res.json();
-  const weaponRecords = json as GraphQlResponse<WeaponRecords>;
+  const weaponRecords = json as SplatNet.GraphQlResponse<SplatNet.WeaponRecords>;
   if (weaponRecords.errors) {
     throw new Error(weaponRecords.errors[0].message);
   }
@@ -278,7 +249,7 @@ export const fetchWeaponRecords = async (bulletToken: string, language?: string)
 export const fetchGears = async (bulletToken: string, language?: string) => {
   const res = await fetchGraphQl(bulletToken, "d29cd0c2b5e6bac90dd5b817914832f8", language);
   const json = await res.json();
-  const gears = json as GraphQlResponse<Gears>;
+  const gears = json as SplatNet.GraphQlResponse<SplatNet.Gears>;
   if (gears.errors) {
     throw new Error(gears.errors[0].message);
   }
@@ -299,10 +270,10 @@ export const fetchBattleHistories = async (bulletToken: string, language?: strin
     privateRes.json(),
   ]);
   const histories = {
-    regular: regularJson as GraphQlResponse<RegularBattleHistories>,
-    anarchy: anarchyJson as GraphQlResponse<BankaraBattleHistories>,
-    x: xJson as GraphQlResponse<XBattleHistories>,
-    private: privateJson as GraphQlResponse<PrivateBattleHistories>,
+    regular: regularJson as SplatNet.GraphQlResponse<SplatNet.RegularBattleHistories>,
+    anarchy: anarchyJson as SplatNet.GraphQlResponse<SplatNet.BankaraBattleHistories>,
+    x: xJson as SplatNet.GraphQlResponse<SplatNet.XBattleHistories>,
+    private: privateJson as SplatNet.GraphQlResponse<SplatNet.PrivateBattleHistories>,
   };
   Object.values(histories).forEach((history) => {
     if (history.errors) {
@@ -321,7 +292,7 @@ export const fetchVsHistoryDetail = async (id: string, bulletToken: string, lang
     vsResultId: id,
   });
   const json = await res.json();
-  const detail = json as GraphQlResponse<VsHistoryDetail>;
+  const detail = json as SplatNet.GraphQlResponse<SplatNet.VsHistoryDetail>;
   if (detail.errors) {
     throw new Error(detail.errors[0].message);
   }
@@ -330,7 +301,7 @@ export const fetchVsHistoryDetail = async (id: string, bulletToken: string, lang
 export const fetchCoopResult = async (bulletToken: string, language?: string) => {
   const res = await fetchGraphQl(bulletToken, "2a7f4335bcf586d904db85e75ba868c0", language);
   const json = await res.json();
-  const result = json as GraphQlResponse<CoopResult>;
+  const result = json as SplatNet.GraphQlResponse<SplatNet.CoopResult>;
   if (result.errors) {
     throw new Error(result.errors[0].message);
   }
@@ -345,7 +316,7 @@ export const fetchCoopHistoryDetail = async (
     coopHistoryDetailId: id,
   });
   const json = await res.json();
-  const detail = json as GraphQlResponse<CoopHistoryDetail>;
+  const detail = json as SplatNet.GraphQlResponse<SplatNet.CoopHistoryDetail>;
   if (detail.errors) {
     throw new Error(detail.errors[0].message);
   }
