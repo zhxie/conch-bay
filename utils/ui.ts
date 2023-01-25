@@ -1,4 +1,3 @@
-import dayjs from "dayjs";
 import { Color } from "../components";
 import {
   BankaraMatchSetting,
@@ -43,6 +42,12 @@ export const getColor = (color: { a: number; b: number; g: number; r: number }) 
     color.b * 255
   )}, ${Math.round(color.a * 255)})`;
 };
+export const convertStageImageUrl = (stage: VsStage) => {
+  const url = getAuthorityAndPath(stage.image.url);
+  const pathComponents = url.split("/");
+  const imageId = pathComponents[pathComponents.length - 1].split("_")[0];
+  return `https://splatoon3.ink/assets/splatnet/stage_img/icon/high_resolution/${imageId}_0.png`;
+};
 
 export const getMatchSetting = (schedule: Schedule, index?: number) => {
   const regularMatchSetting = schedule["regularMatchSetting"];
@@ -81,28 +86,6 @@ export const isSplatfestStarted = (splatfest: Splatfest) => {
   const timestamp = date.getTime();
   return timestamp <= now;
 };
-export const getScheduleTimeRange = (schedule: Schedule, withDate: boolean) => {
-  let format = "HH:mm";
-  if (withDate) {
-    format = "M/DD HH:mm";
-  }
-
-  const startTime = dayjs(schedule.startTime).format(format);
-  const endTime = dayjs(schedule.endTime).format(format);
-
-  return `${startTime} - ${endTime}`;
-};
-export const getSplatfestTimeRange = (splatfest: Splatfest, withDate: boolean) => {
-  let format = "HH:mm";
-  if (withDate) {
-    format = "M/DD HH:mm";
-  }
-
-  const startTime = dayjs(splatfest.midtermTime).format(format);
-  const endTime = dayjs(splatfest.endTime).format(format);
-
-  return `${startTime} - ${endTime}`;
-};
 
 export const getSplatfestStage = (splatfest: Splatfest) => {
   return splatfest.tricolorStage!;
@@ -130,12 +113,6 @@ export const getCoopStageId = (shift: Shift) => {
 export const getCoopWeapons = (shift: Shift) => {
   const setting = getShiftSetting(shift);
   return setting.weapons;
-};
-export const convertStageImageUrl = (stage: VsStage) => {
-  const url = getAuthorityAndPath(stage.image.url);
-  const pathComponents = url.split("/");
-  const imageId = pathComponents[pathComponents.length - 1].split("_")[0];
-  return `https://splatoon3.ink/assets/splatnet/stage_img/icon/high_resolution/${imageId}_0.png`;
 };
 
 export const getVsModeColor = (mode: VsMode) => {

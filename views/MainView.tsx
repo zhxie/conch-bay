@@ -127,7 +127,7 @@ const MainView = (props: MainViewProps) => {
       try {
         await Database.open();
         await loadResults(20, false);
-        Font.loadAsync({
+        await Font.loadAsync({
           Splatfont: require("../assets/fonts/Splatfont.otf"),
         });
         setReady(true);
@@ -458,8 +458,7 @@ const MainView = (props: MainViewProps) => {
         }
       }
     } catch (e) {
-      refresh();
-      return;
+      await refresh();
     }
     setRefreshing(false);
   };
@@ -481,8 +480,8 @@ const MainView = (props: MainViewProps) => {
       setLogIn(false);
     }
   };
-  const onIminkPrivacyPolicyPress = () => {
-    WebBrowser.openBrowserAsync("https://github.com/JoneWang/imink/wiki/Privacy-Policy");
+  const onIminkPrivacyPolicyPress = async () => {
+    await WebBrowser.openBrowserAsync("https://github.com/JoneWang/imink/wiki/Privacy-Policy");
   };
   const onLogInContinuePress = async () => {
     try {
@@ -520,7 +519,7 @@ const MainView = (props: MainViewProps) => {
     try {
       setLoggingOut(true);
       if (autoRefresh) {
-        onAutoRefreshPress();
+        await onAutoRefreshPress();
       }
       await Promise.all([
         clearSessionToken(),
@@ -541,35 +540,35 @@ const MainView = (props: MainViewProps) => {
       setLoggingOut(false);
     }
   };
-  const onFilterRegularBattlePress = async () => {
+  const onFilterRegularBattlePress = () => {
     if (filter !== "regular_battle") {
       setFilter("regular_battle");
     } else {
       setFilter("");
     }
   };
-  const onFilterAnarchyBattlePress = async () => {
+  const onFilterAnarchyBattlePress = () => {
     if (filter !== "anarchy_battle") {
       setFilter("anarchy_battle");
     } else {
       setFilter("");
     }
   };
-  const onFilterXBattlePress = async () => {
+  const onFilterXBattlePress = () => {
     if (filter !== "x_battle") {
       setFilter("x_battle");
     } else {
       setFilter("");
     }
   };
-  const onFilterPrivateBattlePress = async () => {
+  const onFilterPrivateBattlePress = () => {
     if (filter !== "private_battle") {
       setFilter("private_battle");
     } else {
       setFilter("");
     }
   };
-  const onFilterSalmonRunPress = async () => {
+  const onFilterSalmonRunPress = () => {
     if (filter !== "salmon_run") {
       setFilter("salmon_run");
     } else {
@@ -830,8 +829,8 @@ const MainView = (props: MainViewProps) => {
     }
     setPreloadingResources(false);
   };
-  const onCreateAGithubIssuePress = () => {
-    Linking.openURL("https://github.com/zhxie/conch-bay/issues/new");
+  const onCreateAGithubIssuePress = async () => {
+    await Linking.openURL("https://github.com/zhxie/conch-bay/issues/new");
   };
   const onCopySessionTokenPress = async () => {
     if (sessionToken.length > 0) {
@@ -851,8 +850,8 @@ const MainView = (props: MainViewProps) => {
       showToast(e);
     }
   };
-  const onPrivacyPolicyPress = () => {
-    WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay/wiki/Privacy-Policy");
+  const onPrivacyPolicyPress = async () => {
+    await WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay/wiki/Privacy-Policy");
   };
   const onAcknowledgmentsPress = () => {
     setAcknowledgments(true);
@@ -860,18 +859,18 @@ const MainView = (props: MainViewProps) => {
   const onAcknowledgmentsClose = () => {
     setAcknowledgments(false);
   };
-  const onSplatoon3InkPress = () => {
-    Linking.openURL("https://splatoon3.ink/");
+  const onSplatoon3InkPress = async () => {
+    await Linking.openURL("https://splatoon3.ink/");
   };
-  const onIminkFApiPress = () => {
-    Linking.openURL("https://github.com/imink-app/f-API");
+  const onIminkFApiPress = async () => {
+    await Linking.openURL("https://github.com/imink-app/f-API");
   };
-  const onAutoRefreshPress = () => {
+  const onAutoRefreshPress = async () => {
     if (!autoRefresh) {
       showToast(t("auto_refresh_enabled"));
-      activateKeepAwake();
+      await activateKeepAwake();
     } else {
-      deactivateKeepAwake();
+      await deactivateKeepAwake();
     }
     setAutoRefresh(!autoRefresh);
   };

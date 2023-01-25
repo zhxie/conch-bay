@@ -127,7 +127,7 @@ export const add = async (
     false
   );
 };
-export const addBattle = async (battle: VsHistoryDetail) => {
+export const addBattle = (battle: VsHistoryDetail) => {
   return add(
     battle.vsHistoryDetail.id,
     new Date(battle.vsHistoryDetail.playedTime).valueOf(),
@@ -145,7 +145,7 @@ export const addBattle = async (battle: VsHistoryDetail) => {
     battle.vsHistoryDetail.vsStage.id
   );
 };
-export const addCoop = async (coop: CoopHistoryDetail) => {
+export const addCoop = (coop: CoopHistoryDetail) => {
   return add(
     coop.coopHistoryDetail.id,
     new Date(coop.coopHistoryDetail.playedTime).valueOf(),

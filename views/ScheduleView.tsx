@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { useState } from "react";
 import { ScrollView, StyleProp, ViewStyle } from "react-native";
 import {
@@ -17,11 +18,9 @@ import {
   getCoopWeapons,
   getImageCacheSource,
   getMatchSetting,
-  getScheduleTimeRange,
   getShiftSetting,
   getSplatfestStage,
   getSplatfestStageId,
-  getSplatfestTimeRange,
   getVsRuleId,
   getVsStageIds,
   getVsStages,
@@ -67,6 +66,28 @@ const ScheduleView = (props: ScheduleViewProps) => {
   const bigRunShifts = props.schedules?.coopGroupingSchedule.bigRunSchedules.nodes;
   const regularShifts = props.schedules?.coopGroupingSchedule.regularSchedules.nodes;
 
+  const formatScheduleTimeRange = (schedule: Schedule, withDate: boolean) => {
+    let format = "HH:mm";
+    if (withDate) {
+      format = "M/DD HH:mm";
+    }
+
+    const startTime = dayjs(schedule.startTime).format(format);
+    const endTime = dayjs(schedule.endTime).format(format);
+
+    return `${startTime} - ${endTime}`;
+  };
+  const formatSplatfestTimeRange = (splatfest: Splatfest, withDate: boolean) => {
+    let format = "HH:mm";
+    if (withDate) {
+      format = "M/DD HH:mm";
+    }
+
+    const startTime = dayjs(splatfest.midtermTime).format(format);
+    const endTime = dayjs(splatfest.endTime).format(format);
+
+    return `${startTime} - ${endTime}`;
+  };
   const formatStage = (stage: VsStage) => {
     return {
       title: t(stage.id),
@@ -256,7 +277,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
                 <ScheduleBox
                   key={i}
                   rule={t(getVsRuleId(schedule, display.index))}
-                  time={getScheduleTimeRange(schedule, false)}
+                  time={formatScheduleTimeRange(schedule, false)}
                   stages={getVsStages(schedule, display.index).map(formatStage)}
                   style={i !== schedules.length - 1 ? ViewStyles.mb2 : undefined}
                 />
@@ -272,7 +293,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
           {display?.splatfest && (
             <ScheduleBox
               rule={t("VnNSdWxlLTU=")}
-              time={getSplatfestTimeRange(display.splatfest, true)}
+              time={formatSplatfestTimeRange(display.splatfest, true)}
               stages={[formatStage(getSplatfestStage(display.splatfest))]}
             />
           )}
@@ -287,7 +308,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
                 <ShiftBox
                   key={i}
                   rule={display.title}
-                  time={getScheduleTimeRange(shift, true)}
+                  time={formatScheduleTimeRange(shift, true)}
                   stage={formatStage(getCoopStage(shift))}
                   weapons={getCoopWeapons(shift).map(formatWeapon)}
                   style={i !== shifts.length - 1 ? ViewStyles.mb2 : undefined}

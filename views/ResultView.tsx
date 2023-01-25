@@ -118,7 +118,6 @@ const ResultView = (props: ResultViewProps) => {
     if (badge) {
       return getImageCacheSource(badge.image.url);
     }
-
     return null;
   };
   const formatWave = (coop: CoopHistoryDetail) => {
@@ -227,15 +226,15 @@ const ResultView = (props: ResultViewProps) => {
     setDisplayBattle(false);
     setDisplayCoop(false);
   };
-  const onOpenInNintendoSwitchOnlinePress = () => {
+  const onOpenInNintendoSwitchOnlinePress = async () => {
     if (result!.battle) {
-      Linking.openURL(
+      await Linking.openURL(
         `com.nintendo.znca://znca/game/4834290508791808?p=/history/detail/${
           result!.battle.vsHistoryDetail.id
         }`
       );
     } else {
-      Linking.openURL(
+      await Linking.openURL(
         `com.nintendo.znca://znca/game/4834290508791808?p=/coop/${
           result!.coop!.coopHistoryDetail.id
         }`
