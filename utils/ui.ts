@@ -28,6 +28,13 @@ export const getColor = (color: { a: number; b: number; g: number; r: number }) 
     color.b * 255
   )}, ${Math.round(color.a * 255)})`;
 };
+export const getHexColor = (color: { a: number; b: number; g: number; r: number }) => {
+  const hex = (i: number) =>
+    Math.round(i * 255)
+      .toString(16)
+      .padStart(2, "0");
+  return `#${hex(color.r)}${hex(color.g)}${hex(color.b)}${hex(color.a)}`;
+};
 export const convertStageImageUrl = (stage: SplatNet.VsStage) => {
   const url = getAuthorityAndPath(stage.image.url);
   const pathComponents = url.split("/");
@@ -159,6 +166,9 @@ export const isVsAnnotation = (battle: SplatNet.VsHistoryDetail) => {
 };
 export const getVsSelfPlayer = (battle: SplatNet.VsHistoryDetail) => {
   return battle.vsHistoryDetail.myTeam.players.find((player) => player.isMyself)!;
+};
+export const getVsSelfPlayerIndex = (battle: SplatNet.VsHistoryDetail) => {
+  return battle.vsHistoryDetail.myTeam.players.findIndex((player) => player.isMyself)!;
 };
 export const getMaxAdditionalGearPowerCount = (player: SplatNet.VsPlayer) => {
   return Math.max(

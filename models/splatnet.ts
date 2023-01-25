@@ -284,6 +284,7 @@ export interface VsPlayer {
     special: number;
     noroshiTry: number | null;
   } | null;
+  crown?: boolean;
 }
 export interface VsResult {
   paintRatio: number | null;
@@ -303,6 +304,9 @@ export interface VsTeam {
   festTeamName: string | null;
   players: VsPlayer[];
 }
+export interface Award {
+  name: string;
+}
 export interface VsHistoryDetail {
   vsHistoryDetail: {
     id: string;
@@ -312,7 +316,9 @@ export interface VsHistoryDetail {
     myTeam: VsTeam;
     vsStage: VsStage;
     otherTeams: VsTeam[];
+    duration: number;
     playedTime: string;
+    awards: Award[];
   };
 }
 
