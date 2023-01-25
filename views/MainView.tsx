@@ -109,6 +109,7 @@ const MainView = (props: MainViewProps) => {
   const [rank, setRank, clearRank] = useAsyncStorage("rank");
   const [grade, setGrade, clearGrade] = useAsyncStorage("grade");
 
+  const [apiUpdated, setApiUpdated] = useState(false);
   const [schedules, setSchedules] = useState<Schedules>();
   const [friends, setFriends] = useState<Friends>();
   const [results, setResults] =
@@ -270,10 +271,13 @@ const MainView = (props: MainViewProps) => {
       setSchedules(schedules);
       if (sessionToken) {
         // Update versions.
-        try {
-          await Promise.all([await updateNsoVersion(), await updateSplatnetVersion()]);
-        } catch {
-          showToast(t("failed_to_check_api_update"));
+        if (!apiUpdated) {
+          try {
+            await Promise.all([await updateNsoVersion(), await updateSplatnetVersion()]);
+            setApiUpdated(true);
+          } catch {
+            showToast(t("failed_to_check_api_update"));
+          }
         }
 
         // Attempt to friends.
