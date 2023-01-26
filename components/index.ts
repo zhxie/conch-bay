@@ -15,6 +15,7 @@ export { default as GearBox } from "./GearBox";
 export { default as Image, SourceProps } from "./Image";
 export { default as KingSalmonidBox } from "./KingSalmonidBox";
 export { default as Modal } from "./Modal";
+export { default as Picker } from "./Picker";
 export { default as ScheduleButton } from "./ScheduleButton";
 export { default as ScheduleBox } from "./ScheduleBox";
 export * from "./Shape";

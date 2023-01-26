@@ -22,6 +22,9 @@ const zh = {
   exporting: "导出中",
   disclaimer: "本应用是使用鱿鱼圈3的信息的非官方应用，与任天堂有限公司无关。",
   support: "支持",
+  language_notice:
+    "若您的游戏语言与显示语言不一致，您可以在此修改。这将使法螺湾载入对应语言的记录。",
+  change_language: "修改语言",
   relog_in_notice: "如果法螺湾无法获取令牌，您可以重新登录。",
   relog_in: "重新登录",
   resource_notice:

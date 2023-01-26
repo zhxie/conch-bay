@@ -31,6 +31,7 @@ import {
   FloatingActionButton,
   HStack,
   Modal,
+  Picker,
   Text,
   TextStyles,
   ToolButton,
@@ -108,6 +109,8 @@ const MainView = (props: MainViewProps) => {
   const [level, setLevel, clearLevel] = useAsyncStorage("level");
   const [rank, setRank, clearRank] = useAsyncStorage("rank");
   const [grade, setGrade, clearGrade] = useAsyncStorage("grade");
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [language, setLanguage, _, languageReady] = useAsyncStorage("language", t("lang"));
 
   const [apiUpdated, setApiUpdated] = useState(false);
   const [schedules, setSchedules] = useState<Schedules>();
@@ -124,20 +127,22 @@ const MainView = (props: MainViewProps) => {
   };
 
   useEffect(() => {
-    (async () => {
-      try {
-        await Database.open();
-        await loadResults(20, false);
-        await Font.loadAsync({
-          Splatfont: require("../assets/fonts/Splatfont.otf"),
-        });
-        setReady(true);
-      } catch (e) {
-        showToast(e);
-        setFirstAid(true);
-      }
-    })();
-  }, [sessionTokenReady]);
+    if (sessionTokenReady && languageReady) {
+      (async () => {
+        try {
+          await Database.open();
+          await loadResults(20, false);
+          await Font.loadAsync({
+            Splatfont: require("../assets/fonts/Splatfont.otf"),
+          });
+          setReady(true);
+        } catch (e) {
+          showToast(e);
+          setFirstAid(true);
+        }
+      })();
+    }
+  }, [sessionTokenReady, languageReady]);
   const fade = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     if (ready) {
@@ -168,19 +173,14 @@ const MainView = (props: MainViewProps) => {
   }, [filter]);
   useEffect(() => {
     if (ready) {
-      if (autoRefresh) {
-        if (refreshing) {
-          clearTimeout(autoRefreshTimeout);
-        } else {
-          autoRefreshTimeout = setTimeout(() => {
-            refreshResults();
-          }, 10000);
-        }
-      } else {
-        clearTimeout(autoRefreshTimeout);
+      clearTimeout(autoRefreshTimeout);
+      if (autoRefresh && !refreshing) {
+        autoRefreshTimeout = setTimeout(() => {
+          refreshResults();
+        }, 10000);
       }
     }
-  }, [refreshing, autoRefresh]);
+  }, [refreshing, autoRefresh, language]);
 
   const loadResults = async (length: number, forceUpdate: boolean) => {
     setLoadingMore(true);
@@ -356,9 +356,9 @@ const MainView = (props: MainViewProps) => {
           const details = await Promise.all(
             newResults.map((result) => {
               if (!result.isCoop) {
-                return fetchVsHistoryDetail(result.id, newBulletToken, t("lang"));
+                return fetchVsHistoryDetail(result.id, newBulletToken, language);
               }
-              return fetchCoopHistoryDetail(result.id, newBulletToken, t("lang"));
+              return fetchCoopHistoryDetail(result.id, newBulletToken, language);
             })
           );
           let fail = 0;
@@ -435,9 +435,9 @@ const MainView = (props: MainViewProps) => {
           const details = await Promise.all(
             newResults.map((result) => {
               if (!result.isCoop) {
-                return fetchVsHistoryDetail(result.id, bulletToken, t("lang"));
+                return fetchVsHistoryDetail(result.id, bulletToken, language);
               }
-              return fetchCoopHistoryDetail(result.id, bulletToken, t("lang"));
+              return fetchCoopHistoryDetail(result.id, bulletToken, language);
             })
           );
           let fail = 0;
@@ -677,6 +677,9 @@ const MainView = (props: MainViewProps) => {
     if (!preloadingResources) {
       setSupport(false);
     }
+  };
+  const onLanguageSelected = async (language: string) => {
+    await setLanguage(language);
   };
   const onPreloadResourcesPress = async () => {
     setPreloadingResources(true);
@@ -1165,6 +1168,32 @@ const MainView = (props: MainViewProps) => {
             color={Color.MiddleTerritory}
             style={ViewStyles.mb4}
           />
+          <VStack style={[ViewStyles.mb4, ViewStyles.wf]}>
+            <VStack center>
+              <Text style={ViewStyles.mb2}>{t("language_notice")}</Text>
+            </VStack>
+            <Picker
+              isDisabled={refreshing}
+              title={t("change_language")}
+              items={[
+                { key: "de-DE", value: "Deutsch" },
+                { key: "en-GB", value: "English (UK)" },
+                { key: "en-US", value: "English (United States)" },
+                { key: "es-ES", value: "Español" },
+                { key: "es-MX", value: "Español (México)" },
+                { key: "fr-CA", value: "Français (Canada)" },
+                { key: "it-IT", value: "Italiano" },
+                { key: "ja-JP", value: "日本語" },
+                { key: "ko-KR", value: "한국어" },
+                { key: "nl-NL", value: "Nederlands" },
+                { key: "ru-RU", value: "Русский язык" },
+                { key: "zh-CN", value: "简体中文" },
+                { key: "zh-TW", value: "繁體中文" },
+              ]}
+              onSelected={onLanguageSelected}
+              style={ViewStyles.wf}
+            />
+          </VStack>
           {sessionToken.length > 0 && (
             <VStack style={[ViewStyles.mb4, ViewStyles.wf]}>
               <VStack center>
