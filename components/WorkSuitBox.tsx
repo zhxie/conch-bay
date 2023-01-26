@@ -15,7 +15,7 @@ const WorkSuitBox = (props: WorkSuitBoxProps) => {
   const style = colorScheme === "light" ? ViewStyles.lightTerritory : ViewStyles.darkTerritory;
 
   return (
-    <HStack style={[ViewStyles.px3, { height: 64 }, ViewStyles.r, style, props.style]}>
+    <HStack style={[ViewStyles.px3, { height: 64 }, ViewStyles.r2, style, props.style]}>
       <HStack flex center style={[ViewStyles.py2]}>
         <Image source={props.image} style={[ViewStyles.mr3, { width: 48, height: 48 }]} />
         <Text numberOfLines={1}>{props.name}</Text>

@@ -28,8 +28,8 @@ const ResultButton = (props: ResultButtonProps) => {
       style={[
         ViewStyles.px3,
         { height: 64 },
-        props.isFirst && ViewStyles.rt,
-        props.isLast && ViewStyles.rb,
+        props.isFirst && ViewStyles.rt2,
+        props.isLast && ViewStyles.rb2,
         props.style,
       ]}
       onPress={props.onPress}

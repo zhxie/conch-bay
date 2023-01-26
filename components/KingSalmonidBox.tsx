@@ -18,7 +18,7 @@ const KingSalmonidBox = (props: KingSalmonidBoxProps) => {
   const style = colorScheme === "light" ? ViewStyles.lightTerritory : ViewStyles.darkTerritory;
 
   return (
-    <VStack style={[ViewStyles.r, ViewStyles.p2, { width: 110, height: 80 }, style, props.style]}>
+    <VStack style={[ViewStyles.r2, ViewStyles.p2, { width: 110, height: 80 }, style, props.style]}>
       <VStack flex justify>
         <Text
           numberOfLines={1}

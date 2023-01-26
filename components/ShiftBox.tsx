@@ -32,7 +32,7 @@ const ShiftBox = (props: ScheduleBoxProps) => {
           <VStack flex center style={ViewStyles.mr2}>
             <Image
               source={props.stage.image}
-              style={[ViewStyles.mb1, ViewStyles.r, styles.stage]}
+              style={[ViewStyles.mb1, ViewStyles.r2, styles.stage]}
             />
             <Text numberOfLines={1}>{props.stage.title}</Text>
           </VStack>

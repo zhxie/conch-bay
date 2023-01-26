@@ -19,7 +19,8 @@ const Badge = (props: BadgeProps) => {
       style={[
         ViewStyles.px2,
         ViewStyles.py1,
-        { backgroundColor: `${props.color}${opacity}`, borderRadius: 2 },
+        ViewStyles.r0_5,
+        { backgroundColor: `${props.color}${opacity}` },
         props.style,
       ]}
     >

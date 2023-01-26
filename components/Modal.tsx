@@ -41,7 +41,7 @@ const Modal = (props: ModalProps) => {
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
         onScrollEndDrag={onScrollEndDrag}
-        style={[ViewStyles.r, ViewStyles.px4, style, props.style]}
+        style={[ViewStyles.r2, ViewStyles.px4, style, props.style]}
       >
         <View style={{ height: 16 }} />
         {props.children}

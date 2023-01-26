@@ -159,23 +159,29 @@ export const ViewStyles = StyleSheet.create({
   j: {
     justifyContent: "space-between",
   },
-  r: {
+  r0_5: {
+    borderRadius: 2,
+  },
+  r1: {
+    borderRadius: 4,
+  },
+  r2: {
     borderRadius: 8,
   },
-  rt: {
+  rt0: {
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0,
+  },
+  rt2: {
     borderTopLeftRadius: 8,
     borderTopRightRadius: 8,
   },
-  rb: {
-    borderBottomLeftRadius: 8,
-    borderBottomRightRadius: 8,
+  rb0: {
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
   },
-  rl: {
-    borderTopLeftRadius: 8,
+  rb2: {
     borderBottomLeftRadius: 8,
-  },
-  rr: {
-    borderTopRightRadius: 8,
     borderBottomRightRadius: 8,
   },
   s1: {

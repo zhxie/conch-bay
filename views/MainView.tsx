@@ -988,13 +988,8 @@ const MainView = (props: MainViewProps) => {
                     isLoadingText={t("loading_more")}
                     style={[
                       (results?.length ?? 0) > 40 && (results?.length ?? 0) <= 60 && ViewStyles.mb2,
-                      results === undefined || results.length > 0
-                        ? {
-                            borderTopLeftRadius: 0,
-                            borderTopRightRadius: 0,
-                          }
-                        : ViewStyles.rt,
-                      ViewStyles.rb,
+                      results === undefined || results.length > 0 ? ViewStyles.rt0 : ViewStyles.rt2,
+                      ViewStyles.rb2,
                       { height: 64 },
                     ]}
                     textStyle={TextStyles.h3}

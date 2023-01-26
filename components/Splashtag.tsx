@@ -19,7 +19,7 @@ const Splashtag = (props: SplashtagProps) => {
     <Center flex style={props.style}>
       <Image
         source={props.banner}
-        style={[ViewStyles.r, { width: "100%", aspectRatio: 700 / 200 }]}
+        style={[ViewStyles.r2, { width: "100%", aspectRatio: 700 / 200 }]}
       />
       <HStack center style={{ height: "35%", position: "absolute", right: 1, bottom: 1 }}>
         {props.badges.map((badge, i, badges) => {

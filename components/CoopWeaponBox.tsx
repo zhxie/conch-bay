@@ -16,7 +16,7 @@ const BattleWeaponBox = (props: BattleWeaponBoxProps) => {
 
   return (
     <HStack
-      style={[ViewStyles.px3, ViewStyles.py2, { height: 48 }, ViewStyles.r, style, props.style]}
+      style={[ViewStyles.px3, ViewStyles.py2, { height: 48 }, ViewStyles.r2, style, props.style]}
     >
       <HStack flex center justify>
         <HStack center style={ViewStyles.mr1}>
@@ -32,7 +32,7 @@ const BattleWeaponBox = (props: BattleWeaponBoxProps) => {
           ))}
         </HStack>
         <Center>
-          <Circle size={25} color={Color.DarkBackground} style={ViewStyles.r} />
+          <Circle size={25} color={Color.DarkBackground} style={ViewStyles.r2} />
           <Image
             source={props.specialWeapon}
             style={[ViewStyles.transparent, { width: 19, height: 19, position: "absolute" }]}

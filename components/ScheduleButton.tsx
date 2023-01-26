@@ -17,7 +17,7 @@ const ScheduleButton = (props: ScheduleButtonProps) => {
   return (
     <Pressable
       isDisabled={props.rule.length === 0}
-      style={[ViewStyles.r, ViewStyles.p2, { width: 160, height: 80 }, props.style]}
+      style={[ViewStyles.r2, ViewStyles.p2, { width: 160, height: 80 }, props.style]}
       onPress={props.onPress}
     >
       <VStack flex justify>

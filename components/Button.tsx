@@ -19,7 +19,7 @@ const Button = (props: ButtonProps) => {
   return (
     <Pressable
       isDisabled={props.isDisabled || props.isLoading}
-      style={[ViewStyles.c, ViewStyles.px3, { borderRadius: 4 }, props.style]}
+      style={[ViewStyles.c, ViewStyles.px3, ViewStyles.r1, props.style]}
       onPress={props.onPress}
       onLongPress={props.onLongPress}
     >

@@ -26,8 +26,8 @@ const GearBox = (props: GearBoxProps) => {
       style={[
         ViewStyles.px3,
         { height: 48 },
-        props.isFirst && ViewStyles.rt,
-        props.isLast && ViewStyles.rb,
+        props.isFirst && ViewStyles.rt2,
+        props.isLast && ViewStyles.rb2,
         style,
         props.style,
       ]}
