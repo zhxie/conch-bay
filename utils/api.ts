@@ -22,7 +22,7 @@ import { encode64Url } from "./codec";
 import { formUrlEncoded, getParam, parameterize } from "./url";
 
 let NSO_VERSION = "2.4.0";
-let SPLATNET_VERSION = "2.0.0-bd36a652";
+let SPLATNET_VERSION = "2.0.0-7070f95e";
 
 const fetchRetry = async (input: RequestInfo, init?: RequestInit) => {
   return await pRetry(
@@ -328,7 +328,7 @@ export const fetchVsHistoryDetail = async (id: string, bulletToken: string, lang
   return detail.data!;
 };
 export const fetchCoopResult = async (bulletToken: string, language?: string) => {
-  const res = await fetchGraphQl(bulletToken, "2a7f4335bcf586d904db85e75ba868c0", language);
+  const res = await fetchGraphQl(bulletToken, "7edc52165b95dcb2b8a1c14c31e1d5b1", language);
   const json = await res.json();
   const result = json as GraphQlResponse<CoopResult>;
   if (result.errors) {
