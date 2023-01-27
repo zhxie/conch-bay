@@ -24,10 +24,18 @@ import { formUrlEncoded, getParam, parameterize } from "./url";
 let NSO_VERSION = "2.4.0";
 let SPLATNET_VERSION = "2.0.0-7070f95e";
 
+// https://stackoverflow.com/a/54208009.
+const fetchTimeout = async (input: RequestInfo, init: RequestInit | undefined, timeout: number) => {
+  return Promise.race([
+    fetch(input, init),
+    new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), timeout)),
+  ]);
+};
 const fetchRetry = async (input: RequestInfo, init?: RequestInit) => {
   return await pRetry(
     async () => {
-      return await fetch(input, init);
+      // TODO: the timeout should be tuned since it is too long to wait for.
+      return await fetchTimeout(input, init, 60000);
     },
     { retries: 3 }
   );
