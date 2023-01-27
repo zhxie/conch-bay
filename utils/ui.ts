@@ -206,8 +206,8 @@ export const getCoopPowerEgg = (coop: CoopHistoryDetail) => {
   );
 };
 export const getCoopGoldenEgg = (coop: CoopHistoryDetail) => {
-  return coop.coopHistoryDetail.memberResults.reduce(
-    (sum, result) => sum + result.goldenDeliverCount,
-    coop.coopHistoryDetail.myResult.goldenDeliverCount
+  return coop.coopHistoryDetail.waveResults.reduce(
+    (sum, result) => sum + (result.teamDeliverCount ?? 0),
+    0
   );
 };
