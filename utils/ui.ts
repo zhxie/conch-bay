@@ -181,6 +181,15 @@ export const getMaxAdditionalGearPowerCount = (player: VsPlayer) => {
     player.shoesGear.additionalGearPowers.length
   );
 };
+export const isVsPlayerDragon = (player: VsPlayer) => {
+  switch (player.festDragonCert) {
+    case "NONE":
+      return false;
+    case "DRAGON":
+    case "DOUBLE_DRAGON":
+      return true;
+  }
+};
 export const isCoopAnnotation = (coop: CoopHistoryDetail) => {
   return coop.coopHistoryDetail.resultWave === -1;
 };

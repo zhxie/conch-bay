@@ -17,6 +17,8 @@ interface BattlePlayerButtonProps {
   death?: number;
   special?: number;
   ultraSignal?: number | null;
+  crown?: boolean;
+  dragon?: string;
   style?: StyleProp<ViewStyle>;
   onPress?: () => void;
 }
@@ -31,6 +33,7 @@ const BattlePlayerButton = (props: BattlePlayerButtonProps) => {
 
   return (
     <ResultButton
+      color={props.crown ? Color.AnarchyBattle : props.dragon}
       isFirst={props.isFirst}
       isLast={props.isLast}
       image={props.weapon}

@@ -264,6 +264,7 @@ export interface VsGear {
   };
   brand: Brand;
 }
+export type FestDragonCert = "NONE" | "DRAGON" | "DOUBLE_DRAGON";
 export interface VsPlayer {
   id: string;
   name: string;
@@ -284,6 +285,8 @@ export interface VsPlayer {
     special: number;
     noroshiTry: number | null;
   } | null;
+  crown?: boolean;
+  festDragonCert: FestDragonCert;
 }
 export interface VsResult {
   paintRatio: number | null;

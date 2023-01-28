@@ -57,6 +57,7 @@ import {
   getVsModeColor,
   getVsSelfPlayer,
   isCoopAnnotation,
+  isVsPlayerDragon,
 } from "../utils/ui";
 
 export interface ResultProps {
@@ -437,6 +438,8 @@ const ResultView = (props: ResultViewProps) => {
                       ultraSignal={
                         team.tricolorRole !== "DEFENSE" ? player.result?.noroshiTry : undefined
                       }
+                      crown={player.crown}
+                      dragon={isVsPlayerDragon(player) ? getColor(team.color) : undefined}
                       onPress={() => {
                         setBattlePlayer(player);
                         setDisplayBattlePlayer(true);
