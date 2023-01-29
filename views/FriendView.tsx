@@ -1,6 +1,6 @@
 import { FlashList } from "@shopify/flash-list";
 import { StyleProp, ViewStyle } from "react-native";
-import { Avatar, VStack, ViewStyles } from "../components";
+import { Avatar, Center, VStack, ViewStyles } from "../components";
 import { Friend, Friends } from "../models/types";
 import { getFriendColor, getUserIconCacheSource } from "../utils/ui";
 
@@ -13,7 +13,10 @@ const FriendView = (props: FriendViewProps) => {
   const renderItem = (friend: { item: Friend | number; index: number }) => {
     if (typeof friend.item === "number") {
       return (
-        <Avatar size={48} isDisabled style={friend.index !== 7 ? ViewStyles.mr2 : undefined} />
+        // HACK: avoid weird opacity animation which seems from isDisabled.
+        <Center>
+          <Avatar size={48} isDisabled style={friend.index !== 7 ? ViewStyles.mr2 : undefined} />
+        </Center>
       );
     }
     return (
