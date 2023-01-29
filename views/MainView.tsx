@@ -1,10 +1,8 @@
-import { Feather } from "@expo/vector-icons";
 import * as Application from "expo-application";
 import { CacheManager } from "expo-cached-image";
 import * as Clipboard from "expo-clipboard";
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
-import * as Font from "expo-font";
 import { activateKeepAwake, deactivateKeepAwake } from "expo-keep-awake";
 import * as Sharing from "expo-sharing";
 import * as WebBrowser from "expo-web-browser";
@@ -38,6 +36,7 @@ import {
   VStack,
   ViewStyles,
 } from "../components";
+import Lucide from "../components/Lucide";
 import {
   CoopHistoryDetail,
   Friends,
@@ -132,9 +131,6 @@ const MainView = (props: MainViewProps) => {
         try {
           await Database.open();
           await loadResults(20, false);
-          await Font.loadAsync({
-            Splatfont: require("../assets/fonts/Splatfont.otf"),
-          });
           setReady(true);
         } catch (e) {
           showToast(e);
@@ -1005,7 +1001,7 @@ const MainView = (props: MainViewProps) => {
                   </Button>
                   {(results?.length ?? 0) > 40 && (results?.length ?? 0) <= 60 && (
                     <HStack style={ViewStyles.c}>
-                      <Feather
+                      <Lucide
                         name="info"
                         size={14}
                         color={Color.MiddleTerritory}
@@ -1039,7 +1035,7 @@ const MainView = (props: MainViewProps) => {
                       isLoading={exporting}
                       isLoadingText={t("exporting")}
                       isDisabled={refreshing}
-                      icon="share"
+                      icon="upload"
                       title={t("export")}
                       onPress={onExportPress}
                     />
@@ -1091,7 +1087,7 @@ const MainView = (props: MainViewProps) => {
       </Animated.View>
       <Modal isVisible={logIn} onClose={onLogInClose} style={ViewStyles.modal1d}>
         <VStack center>
-          <Feather
+          <Lucide
             name="alert-circle"
             size={48}
             color={Color.MiddleTerritory}
@@ -1125,7 +1121,7 @@ const MainView = (props: MainViewProps) => {
       </Modal>
       <Modal isVisible={logOut} onClose={onLogOutClose} style={ViewStyles.modal1d}>
         <VStack center>
-          <Feather
+          <Lucide
             name="alert-circle"
             size={48}
             color={Color.MiddleTerritory}
@@ -1162,7 +1158,7 @@ const MainView = (props: MainViewProps) => {
       </Modal>
       <Modal isVisible={support} onClose={onSupportClose} style={ViewStyles.modal1d}>
         <VStack center>
-          <Feather
+          <Lucide
             name="help-circle"
             size={48}
             color={Color.MiddleTerritory}
@@ -1311,12 +1307,7 @@ const MainView = (props: MainViewProps) => {
       </Modal>
       <Modal isVisible={firstAid} style={ViewStyles.modal1dc}>
         <VStack center>
-          <Feather
-            name="life-buoy"
-            size={48}
-            color={Color.MiddleTerritory}
-            style={ViewStyles.mb4}
-          />
+          <Lucide name="life-buoy" size={48} color={Color.MiddleTerritory} style={ViewStyles.mb4} />
           <Text style={ViewStyles.mb4}>{t("first_aid_notice")}</Text>
           <VStack style={ViewStyles.wf}>
             <Button

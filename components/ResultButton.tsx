@@ -1,6 +1,6 @@
-import { Feather } from "@expo/vector-icons";
 import { StyleProp, ViewStyle } from "react-native";
 import Image, { SourceProps } from "./Image";
+import Lucide from "./Lucide";
 import Pressable from "./Pressable";
 import { Center, HStack, VStack } from "./Stack";
 import { Color, TextStyles, ViewStyles } from "./Styles";
@@ -13,6 +13,7 @@ interface ResultButtonProps {
   isLast?: boolean;
   image?: SourceProps;
   result?: number;
+  icon?: string;
   title: string;
   subtitle: string;
   subChildren?: React.ReactNode;
@@ -49,14 +50,14 @@ const ResultButton = (props: ResultButtonProps) => {
               switch (props.result) {
                 case 1:
                   return (
-                    <Feather name="circle" size={28} color={props.color ?? Color.MiddleTerritory} />
+                    <Lucide name="circle" size={28} color={props.color ?? Color.MiddleTerritory} />
                   );
                 case 0:
-                  return <Feather name="minus" size={32} color={Color.MiddleTerritory} />;
+                  return <Lucide name="minus" size={32} color={Color.MiddleTerritory} />;
                 case -1:
-                  return <Feather name="x" size={32} color={Color.MiddleTerritory} />;
+                  return <Lucide name="x" size={32} color={Color.MiddleTerritory} />;
                 case -2:
-                  return <Feather name="x-circle" size={28} color={Color.MiddleTerritory} />;
+                  return <Lucide name="x-circle" size={28} color={Color.MiddleTerritory} />;
               }
             })()}
           </Center>
@@ -67,12 +68,23 @@ const ResultButton = (props: ResultButtonProps) => {
         <VStack flex>
           <HStack flex center justify>
             <HStack flex center style={ViewStyles.mr1}>
-              <Text
-                numberOfLines={1}
-                style={[TextStyles.h2, !!props.color && { color: props.color }]}
-              >
-                {props.title}
-              </Text>
+              {props.icon && (
+                <Lucide
+                  // HACK: forcly cast.
+                  name={props.icon as any}
+                  size={16}
+                  color={props.color}
+                  style={ViewStyles.mr1}
+                />
+              )}
+              <HStack flex center>
+                <Text
+                  numberOfLines={1}
+                  style={[TextStyles.h2, !!props.color && { color: props.color }]}
+                >
+                  {props.title}
+                </Text>
+              </HStack>
             </HStack>
             <HStack center>{props.subChildren}</HStack>
           </HStack>

@@ -1,7 +1,8 @@
+import * as Font from "expo-font";
 import * as Localization from "expo-localization";
 import { StatusBar } from "expo-status-bar";
 import { I18n } from "i18n-js";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useColorScheme } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ViewStyles } from "./components";
@@ -20,6 +21,22 @@ const App = () => {
   const statusBarStyle = colorScheme === "light" ? "dark" : "light";
   const backgroundStyle = colorScheme === "light" ? ViewStyles.light : ViewStyles.dark;
 
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        await Font.loadAsync({
+          Lucide: require("./assets/fonts/Lucide.ttf"),
+          Splatfont: require("./assets/fonts/Splatfont.otf"),
+        });
+      } catch {
+        /* empty */
+      }
+      setReady(true);
+    })();
+  });
+
   const t = (f: string, params?: Record<string, any>) => {
     return i18n.t(f, params);
   };
@@ -27,7 +44,7 @@ const App = () => {
   return (
     <SafeAreaProvider style={backgroundStyle}>
       <StatusBar style={statusBarStyle} />
-      <MainView t={t} />
+      {ready && <MainView t={t} />}
     </SafeAreaProvider>
   );
 };

@@ -37,6 +37,7 @@ const BattlePlayerButton = (props: BattlePlayerButtonProps) => {
       isFirst={props.isFirst}
       isLast={props.isLast}
       image={props.weapon}
+      icon={props.crown ? "crown" : props.dragon ? "party-popper" : undefined}
       title={props.name}
       subtitle={`${props.paint} pt`}
       style={props.style}

@@ -1,4 +1,4 @@
-import { Feather } from "@expo/vector-icons";
+import Lucide from "./Lucide";
 import Pressable from "./Pressable";
 import { Center } from "./Stack";
 import { Color, ViewStyles } from "./Styles";
@@ -30,7 +30,7 @@ const FloatingActionButton = (props: FloatingActionButtonProps) => {
       onPress={props.onPress}
     >
       <Center flex>
-        <Feather
+        <Lucide
           name={props.icon as any}
           size={props.size * 0.5}
           color={props.color ? "white" : Color.MiddleTerritory}
