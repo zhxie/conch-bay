@@ -28,6 +28,7 @@ import {
   FilterButton,
   FloatingActionButton,
   HStack,
+  Icon,
   Modal,
   Picker,
   Text,
@@ -36,7 +37,6 @@ import {
   VStack,
   ViewStyles,
 } from "../components";
-import Lucide from "../components/Lucide";
 import {
   CoopHistoryDetail,
   Friends,
@@ -1001,7 +1001,7 @@ const MainView = (props: MainViewProps) => {
                   </Button>
                   {(results?.length ?? 0) > 40 && (results?.length ?? 0) <= 60 && (
                     <HStack style={ViewStyles.c}>
-                      <Lucide
+                      <Icon
                         name="info"
                         size={14}
                         color={Color.MiddleTerritory}
@@ -1087,7 +1087,7 @@ const MainView = (props: MainViewProps) => {
       </Animated.View>
       <Modal isVisible={logIn} onClose={onLogInClose} style={ViewStyles.modal1d}>
         <VStack center>
-          <Lucide
+          <Icon
             name="alert-circle"
             size={48}
             color={Color.MiddleTerritory}
@@ -1121,7 +1121,7 @@ const MainView = (props: MainViewProps) => {
       </Modal>
       <Modal isVisible={logOut} onClose={onLogOutClose} style={ViewStyles.modal1d}>
         <VStack center>
-          <Lucide
+          <Icon
             name="alert-circle"
             size={48}
             color={Color.MiddleTerritory}
@@ -1158,12 +1158,7 @@ const MainView = (props: MainViewProps) => {
       </Modal>
       <Modal isVisible={support} onClose={onSupportClose} style={ViewStyles.modal1d}>
         <VStack center>
-          <Lucide
-            name="help-circle"
-            size={48}
-            color={Color.MiddleTerritory}
-            style={ViewStyles.mb4}
-          />
+          <Icon name="help-circle" size={48} color={Color.MiddleTerritory} style={ViewStyles.mb4} />
           <VStack style={[ViewStyles.mb4, ViewStyles.wf]}>
             <VStack center>
               <Text style={ViewStyles.mb2}>{t("language_notice")}</Text>
@@ -1307,7 +1302,7 @@ const MainView = (props: MainViewProps) => {
       </Modal>
       <Modal isVisible={firstAid} style={ViewStyles.modal1dc}>
         <VStack center>
-          <Lucide name="life-buoy" size={48} color={Color.MiddleTerritory} style={ViewStyles.mb4} />
+          <Icon name="life-buoy" size={48} color={Color.MiddleTerritory} style={ViewStyles.mb4} />
           <Text style={ViewStyles.mb4}>{t("first_aid_notice")}</Text>
           <VStack style={ViewStyles.wf}>
             <Button

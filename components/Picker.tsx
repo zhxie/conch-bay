@@ -42,6 +42,7 @@ const Picker = (props: PickerProps) => {
           {props.items.map((item, i, items) => (
             <Button
               key={item.key}
+              isDisabled={props.isDisabled}
               style={[
                 ViewStyles.accent,
                 i !== 0 && ViewStyles.rt0,

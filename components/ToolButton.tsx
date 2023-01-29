@@ -1,5 +1,5 @@
 import { ActivityIndicator, StyleProp, ViewStyle } from "react-native";
-import Lucide from "./Lucide";
+import Icon from "./Icon";
 import Pressable from "./Pressable";
 import { HStack } from "./Stack";
 import { Color, TextStyles, ViewStyles } from "./Styles";
@@ -29,7 +29,7 @@ const ToolButton = (props: ToolButtonProps) => {
             return <ActivityIndicator style={ViewStyles.mr1} />;
           } else {
             return (
-              <Lucide
+              <Icon
                 // HACK: forcly cast.
                 name={props.icon as any}
                 size={16}

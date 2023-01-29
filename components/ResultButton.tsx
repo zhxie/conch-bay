@@ -1,6 +1,6 @@
 import { StyleProp, ViewStyle } from "react-native";
+import Icon from "./Icon";
 import Image, { SourceProps } from "./Image";
-import Lucide from "./Lucide";
 import Pressable from "./Pressable";
 import { Center, HStack, VStack } from "./Stack";
 import { Color, TextStyles, ViewStyles } from "./Styles";
@@ -50,14 +50,14 @@ const ResultButton = (props: ResultButtonProps) => {
               switch (props.result) {
                 case 1:
                   return (
-                    <Lucide name="circle" size={28} color={props.color ?? Color.MiddleTerritory} />
+                    <Icon name="circle" size={28} color={props.color ?? Color.MiddleTerritory} />
                   );
                 case 0:
-                  return <Lucide name="minus" size={32} color={Color.MiddleTerritory} />;
+                  return <Icon name="minus" size={32} color={Color.MiddleTerritory} />;
                 case -1:
-                  return <Lucide name="x" size={32} color={Color.MiddleTerritory} />;
+                  return <Icon name="x" size={32} color={Color.MiddleTerritory} />;
                 case -2:
-                  return <Lucide name="x-circle" size={28} color={Color.MiddleTerritory} />;
+                  return <Icon name="x-circle" size={28} color={Color.MiddleTerritory} />;
               }
             })()}
           </Center>
@@ -69,7 +69,7 @@ const ResultButton = (props: ResultButtonProps) => {
           <HStack flex center justify>
             <HStack flex center style={ViewStyles.mr1}>
               {props.icon && (
-                <Lucide
+                <Icon
                   // HACK: forcly cast.
                   name={props.icon as any}
                   size={16}
