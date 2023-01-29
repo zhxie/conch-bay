@@ -1,6 +1,7 @@
-import { ScrollView, StyleProp, ViewStyle } from "react-native";
-import { Avatar, HStack, ViewStyles } from "../components";
-import { Friends } from "../models/types";
+import { FlashList } from "@shopify/flash-list";
+import { StyleProp, ViewStyle } from "react-native";
+import { Avatar, VStack, ViewStyles } from "../components";
+import { Friend, Friends } from "../models/types";
 import { getFriendColor, getUserIconCacheSource } from "../utils/ui";
 
 interface FriendViewProps {
@@ -9,34 +10,41 @@ interface FriendViewProps {
 }
 
 const FriendView = (props: FriendViewProps) => {
+  const renderItem = (friend: { item: Friend | number; index: number }) => {
+    if (typeof friend.item === "number") {
+      return (
+        <Avatar size={48} isDisabled style={friend.index !== 7 ? ViewStyles.mr2 : undefined} />
+      );
+    }
+    return (
+      <Avatar
+        size={48}
+        image={getUserIconCacheSource(friend.item.userIcon.url)}
+        badge={getFriendColor(friend.item)}
+        style={
+          friend.index !== props.friends!.friends.nodes.length - 1 ? ViewStyles.mr2 : undefined
+        }
+      />
+    );
+  };
+
   return (
-    <ScrollView
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      style={[ViewStyles.wf, props.style]}
-    >
-      <HStack center style={ViewStyles.px4}>
-        {(() => {
-          if (props.friends) {
-            return props.friends.friends.nodes.map((friend, i, friends) => (
-              <Avatar
-                key={friend.id}
-                size={48}
-                image={getUserIconCacheSource(friend.userIcon.url)}
-                badge={getFriendColor(friend)}
-                style={i !== friends.length - 1 ? ViewStyles.mr2 : undefined}
-              />
-            ));
-          } else {
-            return new Array(8)
-              .fill(0)
-              .map((_, i) => (
-                <Avatar key={i} size={48} isDisabled style={i !== 7 ? ViewStyles.mr2 : undefined} />
-              ));
+    <VStack style={[ViewStyles.wf, props.style]}>
+      <FlashList
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        data={props.friends?.friends.nodes ?? new Array(8).fill(0)}
+        keyExtractor={(friend, i) => {
+          if (typeof friend === "number") {
+            return String(i);
           }
-        })()}
-      </HStack>
-    </ScrollView>
+          return friend.id;
+        }}
+        renderItem={renderItem}
+        estimatedItemSize={48}
+        contentContainerStyle={ViewStyles.px4}
+      />
+    </VStack>
   );
 };
 
