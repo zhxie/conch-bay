@@ -1,5 +1,5 @@
 import { FlashList } from "@shopify/flash-list";
-import { StyleProp, ViewStyle } from "react-native";
+import { Dimensions, StyleProp, ViewStyle } from "react-native";
 import { Avatar, Center, VStack, ViewStyles } from "../components";
 import { Friend, Friends } from "../models/types";
 import { getFriendColor, getUserIconCacheSource } from "../utils/ui";
@@ -10,12 +10,18 @@ interface FriendViewProps {
 }
 
 const FriendView = (props: FriendViewProps) => {
+  const placeholder = Math.ceil(Dimensions.get("window").width / 56);
+
   const renderItem = (friend: { item: Friend | number; index: number }) => {
     if (typeof friend.item === "number") {
       return (
-        // HACK: avoid weird opacity animation which seems from isDisabled.
+        // HACK: avoid weird opacity animation.
         <Center>
-          <Avatar size={48} isDisabled style={friend.index !== 7 ? ViewStyles.mr2 : undefined} />
+          <Avatar
+            size={48}
+            isDisabled
+            style={friend.index !== placeholder - 1 ? ViewStyles.mr2 : undefined}
+          />
         </Center>
       );
     }
@@ -36,7 +42,7 @@ const FriendView = (props: FriendViewProps) => {
       <FlashList
         horizontal
         showsHorizontalScrollIndicator={false}
-        data={props.friends?.friends.nodes ?? new Array(8).fill(0)}
+        data={props.friends?.friends.nodes ?? new Array(placeholder).fill(0)}
         keyExtractor={(friend, i) => {
           if (typeof friend === "number") {
             return String(i);
@@ -45,6 +51,9 @@ const FriendView = (props: FriendViewProps) => {
         }}
         renderItem={renderItem}
         estimatedItemSize={48}
+        getItemType={(item) => {
+          return typeof item;
+        }}
         contentContainerStyle={ViewStyles.px4}
       />
     </VStack>

@@ -18,6 +18,7 @@ const Image = (props: ImageProps) => {
 
   return (
     <CachedImage
+      key={props.source.cacheKey}
       source={{ uri: props.source.uri }}
       cacheKey={props.source.cacheKey}
       placeholderContent={<Center style={[imageStyle, { overflow: "hidden" }, props.style]} />}

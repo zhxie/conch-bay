@@ -271,7 +271,6 @@ const ResultView = (props: ResultViewProps) => {
       return (
         <VStack flex style={ViewStyles.px4}>
           <BattleButton
-            key={result.item.battle.vsHistoryDetail.id}
             isFirst={result.index === 0}
             isLast={false}
             color={getVsModeColor(result.item.battle.vsHistoryDetail.vsMode)!}
@@ -299,7 +298,7 @@ const ResultView = (props: ResultViewProps) => {
     return (
       <VStack flex style={ViewStyles.px4}>
         <CoopButton
-          key={result.item.coop!.coopHistoryDetail.id}
+          isFirst={result.index === 0}
           isLast={false}
           color={getCoopRuleColor(result.item.coop!.coopHistoryDetail.rule)!}
           result={result.item.coop!.coopHistoryDetail.resultWave === 0 ? 1 : -1}
