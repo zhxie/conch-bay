@@ -23,11 +23,7 @@ const ScheduleButton = (props: ScheduleButtonProps) => {
       <VStack flex justify>
         <HStack center style={ViewStyles.mb2}>
           {props.rule.length > 0 && (
-            <Circle
-              size={12}
-              color="#a1a1aa"
-              style={[ViewStyles.mr2, !!props.color && { backgroundColor: props.color }]}
-            />
+            <Circle size={12} color={props.color ?? "#a1a1aa"} style={ViewStyles.mr2} />
           )}
           <Text
             numberOfLines={1}

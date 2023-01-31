@@ -206,6 +206,27 @@ const ResultView = (props: ResultViewProps) => {
     }
     return t(waveResult.eventWave.id);
   };
+  const formatSpecialWeapon = (coop: CoopHistoryDetail, i: number, begin: number) => {
+    const map = [
+      coop.coopHistoryDetail.myResult.specialWeapon!.name,
+      ...coop.coopHistoryDetail.memberResults.map(
+        (memberResult) => memberResult.specialWeapon!.name
+      ),
+    ];
+
+    let last = new Array(coop.coopHistoryDetail.memberResults.length + 1).fill(0);
+    const current = new Array(coop.coopHistoryDetail.memberResults.length + 1).fill(0);
+    for (let j = begin; j <= i; j++) {
+      last = [...current];
+      coop.coopHistoryDetail.waveResults[j].specialWeapons.forEach((specialWeapon) => {
+        const k = map.findIndex((item) => item === specialWeapon.name);
+        current[k] = current[k] + 1;
+      });
+    }
+
+    const result = current.map((_, i) => ({ use: current[i], used: last[i] }));
+    return result;
+  };
 
   const onDisplayResultClose = () => {
     setDisplayResult(false);
@@ -550,6 +571,8 @@ const ResultView = (props: ResultViewProps) => {
                                 deliver={waveResult.teamDeliverCount!}
                                 quota={waveResult.deliverNorm!}
                                 appearance={waveResult.goldenPopCount}
+                                specialWeapons={formatSpecialWeapon(result.coop!, i, 0)}
+                                specialWeaponSupplied={2}
                                 style={i !== waveResults.length - 1 ? ViewStyles.mr2 : undefined}
                               />
                             );
@@ -570,6 +593,8 @@ const ResultView = (props: ResultViewProps) => {
                               }
                               quota={1}
                               appearance={waveResult.goldenPopCount}
+                              specialWeapons={formatSpecialWeapon(result.coop!, i, 3)}
+                              specialWeaponSupplied={1}
                               style={i !== waveResults.length - 1 ? ViewStyles.mr2 : undefined}
                             />
                           );

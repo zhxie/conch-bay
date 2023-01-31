@@ -355,6 +355,7 @@ export interface CoopPlayer {
   species: Species;
 }
 export interface CoopSpecialWeapon {
+  name: string;
   image: {
     url: string;
   };
@@ -389,12 +390,16 @@ export interface CoopEnemyResult {
 export interface CoopEventWave {
   id: string;
 }
+export interface CoopWaveSpecialWeapon {
+  name: string;
+}
 export interface CoopWaveResult {
   waterLevel: number;
   eventWave: CoopEventWave | null;
   deliverNorm: number | null;
   goldenPopCount: number;
   teamDeliverCount: number | null;
+  specialWeapons: CoopWaveSpecialWeapon[];
 }
 export interface CoopHistoryDetail {
   coopHistoryDetail: {

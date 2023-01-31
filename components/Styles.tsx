@@ -254,6 +254,12 @@ export const ViewStyles = StyleSheet.create({
   p4: {
     padding: 16,
   },
+  px0_25: {
+    paddingHorizontal: 1,
+  },
+  px0_5: {
+    paddingHorizontal: 2,
+  },
   px1: {
     paddingHorizontal: 4,
   },
@@ -265,6 +271,12 @@ export const ViewStyles = StyleSheet.create({
   },
   px4: {
     paddingHorizontal: 16,
+  },
+  py0_25: {
+    paddingVertical: 1,
+  },
+  py0_5: {
+    paddingVertical: 2,
   },
   py1: {
     paddingVertical: 4,

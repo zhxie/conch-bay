@@ -28,7 +28,7 @@ let SPLATNET_VERSION = "2.0.0-7070f95e";
 const fetchTimeout = async (input: RequestInfo, init: RequestInit | undefined, timeout: number) => {
   return Promise.race([
     fetch(input, init),
-    new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), timeout)),
+    new Promise<Response>((_, reject) => setTimeout(() => reject(new Error("Timeout")), timeout)),
   ]);
 };
 const fetchRetry = async (input: RequestInfo, init?: RequestInit) => {
