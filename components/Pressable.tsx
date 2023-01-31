@@ -17,7 +17,7 @@ const Pressable = (props: PressableProps) => {
   return (
     <TouchableOpacity
       disabled={props.isDisabled}
-      style={[style, props.style, disabledStyle]}
+      style={[style, disabledStyle, props.style]}
       onPress={props.onPress}
       onLongPress={props.onLongPress}
     >

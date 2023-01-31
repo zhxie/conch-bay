@@ -21,6 +21,7 @@ import Toast from "react-native-root-toast";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   Avatar,
+  AvatarButton,
   Badge,
   Button,
   Center,
@@ -905,7 +906,7 @@ const MainView = (props: MainViewProps) => {
               )}
               {sessionToken.length > 0 && (
                 <VStack center style={[ViewStyles.px4, ViewStyles.mb4]}>
-                  <Avatar
+                  <AvatarButton
                     size={64}
                     image={icon.length > 0 ? getUserIconCacheSource(icon) : undefined}
                     onPress={onLogOutPress}

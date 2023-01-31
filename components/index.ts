@@ -1,4 +1,5 @@
 export { default as Avatar } from "./Avatar";
+export { default as AvatarButton } from "./AvatarButton";
 export { default as Badge } from "./Badge";
 export { default as BattleButton } from "./BattleButton";
 export { default as BattlePlayerButton } from "./BattlePlayerButton";

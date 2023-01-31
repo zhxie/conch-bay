@@ -1,6 +1,6 @@
 import { FlashList } from "@shopify/flash-list";
-import { Dimensions, StyleProp, ViewStyle } from "react-native";
-import { Avatar, Center, VStack, ViewStyles } from "../components";
+import { Dimensions, StyleProp, ViewStyle, useColorScheme } from "react-native";
+import { Avatar, Circle, VStack, ViewStyles } from "../components";
 import { Friend, Friends } from "../models/types";
 import { getFriendColor, getUserIconCacheSource } from "../utils/ui";
 
@@ -10,19 +10,22 @@ interface FriendViewProps {
 }
 
 const FriendView = (props: FriendViewProps) => {
-  const placeholder = Math.ceil(Dimensions.get("window").width / 56);
+  const placeholder = Math.ceil((Dimensions.get("window").width + 8) / 64);
+
+  const colorScheme = useColorScheme();
+  const style = colorScheme === "light" ? ViewStyles.lightTerritory : ViewStyles.darkTerritory;
 
   const renderItem = (friend: { item: Friend | number; index: number }) => {
     if (typeof friend.item === "number") {
       return (
-        // HACK: avoid weird opacity animation.
-        <Center>
-          <Avatar
-            size={48}
-            isDisabled
-            style={friend.index !== placeholder - 1 ? ViewStyles.mr2 : undefined}
-          />
-        </Center>
+        <Circle
+          size={48}
+          style={[
+            friend.index !== placeholder - 1 ? ViewStyles.mr2 : undefined,
+            style,
+            ViewStyles.disabled,
+          ]}
+        />
       );
     }
     return (
