@@ -38,7 +38,7 @@ const App = () => {
   });
 
   const t = (f: string, params?: Record<string, any>) => {
-    return i18n.t(f, params);
+    return i18n.t(f, { defaultValue: f, ...params });
   };
 
   return (
