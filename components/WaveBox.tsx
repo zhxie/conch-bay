@@ -82,7 +82,7 @@ const WaveBox = (props: WaveBoxProps) => {
                         {
                           backgroundColor:
                             j < props.specialWeapons[i].used
-                              ? `${Color.Special}3f`
+                              ? `${Color.Special}5f`
                               : j < props.specialWeapons[i].use
                               ? Color.Special
                               : undefined,

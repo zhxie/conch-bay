@@ -18,5 +18,5 @@ rl.on("line", (line) => {
 });
 
 rl.on("close", () => {
-  glyphMap.write(JSON.stringify(map, undefined, 2));
+  glyphMap.write(JSON.stringify(map, undefined, 2) + "\n");
 });

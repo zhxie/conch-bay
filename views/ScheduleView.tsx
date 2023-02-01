@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+import "dayjs/plugin/advancedFormat";
 import { useState } from "react";
 import { ScrollView, StyleProp, ViewStyle } from "react-native";
 import {
@@ -66,25 +67,40 @@ const ScheduleView = (props: ScheduleViewProps) => {
   const bigRunShifts = props.schedules?.coopGroupingSchedule.bigRunSchedules.nodes;
   const regularShifts = props.schedules?.coopGroupingSchedule.regularSchedules.nodes;
 
-  const formatScheduleTimeRange = (schedule: Schedule, withDate: boolean) => {
-    let format = "HH:mm";
-    if (withDate) {
-      format = "M/DD HH:mm";
-    }
+  const formatTime = (time: string, end: boolean, withDate: boolean) => {
+    const dateFormat = "M/D";
+    const timeFormat = "HH:mm";
+    const dateTimeFormat = "M/D HH:mm";
 
-    const startTime = dayjs(schedule.startTime).format(format);
-    const endTime = dayjs(schedule.endTime).format(format);
+    const nowCheck = dayjs().format(dateFormat);
+    const dateTime = dayjs(time).format(dateTimeFormat);
+    const timeCheck = dateTime.split(" ");
+    // Same day.
+    if (nowCheck === timeCheck[0]) {
+      if (withDate) {
+        return dateTime;
+      }
+      return dayjs(time).format(timeFormat);
+    }
+    // Different day.
+    if (end && timeCheck[1] === "00:00") {
+      const prevDate = dayjs(time).add(-1, "day").format(dateFormat);
+      if (prevDate === nowCheck && !withDate) {
+        return "24:00";
+      }
+      return `${prevDate} 24:00`;
+    }
+    return dateTime;
+  };
+  const formatScheduleTimeRange = (schedule: Schedule, withDate: boolean) => {
+    const startTime = formatTime(schedule.startTime, false, withDate);
+    const endTime = formatTime(schedule.endTime, true, withDate);
 
     return `${startTime} - ${endTime}`;
   };
-  const formatSplatfestTimeRange = (splatfest: Splatfest, withDate: boolean) => {
-    let format = "HH:mm";
-    if (withDate) {
-      format = "M/DD HH:mm";
-    }
-
-    const startTime = dayjs(splatfest.midtermTime).format(format);
-    const endTime = dayjs(splatfest.endTime).format(format);
+  const formatSplatfestTimeRange = (splatfest: Splatfest) => {
+    const startTime = formatTime(splatfest.midtermTime, false, true);
+    const endTime = formatTime(splatfest.endTime, true, true);
 
     return `${startTime} - ${endTime}`;
   };
@@ -293,7 +309,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
           {display?.splatfest && (
             <ScheduleBox
               rule={t("VnNSdWxlLTU=")}
-              time={formatSplatfestTimeRange(display.splatfest, true)}
+              time={formatSplatfestTimeRange(display.splatfest)}
               stages={[formatStage(getSplatfestStage(display.splatfest))]}
             />
           )}
