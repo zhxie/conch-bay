@@ -6,12 +6,12 @@ import React, { useEffect, useState } from "react";
 import { useColorScheme } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ViewStyles } from "./components";
-import { en, ja, zh } from "./i18n";
+import { en, ja, zhHans, zhHant } from "./i18n";
 import { MainView } from "./views";
 
 // Localization.
 const i18n = new I18n();
-i18n.translations = { en, ja, zh };
+i18n.translations = { en, ja, "zh-Hans": zhHans, "zh-Hant": zhHant };
 i18n.enableFallback = true;
 i18n.defaultLocale = "en";
 i18n.locale = Localization.locale;

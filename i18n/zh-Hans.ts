@@ -1,4 +1,4 @@
-const zh = {
+const zhHans = {
   // API.
   lang: "zh-CN",
   // UI.
@@ -252,4 +252,4 @@ const zh = {
   exemption: "由于有玩家中断连接，本场对战不会以落败计算。",
 };
 
-export default zh;
+export default zhHans;
