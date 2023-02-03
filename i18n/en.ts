@@ -60,7 +60,6 @@ const en = {
   show_raw_data: "Show Raw Data",
   open_in_nintendo_switch_online: "Open in Nintendo Switch Online",
   // Stats.
-  database: "Database",
   victory: "VICTORY",
   defeat: "DEFEAT",
   splatted_by_you: "Splatted by You",

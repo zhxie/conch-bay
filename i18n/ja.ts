@@ -60,7 +60,6 @@ const ja = {
   show_raw_data: "生データを表示",
   open_in_nintendo_switch_online: "Nintendo Switch Onlineでチェック",
   // Stats.
-  database: "データベース",
   victory: "WIN!",
   defeat: "LOSE...",
   splatted_by_you: "たおした",
