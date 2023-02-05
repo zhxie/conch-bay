@@ -21,7 +21,7 @@ const zhHant = {
   export: "匯出",
   exporting: "匯出中",
   disclaimer: "本應用是使用魷魚圈3的資訊的非官方應用，與任天堂有限公司無關。",
-  support: "支持",
+  support: "支援",
   language_notice:
     "如果您的遊戲語言與顯示語言不一致，您可以在此修改。這將使法螺灣載入對應語言的記錄。",
   change_language: "修改語言",
