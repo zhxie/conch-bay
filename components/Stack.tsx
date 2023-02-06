@@ -1,8 +1,9 @@
-import { StyleSheet, View, ViewProps } from "react-native";
+import { LayoutChangeEvent, StyleSheet, View, ViewProps } from "react-native";
 import { ViewStyles } from "./Styles";
 
 interface CenterProps extends ViewProps {
   flex?: boolean;
+  onLayout?: (event: LayoutChangeEvent) => void;
 }
 
 const Center = (props: CenterProps) => {

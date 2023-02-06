@@ -74,10 +74,6 @@ export const TextStyles = StyleSheet.create({
   h6: {
     fontSize: 12,
   },
-  h7: {
-    fontSize: 10,
-    fontWeight: "bold",
-  },
   c: {
     textAlign: "center",
   },

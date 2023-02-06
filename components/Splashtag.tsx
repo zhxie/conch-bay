@@ -1,4 +1,12 @@
-import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
+import { useState } from "react";
+import {
+  Dimensions,
+  LayoutChangeEvent,
+  StyleProp,
+  StyleSheet,
+  View,
+  ViewStyle,
+} from "react-native";
 import Image, { SourceProps } from "./Image";
 import { Center, HStack } from "./Stack";
 import { TextStyles, ViewStyles } from "./Styles";
@@ -15,13 +23,27 @@ interface SplashtagProps {
 }
 
 const Splashtag = (props: SplashtagProps) => {
+  const [width, setWidth] = useState(Dimensions.get("window").width);
+
+  const onLayout = (event: LayoutChangeEvent) => {
+    setWidth(event.nativeEvent.layout.width);
+  };
+
   return (
-    <Center flex style={props.style}>
+    <Center flex style={props.style} onLayout={onLayout}>
       <Image
         source={props.banner}
         style={[ViewStyles.r2, { width: "100%", aspectRatio: 700 / 200 }]}
       />
-      <HStack center style={{ height: "35%", position: "absolute", right: 1, bottom: 1 }}>
+      <HStack
+        center
+        style={{
+          height: "34.5%",
+          position: "absolute",
+          right: (1 / 284) * width,
+          bottom: (1 / 284) * width,
+        }}
+      >
         {props.badges.map((badge, i, badges) => {
           if (badge) {
             return (
@@ -29,7 +51,7 @@ const Splashtag = (props: SplashtagProps) => {
                 key={i}
                 source={badge}
                 style={[
-                  i === badges.length - 1 ? undefined : ViewStyles.mr0_5,
+                  i === badges.length - 1 ? undefined : { marginRight: (2 / 284) * width },
                   styles.badge,
                   { backgroundColor: "transparent" },
                 ]}
@@ -39,7 +61,10 @@ const Splashtag = (props: SplashtagProps) => {
             return (
               <View
                 key={i}
-                style={[i === badges.length - 1 ? undefined : ViewStyles.mr0_5, styles.badge]}
+                style={[
+                  i === badges.length - 1 ? undefined : { marginRight: (2 / 284) * width },
+                  styles.badge,
+                ]}
               />
             );
           }
@@ -49,11 +74,12 @@ const Splashtag = (props: SplashtagProps) => {
         numberOfLines={1}
         // TODO: use Splatfont 2. In certain locales, Splatfont 2 is replaced with other fonts.
         style={[
-          TextStyles.h5,
+          TextStyles.b,
           {
+            fontSize: (12 / 284) * width,
             position: "absolute",
-            left: 10,
-            top: 5,
+            left: (10 / 284) * width,
+            top: (5 / 284) * width,
             color: props.color,
             transform: [{ skewX: "-5deg" }],
           },
@@ -64,13 +90,27 @@ const Splashtag = (props: SplashtagProps) => {
       <Text
         numberOfLines={1}
         // TODO: use Splatfont 2. In certain locales, Splatfont 2 is replaced with other fonts.
-        style={[TextStyles.h7, { position: "absolute", left: 10, bottom: 5, color: props.color }]}
+        style={[
+          TextStyles.b,
+          {
+            fontSize: (10 / 284) * width,
+            position: "absolute",
+            left: (10 / 284) * width,
+            bottom: (5 / 284) * width,
+            color: props.color,
+          },
+        ]}
       >
         {`#${props.nameId}`}
       </Text>
       <Text
         numberOfLines={1}
-        style={{ position: "absolute", color: props.color, fontFamily: "Splatfont", fontSize: 26 }}
+        style={{
+          position: "absolute",
+          color: props.color,
+          fontFamily: "Splatfont",
+          fontSize: (26 / 284) * width,
+        }}
       >
         {props.name}
       </Text>
