@@ -14,6 +14,7 @@ const zhHant = {
   export_results: "匯出記錄",
   load_more: "載入更多",
   loading_more: "載入更多中",
+  loaded_all: "已全部載入",
   load_more_notice: "長按載入更多以載入所有結果。",
   stats: "統計",
   stats_notice: "由當前已載入的記錄統計。",

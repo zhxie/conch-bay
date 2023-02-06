@@ -12,6 +12,7 @@ import { ViewStyles } from "./Styles";
 
 interface ModalProps {
   isVisible: boolean;
+  fade?: boolean;
   style?: StyleProp<ViewStyle>;
   onClose?: () => void;
   onModalHide?: () => void;
@@ -31,6 +32,8 @@ const Modal = (props: ModalProps) => {
   return (
     <ReactNativeModal
       isVisible={props.isVisible}
+      animationIn={props.fade ? "fadeIn" : undefined}
+      animationOut={props.fade ? "fadeOut" : undefined}
       backdropOpacity={0.5}
       onBackdropPress={props.onClose}
       onModalHide={props.onModalHide}

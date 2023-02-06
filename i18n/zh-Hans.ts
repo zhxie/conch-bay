@@ -14,6 +14,7 @@ const zhHans = {
   export_results: "导出记录",
   load_more: "加载更多",
   loading_more: "加载更多中",
+  loaded_all: "已全部加载",
   load_more_notice: "长按加载更多以加载所有结果。",
   stats: "统计",
   stats_notice: "由当前已加载的记录统计。",

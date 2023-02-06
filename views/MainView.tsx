@@ -115,16 +115,11 @@ const MainView = (props: MainViewProps) => {
   const [apiUpdated, setApiUpdated] = useState(false);
   const [schedules, setSchedules] = useState<Schedules>();
   const [friends, setFriends] = useState<Friends>();
+  const [count, setCount] = useState(0);
   const [results, setResults] =
     useState<{ battle?: VsHistoryDetail; coop?: CoopHistoryDetail }[]>();
 
-  const showToast = (e: any) => {
-    if (e instanceof Error) {
-      Toast.show(e.message);
-    } else if (typeof e === "string") {
-      Toast.show(e);
-    }
-  };
+  const loadedAll = (results?.length ?? 0) >= count;
 
   useEffect(() => {
     if (sessionTokenReady && languageReady) {
@@ -132,6 +127,7 @@ const MainView = (props: MainViewProps) => {
         try {
           await Database.open();
           await loadResults(20, false);
+          await Database.count();
           setReady(true);
         } catch (e) {
           showToast(e);
@@ -179,6 +175,14 @@ const MainView = (props: MainViewProps) => {
     }
   }, [refreshing, autoRefresh, language]);
 
+  const showToast = (e: any) => {
+    if (e instanceof Error) {
+      Toast.show(e.message);
+    } else if (typeof e === "string") {
+      Toast.show(e);
+    }
+  };
+
   const loadResults = async (length: number, forceUpdate: boolean) => {
     setLoadingMore(true);
     let offset: number, limit: number;
@@ -222,6 +226,8 @@ const MainView = (props: MainViewProps) => {
     } else {
       if (details.length > 0 || forceUpdate) {
         setResults(details);
+        const count = await Database.count(condition);
+        setCount(count);
       }
     }
     setLoadingMore(false);
@@ -466,6 +472,9 @@ const MainView = (props: MainViewProps) => {
 
   const onScrollEndDrag = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     if (refreshing) {
+      return;
+    }
+    if (loadedAll) {
       return;
     }
     const overHeight = event.nativeEvent.contentSize.height - Dimensions.get("window").height;
@@ -984,6 +993,7 @@ const MainView = (props: MainViewProps) => {
               {sessionToken.length > 0 && (
                 <VStack style={[ViewStyles.mb4, ViewStyles.wf, ViewStyles.px4]}>
                   <Button
+                    isDisabled={loadedAll}
                     isLoading={refreshing || loadingMore}
                     isLoadingText={t("loading_more")}
                     style={[
@@ -997,7 +1007,7 @@ const MainView = (props: MainViewProps) => {
                     onLongPress={onLoadAllPress}
                   >
                     <Text numberOfLines={1} style={TextStyles.h3}>
-                      {t("load_more")}
+                      {loadedAll ? t("loaded_all") : t("load_more")}
                     </Text>
                   </Button>
                   {(results?.length ?? 0) > 40 && (results?.length ?? 0) <= 60 && (
@@ -1301,7 +1311,7 @@ const MainView = (props: MainViewProps) => {
           </VStack>
         </VStack>
       </Modal>
-      <Modal isVisible={firstAid} style={ViewStyles.modal1dc}>
+      <Modal isVisible={firstAid} fade style={ViewStyles.modal1dc}>
         <VStack center>
           <Icon name="life-buoy" size={48} color={Color.MiddleTerritory} style={ViewStyles.mb4} />
           <Text style={ViewStyles.mb4}>{t("first_aid_notice")}</Text>

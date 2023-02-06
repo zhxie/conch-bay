@@ -102,8 +102,14 @@ export const queryAll = async (order: boolean) => {
     stage: row["stage"],
   }));
 };
-export const count = async () => {
-  const record = await exec(`SELECT COUNT(1) FROM result`, true);
+export const count = async (condition?: string) => {
+  let sql: string;
+  if (condition) {
+    sql = `SELECT COUNT(1) FROM result WHERE ${condition}`;
+  } else {
+    sql = "SELECT COUNT(1) FROM result";
+  }
+  const record = await exec(sql, true);
   return record.rows[0]["COUNT(1)"] as number;
 };
 export const isExist = async (id: string) => {

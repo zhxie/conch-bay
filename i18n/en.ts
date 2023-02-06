@@ -15,6 +15,7 @@ const en = {
   export_results: "Export Results",
   load_more: "Load more",
   loading_more: "Loading more",
+  loaded_all: "Loaded all",
   load_more_notice: "Long press on Load more to load all results.",
   stats: "Stats",
   stats_notice: "Statistics from currently loaded results.",

@@ -15,6 +15,7 @@ const ja = {
   export_results: "リザルトをエクスポート",
   load_more: "もっと読み込む",
   loading_more: "もっと読み込む中",
+  loaded_all: "すべてを読み込みました",
   load_more_notice: "もっと読み込むを長押しして、すべてのリザルトを読み込みます。",
   stats: "統計",
   stats_notice: "現在ロードされているリザルトからの統計。",
