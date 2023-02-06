@@ -7,8 +7,8 @@ import Text from "./Text";
 
 interface ToolButtonProps {
   isDisabled?: boolean;
-  isLoading: boolean;
-  isLoadingText: string;
+  isLoading?: boolean;
+  isLoadingText?: string;
   color?: string;
   icon: string;
   title: string;
@@ -40,7 +40,7 @@ const ToolButton = (props: ToolButtonProps) => {
           }
         })()}
         <Text numberOfLines={1} style={TextStyles.h3}>
-          {props.isLoading ? props.isLoadingText : props.title}
+          {props.isLoading ? props.isLoadingText ?? props.title : props.title}
         </Text>
       </HStack>
     </Pressable>

@@ -47,10 +47,8 @@ const StatsView = (props: StatsViewProps) => {
 
   const [stats, setStats] = useState(false);
   const [count, setCount] = useState<CountProps>();
-  const [counting, setCounting] = useState(false);
 
   const onStatsPress = () => {
-    setCounting(true);
     let battle = 0,
       win = 0,
       lose = 0,
@@ -126,7 +124,6 @@ const StatsView = (props: StatsViewProps) => {
         rescued,
       },
     });
-    setCounting(false);
     setStats(true);
   };
   const onStatsClose = () => {
@@ -154,13 +151,7 @@ const StatsView = (props: StatsViewProps) => {
 
   return (
     <Center style={props.style}>
-      <ToolButton
-        isLoading={counting}
-        isLoadingText={t("stats")}
-        icon="bar-chart-2"
-        title={t("stats")}
-        onPress={onStatsPress}
-      />
+      <ToolButton icon="bar-chart-2" title={t("stats")} onPress={onStatsPress} />
       <Modal isVisible={stats} onClose={onStatsClose} style={ViewStyles.modal2d}>
         {!!count && (
           <VStack style={[ViewStyles.mb2, ViewStyles.wf]}>
