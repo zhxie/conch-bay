@@ -16,6 +16,22 @@ Run the following command and all outputs will be merged into `conch-bay-import.
 python3 tools/convert_s3s_outputs.py <PATH_TO_S3S>
 ```
 
+### Import data from ikawidget3
+
+Run the following command to extract data from a ikawidget3 database IKAX3 into `conch-bay-import.json`. You can then import it in Conch Bay. You have to acquire [cblite tool](https://github.com/couchbaselabs/couchbase-mobile-tools/releases) before converting.
+
+```sh
+python3 tools/convert_ikax3.py <PATH_TO_CBLITE_TOOL> <PATH_TO_IKAX3>
+```
+
+### Rescue data from a Conch Bay database
+
+Run the following command to extract data from a Conch Bay database into `conch-bay-import.json`. You can then import it in Conch Bay.
+
+```sh
+python3 tools/convert_db.py <PATH_TO_DB>
+```
+
 ### Validate data
 
 Run the following command to validate a results JSON.
