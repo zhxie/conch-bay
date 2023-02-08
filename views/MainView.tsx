@@ -93,13 +93,11 @@ const MainView = (props: MainViewProps) => {
   const [loggingOut, setLoggingOut] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
-  const [filter, setFilter] = useState("");
   const [exporting, setExporting] = useState(false);
   const [support, setSupport] = useState(false);
   const [preloadingResources, setPreloadingResources] = useState(false);
   const [acknowledgments, setAcknowledgments] = useState(false);
   const [firstAid, setFirstAid] = useState(false);
-  const [autoRefresh, setAutoRefresh] = useState(false);
 
   const [sessionToken, setSessionToken, clearSessionToken, sessionTokenReady] =
     useAsyncStorage("sessionToken");
@@ -118,6 +116,8 @@ const MainView = (props: MainViewProps) => {
   const [count, setCount] = useState(0);
   const [results, setResults] =
     useState<{ battle?: VsHistoryDetail; coop?: CoopHistoryDetail }[]>();
+  const [filter, setFilter] = useState("");
+  const [autoRefresh, setAutoRefresh] = useState(false);
 
   const loadedAll = (results?.length ?? 0) >= count;
 
@@ -531,6 +531,10 @@ const MainView = (props: MainViewProps) => {
       if (autoRefresh) {
         await onAutoRefreshPress();
       }
+      setFilter("");
+      setResults(undefined);
+      setCount(0);
+      setFriends(undefined);
       await Promise.all([
         clearSessionToken(),
         clearBulletToken(),
@@ -541,8 +545,6 @@ const MainView = (props: MainViewProps) => {
         clearGrade(),
         Database.clear(),
       ]);
-      setResults(undefined);
-      setFriends(undefined);
       setLoggingOut(false);
       setLogOut(false);
     } catch (e) {
