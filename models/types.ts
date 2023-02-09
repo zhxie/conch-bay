@@ -7,9 +7,11 @@ export interface VsMode {
   id: string;
 }
 export interface VsRule {
+  name: string;
   id: string;
 }
 export interface VsStage {
+  name: string;
   image: {
     url: string;
   };
@@ -122,13 +124,11 @@ export interface Catalog {
 }
 
 export interface SubWeaponRecord {
-  id: string;
   image: {
     url: string;
   };
 }
 export interface SpecialWeaponRecord {
-  id: string;
   image: {
     url: string;
   };
@@ -139,7 +139,6 @@ export interface WeaponRecord {
   image2d: {
     url: string;
   };
-  id: string;
 }
 export interface WeaponRecords {
   weaponRecords: {
@@ -148,7 +147,6 @@ export interface WeaponRecords {
 }
 
 export interface Brand {
-  id: string;
   image: {
     url: string;
   };
@@ -166,7 +164,7 @@ export interface Gear {
   primaryGearPower: GearPower;
   additionalGearPowers: GearPower[];
 }
-export interface Gears {
+export interface Equipments {
   clothingGears: {
     nodes: Gear[];
   };
@@ -245,8 +243,8 @@ export interface VsSubWeapon {
     url: string;
   };
 }
-
 export interface VsWeapon {
+  name: string;
   specialWeapon: VsSpecialWeapon;
   id: string;
   image2d: {
@@ -255,6 +253,11 @@ export interface VsWeapon {
   subWeapon: VsSubWeapon;
 }
 export type Species = "INKLING" | "OCTOLING";
+export interface VsBrand {
+  image: {
+    url: string;
+  };
+}
 export interface VsGear {
   name: string;
   primaryGearPower: GearPower;
@@ -262,7 +265,7 @@ export interface VsGear {
   originalImage: {
     url: string;
   };
-  brand: Brand;
+  brand: VsBrand;
 }
 export type FestDragonCert = "NONE" | "DRAGON" | "DOUBLE_DRAGON";
 export interface VsPlayer {
@@ -337,9 +340,11 @@ export interface CoopResult {
 }
 
 export interface CoopGrade {
+  name: string;
   id: string;
 }
 export interface Uniform {
+  name: string;
   image: {
     url: string;
   };
@@ -372,6 +377,7 @@ export interface CoopPlayerResult {
   rescuedCount: number;
 }
 export interface CoopBoss {
+  name: string;
   id: string;
 }
 export interface CoopBossResult {
@@ -380,6 +386,7 @@ export interface CoopBossResult {
 }
 export interface CoopEnemy {
   id: string;
+  name: string;
 }
 export interface CoopEnemyResult {
   defeatCount: number;
@@ -388,6 +395,7 @@ export interface CoopEnemyResult {
   enemy: CoopEnemy;
 }
 export interface CoopEventWave {
+  name: string;
   id: string;
 }
 export interface CoopWaveSpecialWeapon {

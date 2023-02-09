@@ -35,6 +35,7 @@ import {
   WaveBox,
   WorkSuitBox,
 } from "../components";
+import t, { td } from "../i18n";
 import {
   CoopHistoryDetail,
   CoopPlayerResult,
@@ -46,18 +47,11 @@ import {
   VsTeam,
 } from "../models/types";
 import {
-  getCoopGoldenEgg,
-  getCoopIsClear,
-  getCoopIsWaveClear,
-  getCoopPowerEgg,
   getCoopRuleColor,
   getImageCacheSource,
-  getMaxAdditionalGearPowerCount,
   getColor,
   getVsModeColor,
   getVsSelfPlayer,
-  isCoopAnnotation,
-  isVsPlayerDragon,
 } from "../utils/ui";
 
 export interface ResultProps {
@@ -65,7 +59,6 @@ export interface ResultProps {
   coop?: CoopHistoryDetail;
 }
 interface ResultViewProps {
-  t: (f: string, params?: Record<string, any>) => string;
   results?: ResultProps[];
   refreshControl: React.ReactElement<RefreshControlProps>;
   header: React.ReactElement;
@@ -75,8 +68,6 @@ interface ResultViewProps {
 }
 
 const ResultView = (props: ResultViewProps) => {
-  const { t } = props;
-
   const colorScheme = useColorScheme();
   const reverseTextColor = colorScheme === "light" ? TextStyles.dark : TextStyles.light;
 
@@ -90,6 +81,31 @@ const ResultView = (props: ResultViewProps) => {
   const [displayCoopPlayer, setDisplayCoopPlayer] = useState(false);
   const willDisplayResult = useRef(false);
   const [hidePlayerNames, setHidePlayerNames] = useState(false);
+
+  const isVsPlayerDragon = (player: VsPlayer) => {
+    switch (player.festDragonCert) {
+      case "NONE":
+        return false;
+      case "DRAGON":
+      case "DOUBLE_DRAGON":
+        return true;
+    }
+  };
+  const IsCoopClear = (coop: CoopHistoryDetail) => {
+    if (coop.coopHistoryDetail.resultWave === 0) {
+      if (coop.coopHistoryDetail.bossResult) {
+        return coop.coopHistoryDetail.bossResult.hasDefeatBoss;
+      }
+      return true;
+    }
+    return false;
+  };
+  const IsCoopWaveClear = (coop: CoopHistoryDetail, wave: number) => {
+    if (coop.coopHistoryDetail.resultWave === 0) {
+      return true;
+    }
+    return wave + 1 < coop.coopHistoryDetail.resultWave;
+  };
 
   const formatJudgement = (battle: VsHistoryDetail) => {
     switch (battle.vsHistoryDetail.judgement) {
@@ -190,6 +206,13 @@ const ResultView = (props: ResultViewProps) => {
     }
     return " ";
   };
+  const formatGearPadding = (player: VsPlayer) => {
+    return Math.max(
+      player.headGear.additionalGearPowers.length,
+      player.clothingGear.additionalGearPowers.length,
+      player.shoesGear.additionalGearPowers.length
+    );
+  };
   const formatWaterLevel = (waveResult: CoopWaveResult) => {
     switch (waveResult.waterLevel) {
       case 0:
@@ -204,7 +227,7 @@ const ResultView = (props: ResultViewProps) => {
     if (!waveResult.eventWave) {
       return "-";
     }
-    return t(waveResult.eventWave.id);
+    return td(waveResult.eventWave);
   };
   const formatSpecialWeapon = (coop: CoopHistoryDetail, i: number, begin: number) => {
     const map = [
@@ -296,9 +319,9 @@ const ResultView = (props: ResultViewProps) => {
             isLast={false}
             color={getVsModeColor(result.item.battle.vsHistoryDetail.vsMode)!}
             result={formatJudgement(result.item.battle)}
-            rule={t(result.item.battle.vsHistoryDetail.vsRule.id)}
-            stage={t(result.item.battle.vsHistoryDetail.vsStage.id)}
-            weapon={t(getVsSelfPlayer(result.item.battle).weapon.id)}
+            rule={td(result.item.battle.vsHistoryDetail.vsRule)}
+            stage={td(result.item.battle.vsHistoryDetail.vsStage)}
+            weapon={td(getVsSelfPlayer(result.item.battle).weapon)}
             kill={getVsSelfPlayer(result.item.battle).result?.kill}
             assist={getVsSelfPlayer(result.item.battle).result?.assist}
             death={getVsSelfPlayer(result.item.battle).result?.death}
@@ -316,6 +339,14 @@ const ResultView = (props: ResultViewProps) => {
         </VStack>
       );
     }
+    const powerEgg = result.item.coop!.coopHistoryDetail.memberResults.reduce(
+      (sum, result) => sum + result.deliverCount,
+      result.item.coop!.coopHistoryDetail.myResult.deliverCount
+    );
+    const goldenEgg = result.item.coop!.coopHistoryDetail.waveResults.reduce(
+      (sum, result) => sum + (result.teamDeliverCount ?? 0),
+      0
+    );
     return (
       <VStack flex style={ViewStyles.px4}>
         <CoopButton
@@ -324,17 +355,17 @@ const ResultView = (props: ResultViewProps) => {
           color={getCoopRuleColor(result.item.coop!.coopHistoryDetail.rule)!}
           result={result.item.coop!.coopHistoryDetail.resultWave === 0 ? 1 : -1}
           rule={t(result.item.coop!.coopHistoryDetail.rule)}
-          stage={t(result.item.coop!.coopHistoryDetail.coopStage.id)}
+          stage={td(result.item.coop!.coopHistoryDetail.coopStage)}
           kingSalmonid={
             result.item.coop!.coopHistoryDetail.bossResult !== null
-              ? t(result.item.coop!.coopHistoryDetail.bossResult.boss.id)
+              ? td(result.item.coop!.coopHistoryDetail.bossResult.boss)
               : undefined
           }
           wave={formatWave(result.item.coop!)!}
-          isClear={getCoopIsClear(result.item.coop!)}
+          isClear={IsCoopClear(result.item.coop!)}
           hazardLevel={formatHazardLevel(result.item.coop!)}
-          powerEgg={getCoopPowerEgg(result.item.coop!)}
-          goldenEgg={getCoopGoldenEgg(result.item.coop!)}
+          powerEgg={powerEgg}
+          goldenEgg={goldenEgg}
           onPress={() => {
             setResult({ coop: (result.item as ResultProps).coop });
             setDisplayCoop(true);
@@ -504,7 +535,7 @@ const ResultView = (props: ResultViewProps) => {
                   />
                   <BattleWeaponBox
                     image={getImageCacheSource(battlePlayer.weapon.image2d.url)}
-                    name={t(battlePlayer.weapon.id)}
+                    name={td(battlePlayer.weapon)}
                     subWeapon={getImageCacheSource(battlePlayer.weapon.subWeapon.image.url)}
                     specialWeapon={getImageCacheSource(battlePlayer.weapon.specialWeapon.image.url)}
                     style={ViewStyles.mb2}
@@ -524,7 +555,7 @@ const ResultView = (props: ResultViewProps) => {
                         additionalAbility={gear.additionalGearPowers.map((gearPower) =>
                           getImageCacheSource(gearPower.image.url)
                         )}
-                        paddingTo={getMaxAdditionalGearPowerCount(battlePlayer)}
+                        paddingTo={formatGearPadding(battlePlayer)}
                       />
                     )
                   )}
@@ -544,7 +575,7 @@ const ResultView = (props: ResultViewProps) => {
           <TitledList
             color={getCoopRuleColor(result.coop.coopHistoryDetail.rule)}
             title={t(result.coop.coopHistoryDetail.rule)}
-            subtitle={isCoopAnnotation(result.coop) ? t("penalty") : undefined}
+            subtitle={result.coop.coopHistoryDetail.resultWave === -1 ? t("penalty") : undefined}
           >
             <VStack style={ViewStyles.wf}>
               <VStack style={ViewStyles.mb2}>
@@ -562,7 +593,7 @@ const ResultView = (props: ResultViewProps) => {
                               <WaveBox
                                 key={i}
                                 color={
-                                  getCoopIsWaveClear(result.coop!, i)
+                                  IsCoopWaveClear(result.coop!, i)
                                     ? getCoopRuleColor(result.coop!.coopHistoryDetail.rule)!
                                     : undefined
                                 }
@@ -587,7 +618,7 @@ const ResultView = (props: ResultViewProps) => {
                               }
                               isKingSalmonid
                               waterLevel={formatWaterLevel(waveResult)!}
-                              eventWave={t(result.coop!.coopHistoryDetail.bossResult!.boss.id)}
+                              eventWave={td(result.coop!.coopHistoryDetail.bossResult!.boss)}
                               deliver={
                                 result.coop!.coopHistoryDetail.bossResult!.hasDefeatBoss ? 1 : 0
                               }
@@ -618,7 +649,7 @@ const ResultView = (props: ResultViewProps) => {
                               ? getCoopRuleColor(result.coop!.coopHistoryDetail.rule)!
                               : undefined
                           }
-                          name={t(result.coop.coopHistoryDetail.bossResult.boss.id)}
+                          name={td(result.coop.coopHistoryDetail.bossResult.boss)}
                           bronzeScale={result.coop.coopHistoryDetail.scale!.bronze}
                           silverScale={result.coop.coopHistoryDetail.scale!.silver}
                           goldScale={result.coop.coopHistoryDetail.scale!.gold}
@@ -638,7 +669,7 @@ const ResultView = (props: ResultViewProps) => {
                                 ? getCoopRuleColor(result.coop!.coopHistoryDetail.rule)!
                                 : undefined
                             }
-                            name={t(enemyResult.enemy.id)}
+                            name={td(enemyResult.enemy)}
                             defeat={enemyResult.defeatCount}
                             teamDefeat={enemyResult.teamDefeatCount}
                             appearance={enemyResult.popCount}
@@ -726,7 +757,7 @@ const ResultView = (props: ResultViewProps) => {
                   )}
                   <WorkSuitBox
                     image={getImageCacheSource(coopPlayer.player.uniform.image.url)}
-                    name={t(coopPlayer.player.uniform.id)}
+                    name={td(coopPlayer.player.uniform)}
                   />
                 </VStack>
               )}

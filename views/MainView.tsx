@@ -38,6 +38,7 @@ import {
   VStack,
   ViewStyles,
 } from "../components";
+import t from "../i18n";
 import {
   CoopHistoryDetail,
   Friends,
@@ -51,7 +52,7 @@ import {
   fetchCoopHistoryDetail,
   fetchCoopResult,
   fetchFriends,
-  fetchGears,
+  fetchEquipments,
   fetchSchedules,
   fetchSummary,
   fetchVsHistoryDetail,
@@ -71,15 +72,9 @@ import ResultView from "./ResultView";
 import ScheduleView from "./ScheduleView";
 import StatsView from "./StatsView";
 
-interface MainViewProps {
-  t: (f: string, params?: Record<string, any>) => string;
-}
-
 let autoRefreshTimeout: NodeJS.Timeout | undefined;
 
-const MainView = (props: MainViewProps) => {
-  const { t } = props;
-
+const MainView = () => {
   const colorScheme = useColorScheme();
   const backgroundStyle = colorScheme === "light" ? ViewStyles.light : ViewStyles.dark;
   const reverseTextColor = colorScheme === "light" ? TextStyles.dark : TextStyles.light;
@@ -795,10 +790,10 @@ const MainView = (props: MainViewProps) => {
         newBulletToken = await generateBulletToken();
       }
 
-      // Preload weapon, gear, badge images from API.
-      const [weaponRecords, gears, summary] = await Promise.all([
+      // Preload weapon, equipments, badge images from API.
+      const [weaponRecords, equipments, summary] = await Promise.all([
         weaponRecordsAttempt || fetchWeaponRecords(newBulletToken),
-        fetchGears(newBulletToken),
+        fetchEquipments(newBulletToken),
         fetchSummary(newBulletToken),
       ]);
       weaponRecords.weaponRecords.nodes.forEach((record) => {
@@ -809,19 +804,21 @@ const MainView = (props: MainViewProps) => {
           record.specialWeapon.image.url
         );
       });
-      [...gears.headGears.nodes, ...gears.clothingGears.nodes, ...gears.shoesGears.nodes].forEach(
-        (gear) => {
-          resources.set(getImageCacheKey(gear.image.url), gear.image.url);
-          resources.set(getImageCacheKey(gear.brand.image.url), gear.brand.image.url);
-          resources.set(
-            getImageCacheKey(gear.primaryGearPower.image.url),
-            gear.primaryGearPower.image.url
-          );
-          gear.additionalGearPowers.forEach((gearPower) => {
-            resources.set(getImageCacheKey(gearPower.image.url), gearPower.image.url);
-          });
-        }
-      );
+      [
+        ...equipments.headGears.nodes,
+        ...equipments.clothingGears.nodes,
+        ...equipments.shoesGears.nodes,
+      ].forEach((gear) => {
+        resources.set(getImageCacheKey(gear.image.url), gear.image.url);
+        resources.set(getImageCacheKey(gear.brand.image.url), gear.brand.image.url);
+        resources.set(
+          getImageCacheKey(gear.primaryGearPower.image.url),
+          gear.primaryGearPower.image.url
+        );
+        gear.additionalGearPowers.forEach((gearPower) => {
+          resources.set(getImageCacheKey(gearPower.image.url), gearPower.image.url);
+        });
+      });
       summary.playHistory.allBadges.forEach((badge) => {
         resources.set(getImageCacheKey(badge.image.url), badge.image.url);
       });
@@ -895,7 +892,6 @@ const MainView = (props: MainViewProps) => {
       <Animated.View style={[ViewStyles.f, { opacity: fade }]}>
         {/* TODO: it is a little bit weird concentrating on result list. */}
         <ResultView
-          t={t}
           results={sessionToken.length > 0 ? results : []}
           refreshControl={
             <RefreshControl
@@ -941,7 +937,7 @@ const MainView = (props: MainViewProps) => {
                   </HStack>
                 </VStack>
               )}
-              <ScheduleView t={t} schedules={schedules} style={ViewStyles.mb4} />
+              <ScheduleView schedules={schedules} style={ViewStyles.mb4} />
               {sessionToken.length > 0 &&
                 (friends === undefined || friends.friends.nodes.length > 0) && (
                   <FriendView friends={friends} style={ViewStyles.mb4} />
@@ -1034,7 +1030,7 @@ const MainView = (props: MainViewProps) => {
                   style={[ViewStyles.mb4, ViewStyles.wf]}
                 >
                   <HStack flex center style={ViewStyles.px4}>
-                    <StatsView t={t} results={results} style={ViewStyles.mr2} />
+                    <StatsView results={results} style={ViewStyles.mr2} />
                     <ToolButton
                       isLoading={false}
                       isLoadingText=""

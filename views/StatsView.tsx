@@ -11,11 +11,11 @@ import {
   VStack,
   ViewStyles,
 } from "../components";
+import t from "../i18n";
 import { getVsSelfPlayer } from "../utils/ui";
 import { ResultProps } from "./ResultView";
 
 interface StatsViewProps {
-  t: (f: string, params?: Record<string, any>) => string;
   results?: ResultProps[];
   style?: StyleProp<ViewStyle>;
 }
@@ -43,8 +43,6 @@ interface CountProps {
 }
 
 const StatsView = (props: StatsViewProps) => {
-  const { t } = props;
-
   const [stats, setStats] = useState(false);
   const [count, setCount] = useState<CountProps>();
 
