@@ -124,7 +124,6 @@ const MainView = () => {
         try {
           await Database.open();
           await loadResults(20, false);
-          await Database.count();
           setReady(true);
         } catch (e) {
           showToast(e);
@@ -547,7 +546,6 @@ const MainView = () => {
     await loadResults(results!.length + 20, true);
   };
   const onLoadAllPress = async () => {
-    const count = await Database.count();
     await loadResults(count, true);
   };
   const onImportPress = async () => {
