@@ -1,5 +1,6 @@
 import * as SQLite from "expo-sqlite";
 import { CoopHistoryDetail, VsHistoryDetail } from "../models/types";
+import { decode64Index } from "./codec";
 import { getVsSelfPlayer } from "./ui";
 
 export interface FilterProps {
@@ -155,14 +156,32 @@ export const queryFilterOptions = async () => {
     modes: modeRecord.rows
       .map((row) => row["mode"])
       .filter((mode) => mode !== "")
-      .sort(),
+      .sort((a, b) => {
+        // Move coop to the last.
+        if (a === "salmon_run") {
+          return 1;
+        }
+        if (b === "salmon_run") {
+          return -1;
+        }
+        // Move anarchy battle open behind anarchy battle series.
+        let aId = decode64Index(a);
+        if (aId === 51) {
+          aId = 2.5;
+        }
+        let bId = decode64Index(b);
+        if (bId === 51) {
+          bId = 2.5;
+        }
+        return aId - bId;
+      }),
     rules: ruleRecord.rows
       .map((row) => row["rule"])
       .filter((rule) => rule !== "")
       .sort((a, b) => {
         // Move coop rules behind battle rules.
         if (a.startsWith("V") && b.startsWith("V")) {
-          return a.localeCompare(b);
+          return decode64Index(a) - decode64Index(b);
         }
         return b.localeCompare(a);
       }),
@@ -179,12 +198,12 @@ export const queryFilterOptions = async () => {
         if (a.startsWith("Q") && b.startsWith("V")) {
           return 1;
         }
-        return a.localeCompare(b);
+        return decode64Index(a) - decode64Index(b);
       }),
     weapons: weaponRecord.rows
       .map((row) => row["weapon"])
       .filter((weapon) => weapon !== "")
-      .sort(),
+      .sort((a, b) => decode64Index(a) - decode64Index(b)),
   };
 };
 export const count = async (filter?: FilterProps) => {
