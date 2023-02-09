@@ -11,7 +11,7 @@ const zhHans = {
   log_out_notice: "登出将清除法螺湾所有存储的数据！请在继续之前完成备份。",
   log_out_continue: "登出",
   logging_out: "登出中",
-  export_results: "导出记录",
+  filter: "筛选",
   load_more: "加载更多",
   loading_more: "加载更多中",
   loaded_all: "已全部加载",
@@ -37,6 +37,7 @@ const zhHans = {
   debug_notice: "以下信息仅用于调试。请不要与他人分享。",
   copy_session_token: "复制会话令牌",
   copy_bullet_token: "复制Bullet令牌",
+  export_results: "导出记录",
   export_database: "导出数据库",
   privacy_policy: "隐私政策",
   acknowledgments: "致谢",
@@ -51,11 +52,14 @@ const zhHans = {
   loaded_n_results_fail_failed: "已加载%{n}项记录，%{fail}项失败",
   loaded_n_results_fail_failed_skip_skipped: "已加载%{n}项记录，%{fail}项失败，%{skip}项跳过",
   auto_refresh_enabled: "已启用自动刷新",
+  clear_filter: "清除筛选",
   hide_player_names: "隐藏玩家名称",
   show_player_names: "显示玩家名称",
   show_raw_data: "显示原始数据",
   open_in_nintendo_switch_online: "在Nintendo Switch Online中查看",
   // Stats.
+  count: "计数",
+  database: "数据库",
   victory: "WIN!",
   defeat: "LOSE...",
   splatted_by_you: "击倒",
@@ -70,6 +74,7 @@ const zhHans = {
   crew_members_rescued: "救援",
   rescued: "被救助",
   // Modes.
+  modes: "模式",
   battle: "对战",
   regular_battle: "一般比赛",
   anarchy_battle: "蛮颓比赛",
@@ -92,6 +97,7 @@ const zhHans = {
   salmon_run: "鲑鱼跑",
   big_run: "大型跑",
   // Rules.
+  rules: "规则",
   "VnNSdWxlLTA=": "占地对战",
   "VnNSdWxlLTE=": "真格区域",
   "VnNSdWxlLTI=": "真格塔楼",
@@ -101,6 +107,7 @@ const zhHans = {
   REGULAR: "鲑鱼跑",
   BIG_RUN: "大型跑",
   // Stages.
+  stages: "场地",
   VnNTdGFnZS0x: "温泉花大峡谷",
   VnNTdGFnZS0y: "鳗鲶区",
   VnNTdGFnZS0z: "烟管鱼市场",
@@ -122,6 +129,7 @@ const zhHans = {
   "Q29vcFN0YWdlLTc=": "麦年海洋发电所",
   "Q29vcFN0YWdlLTEwMA==": "醋饭海洋世界",
   // Weapons.
+  weapons: "武器",
   "V2VhcG9uLTA=": "广域标记枪",
   V2VhcG9uLTEw: "新叶射击枪",
   V2VhcG9uLTEx: "枫叶射击枪",

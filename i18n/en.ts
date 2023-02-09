@@ -12,7 +12,7 @@ const en = {
     "Logging out will remove all stored data from Conch Bay! Please complete backup before proceeding.",
   log_out_continue: "Log Out",
   logging_out: "Logging out",
-  export_results: "Export Results",
+  filter: "Filter",
   load_more: "Load more",
   loading_more: "Loading more",
   loaded_all: "Loaded all",
@@ -40,6 +40,7 @@ const en = {
   debug_notice: "The following information is for debug only. Please do NOT share with others.",
   copy_session_token: "Copy Session Token",
   copy_bullet_token: "Copy Bullet Token",
+  export_results: "Export Results",
   export_database: "Export Database",
   privacy_policy: "Privacy Policy",
   acknowledgments: "Acknowledgments",
@@ -56,11 +57,14 @@ const en = {
   loaded_n_results_fail_failed_skip_skipped:
     "Loaded %{n} result(s), %{fail} failed, %{skip} skipped",
   auto_refresh_enabled: "Auto refresh enabled",
+  clear_filter: "Clear Filter",
   hide_player_names: "Hide Player Names",
   show_player_names: "Show Player Names",
   show_raw_data: "Show Raw Data",
   open_in_nintendo_switch_online: "Open in Nintendo Switch Online",
   // Stats.
+  count: "Count",
+  database: "Database",
   victory: "VICTORY",
   defeat: "DEFEAT",
   splatted_by_you: "Splatted by You",
@@ -75,6 +79,7 @@ const en = {
   crew_members_rescued: "Crew Members Rescued",
   rescued: "Rescued",
   // Modes.
+  modes: "Modes",
   battle: "Battle",
   regular_battle: "Regular Battle",
   anarchy_battle: "Anarchy Battle",
@@ -97,6 +102,7 @@ const en = {
   salmon_run: "Salmon Run",
   big_run: "Big Run",
   // Rules.
+  rules: "Rules",
   "VnNSdWxlLTA=": "Turf War",
   "VnNSdWxlLTE=": "Splat Zones",
   "VnNSdWxlLTI=": "Tower Control",
@@ -106,6 +112,7 @@ const en = {
   REGULAR: "Salmon Run",
   BIG_RUN: "Big Run",
   // Stages.
+  stages: "Stages",
   VnNTdGFnZS0x: "Scorch Gorge",
   VnNTdGFnZS0y: "Eeltail Alley",
   VnNTdGFnZS0z: "Hagglefish Market",
@@ -127,6 +134,7 @@ const en = {
   "Q29vcFN0YWdlLTc=": "Gone Fission Hydroplant",
   "Q29vcFN0YWdlLTEwMA==": "Wahoo World",
   // Weapons.
+  weapons: "Weapons",
   "V2VhcG9uLTA=": "Sploosh-o-matic",
   V2VhcG9uLTEw: "Splattershot Jr.",
   V2VhcG9uLTEx: "Custom Splattershot Jr.",

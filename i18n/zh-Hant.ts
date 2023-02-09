@@ -11,7 +11,7 @@ const zhHant = {
   log_out_notice: "登出將清除法螺灣所有存儲的數據！請在繼續之前完成備份。",
   log_out_continue: "登出",
   logging_out: "登出中",
-  export_results: "匯出記錄",
+  filter: "篩選",
   load_more: "載入更多",
   loading_more: "載入更多中",
   loaded_all: "已全部載入",
@@ -37,6 +37,7 @@ const zhHant = {
   debug_notice: "以下資訊僅用於調試。請不要與他人分享。",
   copy_session_token: "複製會話令牌",
   copy_bullet_token: "複製Bullet令牌",
+  export_results: "匯出記錄",
   export_database: "匯出資料庫",
   privacy_policy: "隱私政策",
   acknowledgments: "致謝",
@@ -51,11 +52,14 @@ const zhHant = {
   loaded_n_results_fail_failed: "已載入%{n}項記錄，%{fail}項失敗",
   loaded_n_results_fail_failed_skip_skipped: "已載入%{n}項記錄，%{fail}項失敗，%{skip}項跳過",
   auto_refresh_enabled: "已啟用自動刷新",
+  clear_filter: "清除篩選",
   hide_player_names: "隱藏玩家名稱",
   show_player_names: "顯示玩家名稱",
   show_raw_data: "顯示原始數據",
   open_in_nintendo_switch_online: "在Nintendo Switch Online中查看",
   // Stats.
+  count: "計數",
+  database: "資料庫",
   victory: "WIN!",
   defeat: "LOSE...",
   splatted_by_you: "擊倒",
@@ -70,6 +74,7 @@ const zhHant = {
   crew_members_rescued: "救援",
   rescued: "被救助",
   // Modes.
+  modes: "模式",
   battle: "對戰",
   regular_battle: "一般比賽",
   anarchy_battle: "蠻頹比賽",
@@ -92,6 +97,7 @@ const zhHant = {
   salmon_run: "鮭魚跑",
   big_run: "大型跑",
   // Rules.
+  rules: "規則",
   "VnNSdWxlLTA=": "占地對戰",
   "VnNSdWxlLTE=": "真格區域",
   "VnNSdWxlLTI=": "真格塔樓",
@@ -101,6 +107,7 @@ const zhHant = {
   REGULAR: "鮭魚跑",
   BIG_RUN: "大型跑",
   // Stages.
+  stages: "場地",
   VnNTdGFnZS0x: "溫泉花大峽谷",
   VnNTdGFnZS0y: "鰻鯰區",
   VnNTdGFnZS0z: "煙管魚市場",
@@ -122,6 +129,7 @@ const zhHant = {
   "Q29vcFN0YWdlLTc=": "麥年海洋發電所",
   "Q29vcFN0YWdlLTEwMA==": "醋飯海洋世界",
   // Weapons.
+  weapons: "武器",
   "V2VhcG9uLTA=": "廣域標記槍",
   V2VhcG9uLTEw: "新葉射擊槍",
   V2VhcG9uLTEx: "楓葉射擊槍",

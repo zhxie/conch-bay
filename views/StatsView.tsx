@@ -16,6 +16,8 @@ import { getVsSelfPlayer } from "../utils/ui";
 import { ResultProps } from "./ResultView";
 
 interface StatsViewProps {
+  count: number;
+  total: number;
   results?: ResultProps[];
   style?: StyleProp<ViewStyle>;
 }
@@ -151,6 +153,14 @@ const StatsView = (props: StatsViewProps) => {
     <Center style={props.style}>
       <ToolButton icon="bar-chart-2" title={t("stats")} onPress={onStatsPress} />
       <Modal isVisible={stats} onClose={onStatsClose} style={ViewStyles.modal2d}>
+        <VStack style={[ViewStyles.mb2, ViewStyles.wf]}>
+          <Display isFirst title={t("count")}>
+            <Text numberOfLines={1}>{props.results?.length ?? 0}</Text>
+          </Display>
+          <Display isLast title={t("database")}>
+            <Text numberOfLines={1}>{`${props.count} / ${props.total}`}</Text>
+          </Display>
+        </VStack>
         {!!count && (
           <VStack style={[ViewStyles.mb2, ViewStyles.wf]}>
             <VStack style={ViewStyles.mb2}>

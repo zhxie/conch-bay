@@ -26,7 +26,6 @@ import {
   Button,
   Center,
   Color,
-  FilterButton,
   FloatingActionButton,
   HStack,
   Icon,
@@ -67,6 +66,7 @@ import {
 import * as Database from "../utils/database";
 import { useAsyncStorage } from "../utils/hooks";
 import { convertStageImageUrl, getImageCacheKey, getUserIconCacheSource } from "../utils/ui";
+import FilterView from "./FilterView";
 import FriendView from "./FriendView";
 import ResultView from "./ResultView";
 import ScheduleView from "./ScheduleView";
@@ -108,10 +108,12 @@ const MainView = () => {
   const [apiUpdated, setApiUpdated] = useState(false);
   const [schedules, setSchedules] = useState<Schedules>();
   const [friends, setFriends] = useState<Friends>();
-  const [count, setCount] = useState(0);
   const [results, setResults] =
     useState<{ battle?: VsHistoryDetail; coop?: CoopHistoryDetail }[]>();
-  const [filter, setFilter] = useState("");
+  const [count, setCount] = useState(0);
+  const [total, setTotal] = useState(0);
+  const [filter, setFilter] = useState<Database.FilterProps>();
+  const [filterOptions, setFilterOptions] = useState<Database.FilterProps>();
   const [autoRefresh, setAutoRefresh] = useState(false);
 
   const loadedAll = (results?.length ?? 0) >= count;
@@ -188,27 +190,8 @@ const MainView = () => {
       offset = 0;
       limit = length;
     }
-    let condition: string | undefined = undefined;
-    switch (filter) {
-      case "regular_battle":
-        condition =
-          "mode = 'VnNNb2RlLTE=' OR mode = 'VnNNb2RlLTY=' OR mode = 'VnNNb2RlLTc=' OR mode = 'VnNNb2RlLTg='";
-        break;
-      case "anarchy_battle":
-        condition = "mode = 'VnNNb2RlLTI=' OR mode == 'VnNNb2RlLTUx'";
-        break;
-      case "x_battle":
-        condition = "mode = 'VnNNb2RlLTM='";
-        break;
-      case "private_battle":
-        condition = "mode = 'VnNNb2RlLTU='";
-        break;
-      case "salmon_run":
-        condition = "mode = 'salmon_run'";
-        break;
-    }
 
-    const details = (await Database.query(offset, limit, condition)).map((record) => {
+    const details = (await Database.query(offset, limit, filter)).map((record) => {
       if (record.mode === "salmon_run") {
         return {
           coop: JSON.parse(record.detail) as CoopHistoryDetail,
@@ -221,8 +204,16 @@ const MainView = () => {
     } else {
       if (details.length > 0 || forceUpdate) {
         setResults(details);
-        const count = await Database.count(condition);
+        const [count, newTotal] = await Promise.all([
+          await Database.count(filter),
+          await Database.count(),
+        ]);
         setCount(count);
+        setTotal(newTotal);
+        if (newTotal !== total) {
+          const filterOptions = await Database.queryFilterOptions();
+          setFilterOptions(filterOptions);
+        }
       }
     }
     setLoadingMore(false);
@@ -526,9 +517,11 @@ const MainView = () => {
       if (autoRefresh) {
         await onAutoRefreshPress();
       }
-      setFilter("");
-      setResults(undefined);
+      setFilterOptions(undefined);
+      setFilter(undefined);
+      setTotal(0);
       setCount(0);
+      setResults(undefined);
       setFriends(undefined);
       await Promise.all([
         clearSessionToken(),
@@ -547,40 +540,8 @@ const MainView = () => {
       setLoggingOut(false);
     }
   };
-  const onFilterRegularBattlePress = () => {
-    if (filter !== "regular_battle") {
-      setFilter("regular_battle");
-    } else {
-      setFilter("");
-    }
-  };
-  const onFilterAnarchyBattlePress = () => {
-    if (filter !== "anarchy_battle") {
-      setFilter("anarchy_battle");
-    } else {
-      setFilter("");
-    }
-  };
-  const onFilterXBattlePress = () => {
-    if (filter !== "x_battle") {
-      setFilter("x_battle");
-    } else {
-      setFilter("");
-    }
-  };
-  const onFilterPrivateBattlePress = () => {
-    if (filter !== "private_battle") {
-      setFilter("private_battle");
-    } else {
-      setFilter("");
-    }
-  };
-  const onFilterSalmonRunPress = () => {
-    if (filter !== "salmon_run") {
-      setFilter("salmon_run");
-    } else {
-      setFilter("");
-    }
+  const onChangeFilterPress = (filter?: Database.FilterProps) => {
+    setFilter(filter);
   };
   const onLoadMorePress = async () => {
     await loadResults(results!.length + 20, true);
@@ -943,46 +904,13 @@ const MainView = () => {
                   <FriendView friends={friends} style={ViewStyles.mb4} />
                 )}
               {sessionToken.length > 0 && (
-                <VStack style={[ViewStyles.mb2, ViewStyles.wf]}>
-                  <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                    <HStack flex center style={ViewStyles.px4}>
-                      <FilterButton
-                        isDisabled={refreshing || loadingMore}
-                        color={filter === "regular_battle" ? Color.RegularBattle : undefined}
-                        title={t("regular_battle")}
-                        style={ViewStyles.mr2}
-                        onPress={onFilterRegularBattlePress}
-                      />
-                      <FilterButton
-                        isDisabled={refreshing || loadingMore}
-                        color={filter === "anarchy_battle" ? Color.AnarchyBattle : undefined}
-                        title={t("anarchy_battle")}
-                        style={ViewStyles.mr2}
-                        onPress={onFilterAnarchyBattlePress}
-                      />
-                      <FilterButton
-                        isDisabled={refreshing || loadingMore}
-                        color={filter === "x_battle" ? Color.XBattle : undefined}
-                        title={t("x_battle")}
-                        style={ViewStyles.mr2}
-                        onPress={onFilterXBattlePress}
-                      />
-                      <FilterButton
-                        isDisabled={refreshing || loadingMore}
-                        color={filter === "private_battle" ? Color.PrivateBattle : undefined}
-                        title={t("private_battle")}
-                        style={ViewStyles.mr2}
-                        onPress={onFilterPrivateBattlePress}
-                      />
-                      <FilterButton
-                        isDisabled={refreshing || loadingMore}
-                        color={filter === "salmon_run" ? Color.SalmonRun : undefined}
-                        title={t("salmon_run")}
-                        onPress={onFilterSalmonRunPress}
-                      />
-                    </HStack>
-                  </ScrollView>
-                </VStack>
+                <FilterView
+                  isDisabled={refreshing || loadingMore}
+                  filter={filter}
+                  options={filterOptions}
+                  onChange={onChangeFilterPress}
+                  style={ViewStyles.mb2}
+                />
               )}
             </SafeAreaView>
           }
@@ -1030,7 +958,12 @@ const MainView = () => {
                   style={[ViewStyles.mb4, ViewStyles.wf]}
                 >
                   <HStack flex center style={ViewStyles.px4}>
-                    <StatsView results={results} style={ViewStyles.mr2} />
+                    <StatsView
+                      count={count}
+                      total={total}
+                      results={results}
+                      style={ViewStyles.mr2}
+                    />
                     <ToolButton
                       isLoading={false}
                       isLoadingText=""

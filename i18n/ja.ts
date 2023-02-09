@@ -12,7 +12,7 @@ const ja = {
     "ログアウトすると、ホラガイベイに保存されているすべてのデータが削除されます！続行する前にバックアップを完了してください。",
   log_out_continue: "ログアウト",
   logging_out: "ログアウト中",
-  export_results: "リザルトをエクスポート",
+  filter: "フィルター",
   load_more: "もっと読み込む",
   loading_more: "もっと読み込む中",
   loaded_all: "すべてを読み込みました",
@@ -40,6 +40,7 @@ const ja = {
   debug_notice: "次の情報はデバッグ専用です。他の人と共有しないでください。",
   copy_session_token: "セッショントークンをコピー",
   copy_bullet_token: "ブレットトークンをコピー",
+  export_results: "リザルトをエクスポート",
   export_database: "データーベースをエクスポート",
   privacy_policy: "プライバシーポリシー",
   acknowledgments: "謝辞",
@@ -56,11 +57,14 @@ const ja = {
   loaded_n_results_fail_failed_skip_skipped:
     "%{n}件のリザルトを読み込み、%{fail}件は失敗、%{skip}件はスキップしました",
   auto_refresh_enabled: "自動更新が有効になりました",
+  clear_filter: "フィルターを消す",
   hide_player_names: "プレイヤー名を隠す",
   show_player_names: "プレイヤー名を表示",
   show_raw_data: "生データを表示",
   open_in_nintendo_switch_online: "Nintendo Switch Onlineでチェック",
   // Stats.
+  count: "カウント",
+  database: "データベース",
   victory: "WIN!",
   defeat: "LOSE...",
   splatted_by_you: "たおした",
@@ -75,6 +79,7 @@ const ja = {
   crew_members_rescued: "たすけた",
   rescued: "たすけてもらった",
   // Modes.
+  modes: "モード",
   battle: "バトル",
   regular_battle: "レギュラーマッチ",
   anarchy_battle: "バンカラマッチ",
@@ -97,6 +102,7 @@ const ja = {
   salmon_run: "サーモンラン",
   big_run: "ビッグラン",
   // Rules.
+  rules: "ルール",
   "VnNSdWxlLTA=": "ナワバリバトル",
   "VnNSdWxlLTE=": "ガチエリア",
   "VnNSdWxlLTI=": "ガチヤグラ",
@@ -106,6 +112,7 @@ const ja = {
   REGULAR: "サーモンラン",
   BIG_RUN: "ビッグラン",
   // Stages.
+  stages: "ステージ",
   VnNTdGFnZS0x: "ユノハナ大渓谷",
   VnNTdGFnZS0y: "ゴンズイ地区",
   VnNTdGFnZS0z: "ヤガラ市場",
@@ -127,6 +134,7 @@ const ja = {
   "Q29vcFN0YWdlLTc=": "ムニ・エール海洋発電所",
   "Q29vcFN0YWdlLTEwMA==": "スメーシーワールド",
   // Weapons.
+  weapons: "ブキ",
   "V2VhcG9uLTA=": "ボールドマーカー",
   V2VhcG9uLTEw: "わかばシューター",
   V2VhcG9uLTEx: "もみじシューター",

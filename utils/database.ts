@@ -2,6 +2,13 @@ import * as SQLite from "expo-sqlite";
 import { CoopHistoryDetail, VsHistoryDetail } from "../models/types";
 import { getVsSelfPlayer } from "./ui";
 
+export interface FilterProps {
+  modes: string[];
+  rules: string[];
+  stages: string[];
+  weapons: string[];
+}
+
 let db: SQLite.WebSQLDatabase | undefined = undefined;
 
 export const open = async () => {
@@ -70,13 +77,43 @@ const exec = async (sql: string, readonly: boolean): Promise<SQLite.ResultSet> =
   });
 };
 
-export const query = async (offset: number, limit: number, condition?: string) => {
-  let sql: string;
-  if (condition) {
-    sql = `SELECT * FROM result WHERE ${condition} ORDER BY time DESC LIMIT ${limit} OFFSET ${offset}`;
-  } else {
-    sql = `SELECT * FROM result ORDER BY time DESC LIMIT ${limit} OFFSET ${offset}`;
+const convertFilter = (filter: FilterProps) => {
+  const filters: string[] = [];
+  if (filter.modes.length > 0) {
+    filters.push(`(${filter.modes.map((mode) => `mode = '${mode}'`).join(" OR ")})`);
   }
+  if (filter.rules.length > 0) {
+    filters.push(`(${filter.rules.map((rule) => `rule = '${rule}'`).join(" OR ")})`);
+  }
+  if (filter.weapons.length > 0) {
+    filters.push(`(${filter.weapons.map((weapon) => `weapon = '${weapon}'`).join(" OR ")})`);
+  }
+  if (filter.stages.length > 0) {
+    filters.push(
+      `(${filter.stages
+        .map((stage) => {
+          // Includes Big Run stages.
+          if (stage === "VnNTdGFnZS0xNg==") {
+            return "stage = 'VnNTdGFnZS0xNg==' OR stage = 'Q29vcFN0YWdlLTEwMA=='";
+          }
+          return `stage = '${stage}'`;
+        })
+        .join(" OR ")})`
+    );
+  }
+  const condition = filters.map((filter) => `(${filter})`).join(" AND ");
+  if (!condition) {
+    return "";
+  }
+  return `WHERE ${condition}`;
+};
+
+export const query = async (offset: number, limit: number, filter?: FilterProps) => {
+  let condition: string | undefined = undefined;
+  if (filter) {
+    condition = convertFilter(filter);
+  }
+  const sql = `SELECT * FROM result ${condition} ORDER BY time DESC LIMIT ${limit} OFFSET ${offset}`;
   const record = await exec(sql, true);
   return record.rows.map((row) => ({
     id: row["id"],
@@ -102,13 +139,60 @@ export const queryAll = async (order: boolean) => {
     stage: row["stage"],
   }));
 };
-export const count = async (condition?: string) => {
-  let sql: string;
-  if (condition) {
-    sql = `SELECT COUNT(1) FROM result WHERE ${condition}`;
-  } else {
-    sql = "SELECT COUNT(1) FROM result";
+export const queryFilterOptions = async () => {
+  const modeSql = `SELECT DISTINCT mode FROM result`;
+  const ruleSql = `SELECT DISTINCT rule FROM result`;
+  const stageSql = `SELECT DISTINCT stage FROM result`;
+  const weaponSql = `SELECT DISTINCT weapon FROM result`;
+
+  const [modeRecord, ruleRecord, stageRecord, weaponRecord] = await Promise.all([
+    await exec(modeSql, true),
+    await exec(ruleSql, true),
+    await exec(stageSql, true),
+    await exec(weaponSql, true),
+  ]);
+  return {
+    modes: modeRecord.rows
+      .map((row) => row["mode"])
+      .filter((mode) => mode !== "")
+      .sort(),
+    rules: ruleRecord.rows
+      .map((row) => row["rule"])
+      .filter((rule) => rule !== "")
+      .sort((a, b) => {
+        // Move coop rules behind battle rules.
+        if (a.startsWith("V") && b.startsWith("V")) {
+          return a.localeCompare(b);
+        }
+        return b.localeCompare(a);
+      }),
+    stages: stageRecord.rows
+      .map((row) => row["stage"])
+      .filter((stage) => stage !== "")
+      // Escape Big Run stages.
+      .filter((stage) => stage !== "Q29vcFN0YWdlLTEwMA==")
+      .sort((a, b) => {
+        // Move coop stages behind battle stages.
+        if (a.startsWith("V") && b.startsWith("Q")) {
+          return -1;
+        }
+        if (a.startsWith("Q") && b.startsWith("V")) {
+          return 1;
+        }
+        return a.localeCompare(b);
+      }),
+    weapons: weaponRecord.rows
+      .map((row) => row["weapon"])
+      .filter((weapon) => weapon !== "")
+      .sort(),
+  };
+};
+export const count = async (filter?: FilterProps) => {
+  let condition: string | undefined = undefined;
+  if (filter) {
+    condition = convertFilter(filter);
   }
+  const sql = `SELECT COUNT(1) FROM result ${condition}`;
   const record = await exec(sql, true);
   return record.rows[0]["COUNT(1)"] as number;
 };

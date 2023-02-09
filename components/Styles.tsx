@@ -208,6 +208,14 @@ export const ViewStyles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: `${Color.MiddleTerritory}3f`,
   },
+  sepl: {
+    borderLeftWidth: StyleSheet.hairlineWidth,
+    borderLeftColor: `${Color.MiddleTerritory}3f`,
+  },
+  sepr: {
+    borderRightWidth: StyleSheet.hairlineWidth,
+    borderRightColor: `${Color.MiddleTerritory}3f`,
+  },
   mr0_5: {
     marginRight: 2,
   },
@@ -267,6 +275,30 @@ export const ViewStyles = StyleSheet.create({
   },
   px4: {
     paddingHorizontal: 16,
+  },
+  pl1: {
+    paddingLeft: 4,
+  },
+  pl2: {
+    paddingLeft: 8,
+  },
+  pl3: {
+    paddingLeft: 12,
+  },
+  pl4: {
+    paddingLeft: 16,
+  },
+  pr1: {
+    paddingRight: 4,
+  },
+  pr2: {
+    paddingRight: 8,
+  },
+  pr3: {
+    paddingRight: 12,
+  },
+  pr4: {
+    paddingRight: 16,
   },
   py0_25: {
     paddingVertical: 1,
