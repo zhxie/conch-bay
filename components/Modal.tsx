@@ -42,7 +42,6 @@ const Modal = (props: ModalProps) => {
     >
       <ScrollView
         showsHorizontalScrollIndicator={false}
-        showsVerticalScrollIndicator={false}
         onScrollEndDrag={onScrollEndDrag}
         style={[ViewStyles.r2, ViewStyles.px4, style, props.style]}
       >
