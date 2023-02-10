@@ -276,11 +276,13 @@ const FilterView = (props: FilterViewProps) => {
               />
             ))}
           </HStack>
-          <Button style={ViewStyles.accent} onPress={onClearFilterPress}>
-            <Text numberOfLines={1} style={reverseTextColor}>
-              {t("clear_filter")}
-            </Text>
-          </Button>
+          <VStack style={[ViewStyles.wf, ViewStyles.pr2]}>
+            <Button style={ViewStyles.accent} onPress={onClearFilterPress}>
+              <Text numberOfLines={1} style={reverseTextColor}>
+                {t("clear_filter")}
+              </Text>
+            </Button>
+          </VStack>
         </VStack>
       </Modal>
     </VStack>
