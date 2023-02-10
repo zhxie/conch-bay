@@ -6,6 +6,7 @@ import {
   Color,
   FilterButton,
   HStack,
+  IconButton,
   Modal,
   Text,
   TextStyles,
@@ -124,14 +125,16 @@ const FilterView = (props: FilterViewProps) => {
     <VStack style={[ViewStyles.wf, props.style]}>
       <HStack>
         <Center style={[ViewStyles.pl4, ViewStyles.pr2, ViewStyles.sepr]}>
-          <FilterButton
+          <IconButton
             isDisabled={props.isDisabled}
+            size={32}
             color={
               props.filter && !isFilterEqual(props.filter, EmptyFilterProps)
                 ? Color.AccentColor
                 : undefined
             }
-            title={t("filter")}
+            icon="filter"
+            style={{ paddingTop: 2 }}
             onPress={onFilterPress}
           />
         </Center>
@@ -277,7 +280,11 @@ const FilterView = (props: FilterViewProps) => {
             ))}
           </HStack>
           <VStack style={[ViewStyles.wf, ViewStyles.pr2]}>
-            <Button style={ViewStyles.accent} onPress={onClearFilterPress}>
+            <Button
+              isDisabled={props.isDisabled}
+              style={ViewStyles.accent}
+              onPress={onClearFilterPress}
+            >
               <Text numberOfLines={1} style={reverseTextColor}>
                 {t("clear_filter")}
               </Text>

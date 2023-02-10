@@ -14,6 +14,7 @@ export { default as FilterButton } from "./FilterButton";
 export { default as FloatingActionButton } from "./FloatingActionButton";
 export { default as GearBox } from "./GearBox";
 export { default as Icon } from "./Icon";
+export { default as IconButton } from "./IconButton";
 export { default as Image, SourceProps } from "./Image";
 export { default as KingSalmonidBox } from "./KingSalmonidBox";
 export { default as Modal } from "./Modal";

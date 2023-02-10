@@ -1,7 +1,5 @@
-import Icon from "./Icon";
-import Pressable from "./Pressable";
-import { Center } from "./Stack";
-import { Color, ViewStyles } from "./Styles";
+import IconButton from "./IconButton";
+import { ViewStyles } from "./Styles";
 
 interface FloatingActionButtonProps {
   isDisabled?: boolean;
@@ -13,30 +11,14 @@ interface FloatingActionButtonProps {
 
 const FloatingActionButton = (props: FloatingActionButtonProps) => {
   return (
-    <Pressable
+    <IconButton
       isDisabled={props.isDisabled}
-      style={[
-        ViewStyles.s2,
-        {
-          width: props.size,
-          height: props.size,
-          position: "absolute",
-          right: 20,
-          bottom: 20,
-          borderRadius: props.size / 2,
-        },
-        !!props.color && { backgroundColor: props.color },
-      ]}
+      size={props.size}
+      color={props.color}
+      icon={props.icon}
+      style={[ViewStyles.s2, { position: "absolute", right: 20, bottom: 20 }]}
       onPress={props.onPress}
-    >
-      <Center flex>
-        <Icon
-          name={props.icon as any}
-          size={props.size * 0.5}
-          color={props.color ? "white" : Color.MiddleTerritory}
-        />
-      </Center>
-    </Pressable>
+    />
   );
 };
 
