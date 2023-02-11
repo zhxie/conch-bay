@@ -31,7 +31,8 @@ const en = {
   relog_in_notice: "If Conch Bay cannot acquire tokens, you can relog in.",
   relog_in: "Relog In",
   resource_notice:
-    "If Conch Bay cannot load images, you can preload them in advance. Please note, due to SplatNet 3 restrictions, Conch Bay can only preload some images.",
+    "If Conch Bay cannot load images, you can clear cache or preload resources. Please note, due to SplatNet 3 restrictions, Conch Bay can only preload some images.",
+  clear_cache: "Clear Cache",
   preload_resources: "Preload Resources",
   preloading_resources: "Preloading Resources",
   feedback_notice:

@@ -90,6 +90,7 @@ const MainView = () => {
   const [loadingMore, setLoadingMore] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [support, setSupport] = useState(false);
+  const [clearingCache, setClearingCache] = useState(false);
   const [preloadingResources, setPreloadingResources] = useState(false);
   const [acknowledgments, setAcknowledgments] = useState(false);
   const [firstAid, setFirstAid] = useState(false);
@@ -643,6 +644,24 @@ const MainView = () => {
   const onLanguageSelected = async (language: string) => {
     await setLanguage(language);
   };
+  const onClearCachePress = async () => {
+    setClearingCache(true);
+    try {
+      const files = await FileSystem.readDirectoryAsync(FileSystem.cacheDirectory!);
+      for (const file of files) {
+        try {
+          await FileSystem.deleteAsync(`${FileSystem.cacheDirectory!}${file}`, {
+            idempotent: true,
+          });
+        } catch {
+          /* empty */
+        }
+      }
+    } catch (e) {
+      showToast(e);
+    }
+    setClearingCache(false);
+  };
   const onPreloadResourcesPress = async () => {
     setPreloadingResources(true);
     try {
@@ -786,10 +805,13 @@ const MainView = () => {
       const resourcesArray = Array.from(resources);
       const resourcesInfo = await Promise.all(
         resourcesArray.map((resource) =>
-          FileSystem.getInfoAsync(`${FileSystem.cacheDirectory}${resource[0]}`)
+          FileSystem.getInfoAsync(`${FileSystem.cacheDirectory}${resource[0]}`, { size: true })
         )
       );
-      const newResources = resourcesArray.filter((_, i) => !resourcesInfo[i].exists);
+      const newResources = resourcesArray.filter(
+        // 67 bytes seems to be the smallest PNG size.
+        (_, i) => !resourcesInfo[i].exists || (resourcesInfo[i].size ?? 0) < 68
+      );
       await Promise.all(
         Array.from(newResources).map((resource) =>
           CacheManager.downloadAsync({ uri: resource[1], key: resource[0] })
@@ -1148,6 +1170,17 @@ const MainView = () => {
               <VStack center>
                 <Text style={ViewStyles.mb2}>{t("resource_notice")}</Text>
               </VStack>
+              <Button
+                isLoading={clearingCache}
+                isLoadingText={t("preloading_resources")}
+                style={[ViewStyles.accent, ViewStyles.mb2]}
+                textStyle={reverseTextColor}
+                onPress={onClearCachePress}
+              >
+                <Text numberOfLines={1} style={reverseTextColor}>
+                  {t("clear_cache")}
+                </Text>
+              </Button>
               <Button
                 isLoading={preloadingResources}
                 isLoadingText={t("preloading_resources")}

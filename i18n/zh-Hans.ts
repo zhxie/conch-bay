@@ -29,7 +29,8 @@ const zhHans = {
   relog_in_notice: "如果法螺湾无法获取令牌，您可以重新登录。",
   relog_in: "重新登录",
   resource_notice:
-    "如果法螺湾无法加载图片，您可以提前进行预加载。请注意，由于鱿鱼圈3的限制，法螺湾仅能预加载部分图片。",
+    "如果法螺湾无法加载图片，您可以清除缓存或预加载资源。请注意，由于鱿鱼圈3的限制，法螺湾仅能预加载部分图片。",
+  clear_cache: "清除缓存",
   preload_resources: "预加载资源",
   preloading_resources: "预加载资源中",
   feedback_notice: "如果您在使用法螺湾时遇到任何问题或有任何建议，请随时分享您的反馈。",
