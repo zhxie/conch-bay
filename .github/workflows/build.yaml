@@ -109,7 +109,7 @@ jobs:
         run: eas build --local --non-interactive --platform android --profile preview
 
       - name: Upload build artifacts
-        if: github.event_name == "push"
+        if: ${{ github.event_name == "push" }}
         uses: actions/upload-artifact@v3
         with:
           name: conch-bay-android
