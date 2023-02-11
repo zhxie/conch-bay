@@ -16,8 +16,24 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Prettify code
-        uses: creyD/prettier_action@v4.2
+      - name: Use Node.js 18
+        uses: actions/setup-node@v3
         with:
-          dry: True
-          prettier_options: --check .
+          node-version: "18"
+          cache: "npm"
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-build-node-modules-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-node-modules-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Prettify code
+        run: npm run format
