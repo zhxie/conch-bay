@@ -445,13 +445,17 @@ const ResultView = (props: ResultViewProps) => {
               {formatTeams(result.battle).map((team, i) => (
                 <VStack key={i} style={ViewStyles.mb2}>
                   <HStack center justify style={ViewStyles.mb1}>
-                    <HStack center style={[ViewStyles.mr1, ViewStyles.f]}>
+                    <HStack flex center style={[ViewStyles.mr1, ViewStyles.f]}>
                       <Circle size={12} color={getColor(team.color)} style={ViewStyles.mr1} />
                       <Text
                         numberOfLines={1}
-                        style={[TextStyles.b, { color: getColor(team.color) }]}
+                        style={[ViewStyles.f, TextStyles.b, { color: getColor(team.color) }]}
                       >
-                        {team.festTeamName ?? ""}
+                        {`${team.festTeamName ? `${team.festTeamName} ` : ""}${
+                          (team.festStreakWinCount ?? 0) > 1
+                            ? `${t("n_win_strike", { n: team.festStreakWinCount })} `
+                            : ""
+                        }`}
                       </Text>
                     </HStack>
                     <HStack center>

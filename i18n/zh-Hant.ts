@@ -54,6 +54,7 @@ const zhHant = {
   loaded_n_results_fail_failed_skip_skipped: "已載入%{n}項記錄，%{fail}項失敗，%{skip}項跳過",
   auto_refresh_enabled: "已啟用自動刷新",
   clear_filter: "清除篩選",
+  n_win_strike: "%{n}連勝",
   hide_player_names: "隱藏玩家名稱",
   show_player_names: "顯示玩家名稱",
   show_raw_data: "顯示原始數據",

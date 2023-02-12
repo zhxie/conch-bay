@@ -308,6 +308,7 @@ export interface VsTeam {
   judgement: "WIN" | "LOSE" | "DRAW";
   festTeamName: string | null;
   players: VsPlayer[];
+  festStreakWinCount?: number | null;
 }
 export interface VsHistoryDetail {
   vsHistoryDetail: {

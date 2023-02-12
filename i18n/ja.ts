@@ -59,6 +59,7 @@ const ja = {
     "%{n}件のリザルトを読み込み、%{fail}件は失敗、%{skip}件はスキップしました",
   auto_refresh_enabled: "自動更新が有効になりました",
   clear_filter: "フィルターを消す",
+  n_win_strike: "%{n}連勝",
   hide_player_names: "プレイヤー名を隠す",
   show_player_names: "プレイヤー名を表示",
   show_raw_data: "生データを表示",

@@ -54,6 +54,7 @@ const zhHans = {
   loaded_n_results_fail_failed_skip_skipped: "已加载%{n}项记录，%{fail}项失败，%{skip}项跳过",
   auto_refresh_enabled: "已启用自动刷新",
   clear_filter: "清除筛选",
+  n_win_strike: "%{n}连胜",
   hide_player_names: "隐藏玩家名称",
   show_player_names: "显示玩家名称",
   show_raw_data: "显示原始数据",
