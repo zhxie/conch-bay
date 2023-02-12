@@ -97,14 +97,16 @@ const MainView = () => {
 
   const [sessionToken, setSessionToken, clearSessionToken, sessionTokenReady] =
     useAsyncStorage("sessionToken");
-  const [bulletToken, setBulletToken, clearBulletToken] = useAsyncStorage("bulletToken");
+  const [bulletToken, setBulletToken, clearBulletToken, bulletTokenReady] =
+    useAsyncStorage("bulletToken");
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [language, setLanguage, _, languageReady] = useAsyncStorage("language", t("lang"));
+
   const [icon, setIcon, clearIcon] = useAsyncStorage("icon");
   const [catalogLevel, setCatalogLevel, clearCatalogLevel] = useAsyncStorage("catalogLevel");
   const [level, setLevel, clearLevel] = useAsyncStorage("level");
   const [rank, setRank, clearRank] = useAsyncStorage("rank");
   const [grade, setGrade, clearGrade] = useAsyncStorage("grade");
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [language, setLanguage, _, languageReady] = useAsyncStorage("language", t("lang"));
 
   const [apiUpdated, setApiUpdated] = useState(false);
   const [schedules, setSchedules] = useState<Schedules>();
@@ -120,7 +122,7 @@ const MainView = () => {
   const loadedAll = (results?.length ?? 0) >= count;
 
   useEffect(() => {
-    if (sessionTokenReady && languageReady) {
+    if (sessionTokenReady && bulletTokenReady && languageReady) {
       (async () => {
         try {
           await Database.open();
@@ -132,7 +134,7 @@ const MainView = () => {
         }
       })();
     }
-  }, [sessionTokenReady, languageReady]);
+  }, [sessionTokenReady, bulletTokenReady, languageReady]);
   const fade = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     if (ready) {
