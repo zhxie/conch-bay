@@ -25,7 +25,7 @@ const config = {
   jsEngine: "hermes",
   ios: {
     bundleIdentifier: "name.sketch.ConchBay",
-    buildNumber: "36",
+    buildNumber: "37",
     config: {
       usesNonExemptEncryption: false,
     },
@@ -44,7 +44,7 @@ const config = {
   },
   android: {
     package: "name.sketch.conch_bay",
-    versionCode: 36,
+    versionCode: 37,
     adaptiveIcon: {
       foregroundImage: "./assets/adaptive-icon.png",
       backgroundColor: "#6B84F5",
