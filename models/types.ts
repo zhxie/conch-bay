@@ -309,6 +309,7 @@ export interface VsTeam {
   festTeamName: string | null;
   players: VsPlayer[];
   festStreakWinCount?: number | null;
+  festUniformName?: string | null;
 }
 export interface VsHistoryDetail {
   vsHistoryDetail: {

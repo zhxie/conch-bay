@@ -4,7 +4,6 @@ import Pressable from "./Pressable";
 import { Circle } from "./Shape";
 import { HStack, VStack } from "./Stack";
 import { TextStyles, ViewStyles } from "./Styles";
-import Text from "./Text";
 
 interface ScheduleButtonProps {
   rule: string;

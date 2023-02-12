@@ -454,7 +454,7 @@ const ResultView = (props: ResultViewProps) => {
                             (team.festStreakWinCount ?? 0) > 1
                               ? `${t("n_win_strike", { n: team.festStreakWinCount })} `
                               : ""
-                          }`}
+                          }${team.festUniformName ? `${team.festUniformName}` : ""}`}
                         </Marquee>
                       </HStack>
                     </HStack>
