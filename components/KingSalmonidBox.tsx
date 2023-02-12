@@ -1,4 +1,5 @@
 import { StyleProp, ViewStyle, useColorScheme } from "react-native";
+import Marquee from "./Marquee";
 import { Circle } from "./Shape";
 import { HStack, VStack } from "./Stack";
 import { Color, TextStyles, ViewStyles } from "./Styles";
@@ -20,17 +21,16 @@ const KingSalmonidBox = (props: KingSalmonidBoxProps) => {
   return (
     <VStack style={[ViewStyles.r2, ViewStyles.p2, { width: 110, height: 80 }, style, props.style]}>
       <VStack flex justify>
-        <Text
-          numberOfLines={1}
+        <Marquee
           style={[
-            ViewStyles.mb2,
+            ViewStyles.mb1,
             TextStyles.h2,
             TextStyles.subtle,
             !!props.color && { color: props.color },
           ]}
         >
           {props.name}
-        </Text>
+        </Marquee>
         <VStack>
           <HStack center>
             <Circle size={10} color={Color.BronzeScale} style={ViewStyles.mr1} />

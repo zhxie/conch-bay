@@ -1,9 +1,9 @@
 import { StyleProp, StyleSheet, ViewStyle, useColorScheme } from "react-native";
 import Image, { SourceProps } from "./Image";
+import Marquee from "./Marquee";
 import { Circle } from "./Shape";
 import { Center, HStack } from "./Stack";
 import { Color, ViewStyles } from "./Styles";
-import Text from "./Text";
 
 interface BattleWeaponBoxProps {
   image: SourceProps;
@@ -25,7 +25,7 @@ const BattleWeaponBox = (props: BattleWeaponBoxProps) => {
         <HStack flex center style={ViewStyles.mr1}>
           <Image source={props.image} style={[ViewStyles.mr3, { width: 48, height: 48 }]} />
           <HStack flex>
-            <Text numberOfLines={1}>{props.name}</Text>
+            <Marquee>{props.name}</Marquee>
           </HStack>
         </HStack>
         <HStack center>

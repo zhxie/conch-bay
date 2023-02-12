@@ -1,4 +1,5 @@
 import { StyleProp, StyleSheet, ViewStyle, useColorScheme } from "react-native";
+import Marquee from "./Marquee";
 import { Circle } from "./Shape";
 import { Center, HStack, VStack } from "./Stack";
 import { Color, TextStyles, ViewStyles } from "./Styles";
@@ -32,9 +33,8 @@ const WaveBox = (props: WaveBoxProps) => {
         style={[ViewStyles.mb1, ViewStyles.r2, ViewStyles.p2, { width: 125, height: 90 }, style]}
       >
         <VStack flex justify>
-          <VStack style={ViewStyles.mb2}>
-            <Text
-              numberOfLines={1}
+          <VStack style={ViewStyles.mb1}>
+            <Marquee
               style={[
                 ViewStyles.mb1,
                 TextStyles.h2,
@@ -43,10 +43,8 @@ const WaveBox = (props: WaveBoxProps) => {
               ]}
             >
               {props.waterLevel}
-            </Text>
-            <Text numberOfLines={1} style={ViewStyles.mb2}>
-              {props.eventWave}
-            </Text>
+            </Marquee>
+            <Marquee style={ViewStyles.mb2}>{props.eventWave}</Marquee>
           </VStack>
           <HStack center>
             <Circle

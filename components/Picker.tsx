@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { StyleProp, StyleSheet, ViewStyle, useColorScheme } from "react-native";
 import Button from "./Button";
+import Marquee from "./Marquee";
 import Modal from "./Modal";
 import { VStack } from "./Stack";
 import { Color, TextStyles, ViewStyles } from "./Styles";
@@ -61,9 +62,7 @@ const Picker = (props: PickerProps) => {
                 onClose();
               }}
             >
-              <Text numberOfLines={1} style={reverseTextColor}>
-                {item.value}
-              </Text>
+              <Marquee style={reverseTextColor}>{item.value}</Marquee>
             </Button>
           ))}
         </VStack>

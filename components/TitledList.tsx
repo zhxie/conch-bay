@@ -1,3 +1,4 @@
+import Marquee from "./Marquee";
 import { Circle } from "./Shape";
 import { Center, HStack, VStack } from "./Stack";
 import { TextStyles, ViewStyles } from "./Styles";
@@ -15,9 +16,7 @@ const TitledList = (props: TitledListProps) => {
     <VStack center>
       <HStack center style={props.subtitle ? ViewStyles.mb2 : ViewStyles.mb4}>
         <Circle size={12} color={props.color} style={ViewStyles.mr2} />
-        <Text numberOfLines={1} style={[TextStyles.h2, { color: props.color }]}>
-          {props.title}
-        </Text>
+        <Marquee style={[TextStyles.h2, { color: props.color }]}>{props.title}</Marquee>
       </HStack>
       {props.subtitle && (
         <Center style={ViewStyles.mb2}>

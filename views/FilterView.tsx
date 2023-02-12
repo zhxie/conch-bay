@@ -7,8 +7,8 @@ import {
   FilterButton,
   HStack,
   IconButton,
+  Marquee,
   Modal,
-  Text,
   TextStyles,
   VStack,
   ViewStyles,
@@ -207,9 +207,7 @@ const FilterView = (props: FilterViewProps) => {
         style={[ViewStyles.modal2d, ViewStyles.pl4, ViewStyles.pr2]}
       >
         <VStack flex>
-          <Text numberOfLines={1} style={[TextStyles.h2, ViewStyles.mb2]}>
-            {t("modes")}
-          </Text>
+          <Marquee style={[TextStyles.h2, ViewStyles.mb2]}>{t("modes")}</Marquee>
           <HStack style={[ViewStyles.mb2, { flexWrap: "wrap" }]}>
             {props.options?.modes.map((mode) => (
               <FilterButton
@@ -225,9 +223,7 @@ const FilterView = (props: FilterViewProps) => {
               />
             ))}
           </HStack>
-          <Text numberOfLines={1} style={[TextStyles.h2, ViewStyles.mb2]}>
-            {t("rules")}
-          </Text>
+          <Marquee style={[TextStyles.h2, ViewStyles.mb2]}>{t("rules")}</Marquee>
           <HStack style={[ViewStyles.mb2, { flexWrap: "wrap" }]}>
             {props.options?.rules.map((rule) => (
               <FilterButton
@@ -243,9 +239,7 @@ const FilterView = (props: FilterViewProps) => {
               />
             ))}
           </HStack>
-          <Text numberOfLines={1} style={[TextStyles.h2, ViewStyles.mb2]}>
-            {t("stages")}
-          </Text>
+          <Marquee style={[TextStyles.h2, ViewStyles.mb2]}>{t("stages")}</Marquee>
           <HStack style={[ViewStyles.mb2, { flexWrap: "wrap" }]}>
             {props.options?.stages.map((stage) => (
               <FilterButton
@@ -261,9 +255,7 @@ const FilterView = (props: FilterViewProps) => {
               />
             ))}
           </HStack>
-          <Text numberOfLines={1} style={[TextStyles.h2, ViewStyles.mb2]}>
-            {t("weapons")}
-          </Text>
+          <Marquee style={[TextStyles.h2, ViewStyles.mb2]}>{t("weapons")}</Marquee>
           <HStack style={[ViewStyles.mb2, { flexWrap: "wrap" }]}>
             {props.options?.weapons.map((weapon) => (
               <FilterButton
@@ -285,9 +277,7 @@ const FilterView = (props: FilterViewProps) => {
               style={ViewStyles.accent}
               onPress={onClearFilterPress}
             >
-              <Text numberOfLines={1} style={reverseTextColor}>
-                {t("clear_filter")}
-              </Text>
+              <Marquee style={reverseTextColor}>{t("clear_filter")}</Marquee>
             </Button>
           </VStack>
         </VStack>

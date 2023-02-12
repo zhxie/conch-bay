@@ -1,7 +1,7 @@
 import { StyleProp, ViewStyle, useColorScheme } from "react-native";
+import Marquee from "./Marquee";
 import { HStack } from "./Stack";
 import { TextStyles, ViewStyles } from "./Styles";
-import Text from "./Text";
 
 interface DisplayProps {
   isFirst?: boolean;
@@ -33,9 +33,7 @@ const Display = (props: DisplayProps) => {
         style={[!props.isFirst && ViewStyles.sept, !props.isLast && ViewStyles.sepb]}
       >
         <HStack flex center style={ViewStyles.mr1}>
-          <Text numberOfLines={1} style={TextStyles.b}>
-            {props.title}
-          </Text>
+          <Marquee style={TextStyles.b}>{props.title}</Marquee>
         </HStack>
         <HStack center>{props.children}</HStack>
       </HStack>

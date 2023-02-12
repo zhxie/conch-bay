@@ -1,5 +1,6 @@
 import { StyleProp, StyleSheet, ViewStyle } from "react-native";
 import Image, { SourceProps } from "./Image";
+import Marquee from "./Marquee";
 import { HStack, VStack } from "./Stack";
 import { TextStyles, ViewStyles } from "./Styles";
 import Text from "./Text";
@@ -20,9 +21,9 @@ const ScheduleBox = (props: ScheduleBoxProps) => {
     <HStack flex style={props.style}>
       <VStack flex>
         <HStack flex center justify style={ViewStyles.mb1}>
-          <Text numberOfLines={1} style={[ViewStyles.f, ViewStyles.mr1, TextStyles.b]}>
-            {props.rule}
-          </Text>
+          <HStack flex style={ViewStyles.mr1}>
+            <Marquee style={TextStyles.b}>{props.rule}</Marquee>
+          </HStack>
           <Text numberOfLines={1} style={TextStyles.subtle}>
             {props.time}
           </Text>
@@ -36,7 +37,7 @@ const ScheduleBox = (props: ScheduleBoxProps) => {
               style={i !== stages.length - 1 ? ViewStyles.mr2 : undefined}
             >
               <Image source={stage.image} style={[ViewStyles.mb1, ViewStyles.r2, styles.image]} />
-              <Text numberOfLines={1}>{stage.title}</Text>
+              <Marquee>{stage.title}</Marquee>
             </VStack>
           ))}
         </HStack>

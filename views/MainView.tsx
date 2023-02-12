@@ -29,6 +29,7 @@ import {
   FloatingActionButton,
   HStack,
   Icon,
+  Marquee,
   Modal,
   Picker,
   Text,
@@ -895,9 +896,7 @@ const MainView = () => {
               {!sessionToken && (
                 <Center flex style={[ViewStyles.px4, ViewStyles.mb4]}>
                   <Button style={ViewStyles.accent} onPress={onLogInPress}>
-                    <Text numberOfLines={1} style={reverseTextColor}>
-                      {t("log_in")}
-                    </Text>
+                    <Marquee style={reverseTextColor}>{t("log_in")}</Marquee>
                   </Button>
                 </Center>
               )}
@@ -961,9 +960,9 @@ const MainView = () => {
                     onPress={onLoadMorePress}
                     onLongPress={onLoadAllPress}
                   >
-                    <Text numberOfLines={1} style={TextStyles.h3}>
+                    <Marquee style={TextStyles.h3}>
                       {loadedAll ? t("loaded_all") : t("load_more")}
-                    </Text>
+                    </Marquee>
                   </Button>
                   {(results?.length ?? 0) > 40 && (results?.length ?? 0) <= 60 && (
                     <HStack style={ViewStyles.c}>
@@ -1073,7 +1072,7 @@ const MainView = () => {
               ]}
               onPress={onIminkPrivacyPolicyPress}
             >
-              <Text numberOfLines={1}>{t("imink_privacy_policy")}</Text>
+              <Marquee>{t("imink_privacy_policy")}</Marquee>
             </Button>
             <Button
               isLoading={loggingIn}
@@ -1082,9 +1081,7 @@ const MainView = () => {
               textStyle={reverseTextColor}
               onPress={onLogInContinuePress}
             >
-              <Text numberOfLines={1} style={reverseTextColor}>
-                {t("log_in_continue")}
-              </Text>
+              <Marquee style={reverseTextColor}>{t("log_in_continue")}</Marquee>
             </Button>
           </VStack>
         </VStack>
@@ -1107,9 +1104,7 @@ const MainView = () => {
               textStyle={reverseTextColor}
               onPress={onLogInContinuePress}
             >
-              <Text numberOfLines={1} style={reverseTextColor}>
-                {t("relog_in")}
-              </Text>
+              <Marquee style={reverseTextColor}>{t("relog_in")}</Marquee>
             </Button>
             <Button
               isDisabled={loggingIn || refreshing || loadingMore || exporting}
@@ -1119,9 +1114,7 @@ const MainView = () => {
               textStyle={reverseTextColor}
               onPress={onLogOutContinuePress}
             >
-              <Text numberOfLines={1} style={reverseTextColor}>
-                {t("log_out_continue")}
-              </Text>
+              <Marquee style={reverseTextColor}>{t("log_out_continue")}</Marquee>
             </Button>
           </VStack>
         </VStack>
@@ -1168,9 +1161,7 @@ const MainView = () => {
                 textStyle={reverseTextColor}
                 onPress={onLogInContinuePress}
               >
-                <Text numberOfLines={1} style={reverseTextColor}>
-                  {t("relog_in")}
-                </Text>
+                <Marquee style={reverseTextColor}>{t("relog_in")}</Marquee>
               </Button>
             </VStack>
           )}
@@ -1186,9 +1177,7 @@ const MainView = () => {
                 textStyle={reverseTextColor}
                 onPress={onClearCachePress}
               >
-                <Text numberOfLines={1} style={reverseTextColor}>
-                  {t("clear_cache")}
-                </Text>
+                <Marquee style={reverseTextColor}>{t("clear_cache")}</Marquee>
               </Button>
               <Button
                 isLoading={preloadingResources}
@@ -1197,9 +1186,7 @@ const MainView = () => {
                 textStyle={reverseTextColor}
                 onPress={onPreloadResourcesPress}
               >
-                <Text numberOfLines={1} style={reverseTextColor}>
-                  {t("preload_resources")}
-                </Text>
+                <Marquee style={reverseTextColor}>{t("preload_resources")}</Marquee>
               </Button>
             </VStack>
           )}
@@ -1208,9 +1195,7 @@ const MainView = () => {
               <Text style={ViewStyles.mb2}>{t("feedback_notice")}</Text>
             </VStack>
             <Button style={ViewStyles.accent} onPress={onCreateAGithubIssuePress}>
-              <Text numberOfLines={1} style={reverseTextColor}>
-                {t("create_a_github_issue")}
-              </Text>
+              <Marquee style={reverseTextColor}>{t("create_a_github_issue")}</Marquee>
             </Button>
           </VStack>
           <VStack style={ViewStyles.wf}>
@@ -1218,19 +1203,13 @@ const MainView = () => {
               <Text style={ViewStyles.mb2}>{t("debug_notice")}</Text>
             </VStack>
             <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onCopySessionTokenPress}>
-              <Text numberOfLines={1} style={reverseTextColor}>
-                {t("copy_session_token")}
-              </Text>
+              <Marquee style={reverseTextColor}>{t("copy_session_token")}</Marquee>
             </Button>
             <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onCopyBulletTokenPress}>
-              <Text numberOfLines={1} style={reverseTextColor}>
-                {t("copy_bullet_token")}
-              </Text>
+              <Marquee style={reverseTextColor}>{t("copy_bullet_token")}</Marquee>
             </Button>
             <Button style={ViewStyles.accent} onPress={onExportDatabasePress}>
-              <Text numberOfLines={1} style={reverseTextColor}>
-                {t("export_database")}
-              </Text>
+              <Marquee style={reverseTextColor}>{t("export_database")}</Marquee>
             </Button>
           </VStack>
         </VStack>
@@ -1241,9 +1220,7 @@ const MainView = () => {
         style={ViewStyles.modal1d}
       >
         <VStack center style={ViewStyles.mb3}>
-          <Text numberOfLines={1} style={[TextStyles.h3, ViewStyles.mb2]}>
-            {t("creators")}
-          </Text>
+          <Marquee style={[TextStyles.h3, ViewStyles.mb2]}>{t("creators")}</Marquee>
           <HStack center>
             <Avatar
               size={48}
@@ -1264,18 +1241,12 @@ const MainView = () => {
           </HStack>
         </VStack>
         <VStack center>
-          <Text numberOfLines={1} style={[TextStyles.h3, ViewStyles.mb2]}>
-            {t("license")}
-          </Text>
+          <Marquee style={[TextStyles.h3, ViewStyles.mb2]}>{t("license")}</Marquee>
           <VStack center>
-            <Text
-              numberOfLines={1}
-              style={[TextStyles.link, ViewStyles.mb1]}
-              onPress={onSplatoon3InkPress}
-            >
+            <Text style={[TextStyles.link, ViewStyles.mb1]} onPress={onSplatoon3InkPress}>
               Splatoon3.ink
             </Text>
-            <Text numberOfLines={1} style={TextStyles.link} onPress={onIminkFApiPress}>
+            <Text style={TextStyles.link} onPress={onIminkFApiPress}>
               imink f API
             </Text>
           </VStack>
@@ -1293,14 +1264,10 @@ const MainView = () => {
               textStyle={reverseTextColor}
               onPress={onExportPress}
             >
-              <Text numberOfLines={1} style={reverseTextColor}>
-                {t("export_results")}
-              </Text>
+              <Marquee style={reverseTextColor}>{t("export_results")}</Marquee>
             </Button>
             <Button style={ViewStyles.accent} onPress={onExportDatabasePress}>
-              <Text numberOfLines={1} style={reverseTextColor}>
-                {t("export_database")}
-              </Text>
+              <Marquee style={reverseTextColor}>{t("export_database")}</Marquee>
             </Button>
           </VStack>
         </VStack>

@@ -25,6 +25,7 @@ import {
   GearBox,
   HStack,
   KingSalmonidBox,
+  Marquee,
   Modal,
   Splashtag,
   Text,
@@ -445,18 +446,17 @@ const ResultView = (props: ResultViewProps) => {
               {formatTeams(result.battle).map((team, i) => (
                 <VStack key={i} style={ViewStyles.mb2}>
                   <HStack center justify style={ViewStyles.mb1}>
-                    <HStack flex center style={[ViewStyles.mr1, ViewStyles.f]}>
+                    <HStack flex center style={ViewStyles.mr1}>
                       <Circle size={12} color={getColor(team.color)} style={ViewStyles.mr1} />
-                      <Text
-                        numberOfLines={1}
-                        style={[ViewStyles.f, TextStyles.b, { color: getColor(team.color) }]}
-                      >
-                        {`${team.festTeamName ? `${team.festTeamName} ` : ""}${
-                          (team.festStreakWinCount ?? 0) > 1
-                            ? `${t("n_win_strike", { n: team.festStreakWinCount })} `
-                            : ""
-                        }`}
-                      </Text>
+                      <HStack flex>
+                        <Marquee style={[TextStyles.b, { color: getColor(team.color) }]}>
+                          {`${team.festTeamName ? `${team.festTeamName} ` : ""}${
+                            (team.festStreakWinCount ?? 0) > 1
+                              ? `${t("n_win_strike", { n: team.festStreakWinCount })} `
+                              : ""
+                          }`}
+                        </Marquee>
+                      </HStack>
                     </HStack>
                     <HStack center>
                       {!!team.result?.noroshi &&
@@ -505,19 +505,15 @@ const ResultView = (props: ResultViewProps) => {
                 </VStack>
               ))}
               <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onHidePlayerNamesPress}>
-                <Text numberOfLines={1} style={reverseTextColor}>
+                <Marquee style={reverseTextColor}>
                   {hidePlayerNames ? t("show_player_names") : t("hide_player_names")}
-                </Text>
+                </Marquee>
               </Button>
               <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onShowRawResultPress}>
-                <Text numberOfLines={1} style={reverseTextColor}>
-                  {t("show_raw_data")}
-                </Text>
+                <Marquee style={reverseTextColor}>{t("show_raw_data")}</Marquee>
               </Button>
               <Button style={ViewStyles.accent} onPress={onOpenInNintendoSwitchOnlinePress}>
-                <Text numberOfLines={1} style={reverseTextColor}>
-                  {t("open_in_nintendo_switch_online")}
-                </Text>
+                <Marquee style={reverseTextColor}>{t("open_in_nintendo_switch_online")}</Marquee>
               </Button>
             </VStack>
             <Modal
@@ -717,19 +713,15 @@ const ResultView = (props: ResultViewProps) => {
                   style={[ViewStyles.mb2, ViewStyles.accent]}
                   onPress={onHidePlayerNamesPress}
                 >
-                  <Text numberOfLines={1} style={reverseTextColor}>
+                  <Marquee style={reverseTextColor}>
                     {hidePlayerNames ? t("show_player_names") : t("hide_player_names")}
-                  </Text>
+                  </Marquee>
                 </Button>
                 <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onShowRawResultPress}>
-                  <Text numberOfLines={1} style={reverseTextColor}>
-                    {t("show_raw_data")}
-                  </Text>
+                  <Marquee style={reverseTextColor}>{t("show_raw_data")}</Marquee>
                 </Button>
                 <Button style={ViewStyles.accent} onPress={onOpenInNintendoSwitchOnlinePress}>
-                  <Text numberOfLines={1} style={reverseTextColor}>
-                    {t("open_in_nintendo_switch_online")}
-                  </Text>
+                  <Marquee style={reverseTextColor}>{t("open_in_nintendo_switch_online")}</Marquee>
                 </Button>
               </VStack>
             </VStack>

@@ -1,10 +1,10 @@
 import { StyleProp, ViewStyle } from "react-native";
 import Icon from "./Icon";
 import Image, { SourceProps } from "./Image";
+import Marquee from "./Marquee";
 import Pressable from "./Pressable";
 import { Center, HStack, VStack } from "./Stack";
 import { Color, TextStyles, ViewStyles } from "./Styles";
-import Text from "./Text";
 
 interface ResultButtonProps {
   color?: string;
@@ -78,19 +78,16 @@ const ResultButton = (props: ResultButtonProps) => {
                 />
               )}
               <HStack flex center>
-                <Text
-                  numberOfLines={1}
-                  style={[TextStyles.h2, !!props.color && { color: props.color }]}
-                >
+                <Marquee style={[TextStyles.h2, !!props.color && { color: props.color }]}>
                   {props.title}
-                </Text>
+                </Marquee>
               </HStack>
             </HStack>
             <HStack center>{props.subChildren}</HStack>
           </HStack>
           <HStack flex center justify>
             <HStack flex center style={ViewStyles.mr1}>
-              <Text numberOfLines={1}>{props.subtitle}</Text>
+              <Marquee>{props.subtitle}</Marquee>
             </HStack>
             <HStack center>{props.children}</HStack>
           </HStack>

@@ -1,9 +1,9 @@
 import { StyleProp, View, ViewStyle, useColorScheme } from "react-native";
 import Image, { SourceProps } from "./Image";
+import Marquee from "./Marquee";
 import { Circle } from "./Shape";
 import { Center, HStack } from "./Stack";
 import { Color, ViewStyles } from "./Styles";
-import Text from "./Text";
 
 interface GearBoxProps {
   isFirst?: boolean;
@@ -54,7 +54,7 @@ const GearBox = (props: GearBoxProps) => {
             />
           </Center>
           <HStack flex>
-            <Text numberOfLines={1}>{props.name}</Text>
+            <Marquee>{props.name}</Marquee>
           </HStack>
         </HStack>
         <HStack center>
