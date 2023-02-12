@@ -51,10 +51,10 @@ const ja = {
     "データベースが壊れているため、ロードできません。リザルトをエクスポートして、ホラガイベイを再インストールしてください。",
   failed_to_check_api_update: "APIのアップデートを確認できませんでした",
   reacquiring_tokens: "トークン再取得中",
-  loading_n_new_results: "%{n}件の新しいリザルトを読み込む中",
   loading_n_results: "%{n}件のリザルトを読み込む中",
   loaded_n_results: "%{n}件のリザルトを読み込みました",
   loaded_n_results_fail_failed: "%{n}件のリザルトを読み込み、%{fail}件は失敗しました",
+  loaded_n_results_skip_skipped: "%{n}件のリザルトを読み込み、%{skip}件はスキップしました",
   loaded_n_results_fail_failed_skip_skipped:
     "%{n}件のリザルトを読み込み、%{fail}件は失敗、%{skip}件はスキップしました",
   auto_refresh_enabled: "自動更新が有効になりました",

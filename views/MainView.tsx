@@ -220,26 +220,20 @@ const MainView = () => {
     }
     setLoadingMore(false);
   };
-  const addBattle = async (battle: VsHistoryDetail, check: boolean) => {
+  const addBattle = async (battle: VsHistoryDetail) => {
     try {
-      if (check && (await Database.isExist(battle.vsHistoryDetail.id))) {
-        return 0;
-      }
       await Database.addBattle(battle);
-      return 1;
+      return true;
     } catch {
-      return -1;
+      return false;
     }
   };
-  const addCoop = async (coop: CoopHistoryDetail, check: boolean) => {
+  const addCoop = async (coop: CoopHistoryDetail) => {
     try {
-      if (check && (await Database.isExist(coop.coopHistoryDetail.id))) {
-        return 0;
-      }
       await Database.addCoop(coop);
-      return 1;
+      return true;
     } catch {
-      return -1;
+      return false;
     }
   };
   const generateBulletToken = async () => {
@@ -343,7 +337,7 @@ const MainView = () => {
         const existed = await Promise.all(results.map((result) => Database.isExist(result.id)));
         const newResults = results.filter((_, i) => !existed[i]);
         if (newResults.length > 0) {
-          showToast(t("loading_n_new_results", { n: newResults.length }));
+          showToast(t("loading_n_results", { n: newResults.length }));
           const details = await Promise.all(
             newResults.map((result) => {
               if (!result.isCoop) {
@@ -354,13 +348,13 @@ const MainView = () => {
           );
           let fail = 0;
           for (let i = 0; i < newResults.length; i++) {
-            let result: number;
+            let result: boolean;
             if (!newResults[i].isCoop) {
-              result = await addBattle(details[i] as VsHistoryDetail, false);
+              result = await addBattle(details[i] as VsHistoryDetail);
             } else {
-              result = await addCoop(details[i] as CoopHistoryDetail, false);
+              result = await addCoop(details[i] as CoopHistoryDetail);
             }
-            if (result < 0) {
+            if (!result) {
               fail++;
             }
           }
@@ -422,7 +416,7 @@ const MainView = () => {
         const existed = await Promise.all(results.map((result) => Database.isExist(result.id)));
         const newResults = results.filter((_, i) => !existed[i]);
         if (newResults.length > 0) {
-          showToast(t("loading_n_new_results", { n: newResults.length }));
+          showToast(t("loading_n_results", { n: newResults.length }));
           const details = await Promise.all(
             newResults.map((result) => {
               if (!result.isCoop) {
@@ -433,13 +427,13 @@ const MainView = () => {
           );
           let fail = 0;
           for (let i = 0; i < newResults.length; i++) {
-            let result: number;
+            let result: boolean;
             if (!newResults[i].isCoop) {
-              result = await addBattle(details[i] as VsHistoryDetail, false);
+              result = await addBattle(details[i] as VsHistoryDetail);
             } else {
-              result = await addCoop(details[i] as CoopHistoryDetail, false);
+              result = await addCoop(details[i] as CoopHistoryDetail);
             }
-            if (result < 0) {
+            if (!result) {
               fail++;
             }
           }
@@ -561,30 +555,43 @@ const MainView = () => {
       uri = doc.uri;
 
       setRefreshing(true);
-      let [fail, skip] = [0, 0];
       const result = JSON.parse(await FileSystem.readAsStringAsync(uri));
       const n = result["battles"].length + result["coops"].length;
       showToast(t("loading_n_results", { n }));
-      for (const battle of result["battles"]) {
-        const result = await addBattle(battle, true);
-        if (result < 0) {
+      const battleExisted = await Promise.all(
+        result["battles"].map((battle: VsHistoryDetail) =>
+          Database.isExist(battle.vsHistoryDetail.id)
+        )
+      );
+      const coopExisted = await Promise.all(
+        result["coops"].map((coop: CoopHistoryDetail) =>
+          Database.isExist(coop.coopHistoryDetail.id)
+        )
+      );
+      const newBattles = result["battles"].filter((_, i: number) => !battleExisted[i]);
+      const newCoops = result["coops"].filter((_, i: number) => !coopExisted[i]);
+      const skip = n - (newBattles.length + newCoops.length);
+      let fail = 0;
+      for (const battle of newBattles) {
+        const result = await addBattle(battle);
+        if (!result) {
           fail++;
-        } else if (result === 0) {
-          skip++;
         }
       }
-      for (const coop of result["coops"]) {
-        const result = await addCoop(coop, true);
-        if (result < 0) {
+      for (const coop of newCoops) {
+        const result = await addCoop(coop);
+        if (!result) {
           fail++;
-        } else if (result === 0) {
-          skip++;
         }
       }
-      if (fail === 0 && skip === 0) {
-        showToast(t("loaded_n_results", { n }));
-      } else {
+      if (fail > 0 && skip > 0) {
         showToast(t("loaded_n_results_fail_failed_skip_skipped", { n, fail, skip }));
+      } else if (fail > 0) {
+        showToast(t("loaded_n_results_fail_failed", { n, fail }));
+      } else if (skip > 0) {
+        showToast(t("loaded_n_results_skip_skipped", { n, skip }));
+      } else {
+        showToast(t("loaded_n_results", { n }));
       }
 
       // Query stored latest results if updated.

@@ -51,10 +51,10 @@ const en = {
     "The database is corrupted and cannot be loaded. Please export results and reinstall Conch Bay.",
   failed_to_check_api_update: "Failed to check API update",
   reacquiring_tokens: "Reacquiring tokens",
-  loading_n_new_results: "Loading %{n} new result(s)",
   loading_n_results: "Loading %{n} result(s)",
   loaded_n_results: "Loaded %{n} result(s)",
   loaded_n_results_fail_failed: "Loaded %{n} result(s), %{fail} failed",
+  loaded_n_results_skip_skipped: "Loaded %{n} result(s), %{skip} skipped",
   loaded_n_results_fail_failed_skip_skipped:
     "Loaded %{n} result(s), %{fail} failed, %{skip} skipped",
   auto_refresh_enabled: "Auto refresh enabled",
