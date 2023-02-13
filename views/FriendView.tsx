@@ -1,8 +1,8 @@
-import { FlashList } from "@shopify/flash-list";
+import { FlashList, ListRenderItemInfo } from "@shopify/flash-list";
 import { Dimensions, StyleProp, ViewStyle, useColorScheme } from "react-native";
-import { Avatar, Circle, VStack, ViewStyles } from "../components";
+import { Avatar, Circle, Color, VStack, ViewStyles } from "../components";
 import { Friend, Friends } from "../models/types";
-import { getFriendColor, getUserIconCacheSource } from "../utils/ui";
+import { getFriendColor, getFriendOutline, getUserIconCacheSource } from "../utils/ui";
 
 interface FriendViewProps {
   friends?: Friends;
@@ -14,8 +14,9 @@ const FriendView = (props: FriendViewProps) => {
 
   const colorScheme = useColorScheme();
   const style = colorScheme === "light" ? ViewStyles.lightTerritory : ViewStyles.darkTerritory;
+  const color = colorScheme === "light" ? Color.LightTerritory : Color.DarkTerritory;
 
-  const renderItem = (friend: { item: Friend | number; index: number }) => {
+  const renderItem = (friend: ListRenderItemInfo<Friend | number>) => {
     if (typeof friend.item === "number") {
       return (
         <Circle
@@ -32,7 +33,10 @@ const FriendView = (props: FriendViewProps) => {
       <Avatar
         size={48}
         image={getUserIconCacheSource(friend.item.userIcon.url)}
-        badge={getFriendColor(friend.item)}
+        badge={{
+          color: getFriendColor(friend.item) ?? friend.extraData,
+          outline: getFriendOutline(friend.item),
+        }}
         style={
           friend.index !== props.friends!.friends.nodes.length - 1 ? ViewStyles.mr2 : undefined
         }
@@ -53,6 +57,7 @@ const FriendView = (props: FriendViewProps) => {
           return friend.id;
         }}
         renderItem={renderItem}
+        extraData={color}
         estimatedItemSize={48}
         getItemType={(item) => {
           return typeof item;

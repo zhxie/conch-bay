@@ -66,13 +66,27 @@ export const getCoopRuleColor = (rule: string) => {
 export const getFriendColor = (friend: Friend) => {
   switch (friend.onlineState) {
     case "VS_MODE_FIGHTING":
-    case "VS_MODE_MATCHING":
       return getVsModeColor(friend.vsMode!);
     case "COOP_MODE_FIGHTING":
+      return getCoopRuleColor(friend.coopRule!);
+    case "VS_MODE_MATCHING":
+    case "COOP_MODE_MATCHING":
+    case "ONLINE":
+      return undefined;
+    case "OFFLINE":
+      return "transparent";
+  }
+};
+export const getFriendOutline = (friend: Friend) => {
+  switch (friend.onlineState) {
+    case "VS_MODE_MATCHING":
+      return getVsModeColor(friend.vsMode!);
     case "COOP_MODE_MATCHING":
       return getCoopRuleColor(friend.coopRule!);
     case "ONLINE":
       return Color.Online;
+    case "VS_MODE_FIGHTING":
+    case "COOP_MODE_FIGHTING":
     case "OFFLINE":
       return "transparent";
   }

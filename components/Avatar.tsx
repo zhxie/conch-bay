@@ -4,10 +4,14 @@ import { Circle } from "./Shape";
 import { Center } from "./Stack";
 import { ViewStyles } from "./Styles";
 
+interface BadgeProps {
+  color?: string;
+  outline?: string;
+}
 interface AvatarProps {
   size: number;
   image?: SourceProps;
-  badge?: string;
+  badge?: BadgeProps;
   style?: StyleProp<ViewStyle>;
   imageStyle?: StyleProp<ImageStyle>;
 }
@@ -24,7 +28,8 @@ const Avatar = (props: AvatarProps) => {
       {props.badge && (
         <Circle
           size={12}
-          color={props.badge}
+          color={props.badge.color}
+          outline={props.badge.outline}
           style={{ position: "absolute", right: 0, bottom: 0 }}
         />
       )}
