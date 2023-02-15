@@ -207,10 +207,7 @@ const MainView = () => {
     } else {
       if (details.length > 0 || forceUpdate) {
         setResults(details);
-        const [count, newTotal] = await Promise.all([
-          await Database.count(filter),
-          await Database.count(),
-        ]);
+        const [count, newTotal] = await Promise.all([Database.count(filter), Database.count()]);
         setCount(count);
         setTotal(newTotal);
         if (newTotal !== total) {
@@ -259,7 +256,7 @@ const MainView = () => {
         // Update versions.
         if (!apiUpdated) {
           try {
-            await Promise.all([await updateNsoVersion(), await updateSplatnetVersion()]);
+            await Promise.all([updateNsoVersion(), updateSplatnetVersion()]);
             setApiUpdated(true);
           } catch {
             showToast(t("failed_to_check_api_update"));
