@@ -1,4 +1,6 @@
+import { toByteArray as decode64, fromByteArray as encode64 } from "base64-js";
 import * as SQLite from "expo-sqlite";
+import { deflate, inflate } from "pako";
 import { CoopHistoryDetail, VsHistoryDetail } from "../models/types";
 import { decode64Index } from "./codec";
 import { getVsSelfPlayer } from "./ui";
@@ -26,37 +28,46 @@ export const open = async () => {
 
   // Upgrade database.
   const record = await exec("PRAGMA user_version", true);
-  const version = record.rows[0]["user_version"] as number;
-  switch (version) {
-    case 0:
-      {
-        await exec('ALTER TABLE result ADD COLUMN stage TEXT NOT NULL DEFAULT ""', false);
-        const records = await queryAll(false);
-        await Promise.all(
-          records.map((record) => {
-            if (record.mode === "salmon_run") {
-              return exec(
-                `UPDATE result SET stage = '${
-                  (JSON.parse(record.detail) as CoopHistoryDetail).coopHistoryDetail.coopStage.id
-                }' WHERE id = '${record.id}'`,
-                false
-              );
-            }
-            return exec(
-              `UPDATE result SET stage = '${
-                (JSON.parse(record.detail) as VsHistoryDetail).vsHistoryDetail.vsStage.id
-              }' WHERE id = '${record.id}'`,
-              false
-            );
-          })
+  let version = record.rows[0]["user_version"] as number;
+  if (version < 1) {
+    await exec('ALTER TABLE result ADD COLUMN stage TEXT NOT NULL DEFAULT ""', false);
+    const records = await queryAll(false);
+    await Promise.all(
+      records.map((record) => {
+        if (record.mode === "salmon_run") {
+          return exec(
+            `UPDATE result SET stage = '${
+              (JSON.parse(record.detail) as CoopHistoryDetail).coopHistoryDetail.coopStage.id
+            }' WHERE id = '${record.id}'`,
+            false
+          );
+        }
+        return exec(
+          `UPDATE result SET stage = '${
+            (JSON.parse(record.detail) as VsHistoryDetail).vsHistoryDetail.vsStage.id
+          }' WHERE id = '${record.id}'`,
+          false
         );
-        await exec("PRAGMA user_version=1", false);
-      }
-      break;
-    case 1:
-      break;
-    default:
-      throw `unexpected database version ${version}`;
+      })
+    );
+    await exec("PRAGMA user_version=1", false);
+    version = 1;
+  }
+  if (version < 2) {
+    const record = await exec("SELECT * FROM result", true);
+    await Promise.all(
+      record.rows.map((row) =>
+        exec(
+          `UPDATE result SET detail = '${compress(row["detail"])}' WHERE id = '${row["id"]}'`,
+          false
+        )
+      )
+    );
+    await exec("PRAGMA user_version=2", false);
+    version = 2;
+  }
+  if (version != 2) {
+    throw `unexpected database version ${version}`;
   }
 
   return db;
@@ -76,6 +87,13 @@ const exec = async (sql: string, readonly: boolean): Promise<SQLite.ResultSet> =
       resolve(res![0] as SQLite.ResultSet);
     });
   });
+};
+
+const compress = (data: string) => {
+  return encode64(deflate(data));
+};
+const decompress = (data: string) => {
+  return inflate(decode64(data), { to: "string" });
 };
 
 const convertFilter = (filter: FilterProps) => {
@@ -123,7 +141,7 @@ export const query = async (offset: number, limit: number, filter?: FilterProps)
     rule: row["rule"],
     weapon: row["weapon"],
     players: row["players"].split(","),
-    detail: row["detail"],
+    detail: decompress(row["detail"]),
     stage: row["stage"],
   }));
 };
@@ -136,7 +154,7 @@ export const queryAll = async (order: boolean) => {
     rule: row["rule"],
     weapon: row["weapon"],
     players: row["players"].split(","),
-    detail: row["detail"],
+    detail: decompress(row["detail"]),
     stage: row["stage"],
   }));
 };
@@ -232,7 +250,7 @@ export const add = async (
   await exec(
     `INSERT INTO result VALUES ('${id}', ${time}, '${mode}', '${rule}', '${weapon}', '${players.join(
       ","
-    )}', '${detail.replaceAll("'", "''")}', '${stage}')`,
+    )}', '${compress(detail.replaceAll("'", "''"))}', '${stage}')`,
     false
   );
 };
