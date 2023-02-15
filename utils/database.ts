@@ -147,10 +147,10 @@ export const queryFilterOptions = async () => {
   const weaponSql = `SELECT DISTINCT weapon FROM result`;
 
   const [modeRecord, ruleRecord, stageRecord, weaponRecord] = await Promise.all([
-    await exec(modeSql, true),
-    await exec(ruleSql, true),
-    await exec(stageSql, true),
-    await exec(weaponSql, true),
+    exec(modeSql, true),
+    exec(ruleSql, true),
+    exec(stageSql, true),
+    exec(weaponSql, true),
   ]);
   return {
     modes: modeRecord.rows
