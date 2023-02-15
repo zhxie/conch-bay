@@ -610,7 +610,7 @@ const MainView = () => {
   };
   const onExportPress = async () => {
     setExporting(true);
-    const uri = FileSystem.documentDirectory + "conch-bay-export.json";
+    const uri = FileSystem.cacheDirectory + "conch-bay-export.json";
     try {
       const battles: VsHistoryDetail[] = [];
       const coops: CoopHistoryDetail[] = [];
