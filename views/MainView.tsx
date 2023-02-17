@@ -1107,7 +1107,7 @@ const MainView = () => {
               isDisabled={loggingIn || refreshing || loadingMore || exporting}
               isLoading={loggingOut}
               isLoadingText={t("logging_out")}
-              style={ViewStyles.accent}
+              style={ViewStyles.danger}
               textStyle={reverseTextColor}
               onPress={onLogOutContinuePress}
             >

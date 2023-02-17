@@ -98,6 +98,9 @@ export const ViewStyles = StyleSheet.create({
   accent: {
     backgroundColor: Color.AccentColor,
   },
+  danger: {
+    backgroundColor: Color.Death,
+  },
   disabled: {
     opacity: 0.4,
   },
