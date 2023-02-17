@@ -470,8 +470,8 @@ const MainView = () => {
       setLogIn(false);
     }
   };
-  const onIminkPrivacyPolicyPress = async () => {
-    await WebBrowser.openBrowserAsync("https://github.com/JoneWang/imink/wiki/Privacy-Policy");
+  const onPrivacyPolicyPress = async () => {
+    await WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay/wiki/Privacy-Policy");
   };
   const onLogInContinuePress = async () => {
     try {
@@ -850,9 +850,6 @@ const MainView = () => {
       showToast(e);
     }
   };
-  const onPrivacyPolicyPress = async () => {
-    await WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay/wiki/Privacy-Policy");
-  };
   const onAcknowledgmentsPress = () => {
     setAcknowledgments(true);
   };
@@ -1067,9 +1064,9 @@ const MainView = () => {
                 { borderColor: Color.AccentColor, borderWidth: 1.5 },
                 backgroundStyle,
               ]}
-              onPress={onIminkPrivacyPolicyPress}
+              onPress={onPrivacyPolicyPress}
             >
-              <Marquee>{t("imink_privacy_policy")}</Marquee>
+              <Marquee>{t("privacy_policy")}</Marquee>
             </Button>
             <Button
               isLoading={loggingIn}
