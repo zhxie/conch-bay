@@ -175,7 +175,7 @@ const StatsView = (props: StatsViewProps) => {
                   <Display title={t("defeat")}>
                     <Text numberOfLines={1}>{count.battle.lose}</Text>
                   </Display>
-                  <Display title={t("splatted_by_you")}>
+                  <Display title={t("splatted")}>
                     <Text numberOfLines={1}>
                       {formatTotalAndAverageKillAndAssist(
                         count.battle.kill,
@@ -184,7 +184,7 @@ const StatsView = (props: StatsViewProps) => {
                       )}
                     </Text>
                   </Display>
-                  <Display title={t("splatted")}>
+                  <Display title={t("be_splatted")}>
                     <Text numberOfLines={1}>
                       {formatTotalAndAverage(count.battle.death, count.battle.count)}
                     </Text>
@@ -239,12 +239,12 @@ const StatsView = (props: StatsViewProps) => {
                       {formatTotalAndAverage(count.coop.powerEgg, count.coop.count)}
                     </Text>
                   </Display>
-                  <Display title={t("crew_members_rescued")}>
+                  <Display title={t("rescued")}>
                     <Text numberOfLines={1}>
                       {formatTotalAndAverage(count.coop.rescue, count.coop.count)}
                     </Text>
                   </Display>
-                  <Display isLast title={t("rescued")}>
+                  <Display isLast title={t("be_rescued")}>
                     <Text numberOfLines={1}>
                       {formatTotalAndAverage(count.coop.rescued, count.coop.count)}
                     </Text>

@@ -10,7 +10,7 @@ const en = {
   logging_in: "Acquiring tokens",
   log_out_notice:
     "Logging out will remove all stored data from Conch Bay! Please complete backup before proceeding.",
-  log_out_continue: "Log Out",
+  log_out_continue: "Remove Data and Log Out",
   logging_out: "Logging out",
   filter: "Filter",
   load_more: "Load more",
@@ -69,8 +69,8 @@ const en = {
   database: "Database",
   victory: "VICTORY",
   defeat: "DEFEAT",
-  splatted_by_you: "Splatted by You",
   splatted: "Splatted",
+  be_splatted: "Be Splatted",
   special_weapon_uses: "Special Weapon Uses",
   clear: "Clear!",
   failure: "Defeat",
@@ -78,8 +78,8 @@ const en = {
   boss_salmonids_defeated: "Boss Salmonids Defeated",
   golden_eggs_collected: "Golden Eggs Collected",
   power_eggs_collected: "Power Eggs Collected",
-  crew_members_rescued: "Crew Members Rescued",
   rescued: "Rescued",
+  be_rescued: "Be Rescued",
   // Modes.
   modes: "Modes",
   battle: "Battle",

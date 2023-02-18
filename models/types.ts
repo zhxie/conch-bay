@@ -176,13 +176,13 @@ export interface Equipments {
   };
 }
 
-export interface PlayerBadge {
+export interface NameplateBadge {
   image: {
     url: string;
   };
 }
 export interface Nameplate {
-  badges: (PlayerBadge | null)[];
+  badges: (NameplateBadge | null)[];
   background: {
     textColor: {
       a: number;

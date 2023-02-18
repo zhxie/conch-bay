@@ -41,7 +41,7 @@ import {
   CoopHistoryDetail,
   CoopPlayerResult,
   CoopWaveResult,
-  PlayerBadge,
+  NameplateBadge,
   Species,
   VsHistoryDetail,
   VsPlayer,
@@ -132,7 +132,7 @@ const ResultView = (props: ResultViewProps) => {
     }
     return name;
   };
-  const formatBadge = (badge: PlayerBadge | null) => {
+  const formatBadge = (badge: NameplateBadge | null) => {
     if (badge) {
       return getImageCacheSource(badge.image.url);
     }
