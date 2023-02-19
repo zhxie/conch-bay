@@ -101,7 +101,7 @@ const Splashtag = (props: SplashtagProps) => {
           },
         ]}
       >
-        {`#${props.nameId}`}
+        {props.nameId ? `#${props.nameId}` : ""}
       </Text>
       <Text
         numberOfLines={1}
