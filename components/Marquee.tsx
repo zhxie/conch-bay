@@ -16,7 +16,7 @@ const Marquee = (props: MarqueeProps) => {
       animationType="scroll"
       repeatSpacer={20}
       easing={(value) => value}
-      marqueeDelay={500}
+      marqueeDelay={1000}
       style={[TextStyles.p, textStyle, props.style]}
     >
       {props.children}
