@@ -1,11 +1,11 @@
 import { FlashList, ListRenderItemInfo } from "@shopify/flash-list";
 import { Dimensions, StyleProp, ViewStyle, useColorScheme } from "react-native";
 import { Avatar, Circle, Color, VStack, ViewStyles } from "../components";
-import { Friend, Friends } from "../models/types";
+import { Friend, FriendListResult } from "../models/types";
 import { getFriendColor, getFriendOutline, getUserIconCacheSource } from "../utils/ui";
 
 interface FriendViewProps {
-  friends?: Friends;
+  friends?: FriendListResult;
   style?: StyleProp<ViewStyle>;
 }
 

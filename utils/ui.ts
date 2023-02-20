@@ -1,5 +1,12 @@
 import { Color } from "../components";
-import { Friend, VsHistoryDetail, VsMode, VsStage } from "../models/types";
+import {
+  Friend,
+  VsMode,
+  VsHistoryDetailResult,
+  VsStage,
+  CoopRule,
+  FriendOnlineState,
+} from "../models/types";
 import { getAuthorityAndPath } from "./url";
 
 export const getImageCacheKey = (image: string) => {
@@ -56,42 +63,42 @@ export const getVsModeColor = (mode: VsMode) => {
 };
 export const getCoopRuleColor = (rule: string) => {
   switch (rule) {
-    case "REGULAR":
+    case CoopRule.REGULAR:
       return Color.SalmonRun;
-    case "BIG_RUN":
+    case CoopRule.BIG_RUN:
       return Color.BigRun;
   }
 };
 
 export const getFriendColor = (friend: Friend) => {
   switch (friend.onlineState) {
-    case "VS_MODE_FIGHTING":
+    case FriendOnlineState.VS_MODE_FIGHTING:
       return getVsModeColor(friend.vsMode!);
-    case "COOP_MODE_FIGHTING":
+    case FriendOnlineState.COOP_MODE_FIGHTING:
       return getCoopRuleColor(friend.coopRule!);
-    case "VS_MODE_MATCHING":
-    case "COOP_MODE_MATCHING":
-    case "ONLINE":
+    case FriendOnlineState.VS_MODE_MATCHING:
+    case FriendOnlineState.COOP_MODE_MATCHING:
+    case FriendOnlineState.ONLINE:
       return undefined;
-    case "OFFLINE":
+    case FriendOnlineState.OFFLINE:
       return "transparent";
   }
 };
 export const getFriendOutline = (friend: Friend) => {
   switch (friend.onlineState) {
-    case "VS_MODE_MATCHING":
+    case FriendOnlineState.VS_MODE_MATCHING:
       return getVsModeColor(friend.vsMode!);
-    case "COOP_MODE_MATCHING":
+    case FriendOnlineState.COOP_MODE_MATCHING:
       return getCoopRuleColor(friend.coopRule!);
-    case "ONLINE":
+    case FriendOnlineState.ONLINE:
       return Color.Online;
-    case "VS_MODE_FIGHTING":
-    case "COOP_MODE_FIGHTING":
-    case "OFFLINE":
+    case FriendOnlineState.VS_MODE_FIGHTING:
+    case FriendOnlineState.COOP_MODE_FIGHTING:
+    case FriendOnlineState.OFFLINE:
       return "transparent";
   }
 };
 
-export const getVsSelfPlayer = (battle: VsHistoryDetail) => {
-  return battle.vsHistoryDetail.myTeam.players.find((player) => player.isMyself)!;
+export const getVsSelfPlayer = (battle: VsHistoryDetailResult) => {
+  return battle.vsHistoryDetail!.myTeam.players.find((player) => player.isMyself)!;
 };

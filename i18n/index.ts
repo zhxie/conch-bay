@@ -5,6 +5,11 @@ import ja from "./ja";
 import zhHans from "./zh-Hans";
 import zhHant from "./zh-Hant";
 
+interface ScopeWithDefaultValue {
+  id: string;
+  name: string;
+}
+
 const i18n = new I18n();
 i18n.translations = { en, ja, "zh-Hans": zhHans, "zh-Hant": zhHant };
 i18n.enableFallback = true;
@@ -20,9 +25,9 @@ const t = (f: Scope, options?: TranslateOptions) => {
   return i18n.t(f, { defaultValue: f });
 };
 
-const td = (f: { id: string; name: string }) => {
+const td = (f: ScopeWithDefaultValue) => {
   return i18n.t(f.id, { defaultValue: f.name });
 };
 
 export default t;
-export { td };
+export { ScopeWithDefaultValue, td };

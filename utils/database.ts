@@ -1,5 +1,5 @@
 import * as SQLite from "expo-sqlite";
-import { CoopHistoryDetail, VsHistoryDetail } from "../models/types";
+import { CoopHistoryDetailResult, VsHistoryDetailResult } from "../models/types";
 import { decode64Index } from "./codec";
 import { getVsSelfPlayer } from "./ui";
 
@@ -37,14 +37,15 @@ export const open = async () => {
             if (record.mode === "salmon_run") {
               return exec(
                 `UPDATE result SET stage = '${
-                  (JSON.parse(record.detail) as CoopHistoryDetail).coopHistoryDetail.coopStage.id
+                  (JSON.parse(record.detail) as CoopHistoryDetailResult).coopHistoryDetail!
+                    .coopStage.id
                 }' WHERE id = '${record.id}'`,
                 false
               );
             }
             return exec(
               `UPDATE result SET stage = '${
-                (JSON.parse(record.detail) as VsHistoryDetail).vsHistoryDetail.vsStage.id
+                (JSON.parse(record.detail) as VsHistoryDetailResult).vsHistoryDetail!.vsStage.id
               }' WHERE id = '${record.id}'`,
               false
             );
@@ -56,7 +57,7 @@ export const open = async () => {
     case 1:
       break;
     default:
-      throw `unexpected database version ${version}`;
+      throw new Error(`unexpected database version ${version}`);
   }
 
   return db;
@@ -236,36 +237,38 @@ export const add = async (
     false
   );
 };
-export const addBattle = (battle: VsHistoryDetail) => {
+export const addBattle = (battle: VsHistoryDetailResult) => {
   return add(
-    battle.vsHistoryDetail.id,
-    new Date(battle.vsHistoryDetail.playedTime).valueOf(),
-    battle.vsHistoryDetail.vsMode.id,
-    battle.vsHistoryDetail.vsRule.id,
+    battle.vsHistoryDetail!.id,
+    new Date(battle.vsHistoryDetail!.playedTime).valueOf(),
+    battle.vsHistoryDetail!.vsMode.id,
+    battle.vsHistoryDetail!.vsRule.id,
     getVsSelfPlayer(battle).weapon.id,
-    battle.vsHistoryDetail.myTeam.players
-      .map((player) => player.id)
+    battle
+      .vsHistoryDetail!.myTeam.players.map((player) => player.id)
       .concat(
-        battle.vsHistoryDetail.otherTeams
-          .map((otherTeam) => otherTeam.players.map((player) => player.id))
+        battle
+          .vsHistoryDetail!.otherTeams.map((otherTeam) =>
+            otherTeam.players.map((player) => player.id)
+          )
           .flat()
       ),
     JSON.stringify(battle),
-    battle.vsHistoryDetail.vsStage.id
+    battle.vsHistoryDetail!.vsStage.id
   );
 };
-export const addCoop = (coop: CoopHistoryDetail) => {
+export const addCoop = (coop: CoopHistoryDetailResult) => {
   return add(
-    coop.coopHistoryDetail.id,
-    new Date(coop.coopHistoryDetail.playedTime).valueOf(),
+    coop.coopHistoryDetail!.id,
+    new Date(coop.coopHistoryDetail!.playedTime).valueOf(),
     "salmon_run",
-    coop.coopHistoryDetail.rule,
+    coop.coopHistoryDetail!.rule,
     "",
-    coop.coopHistoryDetail.memberResults
-      .map((memberResult) => memberResult.player.id)
-      .concat(coop.coopHistoryDetail.myResult.player.id),
+    coop
+      .coopHistoryDetail!.memberResults.map((memberResult) => memberResult.player.id)
+      .concat(coop.coopHistoryDetail!.myResult.player.id),
     JSON.stringify(coop),
-    coop.coopHistoryDetail.coopStage.id
+    coop.coopHistoryDetail!.coopStage.id
   );
 };
 export const clear = async () => {

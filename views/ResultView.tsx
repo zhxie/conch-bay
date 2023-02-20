@@ -36,14 +36,18 @@ import {
   WaveBox,
   WorkSuitBox,
 } from "../components";
-import t, { td } from "../i18n";
+import t, { ScopeWithDefaultValue, td } from "../i18n";
 import {
-  CoopHistoryDetail,
+  Badge,
+  CoopHistoryDetailResult,
+  CoopMemberResult,
   CoopPlayerResult,
   CoopWaveResult,
-  NameplateBadge,
+  Enum,
+  FestDragonCert,
+  Judgement,
   Species,
-  VsHistoryDetail,
+  VsHistoryDetailResult,
   VsPlayer,
   VsTeam,
 } from "../models/types";
@@ -56,8 +60,8 @@ import {
 } from "../utils/ui";
 
 export interface ResultProps {
-  battle?: VsHistoryDetail;
-  coop?: CoopHistoryDetail;
+  battle?: VsHistoryDetailResult;
+  coop?: CoopHistoryDetailResult;
 }
 interface ResultViewProps {
   results?: ResultProps[];
@@ -85,96 +89,96 @@ const ResultView = (props: ResultViewProps) => {
 
   const isVsPlayerDragon = (player: VsPlayer) => {
     switch (player.festDragonCert) {
-      case "NONE":
+      case FestDragonCert.NONE:
         return false;
-      case "DRAGON":
-      case "DOUBLE_DRAGON":
+      case FestDragonCert.DRAGON:
+      case FestDragonCert.DOUBLE_DRAGON:
         return true;
     }
   };
-  const IsCoopClear = (coop: CoopHistoryDetail) => {
-    if (coop.coopHistoryDetail.resultWave === 0) {
-      if (coop.coopHistoryDetail.bossResult) {
-        return coop.coopHistoryDetail.bossResult.hasDefeatBoss;
+  const IsCoopClear = (coop: CoopHistoryDetailResult) => {
+    if (coop.coopHistoryDetail!.resultWave === 0) {
+      if (coop.coopHistoryDetail!.bossResult) {
+        return coop.coopHistoryDetail!.bossResult.hasDefeatBoss;
       }
       return true;
     }
     return false;
   };
-  const IsCoopWaveClear = (coop: CoopHistoryDetail, wave: number) => {
-    if (coop.coopHistoryDetail.resultWave === 0) {
-      if (!coop.coopHistoryDetail.waveResults[wave].deliverNorm) {
-        return coop.coopHistoryDetail.bossResult!.hasDefeatBoss;
+  const IsCoopWaveClear = (coop: CoopHistoryDetailResult, wave: number) => {
+    if (coop.coopHistoryDetail!.resultWave === 0) {
+      if (!coop.coopHistoryDetail!.waveResults[wave].deliverNorm) {
+        return coop.coopHistoryDetail!.bossResult!.hasDefeatBoss;
       }
       return true;
     }
-    return wave + 1 < coop.coopHistoryDetail.resultWave;
+    return wave + 1 < coop.coopHistoryDetail!.resultWave;
   };
 
-  const formatJudgement = (battle: VsHistoryDetail) => {
-    switch (battle.vsHistoryDetail.judgement) {
-      case "WIN":
+  const formatJudgement = (battle: VsHistoryDetailResult) => {
+    switch (battle.vsHistoryDetail!.judgement) {
+      case Judgement.WIN:
         return 1;
-      case "DRAW":
+      case Judgement.DRAW:
         return 0;
-      case "LOSE":
-      case "DEEMED_LOSE":
+      case Judgement.LOSE:
+      case Judgement.DEEMED_LOSE:
         return -1;
-      case "EXEMPTED_LOSE":
+      case Judgement.EXEMPTED_LOSE:
         return -2;
     }
   };
-  const formatName = (name: string, species: Species, isSelf: boolean) => {
+  const formatName = (name: string, species: Enum<typeof Species>, isSelf: boolean) => {
     if (hidePlayerNames && !isSelf) {
       switch (species) {
-        case "INKLING":
+        case Species.INKLING:
           return "ᔦꙬᔨ三ᔦꙬᔨ✧‧˚";
-        case "OCTOLING":
+        case Species.OCTOLING:
           return "( Ꙭ )三( Ꙭ )✧‧˚";
       }
     }
     return name;
   };
-  const formatBadge = (badge: NameplateBadge | null) => {
+  const formatBadge = (badge: Badge | null) => {
     if (badge) {
       return getImageCacheSource(badge.image.url);
     }
     return null;
   };
-  const formatWave = (coop: CoopHistoryDetail) => {
-    switch (coop.coopHistoryDetail.resultWave) {
+  const formatWave = (coop: CoopHistoryDetailResult) => {
+    switch (coop.coopHistoryDetail!.resultWave) {
       case -1:
         return "";
       case 0:
-        if (coop.coopHistoryDetail.bossResult) {
+        if (coop.coopHistoryDetail!.bossResult) {
           return t("xtrawave");
         }
-        return t("wave_n", { n: coop.coopHistoryDetail.waveResults.length });
+        return t("wave_n", { n: coop.coopHistoryDetail!.waveResults.length });
       default:
-        return t("wave_n", { n: coop.coopHistoryDetail.waveResults.length });
+        return t("wave_n", { n: coop.coopHistoryDetail!.waveResults.length });
     }
   };
-  const formatHazardLevel = (coop: CoopHistoryDetail) => {
-    if (coop.coopHistoryDetail.dangerRate > 0) {
-      return `(${parseInt(String(coop.coopHistoryDetail.dangerRate * 100))}%)`;
+  const formatHazardLevel = (coop: CoopHistoryDetailResult) => {
+    if (coop.coopHistoryDetail!.dangerRate > 0) {
+      return `(${parseInt(String(coop.coopHistoryDetail!.dangerRate * 100))}%)`;
     }
     return "";
   };
-  const formatAnnotation = (battle: VsHistoryDetail) => {
-    switch (battle.vsHistoryDetail.judgement) {
-      case "WIN":
-      case "LOSE":
+  const formatAnnotation = (battle: VsHistoryDetailResult) => {
+    switch (battle.vsHistoryDetail!.judgement) {
+      case Judgement.WIN:
+      case Judgement.LOSE:
         return undefined;
-      case "DEEMED_LOSE":
+      case Judgement.DEEMED_LOSE:
         return t("penalty");
-      case "EXEMPTED_LOSE":
+      case Judgement.EXEMPTED_LOSE:
         return t("exemption");
-      case "DRAW":
+      case Judgement.DRAW:
         return t("no_contest");
     }
   };
-  const formatTeams = (battle: VsHistoryDetail) => {
-    const teams = [battle.vsHistoryDetail.myTeam, ...battle.vsHistoryDetail.otherTeams];
+  const formatTeams = (battle: VsHistoryDetailResult) => {
+    const teams = [battle.vsHistoryDetail!.myTeam, ...battle.vsHistoryDetail!.otherTeams];
     teams.sort((a, b) => {
       if (a.judgement === "WIN" && b.judgement === "LOSE") {
         return -1;
@@ -197,7 +201,7 @@ const ResultView = (props: ResultViewProps) => {
       if (team.result.paintRatio) {
         return `${(team.result.paintRatio * 100).toFixed(1)}%`;
       } else {
-        if (team.result.score! === 100) {
+        if (team.result.score === 100) {
           return t("knock_out");
         } else {
           return t("score_score", { score: team.result.score });
@@ -229,19 +233,19 @@ const ResultView = (props: ResultViewProps) => {
     }
     return td(waveResult.eventWave);
   };
-  const formatSpecialWeapon = (coop: CoopHistoryDetail, i: number, begin: number) => {
+  const formatSpecialWeapon = (coop: CoopHistoryDetailResult, i: number, begin: number) => {
     const map = [
-      coop.coopHistoryDetail.myResult.specialWeapon!.name,
-      ...coop.coopHistoryDetail.memberResults.map(
-        (memberResult) => memberResult.specialWeapon!.name
+      coop.coopHistoryDetail!.myResult.specialWeapon!.name,
+      ...coop.coopHistoryDetail!.memberResults.map(
+        (memberResult: CoopMemberResult) => memberResult.specialWeapon!.name
       ),
     ];
 
-    let last = new Array(coop.coopHistoryDetail.memberResults.length + 1).fill(0);
-    const current = new Array(coop.coopHistoryDetail.memberResults.length + 1).fill(0);
+    let last = new Array(coop.coopHistoryDetail!.memberResults.length + 1).fill(0);
+    const current = new Array(coop.coopHistoryDetail!.memberResults.length + 1).fill(0);
     for (let j = begin; j <= i; j++) {
       last = [...current];
-      coop.coopHistoryDetail.waveResults[j].specialWeapons.forEach((specialWeapon) => {
+      coop.coopHistoryDetail!.waveResults[j].specialWeapons.forEach((specialWeapon) => {
         const k = map.findIndex((item) => item === specialWeapon.name);
         current[k] = current[k] + 1;
       });
@@ -275,13 +279,13 @@ const ResultView = (props: ResultViewProps) => {
     if (result!.battle) {
       await Linking.openURL(
         `com.nintendo.znca://znca/game/4834290508791808?p=/history/detail/${
-          result!.battle.vsHistoryDetail.id
+          result!.battle.vsHistoryDetail!.id
         }`
       );
     } else {
       await Linking.openURL(
         `com.nintendo.znca://znca/game/4834290508791808?p=/coop/${
-          result!.coop!.coopHistoryDetail.id
+          result!.coop!.coopHistoryDetail!.id
         }`
       );
     }
@@ -317,17 +321,17 @@ const ResultView = (props: ResultViewProps) => {
           <BattleButton
             isFirst={result.index === 0}
             isLast={false}
-            color={getVsModeColor(result.item.battle.vsHistoryDetail.vsMode)!}
+            color={getVsModeColor(result.item.battle.vsHistoryDetail!.vsMode)!}
             result={formatJudgement(result.item.battle)}
-            rule={td(result.item.battle.vsHistoryDetail.vsRule)}
-            stage={td(result.item.battle.vsHistoryDetail.vsStage)}
+            rule={td(result.item.battle.vsHistoryDetail!.vsRule)}
+            stage={td(result.item.battle.vsHistoryDetail!.vsStage)}
             weapon={td(getVsSelfPlayer(result.item.battle).weapon)}
             kill={getVsSelfPlayer(result.item.battle).result?.kill}
             assist={getVsSelfPlayer(result.item.battle).result?.assist}
             death={getVsSelfPlayer(result.item.battle).result?.death}
             special={getVsSelfPlayer(result.item.battle).result?.special}
             ultraSignal={
-              result.item.battle.vsHistoryDetail.myTeam.tricolorRole !== "DEFENSE"
+              result.item.battle.vsHistoryDetail!.myTeam.tricolorRole !== "DEFENSE"
                 ? getVsSelfPlayer(result.item.battle).result?.noroshiTry
                 : undefined
             }
@@ -339,11 +343,13 @@ const ResultView = (props: ResultViewProps) => {
         </VStack>
       );
     }
-    const powerEgg = result.item.coop!.coopHistoryDetail.memberResults.reduce(
-      (sum, result) => sum + result.deliverCount,
-      result.item.coop!.coopHistoryDetail.myResult.deliverCount
-    );
-    const goldenEgg = result.item.coop!.coopHistoryDetail.waveResults.reduce(
+    const powerEgg =
+      // HACK: cast out union uncertainty.
+      (result.item.coop!.coopHistoryDetail!.memberResults as CoopMemberResult[]).reduce(
+        (sum, result) => sum + result.deliverCount,
+        result.item.coop!.coopHistoryDetail!.myResult.deliverCount
+      );
+    const goldenEgg = result.item.coop!.coopHistoryDetail!.waveResults.reduce(
       (sum, result) => sum + (result.teamDeliverCount ?? 0),
       0
     );
@@ -352,13 +358,13 @@ const ResultView = (props: ResultViewProps) => {
         <CoopButton
           isFirst={result.index === 0}
           isLast={false}
-          color={getCoopRuleColor(result.item.coop!.coopHistoryDetail.rule)!}
-          result={result.item.coop!.coopHistoryDetail.resultWave === 0 ? 1 : -1}
-          rule={t(result.item.coop!.coopHistoryDetail.rule)}
-          stage={td(result.item.coop!.coopHistoryDetail.coopStage)}
+          color={getCoopRuleColor(result.item.coop!.coopHistoryDetail!.rule)!}
+          result={result.item.coop!.coopHistoryDetail!.resultWave === 0 ? 1 : -1}
+          rule={t(result.item.coop!.coopHistoryDetail!.rule)}
+          stage={td(result.item.coop!.coopHistoryDetail!.coopStage)}
           kingSalmonid={
-            result.item.coop!.coopHistoryDetail.bossResult !== null
-              ? td(result.item.coop!.coopHistoryDetail.bossResult.boss)
+            result.item.coop!.coopHistoryDetail!.bossResult !== null
+              ? td(result.item.coop!.coopHistoryDetail!.bossResult.boss)
               : undefined
           }
           wave={formatWave(result.item.coop!)!}
@@ -385,9 +391,9 @@ const ResultView = (props: ResultViewProps) => {
             return String(i);
           }
           if (result.battle) {
-            return result.battle.vsHistoryDetail.id;
+            return result.battle.vsHistoryDetail!.id;
           }
-          return result.coop!.coopHistoryDetail.id;
+          return result.coop!.coopHistoryDetail!.id;
         }}
         renderItem={renderItem}
         estimatedItemSize={64}
@@ -437,8 +443,8 @@ const ResultView = (props: ResultViewProps) => {
       >
         {result?.battle && (
           <TitledList
-            color={getVsModeColor(result.battle.vsHistoryDetail.vsMode)}
-            title={t(result.battle.vsHistoryDetail.vsMode.id)}
+            color={getVsModeColor(result.battle.vsHistoryDetail!.vsMode)}
+            title={t(result.battle.vsHistoryDetail!.vsMode.id)}
             subtitle={formatAnnotation(result.battle)}
           >
             <VStack style={ViewStyles.wf}>
@@ -450,10 +456,10 @@ const ResultView = (props: ResultViewProps) => {
                       <HStack flex>
                         <Marquee style={[TextStyles.b, { color: getColor(team.color) }]}>
                           {`${team.festTeamName ? `${team.festTeamName} ` : ""}${
-                            (team.festStreakWinCount ?? 0) > 1
-                              ? `${t("n_win_strike", { n: team.festStreakWinCount })} `
+                            (team["festStreakWinCount"] ?? 0) > 1
+                              ? `${t("n_win_strike", { n: team["festStreakWinCount"] })} `
                               : ""
-                          }${team.festUniformName ? `${team.festUniformName}` : ""}`}
+                          }${team["festUniformName"] ? `${team["festUniformName"]}` : ""}`}
                         </Marquee>
                       </HStack>
                     </HStack>
@@ -477,7 +483,7 @@ const ResultView = (props: ResultViewProps) => {
                       </Text>
                     </HStack>
                   </HStack>
-                  {team.players.map((player, i, players) => (
+                  {team.players.map((player: VsPlayer, i: number, players: VsPlayer[]) => (
                     <BattlePlayerButton
                       key={i}
                       isFirst={i === 0}
@@ -523,13 +529,13 @@ const ResultView = (props: ResultViewProps) => {
               {battlePlayer && (
                 <VStack center>
                   <Splashtag
-                    color={getColor(battlePlayer.nameplate.background.textColor)}
+                    color={getColor(battlePlayer.nameplate!.background.textColor)}
                     name={battlePlayer.name}
                     nameId={battlePlayer.nameId}
                     // TODO: need translation.
                     title={battlePlayer.byname}
-                    banner={getImageCacheSource(battlePlayer.nameplate.background.image.url)}
-                    badges={battlePlayer.nameplate.badges.map(formatBadge)}
+                    banner={getImageCacheSource(battlePlayer.nameplate!.background.image.url)}
+                    badges={battlePlayer.nameplate!.badges.map(formatBadge)}
                     style={ViewStyles.mb2}
                   />
                   <BattleWeaponBox
@@ -572,26 +578,26 @@ const ResultView = (props: ResultViewProps) => {
       >
         {result?.coop && (
           <TitledList
-            color={getCoopRuleColor(result.coop.coopHistoryDetail.rule)}
-            title={t(result.coop.coopHistoryDetail.rule)}
-            subtitle={result.coop.coopHistoryDetail.resultWave === -1 ? t("penalty") : undefined}
+            color={getCoopRuleColor(result.coop.coopHistoryDetail!.rule)}
+            title={t(result.coop.coopHistoryDetail!.rule)}
+            subtitle={result.coop.coopHistoryDetail!.resultWave === -1 ? t("penalty") : undefined}
           >
             <VStack style={ViewStyles.wf}>
               <VStack style={ViewStyles.mb2}>
-                {result.coop.coopHistoryDetail.waveResults.length > 0 && (
+                {result.coop.coopHistoryDetail!.waveResults.length > 0 && (
                   <ScrollView
                     horizontal
                     showsHorizontalScrollIndicator={false}
                     style={ViewStyles.mb2}
                   >
                     <HStack center style={ViewStyles.px4}>
-                      {result.coop.coopHistoryDetail.waveResults.map(
+                      {result.coop.coopHistoryDetail!.waveResults.map(
                         (waveResult, i, waveResults) => (
                           <WaveBox
                             key={i}
                             color={
                               IsCoopWaveClear(result.coop!, i)
-                                ? getCoopRuleColor(result.coop!.coopHistoryDetail.rule)!
+                                ? getCoopRuleColor(result.coop!.coopHistoryDetail!.rule)!
                                 : undefined
                             }
                             isKingSalmonid={!waveResult.deliverNorm}
@@ -599,11 +605,11 @@ const ResultView = (props: ResultViewProps) => {
                             eventWave={
                               waveResult.deliverNorm
                                 ? formatEventWave(waveResult)
-                                : td(result.coop!.coopHistoryDetail.bossResult!.boss)
+                                : td(result.coop!.coopHistoryDetail!.bossResult!.boss)
                             }
                             deliver={
                               waveResult.teamDeliverCount ??
-                              (result.coop!.coopHistoryDetail.bossResult!.hasDefeatBoss ? 1 : 0)
+                              (result.coop!.coopHistoryDetail!.bossResult!.hasDefeatBoss ? 1 : 0)
                             }
                             quota={waveResult.deliverNorm ?? 1}
                             appearance={waveResult.goldenPopCount}
@@ -620,39 +626,41 @@ const ResultView = (props: ResultViewProps) => {
                     </HStack>
                   </ScrollView>
                 )}
-                {(result.coop.coopHistoryDetail.enemyResults.length > 0 ||
-                  result.coop.coopHistoryDetail.bossResult !== null) && (
+                {(result.coop.coopHistoryDetail!.enemyResults.length > 0 ||
+                  result.coop.coopHistoryDetail!.bossResult !== null) && (
                   <ScrollView
                     horizontal
                     showsHorizontalScrollIndicator={false}
                     style={ViewStyles.mb2}
                   >
                     <HStack center style={ViewStyles.px4}>
-                      {result.coop.coopHistoryDetail.bossResult !== null && (
+                      {result.coop.coopHistoryDetail!.bossResult !== null && (
                         <KingSalmonidBox
                           color={
-                            result.coop.coopHistoryDetail.bossResult.hasDefeatBoss
-                              ? getCoopRuleColor(result.coop!.coopHistoryDetail.rule)!
+                            result.coop.coopHistoryDetail!.bossResult.hasDefeatBoss
+                              ? getCoopRuleColor(result.coop.coopHistoryDetail!.rule)!
                               : undefined
                           }
-                          name={td(result.coop.coopHistoryDetail.bossResult.boss)}
-                          bronzeScale={result.coop.coopHistoryDetail.scale!.bronze}
-                          silverScale={result.coop.coopHistoryDetail.scale!.silver}
-                          goldScale={result.coop.coopHistoryDetail.scale!.gold}
+                          name={td(
+                            result.coop.coopHistoryDetail!.bossResult.boss as ScopeWithDefaultValue
+                          )}
+                          bronzeScale={result.coop.coopHistoryDetail!.scale!.bronze}
+                          silverScale={result.coop.coopHistoryDetail!.scale!.silver}
+                          goldScale={result.coop.coopHistoryDetail!.scale!.gold}
                           style={
-                            result.coop.coopHistoryDetail.enemyResults.length > 0
+                            result.coop.coopHistoryDetail!.enemyResults.length > 0
                               ? ViewStyles.mr2
                               : undefined
                           }
                         />
                       )}
-                      {result.coop.coopHistoryDetail.enemyResults.map(
+                      {result.coop.coopHistoryDetail!.enemyResults.map(
                         (enemyResult, i, enemyResults) => (
                           <BossSalmonidBox
                             key={i}
                             color={
                               enemyResult.teamDefeatCount === enemyResult.popCount
-                                ? getCoopRuleColor(result.coop!.coopHistoryDetail.rule)!
+                                ? getCoopRuleColor(result.coop!.coopHistoryDetail!.rule)!
                                 : undefined
                             }
                             name={td(enemyResult.enemy)}
@@ -668,8 +676,8 @@ const ResultView = (props: ResultViewProps) => {
                 )}
                 <VStack style={ViewStyles.px4}>
                   {[
-                    result.coop.coopHistoryDetail.myResult,
-                    ...result.coop.coopHistoryDetail.memberResults,
+                    result.coop.coopHistoryDetail!.myResult,
+                    ...result.coop.coopHistoryDetail!.memberResults,
                   ].map((memberResult, i, memberResults) => (
                     <CoopPlayerButton
                       key={i}
@@ -719,13 +727,13 @@ const ResultView = (props: ResultViewProps) => {
               {coopPlayer && (
                 <VStack center>
                   <Splashtag
-                    color={getColor(coopPlayer.player.nameplate.background.textColor)}
+                    color={getColor(coopPlayer.player.nameplate!.background.textColor)}
                     name={coopPlayer.player.name}
                     nameId={coopPlayer.player.nameId}
                     // TODO: need translation.
                     title={coopPlayer.player.byname}
-                    banner={getImageCacheSource(coopPlayer.player.nameplate.background.image.url)}
-                    badges={coopPlayer.player.nameplate.badges.map(formatBadge)}
+                    banner={getImageCacheSource(coopPlayer.player.nameplate!.background.image.url)}
+                    badges={coopPlayer.player.nameplate!.badges.map(formatBadge)}
                     style={ViewStyles.mb2}
                   />
                   {coopPlayer.specialWeapon && (

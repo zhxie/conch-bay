@@ -12,6 +12,7 @@ import {
   ViewStyles,
 } from "../components";
 import t from "../i18n";
+import { Judgement } from "../models/types";
 import { getVsSelfPlayer } from "../utils/ui";
 import { ResultProps } from "./ResultView";
 
@@ -68,16 +69,16 @@ const StatsView = (props: StatsViewProps) => {
     props.results?.forEach((result) => {
       if (result.battle) {
         battle += 1;
-        switch (result.battle.vsHistoryDetail.judgement) {
-          case "WIN":
+        switch (result.battle.vsHistoryDetail!.judgement) {
+          case Judgement.WIN:
             win += 1;
             break;
-          case "LOSE":
-          case "DEEMED_LOSE":
-          case "EXEMPTED_LOSE":
+          case Judgement.LOSE:
+          case Judgement.DEEMED_LOSE:
+          case Judgement.EXEMPTED_LOSE:
             lose += 1;
             break;
-          case "DRAW":
+          case Judgement.DRAW:
             break;
         }
         kill += getVsSelfPlayer(result.battle).result?.kill ?? 0;
@@ -86,7 +87,7 @@ const StatsView = (props: StatsViewProps) => {
         special += getVsSelfPlayer(result.battle).result?.special ?? 0;
       } else {
         coop += 1;
-        const resultWave = result.coop!.coopHistoryDetail.resultWave;
+        const resultWave = result.coop!.coopHistoryDetail!.resultWave;
         if (resultWave >= 0) {
           if (resultWave === 0) {
             clear += 1;
@@ -94,12 +95,12 @@ const StatsView = (props: StatsViewProps) => {
           }
           wave += resultWave - 1;
         }
-        defeat += result.coop!.coopHistoryDetail.myResult.defeatEnemyCount;
-        deliverGoldenEgg += result.coop!.coopHistoryDetail.myResult.goldenDeliverCount;
-        assistGoldenEgg += result.coop!.coopHistoryDetail.myResult.goldenAssistCount;
-        powerEgg += result.coop!.coopHistoryDetail.myResult.deliverCount;
-        rescue += result.coop!.coopHistoryDetail.myResult.rescueCount;
-        rescued += result.coop!.coopHistoryDetail.myResult.rescuedCount;
+        defeat += result.coop!.coopHistoryDetail!.myResult.defeatEnemyCount;
+        deliverGoldenEgg += result.coop!.coopHistoryDetail!.myResult.goldenDeliverCount;
+        assistGoldenEgg += result.coop!.coopHistoryDetail!.myResult.goldenAssistCount;
+        powerEgg += result.coop!.coopHistoryDetail!.myResult.deliverCount;
+        rescue += result.coop!.coopHistoryDetail!.myResult.rescueCount;
+        rescued += result.coop!.coopHistoryDetail!.myResult.rescuedCount;
       }
     });
     setCount({

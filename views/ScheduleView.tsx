@@ -15,28 +15,29 @@ import {
 import t, { td } from "../i18n";
 import {
   BankaraMatchSetting,
-  CoopWeapon,
+  CoopGroupingSchedule,
+  CoopStage,
+  CoopSupplyWeapon,
+  CurrentFest,
+  FestMatchSetting,
   RegularMatchSetting,
-  Schedule,
-  Schedules,
-  Shift,
-  Splatfest,
-  SplatfestMatchSetting,
+  StageScheduleResult,
+  VsSchedule,
   VsStage,
   XMatchSetting,
 } from "../models/types";
 import { getImageCacheSource } from "../utils/ui";
 
 interface ScheduleViewProps {
-  schedules?: Schedules;
+  schedules?: StageScheduleResult;
   style?: StyleProp<ViewStyle>;
 }
 interface DisplayProps {
   title: string;
   color: string;
-  splatfest?: Splatfest;
-  schedules?: Schedule[];
-  shifts?: Shift[];
+  splatfest?: CurrentFest;
+  schedules?: VsSchedule[];
+  shifts?: CoopGroupingSchedule[];
   index?: number;
 }
 
@@ -46,7 +47,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
   const [displaySchedules, setDisplaySchedules] = useState(false);
   const [displayShifts, setDisplayShifts] = useState(false);
 
-  const getMatchSetting = (schedule: Schedule, index?: number) => {
+  const getMatchSetting = (schedule: VsSchedule, index?: number) => {
     const regularMatchSetting = schedule["regularMatchSetting"];
     if (regularMatchSetting !== undefined) {
       return regularMatchSetting as RegularMatchSetting | null;
@@ -62,18 +63,14 @@ const ScheduleView = (props: ScheduleViewProps) => {
     if (xMatchSetting !== undefined) {
       return xMatchSetting as XMatchSetting | null;
     }
-    const splatfestMatchSetting = schedule["festMatchSetting"];
-    if (splatfestMatchSetting !== undefined) {
-      return splatfestMatchSetting as SplatfestMatchSetting | null;
-    }
-    throw "unexpected match setting";
+    return schedule["festMatchSetting"] as FestMatchSetting | null;
   };
 
   const splatfestSchedules = props.schedules?.festSchedules.nodes.filter((node) =>
     getMatchSetting(node)
   );
   const currentSplatfest = props.schedules?.currentFest?.tricolorStage
-    ? props.schedules?.currentFest
+    ? props.schedules.currentFest
     : undefined;
   const regularSchedules = props.schedules?.regularSchedules.nodes.filter((node) =>
     getMatchSetting(node)
@@ -85,13 +82,13 @@ const ScheduleView = (props: ScheduleViewProps) => {
   const bigRunShifts = props.schedules?.coopGroupingSchedule.bigRunSchedules.nodes;
   const regularShifts = props.schedules?.coopGroupingSchedule.regularSchedules.nodes;
 
-  const isScheduleStarted = (schedule: Schedule) => {
+  const isScheduleStarted = (schedule: VsSchedule | CoopGroupingSchedule) => {
     const now = new Date().getTime();
     const date = new Date(schedule.startTime);
     const timestamp = date.getTime();
     return timestamp <= now;
   };
-  const isSplatfestStarted = (splatfest: Splatfest) => {
+  const isSplatfestStarted = (splatfest: CurrentFest) => {
     const now = new Date().getTime();
     const date = new Date(splatfest.midtermTime);
     const timestamp = date.getTime();
@@ -123,25 +120,28 @@ const ScheduleView = (props: ScheduleViewProps) => {
     }
     return dateTime;
   };
-  const formatScheduleTimeRange = (schedule: Schedule, withDate: boolean) => {
+  const formatScheduleTimeRange = (
+    schedule: VsSchedule | CoopGroupingSchedule,
+    withDate: boolean
+  ) => {
     const startTime = formatTime(schedule.startTime, false, withDate);
     const endTime = formatTime(schedule.endTime, true, withDate);
 
     return `${startTime} - ${endTime}`;
   };
-  const formatSplatfestTimeRange = (splatfest: Splatfest) => {
+  const formatSplatfestTimeRange = (splatfest: CurrentFest) => {
     const startTime = formatTime(splatfest.midtermTime, false, true);
     const endTime = formatTime(splatfest.endTime, true, true);
 
     return `${startTime} - ${endTime}`;
   };
-  const formatStage = (stage: VsStage) => {
+  const formatStage = (stage: VsStage | CoopStage) => {
     return {
       title: td(stage),
       image: getImageCacheSource(stage.image.url),
     };
   };
-  const formatWeapon = (weapon: CoopWeapon) => {
+  const formatWeapon = (weapon: CoopSupplyWeapon) => {
     return getImageCacheSource(weapon.image.url);
   };
 
@@ -252,7 +252,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
           <ScheduleButton
             color={isSplatfestStarted(currentSplatfest) ? Color.AccentColor : undefined}
             rule={t("VnNSdWxlLTU=")}
-            stages={[td(currentSplatfest.tricolorStage!)]}
+            stages={[td(currentSplatfest.tricolorStage)]}
             onPress={onCurrentSplatfestPress}
             style={ViewStyles.mr2}
           />
@@ -297,7 +297,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
           <ScheduleButton
             color={isScheduleStarted(bigRunShifts[0]) ? Color.BigRun : undefined}
             rule={t("big_run")}
-            stages={[td(bigRunShifts[0].setting.coopStage)]}
+            stages={[td(bigRunShifts[0].setting!.coopStage)]}
             onPress={onBigRunShiftPress}
             style={ViewStyles.mr2}
           />
@@ -306,7 +306,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
           <ScheduleButton
             color={isScheduleStarted(regularShifts[0]) ? Color.SalmonRun : undefined}
             rule={t("salmon_run")}
-            stages={[td(regularShifts[0].setting.coopStage)]}
+            stages={[td(regularShifts[0].setting!.coopStage)]}
             onPress={onRegularShiftPress}
           />
         )}
@@ -341,7 +341,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
             <ScheduleBox
               rule={t("VnNSdWxlLTU=")}
               time={formatSplatfestTimeRange(display.splatfest)}
-              stages={[formatStage(display.splatfest.tricolorStage!)]}
+              stages={[formatStage(display.splatfest.tricolorStage)]}
             />
           )}
         </TitledList>
@@ -356,8 +356,8 @@ const ScheduleView = (props: ScheduleViewProps) => {
                   key={i}
                   rule={display.title}
                   time={formatScheduleTimeRange(shift, true)}
-                  stage={formatStage(shift.setting.coopStage)}
-                  weapons={shift.setting.weapons.map(formatWeapon)}
+                  stage={formatStage(shift.setting!.coopStage)}
+                  weapons={shift.setting!.weapons.map(formatWeapon)}
                   style={i !== shifts.length - 1 ? ViewStyles.mb2 : undefined}
                 />
               ))}

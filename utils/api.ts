@@ -2,21 +2,24 @@ import { fromByteArray as encode64 } from "base64-js";
 import * as Crypto from "expo-crypto";
 import * as Random from "expo-random";
 import pRetry from "p-retry";
+import { RequestId } from "splatnet3-types/dist/graphql";
 import {
-  BankaraBattleHistories,
-  Catalog,
-  CoopHistoryDetail,
-  CoopResult,
-  Friends,
-  Equipments,
-  GraphQlResponse,
-  PrivateBattleHistories,
-  RegularBattleHistories,
-  Schedules,
-  Summary,
-  VsHistoryDetail,
-  WeaponRecords,
-  XBattleHistories,
+  BankaraBattleHistoriesResult,
+  CatalogResult,
+  CoopHistoryDetailResult,
+  CoopHistoryDetailVariables,
+  CoopHistoryResult,
+  FriendListResult,
+  GraphQLSuccessResponse,
+  HistoryRecordResult,
+  MyOutfitCommonDataEquipmentsResult,
+  PrivateBattleHistoriesResult,
+  RegularBattleHistoriesResult,
+  StageScheduleResult,
+  VsHistoryDetailResult,
+  VsHistoryDetailVariables,
+  WeaponRecordResult,
+  XBattleHistoriesResult,
 } from "../models/types";
 import { encode64Url } from "./codec";
 import { formUrlEncoded, getParam, parameterize } from "./url";
@@ -43,7 +46,7 @@ const fetchRetry = async (input: RequestInfo, init?: RequestInit) => {
 export const fetchSchedules = async () => {
   const res = await fetchRetry("https://splatoon3.ink/data/schedules.json", {});
   const json = await res.json();
-  return (json as GraphQlResponse<Schedules>).data!;
+  return (json as GraphQLSuccessResponse<StageScheduleResult>).data;
 };
 
 export const updateNsoVersion = async () => {
@@ -220,11 +223,11 @@ export const getBulletToken = async (
   return json["bulletToken"] as string;
 };
 
-const fetchGraphQl = async (
+const fetchGraphQl = async <T>(
   bulletToken: string,
   hash: string,
   language?: string,
-  variables?: Record<string, string>
+  variables?: T
 ) => {
   const res = await fetchRetry("https://api.lp1.av5ja.srv.nintendo.net/api/graphql", {
     method: "POST",
@@ -247,58 +250,62 @@ const fetchGraphQl = async (
   return res;
 };
 export const fetchFriends = async (bulletToken: string, language?: string) => {
-  const res = await fetchGraphQl(bulletToken, "f0a8ebc384cf5fbac01e8085fbd7c898", language);
+  const res = await fetchGraphQl(bulletToken, RequestId.FriendListQuery, language);
   const json = await res.json();
-  const friends = json as GraphQlResponse<Friends>;
+  const friends = json as GraphQLSuccessResponse<FriendListResult>;
   if (friends.errors) {
     throw new Error(friends.errors[0].message);
   }
-  return friends.data!;
+  return friends.data;
 };
 export const fetchSummary = async (bulletToken: string, language?: string) => {
-  const res = await fetchGraphQl(bulletToken, "32b6771f94083d8f04848109b7300af5", language);
+  const res = await fetchGraphQl(bulletToken, RequestId.HistoryRecordQuery, language);
   const json = await res.json();
-  const summary = json as GraphQlResponse<Summary>;
+  const summary = json as GraphQLSuccessResponse<HistoryRecordResult>;
   if (summary.errors) {
     throw new Error(summary.errors[0].message);
   }
-  return summary.data!;
+  return summary.data;
 };
 export const fetchCatalog = async (bulletToken: string, language?: string) => {
-  const res = await fetchGraphQl(bulletToken, "52504060c81ff2f2d618c4e5377e6e7c", language);
+  const res = await fetchGraphQl(bulletToken, RequestId.CatalogQuery, language);
   const json = await res.json();
-  const catalog = json as GraphQlResponse<Catalog>;
+  const catalog = json as GraphQLSuccessResponse<CatalogResult>;
   if (catalog.errors) {
     throw new Error(catalog.errors[0].message);
   }
-  return catalog.data!;
+  return catalog.data;
 };
 
 export const fetchWeaponRecords = async (bulletToken: string, language?: string) => {
-  const res = await fetchGraphQl(bulletToken, "5f279779e7081f2d14ae1ddca0db2b6e", language);
+  const res = await fetchGraphQl(bulletToken, RequestId.WeaponRecordQuery, language);
   const json = await res.json();
-  const weaponRecords = json as GraphQlResponse<WeaponRecords>;
+  const weaponRecords = json as GraphQLSuccessResponse<WeaponRecordResult>;
   if (weaponRecords.errors) {
     throw new Error(weaponRecords.errors[0].message);
   }
-  return weaponRecords.data!;
+  return weaponRecords.data;
 };
 export const fetchEquipments = async (bulletToken: string, language?: string) => {
-  const res = await fetchGraphQl(bulletToken, "d29cd0c2b5e6bac90dd5b817914832f8", language);
+  const res = await fetchGraphQl(
+    bulletToken,
+    RequestId.MyOutfitCommonDataEquipmentsQuery,
+    language
+  );
   const json = await res.json();
-  const gears = json as GraphQlResponse<Equipments>;
+  const gears = json as GraphQLSuccessResponse<MyOutfitCommonDataEquipmentsResult>;
   if (gears.errors) {
     throw new Error(gears.errors[0].message);
   }
-  return gears.data!;
+  return gears.data;
 };
 
 export const fetchBattleHistories = async (bulletToken: string, language?: string) => {
   const [regularRes, anarchyRes, xRes, privateRes] = await Promise.all([
-    fetchGraphQl(bulletToken, "3baef04b095ad8975ea679d722bc17de", language),
-    fetchGraphQl(bulletToken, "0438ea6978ae8bd77c5d1250f4f84803", language),
-    fetchGraphQl(bulletToken, "6796e3cd5dc3ebd51864dc709d899fc5", language),
-    fetchGraphQl(bulletToken, "8e5ae78b194264a6c230e262d069bd28", language),
+    fetchGraphQl(bulletToken, RequestId.RegularBattleHistoriesQuery, language),
+    fetchGraphQl(bulletToken, RequestId.BankaraBattleHistoriesQuery, language),
+    fetchGraphQl(bulletToken, RequestId.XBattleHistoriesQuery, language),
+    fetchGraphQl(bulletToken, RequestId.PrivateBattleHistoriesQuery, language),
   ]);
   const [regularJson, anarchyJson, xJson, privateJson] = await Promise.all([
     regularRes.json(),
@@ -307,10 +314,10 @@ export const fetchBattleHistories = async (bulletToken: string, language?: strin
     privateRes.json(),
   ]);
   const histories = {
-    regular: regularJson as GraphQlResponse<RegularBattleHistories>,
-    anarchy: anarchyJson as GraphQlResponse<BankaraBattleHistories>,
-    x: xJson as GraphQlResponse<XBattleHistories>,
-    private: privateJson as GraphQlResponse<PrivateBattleHistories>,
+    regular: regularJson as GraphQLSuccessResponse<RegularBattleHistoriesResult>,
+    anarchy: anarchyJson as GraphQLSuccessResponse<BankaraBattleHistoriesResult>,
+    x: xJson as GraphQLSuccessResponse<XBattleHistoriesResult>,
+    private: privateJson as GraphQLSuccessResponse<PrivateBattleHistoriesResult>,
   };
   Object.values(histories).forEach((history) => {
     if (history.errors) {
@@ -318,44 +325,54 @@ export const fetchBattleHistories = async (bulletToken: string, language?: strin
     }
   });
   return {
-    regular: histories.regular.data!,
-    anarchy: histories.anarchy.data!,
-    x: histories.x.data!,
-    private: histories.private.data!,
+    regular: histories.regular.data,
+    anarchy: histories.anarchy.data,
+    x: histories.x.data,
+    private: histories.private.data,
   };
 };
 export const fetchVsHistoryDetail = async (id: string, bulletToken: string, language?: string) => {
-  const res = await fetchGraphQl(bulletToken, "291295ad311b99a6288fc95a5c4cb2d2", language, {
-    vsResultId: id,
-  });
+  const res = await fetchGraphQl<VsHistoryDetailVariables>(
+    bulletToken,
+    RequestId.VsHistoryDetailQuery,
+    language,
+    {
+      vsResultId: id,
+    }
+  );
   const json = await res.json();
-  const detail = json as GraphQlResponse<VsHistoryDetail>;
+  const detail = json as GraphQLSuccessResponse<VsHistoryDetailResult>;
   if (detail.errors) {
     throw new Error(detail.errors[0].message);
   }
-  return detail.data!;
+  return detail.data;
 };
 export const fetchCoopResult = async (bulletToken: string, language?: string) => {
-  const res = await fetchGraphQl(bulletToken, "7edc52165b95dcb2b8a1c14c31e1d5b1", language);
+  const res = await fetchGraphQl(bulletToken, RequestId.CoopHistoryQuery, language);
   const json = await res.json();
-  const result = json as GraphQlResponse<CoopResult>;
+  const result = json as GraphQLSuccessResponse<CoopHistoryResult>;
   if (result.errors) {
     throw new Error(result.errors[0].message);
   }
-  return result.data!;
+  return result.data;
 };
 export const fetchCoopHistoryDetail = async (
   id: string,
   bulletToken: string,
   language?: string
 ) => {
-  const res = await fetchGraphQl(bulletToken, "9ade2aa3656324870ccec023636aed32", language, {
-    coopHistoryDetailId: id,
-  });
+  const res = await fetchGraphQl<CoopHistoryDetailVariables>(
+    bulletToken,
+    RequestId.CoopHistoryDetailQuery,
+    language,
+    {
+      coopHistoryDetailId: id,
+    }
+  );
   const json = await res.json();
-  const detail = json as GraphQlResponse<CoopHistoryDetail>;
+  const detail = json as GraphQLSuccessResponse<CoopHistoryDetailResult>;
   if (detail.errors) {
     throw new Error(detail.errors[0].message);
   }
-  return detail.data!;
+  return detail.data;
 };

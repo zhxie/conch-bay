@@ -1,14 +1,18 @@
 module.exports = {
-  extends: ["eslint:recommended", "plugin:@typescript-eslint/recommended", "prettier"],
+  extends: ["eslint:recommended", "plugin:@typescript-eslint/strict", "prettier"],
   parser: "@typescript-eslint/parser",
   parserOptions: {
     project: `./tsconfig.json`,
   },
   plugins: ["@typescript-eslint"],
   rules: {
+    "@typescript-eslint/dot-notation": "off",
+    "@typescript-eslint/no-duplicate-enum-values": "off",
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-non-null-assertion": "off",
+    "@typescript-eslint/prefer-nullish-coalescing": "off",
     "@typescript-eslint/require-await": 2,
+    "no-unused-vars": "off",
   },
   root: true,
 };

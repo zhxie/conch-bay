@@ -1,0 +1,34 @@
+diff --git a/node_modules/splatnet3-types/dist/generated-type-helpers.d.ts b/node_modules/splatnet3-types/dist/generated-type-helpers.d.ts
+index d8c80a5..386398b 100644
+--- a/node_modules/splatnet3-types/dist/generated-type-helpers.d.ts
++++ b/node_modules/splatnet3-types/dist/generated-type-helpers.d.ts
+@@ -1,4 +1,4 @@
+ import { request_types as OperationFields } from './request-types.js';
+-export declare type LinkedFieldType<ParentType extends {}, TypeName extends string & keyof ParentType, Type, Plural extends boolean> = Plural extends true ? Type[] : null extends ParentType[TypeName] ? Type | null : Type;
++export declare type LinkedFieldType<ParentType extends {}, TypeName extends string & keyof ParentType, Type, Plural extends boolean> = Plural extends true ? null[] extends ParentType[TypeName] ? (Type | null)[] : Type[] : null extends ParentType[TypeName] ? Type | null : Type;
+ export declare type OperationFieldType<ParentTypeName extends string, TypeName extends string, Type> = ParentTypeName extends keyof OperationFields ? TypeName extends keyof OperationFields[ParentTypeName] ? null extends OperationFields[ParentTypeName][TypeName] ? Type | null : Type : Type : Type;
+ export declare type UnknownScalarType = unknown & (string | number | boolean);
+diff --git a/node_modules/splatnet3-types/dist/types.d.ts b/node_modules/splatnet3-types/dist/types.d.ts
+index baa868d..2acb0c4 100644
+--- a/node_modules/splatnet3-types/dist/types.d.ts
++++ b/node_modules/splatnet3-types/dist/types.d.ts
+@@ -95,7 +95,7 @@ export interface PhotoAlbumItem {
+     uploadedTime: string;
+ }
+ export interface Catalog {
+-    progress: CatalogProgress;
++    progress: CatalogProgress | null;
+     seasonName: string;
+     seasonEndTime: string;
+     bonus: CatalogBonus;
+@@ -269,8 +269,8 @@ export interface CoopHistoryDetail {
+     jobBonus: number | null;
+ }
+ export interface CoopBossResult {
+-    boss: unknown;
+-    hasDefeatBoss: unknown;
++    boss: CoopEnemy;
++    hasDefeatBoss: boolean;
+ }
+ export interface CoopPlayerResult {
+     player: CoopPlayer;

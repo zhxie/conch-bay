@@ -40,11 +40,11 @@ import {
 } from "../components";
 import t from "../i18n";
 import {
-  CoopHistoryDetail,
-  Friends,
-  Schedules,
-  VsHistoryDetail,
-  WeaponRecords,
+  CoopHistoryDetailResult,
+  FriendListResult,
+  StageScheduleResult,
+  VsHistoryDetailResult,
+  WeaponRecordResult,
 } from "../models/types";
 import {
   fetchBattleHistories,
@@ -111,10 +111,10 @@ const MainView = () => {
   const [grade, setGrade, clearGrade] = useAsyncStorage("grade");
 
   const [apiUpdated, setApiUpdated] = useState(false);
-  const [schedules, setSchedules] = useState<Schedules>();
-  const [friends, setFriends] = useState<Friends>();
+  const [schedules, setSchedules] = useState<StageScheduleResult>();
+  const [friends, setFriends] = useState<FriendListResult>();
   const [results, setResults] =
-    useState<{ battle?: VsHistoryDetail; coop?: CoopHistoryDetail }[]>();
+    useState<{ battle?: VsHistoryDetailResult; coop?: CoopHistoryDetailResult }[]>();
   const [count, setCount] = useState(0);
   const [total, setTotal] = useState(0);
   const [filter, setFilter] = useState<Database.FilterProps>();
@@ -198,13 +198,13 @@ const MainView = () => {
     const details = (await Database.query(offset, limit, filter)).map((record) => {
       if (record.mode === "salmon_run") {
         return {
-          coop: JSON.parse(record.detail) as CoopHistoryDetail,
+          coop: JSON.parse(record.detail) as CoopHistoryDetailResult,
         };
       }
-      return { battle: JSON.parse(record.detail) as VsHistoryDetail };
+      return { battle: JSON.parse(record.detail) as VsHistoryDetailResult };
     });
     if (results !== undefined && results.length >= 20 && length > results.length) {
-      setResults((results ?? []).concat(details));
+      setResults(results.concat(details));
     } else {
       if (details.length > 0 || forceUpdate) {
         setResults(details);
@@ -219,7 +219,7 @@ const MainView = () => {
     }
     setLoadingMore(false);
   };
-  const addBattle = async (battle: VsHistoryDetail) => {
+  const addBattle = async (battle: VsHistoryDetailResult) => {
     try {
       await Database.addBattle(battle);
       return true;
@@ -227,7 +227,7 @@ const MainView = () => {
       return false;
     }
   };
-  const addCoop = async (coop: CoopHistoryDetail) => {
+  const addCoop = async (coop: CoopHistoryDetailResult) => {
     try {
       await Database.addCoop(coop);
       return true;
@@ -256,7 +256,7 @@ const MainView = () => {
       if (sessionToken) {
         // Attempt to friends.
         let newBulletToken = "";
-        let friendsAttempt: Friends | undefined;
+        let friendsAttempt: FriendListResult | undefined;
         if (bulletToken.length > 0) {
           try {
             friendsAttempt = await fetchFriends(bulletToken);
@@ -299,9 +299,7 @@ const MainView = () => {
         await setCatalogLevel(catalogLevel);
         await setLevel(level);
         await setRank(rank);
-        if (coopResult.coopResult.regularGrade) {
-          await setGrade(coopResult.coopResult.regularGrade.id);
-        }
+        await setGrade(coopResult.coopResult.regularGrade.id);
 
         // Fetch details.
         const results: {
@@ -350,9 +348,9 @@ const MainView = () => {
           for (let i = 0; i < newResults.length; i++) {
             let result: boolean;
             if (!newResults[i].isCoop) {
-              result = await addBattle(details[i] as VsHistoryDetail);
+              result = await addBattle(details[i] as VsHistoryDetailResult);
             } else {
-              result = await addCoop(details[i] as CoopHistoryDetail);
+              result = await addCoop(details[i] as CoopHistoryDetailResult);
             }
             if (!result) {
               fail++;
@@ -429,9 +427,9 @@ const MainView = () => {
           for (let i = 0; i < newResults.length; i++) {
             let result: boolean;
             if (!newResults[i].isCoop) {
-              result = await addBattle(details[i] as VsHistoryDetail);
+              result = await addBattle(details[i] as VsHistoryDetailResult);
             } else {
-              result = await addCoop(details[i] as CoopHistoryDetail);
+              result = await addCoop(details[i] as CoopHistoryDetailResult);
             }
             if (!result) {
               fail++;
@@ -559,13 +557,13 @@ const MainView = () => {
       const n = result["battles"].length + result["coops"].length;
       showToast(t("loading_n_results", { n }));
       const battleExisted = await Promise.all(
-        result["battles"].map((battle: VsHistoryDetail) =>
-          Database.isExist(battle.vsHistoryDetail.id)
+        result["battles"].map((battle: VsHistoryDetailResult) =>
+          Database.isExist(battle.vsHistoryDetail!.id)
         )
       );
       const coopExisted = await Promise.all(
-        result["coops"].map((coop: CoopHistoryDetail) =>
-          Database.isExist(coop.coopHistoryDetail.id)
+        result["coops"].map((coop: CoopHistoryDetailResult) =>
+          Database.isExist(coop.coopHistoryDetail!.id)
         )
       );
       const newBattles = result["battles"].filter((_, i: number) => !battleExisted[i]);
@@ -614,14 +612,14 @@ const MainView = () => {
     setExporting(true);
     const uri = FileSystem.cacheDirectory + "conch-bay-export.json";
     try {
-      const battles: VsHistoryDetail[] = [];
-      const coops: CoopHistoryDetail[] = [];
+      const battles: VsHistoryDetailResult[] = [];
+      const coops: CoopHistoryDetailResult[] = [];
       const records = await Database.queryAll(false);
       records.forEach((record) => {
         if (record.mode === "salmon_run") {
-          coops.push(JSON.parse(record.detail) as CoopHistoryDetail);
+          coops.push(JSON.parse(record.detail) as CoopHistoryDetailResult);
         } else {
-          battles.push(JSON.parse(record.detail) as VsHistoryDetail);
+          battles.push(JSON.parse(record.detail) as VsHistoryDetailResult);
         }
       });
 
@@ -679,11 +677,11 @@ const MainView = () => {
       const records = await Database.queryAll(true);
       records.forEach((record) => {
         if (record.mode === "salmon_run") {
-          const coop = JSON.parse(record.detail) as CoopHistoryDetail;
-          const stage = convertStageImageUrl(coop.coopHistoryDetail.coopStage);
+          const coop = JSON.parse(record.detail) as CoopHistoryDetailResult;
+          const stage = convertStageImageUrl(coop.coopHistoryDetail!.coopStage);
           resources.set(getImageCacheKey(stage), stage);
 
-          [coop.coopHistoryDetail.myResult, ...coop.coopHistoryDetail.memberResults].forEach(
+          [coop.coopHistoryDetail!.myResult, ...coop.coopHistoryDetail!.memberResults].forEach(
             (memberResult) => {
               // Weapons.
               memberResult.weapons.forEach((weapon) => {
@@ -704,10 +702,10 @@ const MainView = () => {
 
               // Splashtags.
               resources.set(
-                getImageCacheKey(memberResult.player.nameplate.background.image.url),
-                memberResult.player.nameplate.background.image.url
+                getImageCacheKey(memberResult.player.nameplate!.background.image.url),
+                memberResult.player.nameplate!.background.image.url
               );
-              memberResult.player.nameplate.badges.forEach((badge) => {
+              memberResult.player.nameplate!.badges.forEach((badge) => {
                 if (badge) {
                   resources.set(getImageCacheKey(badge.image.url), badge.image.url);
                 }
@@ -715,54 +713,59 @@ const MainView = () => {
             }
           );
         } else {
-          const battle = JSON.parse(record.detail) as VsHistoryDetail;
-          const stage = convertStageImageUrl(battle.vsHistoryDetail.vsStage);
+          const battle = JSON.parse(record.detail) as VsHistoryDetailResult;
+          const stage = convertStageImageUrl(battle.vsHistoryDetail!.vsStage);
           resources.set(getImageCacheKey(stage), stage);
 
-          [battle.vsHistoryDetail.myTeam, ...battle.vsHistoryDetail.otherTeams].forEach((team) => {
-            team.players.forEach((player) => {
-              // Weapons.
-              resources.set(getImageCacheKey(player.weapon.image2d.url), player.weapon.image2d.url);
-              resources.set(
-                getImageCacheKey(player.weapon.subWeapon.image.url),
-                player.weapon.subWeapon.image.url
-              );
-              resources.set(
-                getImageCacheKey(player.weapon.specialWeapon.image.url),
-                player.weapon.specialWeapon.image.url
-              );
-
-              // Gears.
-              [player.headGear, player.clothingGear, player.shoesGear].forEach((gear) => {
-                resources.set(getImageCacheKey(gear.originalImage.url), gear.originalImage.url);
-                resources.set(getImageCacheKey(gear.brand.image.url), gear.brand.image.url);
+          [battle.vsHistoryDetail!.myTeam, ...battle.vsHistoryDetail!.otherTeams].forEach(
+            (team) => {
+              team.players.forEach((player) => {
+                // Weapons.
                 resources.set(
-                  getImageCacheKey(gear.primaryGearPower.image.url),
-                  gear.primaryGearPower.image.url
+                  getImageCacheKey(player.weapon.image2d.url),
+                  player.weapon.image2d.url
                 );
-                gear.additionalGearPowers.forEach((gearPower) => {
-                  resources.set(getImageCacheKey(gearPower.image.url), gearPower.image.url);
+                resources.set(
+                  getImageCacheKey(player.weapon.subWeapon.image.url),
+                  player.weapon.subWeapon.image.url
+                );
+                resources.set(
+                  getImageCacheKey(player.weapon.specialWeapon.image.url),
+                  player.weapon.specialWeapon.image.url
+                );
+
+                // Gears.
+                [player.headGear, player.clothingGear, player.shoesGear].forEach((gear) => {
+                  resources.set(getImageCacheKey(gear.originalImage.url), gear.originalImage.url);
+                  resources.set(getImageCacheKey(gear.brand.image.url), gear.brand.image.url);
+                  resources.set(
+                    getImageCacheKey(gear.primaryGearPower.image.url),
+                    gear.primaryGearPower.image.url
+                  );
+                  gear.additionalGearPowers.forEach((gearPower) => {
+                    resources.set(getImageCacheKey(gearPower.image.url), gearPower.image.url);
+                  });
+                });
+
+                // Splashtags.
+                resources.set(
+                  getImageCacheKey(player.nameplate!.background.image.url),
+                  player.nameplate!.background.image.url
+                );
+                player.nameplate!.badges.forEach((badge) => {
+                  if (badge) {
+                    resources.set(getImageCacheKey(badge.image.url), badge.image.url);
+                  }
                 });
               });
-
-              // Splashtags.
-              resources.set(
-                getImageCacheKey(player.nameplate.background.image.url),
-                player.nameplate.background.image.url
-              );
-              player.nameplate.badges.forEach((badge) => {
-                if (badge) {
-                  resources.set(getImageCacheKey(badge.image.url), badge.image.url);
-                }
-              });
-            });
-          });
+            }
+          );
         }
       });
 
       // Attempt to preload weapon images from API.
       let newBulletToken = "";
-      let weaponRecordsAttempt: WeaponRecords | undefined;
+      let weaponRecordsAttempt: WeaponRecordResult | undefined;
       if (bulletToken.length > 0) {
         try {
           weaponRecordsAttempt = await fetchWeaponRecords(bulletToken);
