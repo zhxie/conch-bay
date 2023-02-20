@@ -103,6 +103,9 @@ const ResultView = (props: ResultViewProps) => {
   };
   const IsCoopWaveClear = (coop: CoopHistoryDetail, wave: number) => {
     if (coop.coopHistoryDetail.resultWave === 0) {
+      if (!coop.coopHistoryDetail.waveResults[wave].deliverNorm) {
+        return coop.coopHistoryDetail.bossResult!.hasDefeatBoss;
+      }
       return true;
     }
     return wave + 1 < coop.coopHistoryDetail.resultWave;
@@ -142,17 +145,13 @@ const ResultView = (props: ResultViewProps) => {
     switch (coop.coopHistoryDetail.resultWave) {
       case -1:
         return "";
-      case 1:
-        return t("wave_1");
-      case 2:
-        return t("wave_2");
-      case 3:
-        return t("wave_3");
       case 0:
         if (coop.coopHistoryDetail.bossResult) {
           return t("xtrawave");
         }
-        return t("wave_3");
+        return t("wave_n", { n: coop.coopHistoryDetail.waveResults.length });
+      default:
+        return t("wave_n", { n: coop.coopHistoryDetail.waveResults.length });
     }
   };
   const formatHazardLevel = (coop: CoopHistoryDetail) => {
@@ -587,49 +586,36 @@ const ResultView = (props: ResultViewProps) => {
                   >
                     <HStack center style={ViewStyles.px4}>
                       {result.coop.coopHistoryDetail.waveResults.map(
-                        (waveResult, i, waveResults) => {
-                          if (i < 3) {
-                            return (
-                              <WaveBox
-                                key={i}
-                                color={
-                                  IsCoopWaveClear(result.coop!, i)
-                                    ? getCoopRuleColor(result.coop!.coopHistoryDetail.rule)!
-                                    : undefined
-                                }
-                                waterLevel={formatWaterLevel(waveResult)!}
-                                eventWave={formatEventWave(waveResult)}
-                                deliver={waveResult.teamDeliverCount!}
-                                quota={waveResult.deliverNorm!}
-                                appearance={waveResult.goldenPopCount}
-                                specialWeapons={formatSpecialWeapon(result.coop!, i, 0)}
-                                specialWeaponSupplied={2}
-                                style={i !== waveResults.length - 1 ? ViewStyles.mr2 : undefined}
-                              />
-                            );
-                          }
-                          return (
-                            <WaveBox
-                              key={i}
-                              color={
-                                result.coop!.coopHistoryDetail.bossResult!.hasDefeatBoss
-                                  ? getCoopRuleColor(result.coop!.coopHistoryDetail.rule)!
-                                  : undefined
-                              }
-                              isKingSalmonid
-                              waterLevel={formatWaterLevel(waveResult)!}
-                              eventWave={td(result.coop!.coopHistoryDetail.bossResult!.boss)}
-                              deliver={
-                                result.coop!.coopHistoryDetail.bossResult!.hasDefeatBoss ? 1 : 0
-                              }
-                              quota={1}
-                              appearance={waveResult.goldenPopCount}
-                              specialWeapons={formatSpecialWeapon(result.coop!, i, 3)}
-                              specialWeaponSupplied={1}
-                              style={i !== waveResults.length - 1 ? ViewStyles.mr2 : undefined}
-                            />
-                          );
-                        }
+                        (waveResult, i, waveResults) => (
+                          <WaveBox
+                            key={i}
+                            color={
+                              IsCoopWaveClear(result.coop!, i)
+                                ? getCoopRuleColor(result.coop!.coopHistoryDetail.rule)!
+                                : undefined
+                            }
+                            isKingSalmonid={!waveResult.deliverNorm}
+                            waterLevel={formatWaterLevel(waveResult)!}
+                            eventWave={
+                              waveResult.deliverNorm
+                                ? formatEventWave(waveResult)
+                                : td(result.coop!.coopHistoryDetail.bossResult!.boss)
+                            }
+                            deliver={
+                              waveResult.teamDeliverCount ??
+                              (result.coop!.coopHistoryDetail.bossResult!.hasDefeatBoss ? 1 : 0)
+                            }
+                            quota={waveResult.deliverNorm ?? 1}
+                            appearance={waveResult.goldenPopCount}
+                            specialWeapons={formatSpecialWeapon(
+                              result.coop!,
+                              i,
+                              waveResult.deliverNorm ? 0 : i
+                            )}
+                            specialWeaponSupplied={waveResult.deliverNorm ? 2 : 1}
+                            style={i !== waveResults.length - 1 ? ViewStyles.mr2 : undefined}
+                          />
+                        )
                       )}
                     </HStack>
                   </ScrollView>

@@ -219,9 +219,7 @@ const zhHant = {
   "Q29vcEdyYWRlLTc=": "達人+3",
   "Q29vcEdyYWRlLTg=": "傳說",
   // Waves.
-  wave_1: "WAVE 1",
-  wave_2: "WAVE 2",
-  wave_3: "WAVE 3",
+  wave_n: "WAVE %{n}",
   xtrawave: "EX-WAVE",
   // Water levels.
   low_tide: "乾潮",
