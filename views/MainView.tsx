@@ -66,6 +66,7 @@ import {
 } from "../utils/api";
 import * as Database from "../utils/database";
 import { useAsyncStorage } from "../utils/hooks";
+import { ok } from "../utils/promise";
 import { convertStageImageUrl, getImageCacheKey, getUserIconCacheSource } from "../utils/ui";
 import FilterView from "./FilterView";
 import FriendView from "./FriendView";
@@ -253,16 +254,6 @@ const MainView = () => {
       const schedules = await fetchSchedules();
       setSchedules(schedules);
       if (sessionToken) {
-        // Update versions.
-        if (!apiUpdated) {
-          try {
-            await Promise.all([updateNsoVersion(), updateSplatnetVersion()]);
-            setApiUpdated(true);
-          } catch {
-            showToast(t("failed_to_check_api_update"));
-          }
-        }
-
         // Attempt to friends.
         let newBulletToken = "";
         let friendsAttempt: Friends | undefined;
@@ -277,7 +268,18 @@ const MainView = () => {
 
         // Regenerate bullet token if necessary.
         if (!newBulletToken) {
-          newBulletToken = await generateBulletToken();
+          // Also update versions.
+          const [newBulletTokenInner, nsoUpdated, splatnetUpdated] = await Promise.all([
+            generateBulletToken(),
+            apiUpdated ? true : ok(updateNsoVersion()),
+            apiUpdated ? true : ok(updateSplatnetVersion()),
+          ]);
+          newBulletToken = newBulletTokenInner;
+          if (nsoUpdated && splatnetUpdated) {
+            setApiUpdated(true);
+          } else {
+            showToast(t("failed_to_check_api_update"));
+          }
         }
 
         // Fetch friends, summary, catalog and results.
