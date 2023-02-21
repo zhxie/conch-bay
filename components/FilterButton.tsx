@@ -2,7 +2,7 @@ import { StyleProp, ViewStyle } from "react-native";
 import Pressable from "./Pressable";
 import { Circle } from "./Shape";
 import { HStack } from "./Stack";
-import { ViewStyles } from "./Styles";
+import { Color, ViewStyles } from "./Styles";
 import Text from "./Text";
 
 interface FilterButtonProps {
@@ -30,7 +30,7 @@ const FilterButton = (props: FilterButtonProps) => {
         {!props.textColor && (
           <Circle
             size={12}
-            color="#a1a1aa"
+            color={Color.MiddleTerritory}
             style={[ViewStyles.mr1, !!props.color && { backgroundColor: props.color }]}
           />
         )}

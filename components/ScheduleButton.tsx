@@ -3,7 +3,7 @@ import Marquee from "./Marquee";
 import Pressable from "./Pressable";
 import { Circle } from "./Shape";
 import { HStack, VStack } from "./Stack";
-import { TextStyles, ViewStyles } from "./Styles";
+import { Color, TextStyles, ViewStyles } from "./Styles";
 
 interface ScheduleButtonProps {
   rule: string;
@@ -23,7 +23,7 @@ const ScheduleButton = (props: ScheduleButtonProps) => {
       <VStack flex justify>
         <HStack center style={ViewStyles.mb1}>
           {props.rule.length > 0 && (
-            <Circle size={12} color={props.color ?? "#a1a1aa"} style={ViewStyles.mr2} />
+            <Circle size={12} color={props.color ?? Color.MiddleTerritory} style={ViewStyles.mr2} />
           )}
           <HStack flex>
             <Marquee

@@ -222,22 +222,6 @@ const MainView = () => {
     }
     setLoadingMore(false);
   };
-  const addBattle = async (battle: VsHistoryDetailResult) => {
-    try {
-      await Database.addBattle(battle);
-      return true;
-    } catch {
-      return false;
-    }
-  };
-  const addCoop = async (coop: CoopHistoryDetailResult) => {
-    try {
-      await Database.addCoop(coop);
-      return true;
-    } catch {
-      return false;
-    }
-  };
   const generateBulletToken = async () => {
     if (bulletToken.length > 0) {
       showToast(t("reacquiring_tokens"));
@@ -351,9 +335,9 @@ const MainView = () => {
           for (let i = 0; i < newResults.length; i++) {
             let result: boolean;
             if (!newResults[i].isCoop) {
-              result = await addBattle(details[i] as VsHistoryDetailResult);
+              result = await ok(Database.addBattle(details[i] as VsHistoryDetailResult));
             } else {
-              result = await addCoop(details[i] as CoopHistoryDetailResult);
+              result = await ok(Database.addCoop(details[i] as CoopHistoryDetailResult));
             }
             if (!result) {
               fail++;
@@ -430,9 +414,9 @@ const MainView = () => {
           for (let i = 0; i < newResults.length; i++) {
             let result: boolean;
             if (!newResults[i].isCoop) {
-              result = await addBattle(details[i] as VsHistoryDetailResult);
+              result = await ok(Database.addBattle(details[i] as VsHistoryDetailResult));
             } else {
-              result = await addCoop(details[i] as CoopHistoryDetailResult);
+              result = await ok(Database.addCoop(details[i] as CoopHistoryDetailResult));
             }
             if (!result) {
               fail++;
@@ -574,13 +558,13 @@ const MainView = () => {
       const skip = n - (newBattles.length + newCoops.length);
       let fail = 0;
       for (const battle of newBattles) {
-        const result = await addBattle(battle);
+        const result = await ok(Database.addBattle(battle));
         if (!result) {
           fail++;
         }
       }
       for (const coop of newCoops) {
-        const result = await addCoop(coop);
+        const result = await ok(Database.addCoop(coop));
         if (!result) {
           fail++;
         }
