@@ -31,6 +31,7 @@ const zhHant = {
   resource_notice:
     "如果法螺灣無法載入圖片，您可以清除緩存或預載入資源。請注意，由於魷魚圈3的限制，法螺灣僅能預載入部分圖片。",
   clear_cache: "清除緩存",
+  clearing_cache: "清除緩存中",
   preload_resources: "預載入資源",
   preloading_resources: "預載入資源中",
   feedback_notice: "如果您在使用法螺灣時遇到任何問題或有任何建議，請隨時分享您的反饋。",

@@ -33,6 +33,7 @@ const ja = {
   resource_notice:
     "ホラガイベイが画像を読み込めない場合は、キャッシュを消去するか、リソースを読み込むことができます。イカリング3の制限により、ホラガイベイは一部の画像しか事前に読み込むできないことに注意してください。",
   clear_cache: "キャッシュを消去",
+  clearing_cache: "キャッシュを消去中",
   preload_resources: "リソースを読み込む",
   preloading_resources: "リソースを読み込む中",
   feedback_notice:

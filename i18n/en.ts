@@ -33,6 +33,7 @@ const en = {
   resource_notice:
     "If Conch Bay cannot load images, you can clear cache or preload resources. Please note, due to SplatNet 3 restrictions, Conch Bay can only preload some images.",
   clear_cache: "Clear Cache",
+  clearing_cache: "Clearing Cache",
   preload_resources: "Preload Resources",
   preloading_resources: "Preloading Resources",
   feedback_notice:

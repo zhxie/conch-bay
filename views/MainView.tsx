@@ -501,7 +501,7 @@ const MainView = () => {
     setLogOut(true);
   };
   const onLogOutClose = () => {
-    if (!loggingOut && !exporting) {
+    if (!loggingIn && !loggingOut) {
       setLogOut(false);
     }
   };
@@ -644,7 +644,7 @@ const MainView = () => {
     setSupport(true);
   };
   const onSupportClose = () => {
-    if (!preloadingResources) {
+    if (!loggingIn && !clearingCache && !preloadingResources) {
       setSupport(false);
     }
   };
@@ -1171,7 +1171,7 @@ const MainView = () => {
               </VStack>
               <Button
                 isLoading={clearingCache}
-                isLoadingText={t("preloading_resources")}
+                isLoadingText={t("clearing_cache")}
                 style={[ViewStyles.accent, ViewStyles.mb2]}
                 textStyle={reverseTextColor}
                 onPress={onClearCachePress}
