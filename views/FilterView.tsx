@@ -90,6 +90,11 @@ const FilterView = (props: FilterViewProps) => {
   const onFilterPress = () => {
     setFilter(true);
   };
+  const onFilterLongPress = () => {
+    if (!isFilterEqual(props.filter, EmptyFilterProps)) {
+      props.onChange(EmptyFilterProps);
+    }
+  };
   const onQuickFilterPress = (filter: FilterProps) => {
     if (!isFilterEqual(props.filter, filter)) {
       props.onChange(filter);
@@ -136,6 +141,7 @@ const FilterView = (props: FilterViewProps) => {
             icon="filter"
             style={{ paddingTop: 2 }}
             onPress={onFilterPress}
+            onLongPress={onFilterLongPress}
           />
         </Center>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>

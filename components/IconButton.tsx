@@ -11,6 +11,7 @@ interface IconButtonProps {
   icon: string;
   style?: StyleProp<ViewStyle>;
   onPress?: () => void;
+  onLongPress?: () => void;
 }
 
 const IconButton = (props: IconButtonProps) => {
@@ -27,6 +28,7 @@ const IconButton = (props: IconButtonProps) => {
         props.style,
       ]}
       onPress={props.onPress}
+      onLongPress={props.onLongPress}
     >
       <Center flex>
         <Icon
