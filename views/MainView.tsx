@@ -102,7 +102,10 @@ const MainView = () => {
   const [bulletToken, setBulletToken, clearBulletToken, bulletTokenReady] =
     useAsyncStorage("bulletToken");
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [language, setLanguage, _, languageReady] = useAsyncStorage("language", t("lang"));
+  const [language, setLanguage, clearLanguage, languageReady] = useAsyncStorage(
+    "language",
+    t("lang")
+  );
 
   const [icon, setIcon, clearIcon] = useAsyncStorage("icon");
   const [catalogLevel, setCatalogLevel, clearCatalogLevel] = useAsyncStorage("catalogLevel");
@@ -649,7 +652,11 @@ const MainView = () => {
     }
   };
   const onLanguageSelected = async (language: string) => {
-    await setLanguage(language);
+    if (language === t("lang")) {
+      await clearLanguage();
+    } else {
+      await setLanguage(language);
+    }
   };
   const onClearCachePress = async () => {
     setClearingCache(true);
@@ -1127,21 +1134,21 @@ const MainView = () => {
             </VStack>
             <Picker
               isDisabled={refreshing}
-              title={t("change_language")}
+              title={t("change_language_language", { language: t(language) })}
               items={[
-                { key: "de-DE", value: "Deutsch" },
-                { key: "en-GB", value: "English (UK)" },
-                { key: "en-US", value: "English (United States)" },
-                { key: "es-ES", value: "Español" },
-                { key: "es-MX", value: "Español (México)" },
-                { key: "fr-CA", value: "Français (Canada)" },
-                { key: "it-IT", value: "Italiano" },
-                { key: "ja-JP", value: "日本語" },
-                { key: "ko-KR", value: "한국어" },
-                { key: "nl-NL", value: "Nederlands" },
-                { key: "ru-RU", value: "Русский язык" },
-                { key: "zh-CN", value: "简体中文" },
-                { key: "zh-TW", value: "繁體中文" },
+                { key: "de-DE", value: t("de-DE") },
+                { key: "en-GB", value: t("en-GB") },
+                { key: "en-US", value: t("en-US") },
+                { key: "es-ES", value: t("es-ES") },
+                { key: "es-MX", value: t("es-MX") },
+                { key: "fr-CA", value: t("fr-CA") },
+                { key: "it-IT", value: t("it-IT") },
+                { key: "ja-JP", value: t("ja-JP") },
+                { key: "ko-KR", value: t("ko-KR") },
+                { key: "nl-NL", value: t("nl-NL") },
+                { key: "ru-RU", value: t("ru-RU") },
+                { key: "zh-CN", value: t("zh-CN") },
+                { key: "zh-TW", value: t("zh-TW") },
               ]}
               onSelected={onLanguageSelected}
               style={ViewStyles.wf}

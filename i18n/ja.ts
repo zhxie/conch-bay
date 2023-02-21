@@ -1,4 +1,7 @@
+import base from "./base";
+
 const ja = {
+  ...base,
   // API.
   lang: "ja-JP",
   // UI.
@@ -27,7 +30,7 @@ const ja = {
   support: "サポート",
   language_notice:
     "ゲームの言語が表示言語と一致しない場合は、ここで変更できます。これにより、ホラガイベイは対応する言語でリザルトを読み込むことができます。",
-  change_language: "言語を変更",
+  change_language_language: "言語を変更 (%{language})",
   relog_in_notice: "ホラガイベイがトークンを取得できない場合は、再ログインできます。",
   relog_in: "再ログイン",
   resource_notice:
