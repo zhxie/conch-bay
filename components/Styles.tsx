@@ -155,7 +155,7 @@ export const ViewStyles = StyleSheet.create({
   f: {
     flex: 1,
   },
-  f0: {
+  i: {
     flexGrow: 0,
     flexShrink: 1,
   },

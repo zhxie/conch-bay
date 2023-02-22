@@ -962,9 +962,9 @@ const MainView = () => {
                         color={Color.MiddleTerritory}
                         style={ViewStyles.mr1}
                       />
-                      <Text center style={TextStyles.subtle}>
-                        {t("load_more_notice")}
-                      </Text>
+                      <HStack style={ViewStyles.i}>
+                        <Marquee style={TextStyles.subtle}>{t("load_more_notice")}</Marquee>
+                      </HStack>
                     </HStack>
                   )}
                 </VStack>
