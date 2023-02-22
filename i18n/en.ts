@@ -63,6 +63,7 @@ const en = {
     "Loaded %{n} result(s), %{fail} failed, %{skip} skipped",
   auto_refresh_enabled: "Auto refresh enabled",
   clear_filter: "Clear Filter",
+  n_x_battle: "%{n}x Battle",
   n_win_strike: "%{n}-WIN STRIKE",
   hide_player_names: "Hide Player Names",
   show_player_names: "Show Player Names",

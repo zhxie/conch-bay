@@ -74,6 +74,10 @@ export const TextStyles = StyleSheet.create({
   h6: {
     fontSize: 12,
   },
+  h7: {
+    fontSize: 10,
+    fontWeight: "bold",
+  },
   c: {
     textAlign: "center",
   },
@@ -150,6 +154,10 @@ export const ViewStyles = StyleSheet.create({
   },
   f: {
     flex: 1,
+  },
+  f0: {
+    flexGrow: 0,
+    flexShrink: 1,
   },
   h: {
     flexDirection: "row",

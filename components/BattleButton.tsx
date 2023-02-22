@@ -12,6 +12,7 @@ interface BattleButtonProps {
   isLast?: boolean;
   result?: number;
   rule: string;
+  dragon?: string;
   stage: string;
   weapon: string;
   kill?: number;
@@ -39,6 +40,7 @@ const BattleButton = (props: BattleButtonProps) => {
       isLast={props.isLast}
       result={props.result}
       title={props.rule}
+      badge={props.dragon}
       subtitle={props.stage}
       subChildren={<Text numberOfLines={1}>{props.weapon}</Text>}
       style={props.style}

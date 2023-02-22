@@ -43,6 +43,7 @@ import {
   CoopMemberResult,
   CoopPlayerResult,
   CoopWaveResult,
+  DragonMatchType,
   Enum,
   FestDragonCert,
   Judgement,
@@ -126,6 +127,18 @@ const ResultView = (props: ResultViewProps) => {
         return -1;
       case Judgement.EXEMPTED_LOSE:
         return -2;
+    }
+  };
+  const formatDragon = (battle: VsHistoryDetailResult) => {
+    if (battle.vsHistoryDetail!.festMatch) {
+      switch (battle.vsHistoryDetail!.festMatch.dragonMatchType) {
+        case DragonMatchType.DECUPLE:
+          return t("n_x_battle", { n: 10 });
+        case DragonMatchType.DRAGON:
+          return t("n_x_battle", { n: 100 });
+        case DragonMatchType.DOUBLE_DRAGON:
+          return t("n_x_battle", { n: 333 });
+      }
     }
   };
   const formatName = (name: string, species: Enum<typeof Species>, isSelf: boolean) => {
@@ -324,6 +337,7 @@ const ResultView = (props: ResultViewProps) => {
             color={getVsModeColor(result.item.battle.vsHistoryDetail!.vsMode)!}
             result={formatJudgement(result.item.battle)}
             rule={td(result.item.battle.vsHistoryDetail!.vsRule)}
+            dragon={formatDragon(result.item.battle)}
             stage={td(result.item.battle.vsHistoryDetail!.vsStage)}
             weapon={td(getVsSelfPlayer(result.item.battle).weapon)}
             kill={getVsSelfPlayer(result.item.battle).result?.kill}

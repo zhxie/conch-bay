@@ -1,4 +1,5 @@
 import { StyleProp, ViewStyle } from "react-native";
+import Badge from "./Badge";
 import Icon from "./Icon";
 import Image, { SourceProps } from "./Image";
 import Marquee from "./Marquee";
@@ -15,6 +16,7 @@ interface ResultButtonProps {
   result?: number;
   icon?: string;
   title: string;
+  badge?: string;
   subtitle: string;
   subChildren?: React.ReactNode;
   style?: StyleProp<ViewStyle>;
@@ -77,11 +79,18 @@ const ResultButton = (props: ResultButtonProps) => {
                   style={ViewStyles.mr1}
                 />
               )}
-              <HStack flex center>
+              <HStack center style={[!!props.badge && ViewStyles.mr1, ViewStyles.f0]}>
                 <Marquee style={[TextStyles.h2, !!props.color && { color: props.color }]}>
                   {props.title}
                 </Marquee>
               </HStack>
+              {props.badge && (
+                <Badge
+                  color={props.color ?? Color.MiddleTerritory}
+                  title={props.badge}
+                  size="small"
+                />
+              )}
             </HStack>
             <HStack center>{props.subChildren}</HStack>
           </HStack>

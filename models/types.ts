@@ -27,6 +27,7 @@ export {
   CoopHistoryDetailVariables,
   CoopHistoryResult,
   CoopRule,
+  DragonMatchType,
   FestDragonCert,
   FriendListResult,
   FriendOnlineState,
