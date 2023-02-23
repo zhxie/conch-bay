@@ -1,5 +1,5 @@
 import { StyleProp, ViewStyle } from "react-native";
-import { SourceProps } from "./Image";
+import { ImageSource } from "./Image";
 import ResultButton from "./ResultButton";
 import { Circle } from "./Shape";
 import { HStack } from "./Stack";
@@ -10,7 +10,7 @@ interface BattlePlayerButtonProps {
   isFirst?: boolean;
   isLast?: boolean;
   name: string;
-  weapon: SourceProps;
+  weapon: ImageSource;
   paint: number;
   kill?: number;
   assist?: number;

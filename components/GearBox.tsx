@@ -1,5 +1,5 @@
 import { StyleProp, View, ViewStyle, useColorScheme } from "react-native";
-import Image, { SourceProps } from "./Image";
+import Image, { ImageSource } from "./Image";
 import Marquee from "./Marquee";
 import { Circle } from "./Shape";
 import { Center, HStack } from "./Stack";
@@ -8,11 +8,11 @@ import { Color, ViewStyles } from "./Styles";
 interface GearBoxProps {
   isFirst?: boolean;
   isLast?: boolean;
-  image: SourceProps;
-  brand: SourceProps;
+  image: ImageSource;
+  brand: ImageSource;
   name: string;
-  primaryAbility: SourceProps;
-  additionalAbility: SourceProps[];
+  primaryAbility: ImageSource;
+  additionalAbility: ImageSource[];
   paddingTo: number;
   style?: StyleProp<ViewStyle>;
 }

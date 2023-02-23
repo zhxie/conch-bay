@@ -22,7 +22,6 @@ const config = {
     image: "./assets/splash.png",
     backgroundColor: "#FAFAFA",
   },
-  jsEngine: "hermes",
   ios: {
     bundleIdentifier: "name.sketch.ConchBay",
     buildNumber: "39",

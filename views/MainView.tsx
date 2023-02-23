@@ -1,9 +1,9 @@
 import * as Application from "expo-application";
-import { CacheManager } from "expo-cached-image";
 import * as Clipboard from "expo-clipboard";
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
-import { activateKeepAwake, deactivateKeepAwake } from "expo-keep-awake";
+import { Image } from "expo-image";
+import { activateKeepAwakeAsync, deactivateKeepAwake } from "expo-keep-awake";
 import * as Sharing from "expo-sharing";
 import * as WebBrowser from "expo-web-browser";
 import React, { useEffect, useRef, useState } from "react";
@@ -645,16 +645,7 @@ const MainView = () => {
   const onClearCachePress = async () => {
     setClearingCache(true);
     try {
-      const files = await FileSystem.readDirectoryAsync(FileSystem.cacheDirectory!);
-      for (const file of files) {
-        try {
-          await FileSystem.deleteAsync(`${FileSystem.cacheDirectory!}${file}`, {
-            idempotent: true,
-          });
-        } catch {
-          /* empty */
-        }
-      }
+      await Image.clearDiskCache();
     } catch (e) {
       showToast(e);
     }
@@ -805,21 +796,7 @@ const MainView = () => {
       });
 
       // Preload images.
-      const resourcesArray = Array.from(resources);
-      const resourcesInfo = await Promise.all(
-        resourcesArray.map((resource) =>
-          FileSystem.getInfoAsync(`${FileSystem.cacheDirectory}${resource[0]}`, { size: true })
-        )
-      );
-      const newResources = resourcesArray.filter(
-        // 67 bytes seems to be the smallest PNG size.
-        (_, i) => !resourcesInfo[i].exists || (resourcesInfo[i].size ?? 0) < 68
-      );
-      await Promise.all(
-        Array.from(newResources).map((resource) =>
-          CacheManager.downloadAsync({ uri: resource[1], key: resource[0] })
-        )
-      );
+      Image.prefetch(Array.from(resources));
     } catch (e) {
       showToast(e);
     }
@@ -861,7 +838,7 @@ const MainView = () => {
   const onAutoRefreshPress = async () => {
     if (!autoRefresh) {
       showToast(t("auto_refresh_enabled"));
-      await activateKeepAwake();
+      await activateKeepAwakeAsync();
     } else {
       await deactivateKeepAwake();
     }
