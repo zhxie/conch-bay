@@ -68,7 +68,11 @@ jobs:
         run: npm run lint
 
   build:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest]
+
+    runs-on: ${{ matrix.os }}
 
     needs:
       - format
@@ -105,12 +109,25 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build
+      - name: Build (iOS)
+        if: matrix.os == 'macos-latest'
+        run: eas build --local --non-interactive --platform ios --profile preview
+
+      - name: Build (Android)
+        if: matrix.os == 'ubuntu-latest'
         run: eas build --local --non-interactive --platform android --profile preview
 
-      - name: Upload build artifacts
-        if: github.event_name == 'push'
+      - name: Upload build artifacts (iOS)
         uses: actions/upload-artifact@v3
+        if: matrix.os == 'macos-latest'
+        with:
+          name: conch-bay-ios
+          path: |
+            ./*.tar.gz
+
+      - name: Upload build artifacts (Android)
+        uses: actions/upload-artifact@v3
+        if: matrix.os == 'ubuntu-latest'
         with:
           name: conch-bay-android
           path: |
