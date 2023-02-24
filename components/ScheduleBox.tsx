@@ -1,5 +1,5 @@
 import { StyleProp, StyleSheet, ViewStyle } from "react-native";
-import Image, { SourceProps } from "./Image";
+import Image, { ImageSource } from "./Image";
 import Marquee from "./Marquee";
 import { HStack, VStack } from "./Stack";
 import { TextStyles, ViewStyles } from "./Styles";
@@ -7,7 +7,7 @@ import Text from "./Text";
 
 interface StageProps {
   title: string;
-  image: SourceProps;
+  image: ImageSource;
 }
 interface ScheduleBoxProps {
   rule: string;

@@ -1,11 +1,11 @@
 import { StyleProp, ViewStyle, useColorScheme } from "react-native";
-import Image, { SourceProps } from "./Image";
+import Image, { ImageSource } from "./Image";
 import Marquee from "./Marquee";
 import { HStack } from "./Stack";
 import { ViewStyles } from "./Styles";
 
 interface WorkSuitBoxProps {
-  image: SourceProps;
+  image: ImageSource;
   name: string;
   style?: StyleProp<ViewStyle>;
 }

@@ -1,12 +1,12 @@
 import { ImageStyle, StyleProp, ViewStyle } from "react-native";
-import Image, { SourceProps } from "./Image";
+import Image, { ImageSource } from "./Image";
 import Pressable from "./Pressable";
 import { Circle } from "./Shape";
 
 interface AvatarButtonProps {
   size: number;
   isDisabled?: boolean;
-  image?: SourceProps;
+  image?: ImageSource;
   badge?: string;
   style?: StyleProp<ViewStyle>;
   imageStyle?: StyleProp<ImageStyle>;

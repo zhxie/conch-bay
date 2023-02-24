@@ -1,0 +1,58 @@
+# Prefetch with certain cache keys after the hashtag of each URLs.
+diff --git a/node_modules/expo-image/.DS_Store b/node_modules/expo-image/.DS_Store
+new file mode 100644
+index 0000000..e69de29
+diff --git a/node_modules/expo-image/android/src/main/java/expo/modules/image/ExpoImageModule.kt b/node_modules/expo-image/android/src/main/java/expo/modules/image/ExpoImageModule.kt
+index a3fae8a..dea8e6b 100644
+--- a/node_modules/expo-image/android/src/main/java/expo/modules/image/ExpoImageModule.kt
++++ b/node_modules/expo-image/android/src/main/java/expo/modules/image/ExpoImageModule.kt
+@@ -9,6 +9,7 @@ import com.facebook.react.uimanager.ViewProps
+ import com.facebook.yoga.YogaConstants
+ import expo.modules.image.enums.ContentFit
+ import expo.modules.image.enums.Priority
++import expo.modules.image.okhttp.GlideUrlWithCustomCacheKey
+ import expo.modules.image.records.CachePolicy
+ import expo.modules.image.records.ContentPosition
+ import expo.modules.image.records.ImageTransition
+@@ -25,10 +26,18 @@ class ExpoImageModule : Module() {
+     Function("prefetch") { urls: List<String> ->
+       val context = appContext.reactContext ?: return@Function
+       urls.forEach {
+-        Glide
+-          .with(context)
+-          .download(GlideUrl(it))
+-          .submit()
++        var separated = it.split("#")
++        if (separated.size > 1) {
++          Glide
++            .with(context)
++            .download(GlideUrlWithCustomCacheKey(it, null, it.split("#")[1]))
++            .submit()
++        } else {
++          Glide
++            .with(context)
++            .download(GlideUrl(it))
++            .submit()
++        }
+       }
+     }
+ 
+diff --git a/node_modules/expo-image/ios/ImageModule.swift b/node_modules/expo-image/ios/ImageModule.swift
+index 04f2dae..e4bc063 100644
+--- a/node_modules/expo-image/ios/ImageModule.swift
++++ b/node_modules/expo-image/ios/ImageModule.swift
+@@ -91,7 +91,13 @@ public final class ImageModule: Module {
+     }
+ 
+     Function("prefetch") { (urls: [URL]) in
+-      SDWebImagePrefetcher.shared.prefetchURLs(urls)
++      SDWebImagePrefetcher.shared.prefetchURLs(urls, context: [.cacheKeyFilter : SDWebImageCacheKeyFilter { url in
++            var components = url.absoluteString.components(separatedBy: "#")
++            guard components.count > 1 else {
++                return url.absoluteString
++            }
++            return url.absoluteString.components(separatedBy: "#")[1]
++          }], progress: .none)
+     }
+ 
+     AsyncFunction("clearMemoryCache") { () -> Bool in

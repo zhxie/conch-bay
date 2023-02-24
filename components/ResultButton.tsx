@@ -1,7 +1,7 @@
 import { StyleProp, ViewStyle } from "react-native";
 import Badge from "./Badge";
 import Icon from "./Icon";
-import Image, { SourceProps } from "./Image";
+import Image, { ImageSource } from "./Image";
 import Marquee from "./Marquee";
 import Pressable from "./Pressable";
 import { Center, HStack, VStack } from "./Stack";
@@ -12,7 +12,7 @@ interface ResultButtonProps {
   isLoading?: boolean;
   isFirst?: boolean;
   isLast?: boolean;
-  image?: SourceProps;
+  image?: ImageSource;
   result?: number;
   icon?: string;
   title: string;

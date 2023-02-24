@@ -1,15 +1,15 @@
 import { StyleProp, StyleSheet, ViewStyle, useColorScheme } from "react-native";
-import Image, { SourceProps } from "./Image";
+import Image, { ImageSource } from "./Image";
 import Marquee from "./Marquee";
 import { Circle } from "./Shape";
 import { Center, HStack } from "./Stack";
 import { Color, ViewStyles } from "./Styles";
 
 interface BattleWeaponBoxProps {
-  image: SourceProps;
+  image: ImageSource;
   name: string;
-  subWeapon: SourceProps;
-  specialWeapon: SourceProps;
+  subWeapon: ImageSource;
+  specialWeapon: ImageSource;
   style?: StyleProp<ViewStyle>;
 }
 

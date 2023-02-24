@@ -7,7 +7,7 @@ import {
   View,
   ViewStyle,
 } from "react-native";
-import Image, { SourceProps } from "./Image";
+import Image, { ImageSource } from "./Image";
 import { Center, HStack } from "./Stack";
 import { TextStyles, ViewStyles } from "./Styles";
 import Text from "./Text";
@@ -17,8 +17,8 @@ interface SplashtagProps {
   name: string;
   nameId: string;
   title: string;
-  banner: SourceProps;
-  badges: (SourceProps | null)[];
+  banner: ImageSource;
+  badges: (ImageSource | null)[];
   style?: StyleProp<ViewStyle>;
 }
 
