@@ -67,7 +67,12 @@ import {
 import * as Database from "../utils/database";
 import { useAsyncStorage } from "../utils/hooks";
 import { ok } from "../utils/promise";
-import { convertStageImageUrl, getImageCacheKey, getUserIconCacheSource } from "../utils/ui";
+import {
+  convertStageImageUrl,
+  getImageCacheKey,
+  getUserIconCacheSource,
+  isImageExpired,
+} from "../utils/ui";
 import FilterView from "./FilterView";
 import FriendView from "./FriendView";
 import ResultView from "./ResultView";
@@ -666,10 +671,15 @@ const MainView = () => {
           [coop.coopHistoryDetail!.myResult, ...coop.coopHistoryDetail!.memberResults].forEach(
             (memberResult) => {
               // Weapons.
-              memberResult.weapons.forEach((weapon) => {
-                resources.set(getImageCacheKey(weapon.image.url), weapon.image.url);
-              });
-              if (memberResult.specialWeapon) {
+              memberResult.weapons
+                .filter((weapon) => !isImageExpired(weapon.image.url))
+                .forEach((weapon) => {
+                  resources.set(getImageCacheKey(weapon.image.url), weapon.image.url);
+                });
+              if (
+                memberResult.specialWeapon &&
+                !isImageExpired(memberResult.specialWeapon.image.url)
+              ) {
                 resources.set(
                   getImageCacheKey(memberResult.specialWeapon.image.url),
                   memberResult.specialWeapon.image.url
@@ -677,18 +687,22 @@ const MainView = () => {
               }
 
               // Work suits.
-              resources.set(
-                getImageCacheKey(memberResult.player.uniform.image.url),
-                memberResult.player.uniform.image.url
-              );
+              if (!isImageExpired(memberResult.player.uniform.image.url)) {
+                resources.set(
+                  getImageCacheKey(memberResult.player.uniform.image.url),
+                  memberResult.player.uniform.image.url
+                );
+              }
 
               // Splashtags.
-              resources.set(
-                getImageCacheKey(memberResult.player.nameplate!.background.image.url),
-                memberResult.player.nameplate!.background.image.url
-              );
+              if (!isImageExpired(memberResult.player.nameplate!.background.image.url)) {
+                resources.set(
+                  getImageCacheKey(memberResult.player.nameplate!.background.image.url),
+                  memberResult.player.nameplate!.background.image.url
+                );
+              }
               memberResult.player.nameplate!.badges.forEach((badge) => {
-                if (badge) {
+                if (badge && !isImageExpired(badge.image.url)) {
                   resources.set(getImageCacheKey(badge.image.url), badge.image.url);
                 }
               });
@@ -703,39 +717,55 @@ const MainView = () => {
             (team) => {
               team.players.forEach((player) => {
                 // Weapons.
-                resources.set(
-                  getImageCacheKey(player.weapon.image2d.url),
-                  player.weapon.image2d.url
-                );
-                resources.set(
-                  getImageCacheKey(player.weapon.subWeapon.image.url),
-                  player.weapon.subWeapon.image.url
-                );
-                resources.set(
-                  getImageCacheKey(player.weapon.specialWeapon.image.url),
-                  player.weapon.specialWeapon.image.url
-                );
+                if (!isImageExpired(player.weapon.image2d.url)) {
+                  resources.set(
+                    getImageCacheKey(player.weapon.image2d.url),
+                    player.weapon.image2d.url
+                  );
+                }
+                if (!isImageExpired(player.weapon.subWeapon.image.url)) {
+                  resources.set(
+                    getImageCacheKey(player.weapon.subWeapon.image.url),
+                    player.weapon.subWeapon.image.url
+                  );
+                }
+                if (!isImageExpired(player.weapon.specialWeapon.image.url)) {
+                  resources.set(
+                    getImageCacheKey(player.weapon.specialWeapon.image.url),
+                    player.weapon.specialWeapon.image.url
+                  );
+                }
 
                 // Gears.
                 [player.headGear, player.clothingGear, player.shoesGear].forEach((gear) => {
-                  resources.set(getImageCacheKey(gear.originalImage.url), gear.originalImage.url);
-                  resources.set(getImageCacheKey(gear.brand.image.url), gear.brand.image.url);
-                  resources.set(
-                    getImageCacheKey(gear.primaryGearPower.image.url),
-                    gear.primaryGearPower.image.url
-                  );
-                  gear.additionalGearPowers.forEach((gearPower) => {
-                    resources.set(getImageCacheKey(gearPower.image.url), gearPower.image.url);
-                  });
+                  if (!isImageExpired(gear.originalImage.url)) {
+                    resources.set(getImageCacheKey(gear.originalImage.url), gear.originalImage.url);
+                  }
+                  if (!isImageExpired(gear.brand.image.url)) {
+                    resources.set(getImageCacheKey(gear.brand.image.url), gear.brand.image.url);
+                  }
+                  if (!isImageExpired(gear.primaryGearPower.image.url)) {
+                    resources.set(
+                      getImageCacheKey(gear.primaryGearPower.image.url),
+                      gear.primaryGearPower.image.url
+                    );
+                  }
+                  gear.additionalGearPowers
+                    .filter((gearPower) => !isImageExpired(gearPower.image.url))
+                    .forEach((gearPower) => {
+                      resources.set(getImageCacheKey(gearPower.image.url), gearPower.image.url);
+                    });
                 });
 
                 // Splashtags.
-                resources.set(
-                  getImageCacheKey(player.nameplate!.background.image.url),
-                  player.nameplate!.background.image.url
-                );
+                if (!isImageExpired(player.nameplate!.background.image.url)) {
+                  resources.set(
+                    getImageCacheKey(player.nameplate!.background.image.url),
+                    player.nameplate!.background.image.url
+                  );
+                }
                 player.nameplate!.badges.forEach((badge) => {
-                  if (badge) {
+                  if (badge && !isImageExpired(badge.image.url)) {
                     resources.set(getImageCacheKey(badge.image.url), badge.image.url);
                   }
                 });

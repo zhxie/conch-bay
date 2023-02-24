@@ -9,6 +9,21 @@ import {
 } from "../models/types";
 import { getAuthorityAndPath } from "./url";
 
+export const getImageExpires = (image: string) => {
+  const regex = /Expires=(\d*)&/;
+  const match = regex.exec(image);
+  if (!match) {
+    return null;
+  }
+  return match[1];
+};
+export const isImageExpired = (image: string) => {
+  const expires = getImageExpires(image);
+  if (expires && parseInt(expires) * 1000 < new Date().valueOf()) {
+    return true;
+  }
+  return false;
+};
 export const getImageCacheKey = (image: string) => {
   const regex = /\/([0-9|a-f]{64}_\d)\./;
   const match = regex.exec(image)!;
