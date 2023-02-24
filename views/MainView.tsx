@@ -796,7 +796,8 @@ const MainView = () => {
       });
 
       // Preload images.
-      Image.prefetch(Array.from(resources));
+      // HACK: add a hashtag do not break the URL. Here the cache key will be appended after the hashtag.
+      Image.prefetch(Array.from(resources).map((resource) => `${resource[1]}#${resource[0]}`));
     } catch (e) {
       showToast(e);
     }
