@@ -1,6 +1,6 @@
 import { FlashList, ListRenderItemInfo } from "@shopify/flash-list";
 import { Dimensions, StyleProp, ViewStyle, useColorScheme } from "react-native";
-import { Avatar, Circle, Color, VStack, ViewStyles } from "../components";
+import { Avatar, Color, VStack, ViewStyles } from "../components";
 import { Friend, FriendListResult } from "../models/types";
 import { getFriendColor, getFriendOutline, getUserIconCacheSource } from "../utils/ui";
 
@@ -19,8 +19,9 @@ const FriendView = (props: FriendViewProps) => {
   const renderItem = (friend: ListRenderItemInfo<Friend | number>) => {
     if (typeof friend.item === "number") {
       return (
-        <Circle
+        <Avatar
           size={48}
+          recyclingKey={String(friend.item)}
           style={[
             friend.index !== placeholder - 1 ? ViewStyles.mr2 : undefined,
             style,
@@ -33,6 +34,7 @@ const FriendView = (props: FriendViewProps) => {
       <Avatar
         size={48}
         image={getUserIconCacheSource(friend.item.userIcon.url)}
+        recyclingKey={friend.item.id}
         badge={{
           color: getFriendColor(friend.item) ?? friend.extraData,
           outline: getFriendOutline(friend.item),
@@ -59,9 +61,6 @@ const FriendView = (props: FriendViewProps) => {
         renderItem={renderItem}
         extraData={color}
         estimatedItemSize={48}
-        getItemType={(item) => {
-          return typeof item;
-        }}
         contentContainerStyle={ViewStyles.px4}
       />
     </VStack>

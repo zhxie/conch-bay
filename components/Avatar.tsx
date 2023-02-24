@@ -11,6 +11,7 @@ interface BadgeProps {
 interface AvatarProps {
   size: number;
   image?: ImageSource;
+  recyclingKey?: string;
   badge?: BadgeProps;
   style?: StyleProp<ViewStyle>;
   imageStyle?: StyleProp<ImageStyle>;
@@ -24,7 +25,13 @@ const Avatar = (props: AvatarProps) => {
 
   return (
     <Center style={[circle, style, props.style]}>
-      {props.image && <Image source={props.image} style={[circle, props.imageStyle]} />}
+      {props.image && (
+        <Image
+          source={props.image}
+          recyclingKey={props.recyclingKey}
+          style={[circle, props.imageStyle]}
+        />
+      )}
       {props.badge && (
         <Circle
           size={12}

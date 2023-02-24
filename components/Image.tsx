@@ -4,6 +4,7 @@ import { ViewStyles } from "./Styles";
 
 interface ImageProps {
   source?: ImageSource;
+  recyclingKey?: string;
   style?: StyleProp<ImageStyle>;
 }
 
@@ -12,7 +13,14 @@ const Image = (props: ImageProps) => {
   const imageStyle = colorScheme === "light" ? ViewStyles.lightTerritory : ViewStyles.darkTerritory;
 
   // HACK: forcly cast.
-  return <EImage source={props.source} style={[imageStyle, props.style as any]} transition={300} />;
+  return (
+    <EImage
+      source={props.source}
+      style={[imageStyle, props.style as any]}
+      transition={300}
+      recyclingKey={props.recyclingKey}
+    />
+  );
 };
 
 export { ImageSource } from "expo-image";
