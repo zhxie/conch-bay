@@ -129,12 +129,14 @@ const zhHant = {
   "VnNTdGFnZS0xNA==": "鱘魚造船廠",
   "VnNTdGFnZS0xNQ==": "座頭購物中心",
   "VnNTdGFnZS0xNg==": "醋飯海洋世界",
+  VnNTdGFnZS0tOTk5: "",
   // Coop stages.
   "Q29vcFN0YWdlLTE=": "鮭壩",
   "Q29vcFN0YWdlLTI=": "新卷堡",
   "Q29vcFN0YWdlLTY=": "漂浮落難船",
   "Q29vcFN0YWdlLTc=": "麥年海洋發電所",
   "Q29vcFN0YWdlLTEwMA==": "醋飯海洋世界",
+  "Q29vcFN0YWdlLS05OTk=": "",
   // Weapons.
   weapons: "武器",
   "V2VhcG9uLTA=": "廣域標記槍",

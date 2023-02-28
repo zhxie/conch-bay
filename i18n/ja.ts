@@ -134,12 +134,14 @@ const ja = {
   "VnNTdGFnZS0xNA==": "チョウザメ造船",
   "VnNTdGFnZS0xNQ==": "ザトウマーケット",
   "VnNTdGFnZS0xNg==": "スメーシーワールド",
+  VnNTdGFnZS0tOTk5: "",
   // Coop stages.
   "Q29vcFN0YWdlLTE=": "シェケナダム",
   "Q29vcFN0YWdlLTI=": "アラマキ砦",
   "Q29vcFN0YWdlLTY=": "難破船ドン・ブラコ",
   "Q29vcFN0YWdlLTc=": "ムニ・エール海洋発電所",
   "Q29vcFN0YWdlLTEwMA==": "スメーシーワールド",
+  "Q29vcFN0YWdlLS05OTk=": "",
   // Weapons.
   weapons: "ブキ",
   "V2VhcG9uLTA=": "ボールドマーカー",

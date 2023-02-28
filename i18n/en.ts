@@ -134,12 +134,14 @@ const en = {
   "VnNTdGFnZS0xNA==": "Sturgeon Shipyard",
   "VnNTdGFnZS0xNQ==": "MakoMart",
   "VnNTdGFnZS0xNg==": "Wahoo World",
+  VnNTdGFnZS0tOTk5: "",
   // Coop stages.
   "Q29vcFN0YWdlLTE=": "Spawning Grounds",
   "Q29vcFN0YWdlLTI=": "Sockeye Station",
   "Q29vcFN0YWdlLTY=": "Marooner's Bay",
   "Q29vcFN0YWdlLTc=": "Gone Fission Hydroplant",
   "Q29vcFN0YWdlLTEwMA==": "Wahoo World",
+  "Q29vcFN0YWdlLS05OTk=": "",
   // Weapons.
   weapons: "Weapons",
   "V2VhcG9uLTA=": "Sploosh-o-matic",
