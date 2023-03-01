@@ -1,4 +1,5 @@
 import {
+  CoopHistoryDetailQuery_379f0d9,
   CoopHistoryDetailQuery_3cc5f82,
   CoopHistoryDetailQuery_9ade2aa,
   CoopHistoryDetailQuery_f3799a0,
@@ -37,6 +38,7 @@ export {
   MyOutfitCommonDataEquipmentsResult,
   PrivateBattleHistoriesResult,
   RegularBattleHistoriesResult,
+  RequestId,
   StageScheduleResult,
   Species,
   VsHistoryDetailVariables,
@@ -53,6 +55,7 @@ export type Badge =
 export type BankaraMatchSetting = BankaraMatchSetting_schedule;
 export type CoopGroupingSchedule = CoopSchedule_schedule;
 export type CoopHistoryDetailResult =
+  | CoopHistoryDetailQuery_379f0d9
   | CoopHistoryDetailQuery_3cc5f82
   | CoopHistoryDetailQuery_9ade2aa
   | CoopHistoryDetailQuery_f3799a0;

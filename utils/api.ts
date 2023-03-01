@@ -2,7 +2,6 @@ import { fromByteArray as encode64 } from "base64-js";
 import * as Crypto from "expo-crypto";
 import * as Random from "expo-random";
 import pRetry from "p-retry";
-import { RequestId } from "splatnet3-types/dist/graphql";
 import {
   BankaraBattleHistoriesResult,
   CatalogResult,
@@ -15,6 +14,7 @@ import {
   MyOutfitCommonDataEquipmentsResult,
   PrivateBattleHistoriesResult,
   RegularBattleHistoriesResult,
+  RequestId,
   StageScheduleResult,
   VsHistoryDetailResult,
   VsHistoryDetailVariables,
@@ -24,8 +24,8 @@ import {
 import { encode64Url } from "./codec";
 import { formUrlEncoded, getParam, parameterize } from "./url";
 
-let NSO_VERSION = "2.4.0";
-let SPLATNET_VERSION = "2.0.0-7070f95e";
+let NSO_VERSION = "2.5.0";
+let SPLATNET_VERSION = "3.0.0-2857bc50";
 
 // https://stackoverflow.com/a/54208009.
 const fetchTimeout = async (input: RequestInfo, init: RequestInit | undefined, timeout: number) => {
