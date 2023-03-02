@@ -13,6 +13,24 @@ def main():
     ids = set()
     battles = []
     coops = []
+    if os.path.exists(f"{sys.argv[1]}/exports/results"):
+        for file in os.listdir(f"{sys.argv[1]}/exports/results"):
+            with open(f"{sys.argv[1]}/exports/results/{file}") as f:
+                datum = json.loads(f.read())
+                battle = datum["data"]
+                id = battle["vsHistoryDetail"]["id"]
+                if id not in ids:
+                    ids.add(id)
+                    battles.append(battle)
+    if os.path.exists(f"{sys.argv[1]}/exports/coop_results"):
+        for file in os.listdir(f"{sys.argv[1]}/exports/coop_results"):
+            with open(f"{sys.argv[1]}/exports/coop_results/{file}") as f:
+                datum = json.loads(f.read())
+                coop = datum["data"]
+                id = coop["coopHistoryDetail"]["id"]
+                if id not in ids:
+                    ids.add(id)
+                    coops.append(coop)
     for dir in os.listdir(sys.argv[1]):
         if dir.startswith("export-"):
             with open(f"{sys.argv[1]}/{dir}/results.json") as f:
