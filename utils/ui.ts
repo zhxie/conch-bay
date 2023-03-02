@@ -25,9 +25,7 @@ export const isImageExpired = (image: string) => {
   return false;
 };
 export const getImageCacheKey = (image: string) => {
-  const regex = /\/([0-9|a-f]{64}_\d)\./;
-  const match = regex.exec(image)!;
-  return match[1];
+  return image.split("?")[0];
 };
 export const getImageCacheSource = (image: string) => {
   return {
@@ -35,14 +33,10 @@ export const getImageCacheSource = (image: string) => {
     cacheKey: getImageCacheKey(image),
   };
 };
-export const getUserIconCacheKey = (userIcon: string) => {
-  const components = userIcon.split("/");
-  return components[components.length - 1];
-};
 export const getUserIconCacheSource = (userIcon: string) => {
   return {
     uri: userIcon,
-    cacheKey: getUserIconCacheKey(userIcon),
+    cacheKey: userIcon,
   };
 };
 
@@ -56,7 +50,7 @@ export const convertStageImageUrl = (stage: VsStage) => {
   const url = getAuthorityAndPath(stage.image.url);
   const pathComponents = url.split("/");
   const imageId = pathComponents[pathComponents.length - 1].split("_")[0];
-  return `https://splatoon3.ink/assets/splatnet/stage_img/icon/high_resolution/${imageId}_0.png`;
+  return `https://splatoon3.ink/assets/splatnet/v1/stage_img/icon/high_resolution/${imageId}_0.png`;
 };
 
 export const getVsModeColor = (mode: VsMode) => {
