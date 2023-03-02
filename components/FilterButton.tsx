@@ -34,7 +34,10 @@ const FilterButton = (props: FilterButtonProps) => {
             style={[ViewStyles.mr1, !!props.color && { backgroundColor: props.color }]}
           />
         )}
-        <Text numberOfLines={1} style={!!props.color && { color: props.textColor }}>
+        <Text
+          numberOfLines={1}
+          style={!!props.color && !!props.textColor && { color: props.textColor }}
+        >
           {props.title}
         </Text>
       </HStack>
