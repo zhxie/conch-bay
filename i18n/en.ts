@@ -236,10 +236,9 @@ const en = {
   "Q29vcFVuaWZvcm0tNg==": "Black Slopsuit",
   "Q29vcFVuaWZvcm0tNw==": "White Slopsuit",
   "Q29vcFVuaWZvcm0tOA==": "Orange Gloopsuit",
-  // TODO: not verified on the following 3.
-  "Q29vcFVuaWZvcm0tOQ==": "Yellow Gloopsuit",
-  "Q29vcFVuaWZvcm0tMTA=": "Brown Gloopsuit",
-  "Q29vcFVuaWZvcm0tMTE=": "Black Gloopsuit",
+  "Q29vcFVuaWZvcm0tOQ==": "Black Gloopsuit",
+  "Q29vcFVuaWZvcm0tMTA=": "Yellow Gloopsuit",
+  "Q29vcFVuaWZvcm0tMTE=": "Brown Gloopsuit",
   // Grades.
   "Q29vcEdyYWRlLTA=": "Apprentice",
   "Q29vcEdyYWRlLTE=": "Part-Timer",

@@ -236,10 +236,9 @@ const ja = {
   "Q29vcFVuaWZvcm0tNg==": "バイトツナギ ブラック",
   "Q29vcFVuaWZvcm0tNw==": "バイトツナギ ホワイト",
   "Q29vcFVuaWZvcm0tOA==": "バイトウェーダー オレンジ",
-  // TODO: not verified on the following 3.
-  "Q29vcFVuaWZvcm0tOQ==": "バイトウェーダー イエロー",
-  "Q29vcFVuaWZvcm0tMTA=": "バイトウェーダー ブラウン",
-  "Q29vcFVuaWZvcm0tMTE=": "バイトウェーダー ブラック",
+  "Q29vcFVuaWZvcm0tOQ==": "バイトウェーダー ブラック",
+  "Q29vcFVuaWZvcm0tMTA=": "バイトウェーダー イエロー",
+  "Q29vcFVuaWZvcm0tMTE=": "バイトウェーダー ブラウン",
   // Grades.
   "Q29vcEdyYWRlLTA=": "かけだし",
   "Q29vcEdyYWRlLTE=": "はんにんまえ",

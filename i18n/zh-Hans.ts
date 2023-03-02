@@ -18,7 +18,7 @@ const zhHans = {
   load_more: "加载更多",
   loading_more: "加载更多中",
   loaded_all: "已全部加载",
-  load_more_notice: "长按加载更多以加载所有结果。",
+  load_more_notice: "长按加载更多以加载所有记录。",
   stats: "统计",
   stats_notice: "由当前已加载的记录统计。",
   import: "导入",
@@ -231,10 +231,9 @@ const zhHans = {
   "Q29vcFVuaWZvcm0tNg==": "打工连身工作服 黑色",
   "Q29vcFVuaWZvcm0tNw==": "打工连身工作服 白色",
   "Q29vcFVuaWZvcm0tOA==": "打工防水衣 橘色",
-  // TODO: not verified on the following 3.
-  "Q29vcFVuaWZvcm0tOQ==": "打工防水衣 黄色",
-  "Q29vcFVuaWZvcm0tMTA=": "打工防水衣 棕色",
-  "Q29vcFVuaWZvcm0tMTE=": "打工防水衣 黑色",
+  "Q29vcFVuaWZvcm0tOQ==": "打工防水衣 黑色",
+  "Q29vcFVuaWZvcm0tMTA=": "打工防水衣 黄色",
+  "Q29vcFVuaWZvcm0tMTE=": "打工防水衣 棕色",
   // Grades.
   "Q29vcEdyYWRlLTA=": "新手",
   "Q29vcEdyYWRlLTE=": "半吊子",
