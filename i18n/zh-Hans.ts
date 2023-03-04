@@ -278,6 +278,7 @@ const zhHans = {
   Q29vcEVuZW15LTIw: "泥鲑鱼",
   // King Salmonids.
   Q29vcEVuZW15LTIz: "横纲",
+  Q29vcEVuZW15LTI0: "辰龙",
   // Results.
   score_score: "%{score}计数",
   knock_out: "完胜！",

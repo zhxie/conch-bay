@@ -283,6 +283,7 @@ const ja = {
   Q29vcEVuZW15LTIw: "ドロシャケ",
   // King Salmonids.
   Q29vcEVuZW15LTIz: "ヨコヅナ",
+  Q29vcEVuZW15LTI0: "タツ",
   // Results.
   score_score: "%{score}カウント",
   knock_out: "ノックアウト！",

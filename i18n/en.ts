@@ -283,6 +283,7 @@ const en = {
   Q29vcEVuZW15LTIw: "Mudmouth",
   // King Salmonids.
   Q29vcEVuZW15LTIz: "Cohozuna",
+  Q29vcEVuZW15LTI0: "Horrorboros",
   // Results.
   score_score: "Score %{score}",
   knock_out: "KNOCKOUT!",
