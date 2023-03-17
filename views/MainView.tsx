@@ -866,6 +866,9 @@ const MainView = () => {
   const onIminkFApiPress = async () => {
     await Linking.openURL("https://github.com/imink-app/f-API");
   };
+  const onNintendoAppVersionsPress = async () => {
+    await Linking.openURL("https://github.com/nintendoapis/nintendo-app-versions");
+  };
   const onAutoRefreshPress = async () => {
     if (!autoRefresh) {
       showToast(t("auto_refresh_enabled"));
@@ -1246,6 +1249,9 @@ const MainView = () => {
             </Text>
             <Text style={TextStyles.link} onPress={onIminkFApiPress}>
               imink f API
+            </Text>
+            <Text style={TextStyles.link} onPress={onNintendoAppVersionsPress}>
+              Nintendo app versions
             </Text>
           </VStack>
         </VStack>

@@ -25,7 +25,7 @@ import { encode64Url } from "./codec";
 import { formUrlEncoded, getParam, parameterize } from "./url";
 
 let NSO_VERSION = "2.5.0";
-let SPLATNET_VERSION = "3.0.0-2857bc50";
+let SPLATNET_VERSION = "3.0.0-6049221b";
 
 // https://stackoverflow.com/a/54208009.
 const fetchTimeout = async (input: RequestInfo, init: RequestInit | undefined, timeout: number) => {
@@ -56,18 +56,12 @@ export const updateNsoVersion = async () => {
   NSO_VERSION = json["results"][0]["version"];
 };
 export const updateSplatnetVersion = async () => {
-  const res = await fetchRetry("https://api.lp1.av5ja.srv.nintendo.net");
-  const text = await res.text();
+  const res = await fetchRetry(
+    "https://raw.fastgit.org/nintendoapis/nintendo-app-versions/main/data/splatnet3-app.json"
+  );
+  const json = await res.json();
 
-  const regex = /src="(\/.*?\.js)"/;
-  const match = regex.exec(text)!;
-
-  const res2 = await fetchRetry(`https://api.lp1.av5ja.srv.nintendo.net${match[1]}`);
-  const text2 = await res2.text();
-
-  const regex2 = /([0-9a-f]{40}).*?revision_info_not_set.*?=`(.*?)-/;
-  const match2 = regex2.exec(text2)!;
-  SPLATNET_VERSION = `${match2[2]}-${match2[1].substring(0, 8)}`;
+  SPLATNET_VERSION = json["web_app_ver"];
 };
 const callIminkFApi = async (idToken: string, step: number) => {
   const res = await fetchRetry("https://api.imink.app/f", {
