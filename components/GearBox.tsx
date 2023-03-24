@@ -3,14 +3,16 @@ import Image, { ImageSource } from "./Image";
 import Marquee from "./Marquee";
 import { Circle } from "./Shape";
 import { Center, HStack } from "./Stack";
-import { Color, ViewStyles } from "./Styles";
+import { Color, TextStyles, ViewStyles } from "./Styles";
+import Text from "./Text";
 
 interface GearBoxProps {
   isFirst?: boolean;
   isLast?: boolean;
   image: ImageSource;
-  brand: ImageSource;
+  brandImage: ImageSource;
   name: string;
+  brand: string;
   primaryAbility: ImageSource;
   additionalAbility: ImageSource[];
   paddingTo: number;
@@ -46,7 +48,7 @@ const GearBox = (props: GearBoxProps) => {
           <Center style={ViewStyles.mr3}>
             <Image source={props.image} style={{ width: 32, height: 32 }} />
             <Image
-              source={props.brand}
+              source={props.brandImage}
               style={[
                 ViewStyles.transparent,
                 { width: 12, height: 12, position: "absolute", left: 0, top: 0 },
@@ -54,7 +56,9 @@ const GearBox = (props: GearBoxProps) => {
             />
           </Center>
           <HStack flex>
-            <Marquee>{props.name}</Marquee>
+            <Marquee>
+              <Text style={TextStyles.subtle}>{props.brand}</Text> {props.name}
+            </Marquee>
           </HStack>
         </HStack>
         <HStack center>

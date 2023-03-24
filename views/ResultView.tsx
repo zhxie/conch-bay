@@ -567,9 +567,10 @@ const ResultView = (props: ResultViewProps) => {
                         isFirst={i === 0}
                         isLast={i === gears.length - 1}
                         image={getImageCacheSource(gear.originalImage.url)}
-                        brand={getImageCacheSource(gear.brand.image.url)}
+                        brandImage={getImageCacheSource(gear.brand.image.url)}
                         // TODO: need translation.
                         name={gear.name}
+                        brand={t(gear.brand.id)}
                         primaryAbility={getImageCacheSource(gear.primaryGearPower.image.url)}
                         additionalAbility={gear.additionalGearPowers.map((gearPower) =>
                           getImageCacheSource(gearPower.image.url)
