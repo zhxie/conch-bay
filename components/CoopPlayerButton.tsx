@@ -33,12 +33,12 @@ const CoopPlayerButton = (props: CoopPlayerButtonProps) => {
     >
       <HStack center>
         <Circle size={10} color={Color.GoldenEgg} style={ViewStyles.mr1} />
-        <HStack style={[ViewStyles.mr1, { alignItems: "baseline" }]}>
-          <Text numberOfLines={1}>{props.deliverGoldenEgg}</Text>
+        <Text numberOfLines={1} style={ViewStyles.mr1}>
+          {props.deliverGoldenEgg}
           <Text numberOfLines={1} style={TextStyles.h6}>
             {assistGoldenEgg}
           </Text>
-        </HStack>
+        </Text>
         <Circle size={10} color={Color.PowerEgg} style={ViewStyles.mr1} />
         <Text numberOfLines={1} style={ViewStyles.mr1}>
           {props.powerEgg}

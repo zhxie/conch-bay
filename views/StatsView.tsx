@@ -149,6 +149,24 @@ const StatsView = (props: StatsViewProps) => {
     }
     return formatTotalAndAverage(kill, count);
   };
+  const formatTotalAndAverageGoldenEggs = (deliver: number, assist: number, count: number) => {
+    if (deliver + assist === 0) {
+      return <Text numberOfLines={1}>0</Text>;
+    }
+    return (
+      <Text numberOfLines={1}>
+        {deliver}
+        <Text numberOfLines={1} style={TextStyles.h6}>
+          {assist > 0 ? `+${assist}` : ""}
+        </Text>{" "}
+        ({(deliver / count).toFixed(1)}
+        <Text numberOfLines={1} style={TextStyles.h6}>
+          {assist > 0 ? `+${(assist / count).toFixed(1)}` : ""}
+        </Text>
+        )
+      </Text>
+    );
+  };
 
   return (
     <Center style={props.style}>
@@ -221,19 +239,11 @@ const StatsView = (props: StatsViewProps) => {
                     </Text>
                   </Display>
                   <Display title={t("golden_eggs_collected")}>
-                    <HStack style={{ alignItems: "baseline" }}>
-                      <Text numberOfLines={1}>
-                        {formatTotalAndAverage(count.coop.deliverGoldenEgg, count.coop.count)}
-                      </Text>
-                      {count.coop.assistGoldenEgg > 0 && (
-                        <Text numberOfLines={1} style={TextStyles.h6}>
-                          {`+${formatTotalAndAverage(
-                            count.coop.assistGoldenEgg,
-                            count.coop.count
-                          )}`}
-                        </Text>
-                      )}
-                    </HStack>
+                    {formatTotalAndAverageGoldenEggs(
+                      count.coop.deliverGoldenEgg,
+                      count.coop.assistGoldenEgg,
+                      count.coop.count
+                    )}
                   </Display>
                   <Display title={t("power_eggs_collected")}>
                     <Text numberOfLines={1}>
