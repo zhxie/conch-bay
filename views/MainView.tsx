@@ -17,8 +17,8 @@ import {
   ScrollView,
   useColorScheme,
 } from "react-native";
-import Toast from "react-native-root-toast";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { Transition, useToastBannerToggler } from "react-native-toast-banner";
 import {
   Avatar,
   AvatarButton,
@@ -88,6 +88,8 @@ const MainView = () => {
 
   const insets = useSafeAreaInsets();
 
+  const { showBanner } = useToastBannerToggler();
+
   const [ready, setReady] = useState(false);
   const [logIn, setLogIn] = useState(false);
   const [loggingIn, setLoggingIn] = useState(false);
@@ -139,7 +141,7 @@ const MainView = () => {
           await loadResults(20, false);
           setReady(true);
         } catch (e) {
-          showToast(e);
+          showToast(ToastLevel.Error, e);
           setFirstAid(true);
         }
       })();
@@ -184,12 +186,42 @@ const MainView = () => {
     }
   }, [refreshing, autoRefresh, language]);
 
-  const showToast = (e: any) => {
-    if (e instanceof Error) {
-      Toast.show(e.message);
-    } else if (typeof e === "string") {
-      Toast.show(e);
+  enum ToastLevel {
+    Success,
+    Info,
+    Warn,
+    Error,
+  }
+  const showToast = (level: ToastLevel, content: any) => {
+    let backgroundColor: string;
+    let color = Color.DarkText;
+    switch (level) {
+      case ToastLevel.Success:
+        backgroundColor = Color.KillAndRescue;
+        break;
+      case ToastLevel.Info:
+        backgroundColor = Color.UltraSignal;
+        break;
+      case ToastLevel.Warn:
+        backgroundColor = Color.Special;
+        color = Color.LightText;
+        break;
+      case ToastLevel.Error:
+        backgroundColor = Color.Death;
+        break;
     }
+    if (content instanceof Error) {
+      content = content.message;
+    }
+    showBanner({
+      contentView: (
+        <Text style={[ViewStyles.px4, ViewStyles.py2, TextStyles.h2, TextStyles.c, { color }]}>
+          {content}
+        </Text>
+      ),
+      backgroundColor,
+      transitions: [Transition.MoveLinear],
+    });
   };
 
   const loadResults = async (length: number, forceUpdate: boolean) => {
@@ -229,7 +261,7 @@ const MainView = () => {
   };
   const generateBulletToken = async () => {
     if (bulletToken.length > 0) {
-      showToast(t("reacquiring_tokens"));
+      showToast(ToastLevel.Info, t("reacquiring_tokens"));
     }
 
     const res = await getWebServiceToken(sessionToken);
@@ -270,7 +302,7 @@ const MainView = () => {
           if (nsoUpdated && splatnetUpdated) {
             setApiUpdated(true);
           } else {
-            showToast(t("failed_to_check_api_update"));
+            showToast(ToastLevel.Warn, t("failed_to_check_api_update"));
           }
         }
 
@@ -327,7 +359,7 @@ const MainView = () => {
         const existed = await Promise.all(results.map((result) => Database.isExist(result.id)));
         const newResults = results.filter((_, i) => !existed[i]);
         if (newResults.length > 0) {
-          showToast(t("loading_n_results", { n: newResults.length }));
+          showToast(ToastLevel.Info, t("loading_n_results", { n: newResults.length }));
           const details = await Promise.all(
             newResults.map((result) => {
               if (!result.isCoop) {
@@ -349,16 +381,19 @@ const MainView = () => {
             }
           }
           if (fail > 0) {
-            showToast(t("loaded_n_results_fail_failed", { n: newResults.length, fail }));
+            showToast(
+              ToastLevel.Warn,
+              t("loaded_n_results_fail_failed", { n: newResults.length, fail })
+            );
           } else {
-            showToast(t("loaded_n_results", { n: newResults.length }));
+            showToast(ToastLevel.Success, t("loaded_n_results", { n: newResults.length }));
           }
         }
 
         await loadResults(20, true);
       }
     } catch (e) {
-      showToast(e);
+      showToast(ToastLevel.Error, e);
     }
     setRefreshing(false);
   };
@@ -406,7 +441,7 @@ const MainView = () => {
         const existed = await Promise.all(results.map((result) => Database.isExist(result.id)));
         const newResults = results.filter((_, i) => !existed[i]);
         if (newResults.length > 0) {
-          showToast(t("loading_n_results", { n: newResults.length }));
+          showToast(ToastLevel.Info, t("loading_n_results", { n: newResults.length }));
           const details = await Promise.all(
             newResults.map((result) => {
               if (!result.isCoop) {
@@ -428,9 +463,12 @@ const MainView = () => {
             }
           }
           if (fail > 0) {
-            showToast(t("loaded_n_results_fail_failed", { n: newResults.length, fail }));
+            showToast(
+              ToastLevel.Warn,
+              t("loaded_n_results_fail_failed", { n: newResults.length, fail })
+            );
           } else {
-            showToast(t("loaded_n_results", { n: newResults.length }));
+            showToast(ToastLevel.Success, t("loaded_n_results", { n: newResults.length }));
           }
 
           await loadResults(20, true);
@@ -485,7 +523,7 @@ const MainView = () => {
       setLoggingIn(false);
       setLogIn(false);
     } catch (e) {
-      showToast(e);
+      showToast(ToastLevel.Error, e);
       setLoggingIn(false);
     }
   };
@@ -522,7 +560,7 @@ const MainView = () => {
       setLoggingOut(false);
       setLogOut(false);
     } catch (e) {
-      showToast(e);
+      showToast(ToastLevel.Error, e);
       setLoggingOut(false);
     }
   };
@@ -547,7 +585,7 @@ const MainView = () => {
       setRefreshing(true);
       const result = JSON.parse(await FileSystem.readAsStringAsync(uri));
       const n = result["battles"].length + result["coops"].length;
-      showToast(t("loading_n_results", { n }));
+      showToast(ToastLevel.Info, t("loading_n_results", { n }));
       const battleExisted = await Promise.all(
         result["battles"].map((battle: VsHistoryDetailResult) =>
           Database.isExist(battle.vsHistoryDetail!.id)
@@ -575,13 +613,16 @@ const MainView = () => {
         }
       }
       if (fail > 0 && skip > 0) {
-        showToast(t("loaded_n_results_fail_failed_skip_skipped", { n, fail, skip }));
+        showToast(
+          ToastLevel.Warn,
+          t("loaded_n_results_fail_failed_skip_skipped", { n, fail, skip })
+        );
       } else if (fail > 0) {
-        showToast(t("loaded_n_results_fail_failed", { n, fail }));
+        showToast(ToastLevel.Warn, t("loaded_n_results_fail_failed", { n, fail }));
       } else if (skip > 0) {
-        showToast(t("loaded_n_results_skip_skipped", { n, skip }));
+        showToast(ToastLevel.Success, t("loaded_n_results_skip_skipped", { n, skip }));
       } else {
-        showToast(t("loaded_n_results", { n }));
+        showToast(ToastLevel.Success, t("loaded_n_results", { n }));
       }
 
       // Query stored latest results if updated.
@@ -589,14 +630,14 @@ const MainView = () => {
         await loadResults(20, true);
       }
     } catch (e) {
-      showToast(e);
+      showToast(ToastLevel.Error, e);
     }
 
     // Clean up.
     try {
       await FileSystem.deleteAsync(uri, { idempotent: true });
     } catch (e) {
-      showToast(e);
+      showToast(ToastLevel.Error, e);
     }
     setRefreshing(false);
   };
@@ -621,14 +662,14 @@ const MainView = () => {
       });
       await Sharing.shareAsync(uri, { UTI: "public.json" });
     } catch (e) {
-      showToast(e);
+      showToast(ToastLevel.Error, e);
     }
 
     // Clean up.
     try {
       await FileSystem.deleteAsync(uri, { idempotent: true });
     } catch (e) {
-      showToast(e);
+      showToast(ToastLevel.Error, e);
     }
     setExporting(false);
   };
@@ -652,7 +693,7 @@ const MainView = () => {
     try {
       await Image.clearDiskCache();
     } catch (e) {
-      showToast(e);
+      showToast(ToastLevel.Error, e);
     }
     setClearingCache(false);
   };
@@ -829,7 +870,7 @@ const MainView = () => {
       // HACK: add a hashtag do not break the URL. Here the cache key will be appended after the hashtag.
       Image.prefetch(Array.from(resources).map((resource) => `${resource[1]}#${resource[0]}`));
     } catch (e) {
-      showToast(e);
+      showToast(ToastLevel.Error, e);
     }
     setPreloadingResources(false);
   };
@@ -851,7 +892,7 @@ const MainView = () => {
     try {
       await Sharing.shareAsync(uri, { UTI: "public.database" });
     } catch (e) {
-      showToast(e);
+      showToast(ToastLevel.Error, e);
     }
   };
   const onAcknowledgmentsPress = () => {
@@ -871,7 +912,7 @@ const MainView = () => {
   };
   const onAutoRefreshPress = async () => {
     if (!autoRefresh) {
-      showToast(t("auto_refresh_enabled"));
+      showToast(ToastLevel.Info, t("auto_refresh_enabled"));
       await activateKeepAwakeAsync();
     } else {
       await deactivateKeepAwake();

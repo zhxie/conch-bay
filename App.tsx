@@ -3,6 +3,7 @@ import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
 import { useColorScheme } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { ToastBannerProvider, ToastBannerPresenter } from "react-native-toast-banner";
 import { ViewStyles } from "./components";
 import "./i18n";
 import { MainView } from "./views";
@@ -30,8 +31,11 @@ const App = () => {
 
   return (
     <SafeAreaProvider style={backgroundStyle}>
-      <StatusBar style={statusBarStyle} />
-      {ready && <MainView />}
+      <ToastBannerProvider>
+        <StatusBar style={statusBarStyle} />
+        {ready && <MainView />}
+        <ToastBannerPresenter />
+      </ToastBannerProvider>
     </SafeAreaProvider>
   );
 };
