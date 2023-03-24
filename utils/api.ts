@@ -1,6 +1,5 @@
 import { fromByteArray as encode64 } from "base64-js";
 import * as Crypto from "expo-crypto";
-import * as Random from "expo-random";
 import pRetry from "p-retry";
 import {
   BankaraBattleHistoriesResult,
@@ -78,8 +77,8 @@ const callIminkFApi = async (idToken: string, step: number) => {
   return json as { f: string; request_id: string; timestamp: string };
 };
 export const generateLogIn = async () => {
-  const state = encode64Url(encode64(Random.getRandomBytes(36)));
-  const cv = encode64Url(encode64(Random.getRandomBytes(32)));
+  const state = encode64Url(encode64(Crypto.getRandomBytes(36)));
+  const cv = encode64Url(encode64(Crypto.getRandomBytes(32)));
   const cvHash = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, cv, {
     encoding: Crypto.CryptoEncoding.BASE64,
   });

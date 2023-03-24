@@ -522,6 +522,7 @@ const MainView = () => {
 
       setLoggingIn(false);
       setLogIn(false);
+      setLogOut(false);
     } catch (e) {
       showToast(ToastLevel.Error, e);
       setLoggingIn(false);
