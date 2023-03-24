@@ -42,6 +42,7 @@ const ja = {
   feedback_notice:
     "ホラガイベイの使用中に問題が発生した場合、またはアドバイスがある場合は、お気軽にフィードバックをお寄せください。",
   create_a_github_issue: "GitHub Issueを作成",
+  send_a_mail: "メールを送る",
   debug_notice: "次の情報はデバッグ専用です。他の人と共有しないでください。",
   copy_session_token: "セッショントークンをコピー",
   copy_bullet_token: "ブレットトークンをコピー",

@@ -39,6 +39,7 @@ const zhHant = {
   preloading_resources: "預載入資源中",
   feedback_notice: "如果您在使用法螺灣時遇到任何問題或有任何建議，請隨時分享您的反饋。",
   create_a_github_issue: "創建GitHub Issue",
+  send_a_mail: "發送郵件",
   debug_notice: "以下資訊僅用於調試。請不要與他人分享。",
   copy_session_token: "複製會話令牌",
   copy_bullet_token: "複製Bullet令牌",

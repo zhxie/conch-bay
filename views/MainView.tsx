@@ -878,6 +878,9 @@ const MainView = () => {
   const onCreateAGithubIssuePress = async () => {
     await Linking.openURL("https://github.com/zhxie/conch-bay/issues/new");
   };
+  const onSendAMailress = async () => {
+    await Linking.openURL("mailto:conch-bay@outlook.com");
+  };
   const onCopySessionTokenPress = async () => {
     if (sessionToken.length > 0) {
       await Clipboard.setStringAsync(sessionToken);
@@ -1237,8 +1240,11 @@ const MainView = () => {
             <VStack center>
               <Text style={ViewStyles.mb2}>{t("feedback_notice")}</Text>
             </VStack>
-            <Button style={ViewStyles.accent} onPress={onCreateAGithubIssuePress}>
+            <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onCreateAGithubIssuePress}>
               <Marquee style={reverseTextColor}>{t("create_a_github_issue")}</Marquee>
+            </Button>
+            <Button style={ViewStyles.accent} onPress={onSendAMailress}>
+              <Marquee style={reverseTextColor}>{t("send_a_mail")}</Marquee>
             </Button>
           </VStack>
           <VStack style={ViewStyles.wf}>

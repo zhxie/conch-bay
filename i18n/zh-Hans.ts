@@ -39,6 +39,7 @@ const zhHans = {
   preloading_resources: "预加载资源中",
   feedback_notice: "如果您在使用法螺湾时遇到任何问题或有任何建议，请随时分享您的反馈。",
   create_a_github_issue: "创建GitHub Issue",
+  send_a_mail: "发送邮件",
   debug_notice: "以下信息仅用于调试。请不要与他人分享。",
   copy_session_token: "复制会话令牌",
   copy_bullet_token: "复制Bullet令牌",
