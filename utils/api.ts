@@ -24,7 +24,7 @@ import { encode64Url } from "./codec";
 import { formUrlEncoded, getParam, parameterize } from "./url";
 
 let NSO_VERSION = "2.5.0";
-let SPLATNET_VERSION = "3.0.0-6049221b";
+let SPLATNET_VERSION = "3.0.0-0742bda0";
 
 // https://stackoverflow.com/a/54208009.
 const fetchTimeout = async (input: RequestInfo, init: RequestInit | undefined, timeout: number) => {
