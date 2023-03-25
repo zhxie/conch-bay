@@ -20,7 +20,6 @@ import {
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { Transition, useToastBannerToggler } from "react-native-toast-banner";
 import {
-  Avatar,
   AvatarButton,
   Badge,
   Button,
@@ -1271,19 +1270,25 @@ const MainView = () => {
         <VStack center style={ViewStyles.mb3}>
           <Marquee style={[TextStyles.h3, ViewStyles.mb2]}>{t("creators")}</Marquee>
           <HStack center>
-            <Avatar
+            <AvatarButton
               size={48}
               image={{
                 uri: "https://cdn-image-e0d67c509fb203858ebcb2fe3f88c2aa.baas.nintendo.com/1/1afd1450a5a5ebec",
                 cacheKey: "1afd1450a5a5ebec",
               }}
+              onPress={async () => {
+                await Linking.openURL("https://weibo.com/u/2269567390");
+              }}
               style={ViewStyles.mr2}
             />
-            <Avatar
+            <AvatarButton
               size={48}
               image={{
                 uri: "https://cdn-image-e0d67c509fb203858ebcb2fe3f88c2aa.baas.nintendo.com/1/4b98d8291ae60b8c",
                 cacheKey: "4b98d8291ae60b8c",
+              }}
+              onPress={async () => {
+                await Linking.openURL("https://weibo.com/u/6622470330");
               }}
               style={ViewStyles.mr2}
             />
