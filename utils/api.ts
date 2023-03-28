@@ -56,7 +56,7 @@ export const updateNsoVersion = async () => {
 };
 export const updateSplatnetVersion = async () => {
   const res = await fetchRetry(
-    "https://raw.fastgit.org/nintendoapis/nintendo-app-versions/main/data/splatnet3-app.json"
+    "https://cdn.jsdelivr.net/gh/nintendoapis/nintendo-app-versions/data/splatnet3-app.json"
   );
   const json = await res.json();
 
