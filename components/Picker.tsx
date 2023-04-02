@@ -34,7 +34,11 @@ const Picker = (props: PickerProps) => {
   };
 
   return (
-    <Button isDisabled={props.isDisabled} style={ViewStyles.accent} onPress={onPress}>
+    <Button
+      isDisabled={props.isDisabled}
+      style={[ViewStyles.accent, props.style]}
+      onPress={onPress}
+    >
       <Text numberOfLines={1} style={reverseTextColor}>
         {props.title}
       </Text>

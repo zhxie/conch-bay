@@ -30,7 +30,8 @@ const en = {
   support: "Support",
   language_notice:
     "If your game language is inconsistent with the display one, you can change it here. This will allow Conch Bay to loading results with the corresponding language.",
-  change_language_language: "Change Language (%{language})",
+  change_game_language_language: "Change Game Language (%{language})",
+  change_display_language_language: "Change Display Language (%{language})",
   relog_in_notice: "If Conch Bay cannot acquire tokens, you can relog in.",
   relog_in: "Relog In",
   resource_notice:

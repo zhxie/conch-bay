@@ -619,12 +619,15 @@ const MainView = () => {
       setSupport(false);
     }
   };
-  const onLanguageSelected = async (language: string) => {
+  const onGameLanguageSelected = async (language: string) => {
     if (language === t("lang")) {
       await clearLanguage();
     } else {
       await setLanguage(language);
     }
+  };
+  const onChangeDisplayLanguagePress = async () => {
+    await Linking.openSettings();
   };
   const onClearCachePress = async () => {
     setClearingCache(true);
@@ -1111,7 +1114,7 @@ const MainView = () => {
             </VStack>
             <Picker
               isDisabled={refreshing}
-              title={t("change_language_language", { language: t(language) })}
+              title={t("change_game_language_language", { language: t(language) })}
               items={[
                 { key: "de-DE", value: t("de-DE") },
                 { key: "en-GB", value: t("en-GB") },
@@ -1127,9 +1130,18 @@ const MainView = () => {
                 { key: "zh-CN", value: t("zh-CN") },
                 { key: "zh-TW", value: t("zh-TW") },
               ]}
-              onSelected={onLanguageSelected}
-              style={ViewStyles.wf}
+              onSelected={onGameLanguageSelected}
+              style={ViewStyles.mb2}
             />
+            <Button
+              style={ViewStyles.accent}
+              textStyle={reverseTextColor}
+              onPress={onChangeDisplayLanguagePress}
+            >
+              <Marquee style={reverseTextColor}>
+                {t("change_display_language_language", { language: t(t("lang")) })}
+              </Marquee>
+            </Button>
           </VStack>
           {sessionToken.length > 0 && (
             <VStack style={[ViewStyles.mb4, ViewStyles.wf]}>

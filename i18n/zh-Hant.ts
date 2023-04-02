@@ -28,7 +28,8 @@ const zhHant = {
   support: "支援",
   language_notice:
     "如果您的遊戲語言與顯示語言不一致，您可以在此修改。這將使法螺灣載入對應語言的記錄。",
-  change_language_language: "修改語言 (%{language})",
+  change_game_language_language: "修改遊戲語言 (%{language})",
+  change_display_language_language: "修改顯示語言 (%{language})",
   relog_in_notice: "如果法螺灣無法獲取令牌，您可以重新登錄。",
   relog_in: "重新登錄",
   resource_notice:
