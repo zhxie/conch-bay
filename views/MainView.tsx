@@ -178,12 +178,18 @@ const MainView = () => {
     if (ready) {
       clearTimeout(autoRefreshTimeout);
       if (autoRefresh && !refreshing) {
-        autoRefreshTimeout = setTimeout(() => {
-          refreshResults();
+        autoRefreshTimeout = setTimeout(async () => {
+          setRefreshing(true);
+          try {
+            await refreshResults(bulletToken);
+          } catch (e) {
+            await refresh();
+          }
+          setRefreshing(false);
         }, 10000);
       }
     }
-  }, [refreshing, autoRefresh, language]);
+  }, [refreshing, bulletToken, autoRefresh, language]);
 
   enum ToastLevel {
     Success,
@@ -288,6 +294,9 @@ const MainView = () => {
             /* empty */
           }
         }
+        if (friendsAttempt) {
+          setFriends(friendsAttempt);
+        }
 
         // Regenerate bullet token if necessary.
         if (!newBulletToken) {
@@ -306,88 +315,25 @@ const MainView = () => {
         }
 
         // Fetch friends, summary, catalog and results.
-        const [friends, summary, catalog, battleHistories, coopResult] = await Promise.all([
-          friendsAttempt || fetchFriends(newBulletToken),
-          fetchSummary(newBulletToken),
-          fetchCatalog(newBulletToken),
-          fetchBattleHistories(newBulletToken),
-          fetchCoopResult(newBulletToken),
+        await Promise.all([
+          friendsAttempt ||
+            fetchFriends(newBulletToken).then((friends) => {
+              setFriends(friends);
+            }),
+          fetchSummary(newBulletToken).then(async (summary) => {
+            const icon = summary.currentPlayer.userIcon.url;
+            const level = String(summary.playHistory.rank);
+            const rank = summary.playHistory.udemae;
+            await setIcon(icon);
+            await setRank(rank);
+            await setLevel(level);
+          }),
+          fetchCatalog(newBulletToken).then(async (catalog) => {
+            const catalogLevel = String(catalog.catalog.progress?.level ?? 0);
+            await setCatalogLevel(catalogLevel);
+          }),
+          refreshResults(newBulletToken),
         ]);
-        setFriends(friends);
-        const icon = summary.currentPlayer.userIcon.url;
-        const catalogLevel = String(catalog.catalog.progress?.level ?? 0);
-        const level = String(summary.playHistory.rank);
-        const rank = summary.playHistory.udemae;
-        await setIcon(icon);
-        await setCatalogLevel(catalogLevel);
-        await setLevel(level);
-        await setRank(rank);
-        await setGrade(coopResult.coopResult.regularGrade.id);
-
-        // Fetch details.
-        const results: {
-          id: string;
-          isCoop: boolean;
-        }[] = [];
-        battleHistories.regular.regularBattleHistories.historyGroups.nodes.forEach((historyGroup) =>
-          historyGroup.historyDetails.nodes.forEach((historyDetail) =>
-            results.push({ id: historyDetail.id, isCoop: false })
-          )
-        );
-        battleHistories.anarchy.bankaraBattleHistories.historyGroups.nodes.forEach((historyGroup) =>
-          historyGroup.historyDetails.nodes.forEach((historyDetail) =>
-            results.push({ id: historyDetail.id, isCoop: false })
-          )
-        );
-        battleHistories.x.xBattleHistories.historyGroups.nodes.forEach((historyGroup) =>
-          historyGroup.historyDetails.nodes.forEach((historyDetail) =>
-            results.push({ id: historyDetail.id, isCoop: false })
-          )
-        );
-        battleHistories.private.privateBattleHistories.historyGroups.nodes.forEach((historyGroup) =>
-          historyGroup.historyDetails.nodes.forEach((historyDetail) =>
-            results.push({ id: historyDetail.id, isCoop: false })
-          )
-        );
-        coopResult.coopResult.historyGroups.nodes.forEach((historyGroup) => {
-          historyGroup.historyDetails.nodes.forEach((historyDetail) => {
-            results.push({ id: historyDetail.id, isCoop: true });
-          });
-        });
-
-        const existed = await Promise.all(results.map((result) => Database.isExist(result.id)));
-        const newResults = results.filter((_, i) => !existed[i]);
-        if (newResults.length > 0) {
-          showToast(ToastLevel.Info, t("loading_n_results", { n: newResults.length }));
-          const details = await Promise.all(
-            newResults.map((result) => {
-              if (!result.isCoop) {
-                return fetchVsHistoryDetail(result.id, newBulletToken, language);
-              }
-              return fetchCoopHistoryDetail(result.id, newBulletToken, language);
-            })
-          );
-          let fail = 0;
-          for (let i = 0; i < newResults.length; i++) {
-            let result: boolean;
-            if (!newResults[i].isCoop) {
-              result = await ok(Database.addBattle(details[i] as VsHistoryDetailResult));
-            } else {
-              result = await ok(Database.addCoop(details[i] as CoopHistoryDetailResult));
-            }
-            if (!result) {
-              fail++;
-            }
-          }
-          if (fail > 0) {
-            showToast(
-              ToastLevel.Warn,
-              t("loaded_n_results_fail_failed", { n: newResults.length, fail })
-            );
-          } else {
-            showToast(ToastLevel.Success, t("loaded_n_results", { n: newResults.length }));
-          }
-        }
 
         await loadResults(20, true);
       }
@@ -396,87 +342,79 @@ const MainView = () => {
     }
     setRefreshing(false);
   };
-  const refreshResults = async () => {
-    setRefreshing(true);
-    try {
-      if (sessionToken) {
-        // Fetch results.
-        const [battleHistories, coopResult] = await Promise.all([
-          fetchBattleHistories(bulletToken),
-          fetchCoopResult(bulletToken),
-        ]);
-
+  const refreshResults = async (bulletToken: string) => {
+    // Fetch results.
+    let n = 0;
+    const [battleFail, coopFail] = await Promise.all([
+      fetchBattleHistories(bulletToken).then(async (battleHistories) => {
         // Fetch details.
-        const results: {
-          id: string;
-          isCoop: boolean;
-        }[] = [];
+        const ids: string[] = [];
         battleHistories.regular.regularBattleHistories.historyGroups.nodes.forEach((historyGroup) =>
-          historyGroup.historyDetails.nodes.forEach((historyDetail) =>
-            results.push({ id: historyDetail.id, isCoop: false })
-          )
+          historyGroup.historyDetails.nodes.forEach((historyDetail) => ids.push(historyDetail.id))
         );
         battleHistories.anarchy.bankaraBattleHistories.historyGroups.nodes.forEach((historyGroup) =>
-          historyGroup.historyDetails.nodes.forEach((historyDetail) =>
-            results.push({ id: historyDetail.id, isCoop: false })
-          )
+          historyGroup.historyDetails.nodes.forEach((historyDetail) => ids.push(historyDetail.id))
         );
         battleHistories.x.xBattleHistories.historyGroups.nodes.forEach((historyGroup) =>
-          historyGroup.historyDetails.nodes.forEach((historyDetail) =>
-            results.push({ id: historyDetail.id, isCoop: false })
-          )
+          historyGroup.historyDetails.nodes.forEach((historyDetail) => ids.push(historyDetail.id))
         );
         battleHistories.private.privateBattleHistories.historyGroups.nodes.forEach((historyGroup) =>
-          historyGroup.historyDetails.nodes.forEach((historyDetail) =>
-            results.push({ id: historyDetail.id, isCoop: false })
+          historyGroup.historyDetails.nodes.forEach((historyDetail) => ids.push(historyDetail.id))
+        );
+
+        const existed = await Promise.all(ids.map((id) => Database.isExist(id)));
+        const newIds = ids.filter((_, i) => !existed[i]);
+        n += newIds.length;
+        if (n !== newIds.length) {
+          showToast(ToastLevel.Info, t("loading_n_results", { n }));
+        }
+        const results = await Promise.all(
+          newIds.map((id) =>
+            fetchVsHistoryDetail(id, bulletToken, language).then(async (detail) => {
+              return await ok(Database.addBattle(detail));
+            })
           )
         );
+        return results.filter((result) => !result).length;
+      }),
+      fetchCoopResult(bulletToken).then(async (coopResult) => {
+        await setGrade(coopResult.coopResult.regularGrade.id);
+
+        // Fetch details.
+        const ids: string[] = [];
         coopResult.coopResult.historyGroups.nodes.forEach((historyGroup) => {
           historyGroup.historyDetails.nodes.forEach((historyDetail) => {
-            results.push({ id: historyDetail.id, isCoop: true });
+            ids.push(historyDetail.id);
           });
         });
 
-        const existed = await Promise.all(results.map((result) => Database.isExist(result.id)));
-        const newResults = results.filter((_, i) => !existed[i]);
-        if (newResults.length > 0) {
-          showToast(ToastLevel.Info, t("loading_n_results", { n: newResults.length }));
-          const details = await Promise.all(
-            newResults.map((result) => {
-              if (!result.isCoop) {
-                return fetchVsHistoryDetail(result.id, bulletToken, language);
-              }
-              return fetchCoopHistoryDetail(result.id, bulletToken, language);
-            })
-          );
-          let fail = 0;
-          for (let i = 0; i < newResults.length; i++) {
-            let result: boolean;
-            if (!newResults[i].isCoop) {
-              result = await ok(Database.addBattle(details[i] as VsHistoryDetailResult));
-            } else {
-              result = await ok(Database.addCoop(details[i] as CoopHistoryDetailResult));
-            }
-            if (!result) {
-              fail++;
-            }
-          }
-          if (fail > 0) {
-            showToast(
-              ToastLevel.Warn,
-              t("loaded_n_results_fail_failed", { n: newResults.length, fail })
-            );
-          } else {
-            showToast(ToastLevel.Success, t("loaded_n_results", { n: newResults.length }));
-          }
-
-          await loadResults(20, true);
+        const existed = await Promise.all(ids.map((id) => Database.isExist(id)));
+        const newIds = ids.filter((_, i) => !existed[i]);
+        n += newIds.length;
+        if (n !== newIds.length) {
+          showToast(ToastLevel.Info, t("loading_n_results", { n }));
         }
+        const results = await Promise.all(
+          newIds.map((id) =>
+            fetchCoopHistoryDetail(id, bulletToken, language).then(async (detail) => {
+              return await ok(Database.addCoop(detail));
+            })
+          )
+        );
+        return results.filter((result) => !result).length;
+      }),
+    ]);
+
+    if (n > 0) {
+      const fail = battleFail + coopFail;
+      if (fail > 0) {
+        showToast(ToastLevel.Warn, t("loaded_n_results_fail_failed", { n, fail }));
+      } else {
+        showToast(ToastLevel.Success, t("loaded_n_results", { n }));
       }
-    } catch (e) {
-      await refresh();
+
+      await loadResults(20, true);
     }
-    setRefreshing(false);
   };
 
   const onScrollEndDrag = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
