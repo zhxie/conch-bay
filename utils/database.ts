@@ -21,43 +21,50 @@ export const open = async () => {
   // Initialize database.
   await exec(
     "CREATE TABLE IF NOT EXISTS result ( id TEXT PRIMARY KEY, time INT NOT NULL, mode TEXT NOT NULL, rule TEXT NOT NULL, weapon TEXT NOT NULL, players TEXT NOT NULL, detail TEXT NOT NULL )",
+    [],
     false
   );
 
   // Upgrade database.
-  const record = await exec("PRAGMA user_version", true);
-  const version = record.rows[0]["user_version"] as number;
-  switch (version) {
-    case 0:
-      {
-        await exec('ALTER TABLE result ADD COLUMN stage TEXT NOT NULL DEFAULT ""', false);
-        const records = await queryAll(false);
-        await Promise.all(
-          records.map((record) => {
-            if (record.mode === "salmon_run") {
-              return exec(
-                `UPDATE result SET stage = '${
-                  (JSON.parse(record.detail) as CoopHistoryDetailResult).coopHistoryDetail!
-                    .coopStage.id
-                }' WHERE id = '${record.id}'`,
-                false
-              );
-            }
+  const record = await exec("PRAGMA user_version", [], true);
+  let version = record.rows[0]["user_version"] as number;
+  if (version < 1) {
+    await beginTransaction();
+    try {
+      await exec('ALTER TABLE result ADD COLUMN stage TEXT NOT NULL DEFAULT ""', [], false);
+      const records = await queryAll(false);
+      await Promise.all(
+        records.map((record) => {
+          if (record.mode === "salmon_run") {
             return exec(
-              `UPDATE result SET stage = '${
-                (JSON.parse(record.detail) as VsHistoryDetailResult).vsHistoryDetail!.vsStage.id
-              }' WHERE id = '${record.id}'`,
+              "UPDATE result SET stage = ? WHERE id = ?",
+              [
+                (JSON.parse(record.detail) as CoopHistoryDetailResult).coopHistoryDetail!.coopStage
+                  .id,
+              ],
               false
             );
-          })
-        );
-        await exec("PRAGMA user_version=1", false);
-      }
-      break;
-    case 1:
-      break;
-    default:
-      throw new Error(`unexpected database version ${version}`);
+          }
+          return exec(
+            "UPDATE result SET stage = ? WHERE id = ?",
+            [
+              (JSON.parse(record.detail) as VsHistoryDetailResult).vsHistoryDetail!.vsStage.id,
+              record.id,
+            ],
+            false
+          );
+        })
+      );
+      await exec("PRAGMA user_version=1", [], false);
+      await commit();
+    } catch (e) {
+      await rollback();
+      throw e;
+    }
+    version = 1;
+  }
+  if (version != 1) {
+    throw new Error(`unexpected database version ${version}`);
   }
 
   return db;
@@ -65,9 +72,9 @@ export const open = async () => {
 export const close = () => {
   db!.closeAsync();
 };
-const exec = async (sql: string, readonly: boolean): Promise<SQLite.ResultSet> => {
+const exec = async (sql: string, args: any[], readonly: boolean): Promise<SQLite.ResultSet> => {
   return await new Promise((resolve, reject) => {
-    db!.exec([{ sql: sql, args: [] }], readonly, (err, res) => {
+    db!.exec([{ sql: sql, args: args }], readonly, (err, res) => {
       if (err) {
         return reject(err);
       }
@@ -77,6 +84,15 @@ const exec = async (sql: string, readonly: boolean): Promise<SQLite.ResultSet> =
       resolve(res![0] as SQLite.ResultSet);
     });
   });
+};
+const beginTransaction = async () => {
+  return await exec("begin transaction", [], false);
+};
+const commit = async () => {
+  return await exec("commit", [], false);
+};
+const rollback = async () => {
+  return await exec("rollback", [], false);
 };
 
 const convertFilter = (filter: FilterProps) => {
@@ -116,7 +132,7 @@ export const query = async (offset: number, limit: number, filter?: FilterProps)
     condition = convertFilter(filter);
   }
   const sql = `SELECT * FROM result ${condition} ORDER BY time DESC LIMIT ${limit} OFFSET ${offset}`;
-  const record = await exec(sql, true);
+  const record = await exec(sql, [], true);
   return record.rows.map((row) => ({
     id: row["id"],
     time: row["time"],
@@ -129,7 +145,7 @@ export const query = async (offset: number, limit: number, filter?: FilterProps)
   }));
 };
 export const queryAll = async (order: boolean) => {
-  const record = await exec("SELECT * FROM result" + (order ? " ORDER BY time" : ""), true);
+  const record = await exec("SELECT * FROM result" + (order ? " ORDER BY time" : ""), [], true);
   return record.rows.map((row) => ({
     id: row["id"],
     time: row["time"],
@@ -142,16 +158,16 @@ export const queryAll = async (order: boolean) => {
   }));
 };
 export const queryFilterOptions = async () => {
-  const modeSql = `SELECT DISTINCT mode FROM result`;
-  const ruleSql = `SELECT DISTINCT rule FROM result`;
-  const stageSql = `SELECT DISTINCT stage FROM result`;
-  const weaponSql = `SELECT DISTINCT weapon FROM result`;
+  const modeSql = "SELECT DISTINCT mode FROM result";
+  const ruleSql = "SELECT DISTINCT rule FROM result";
+  const stageSql = "SELECT DISTINCT stage FROM result";
+  const weaponSql = "SELECT DISTINCT weapon FROM result";
 
   const [modeRecord, ruleRecord, stageRecord, weaponRecord] = await Promise.all([
-    exec(modeSql, true),
-    exec(ruleSql, true),
-    exec(stageSql, true),
-    exec(weaponSql, true),
+    exec(modeSql, [], true),
+    exec(ruleSql, [], true),
+    exec(stageSql, [], true),
+    exec(weaponSql, [], true),
   ]);
   return {
     modes: modeRecord.rows
@@ -213,11 +229,11 @@ export const count = async (filter?: FilterProps) => {
     condition = convertFilter(filter);
   }
   const sql = `SELECT COUNT(1) FROM result ${condition}`;
-  const record = await exec(sql, true);
+  const record = await exec(sql, [], true);
   return record.rows[0]["COUNT(1)"] as number;
 };
 export const isExist = async (id: string) => {
-  const record = await exec(`SELECT * FROM result WHERE id = '${id}'`, true);
+  const record = await exec("SELECT * FROM result WHERE id = ?", [id], true);
   return record.rows.length > 0;
 };
 export const add = async (
@@ -231,9 +247,8 @@ export const add = async (
   stage: string
 ) => {
   await exec(
-    `INSERT INTO result VALUES ('${id}', ${time}, '${mode}', '${rule}', '${weapon}', '${players.join(
-      ","
-    )}', '${detail.replaceAll("'", "''")}', '${stage}')`,
+    "INSERT INTO result VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+    [id, time, mode, rule, weapon, players.join(","), detail, stage],
     false
   );
 };
@@ -272,6 +287,6 @@ export const addCoop = (coop: CoopHistoryDetailResult) => {
   );
 };
 export const clear = async () => {
-  await exec("DELETE FROM result", false);
-  await exec("VACUUM result", false);
+  await exec("DELETE FROM result", [], false);
+  await exec("VACUUM result", [], false);
 };

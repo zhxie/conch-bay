@@ -23,7 +23,7 @@
     "expo": "^48.0.9",
     "expo-clipboard": "~4.1.2",
     "expo-crypto": "~12.2.1",
-    "expo-document-picker": "~11.2.1",
+    "expo-document-picker": "~11.2.2",
     "expo-image": "~1.0.0",
     "expo-localization": "~14.1.1",
     "expo-sharing": "~11.2.2",
