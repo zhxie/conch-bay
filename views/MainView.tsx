@@ -193,7 +193,6 @@ const MainView = () => {
   }
   const showToast = (level: ToastLevel, content: any) => {
     let backgroundColor: string;
-    let color = Color.DarkText;
     switch (level) {
       case ToastLevel.Success:
         backgroundColor = Color.KillAndRescue;
@@ -203,7 +202,6 @@ const MainView = () => {
         break;
       case ToastLevel.Warn:
         backgroundColor = Color.Special;
-        color = Color.LightText;
         break;
       case ToastLevel.Error:
         backgroundColor = Color.Death;
@@ -214,7 +212,9 @@ const MainView = () => {
     }
     showBanner({
       contentView: (
-        <Text style={[ViewStyles.px4, ViewStyles.py2, TextStyles.h2, TextStyles.c, { color }]}>
+        <Text
+          style={[ViewStyles.px4, ViewStyles.py2, TextStyles.h2, TextStyles.c, TextStyles.dark]}
+        >
           {content}
         </Text>
       ),
@@ -877,7 +877,7 @@ const MainView = () => {
   const onCreateAGithubIssuePress = async () => {
     await Linking.openURL("https://github.com/zhxie/conch-bay/issues/new");
   };
-  const onSendAMailress = async () => {
+  const onSendAMailPress = async () => {
     await Linking.openURL("mailto:conch-bay@outlook.com");
   };
   const onCopySessionTokenPress = async () => {
@@ -1242,7 +1242,7 @@ const MainView = () => {
             <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onCreateAGithubIssuePress}>
               <Marquee style={reverseTextColor}>{t("create_a_github_issue")}</Marquee>
             </Button>
-            <Button style={ViewStyles.accent} onPress={onSendAMailress}>
+            <Button style={ViewStyles.accent} onPress={onSendAMailPress}>
               <Marquee style={reverseTextColor}>{t("send_a_mail")}</Marquee>
             </Button>
           </VStack>
@@ -1309,7 +1309,7 @@ const MainView = () => {
           </VStack>
         </VStack>
       </Modal>
-      <Modal isVisible={firstAid} fade style={ViewStyles.modal1dc}>
+      <Modal isVisible={firstAid} fade style={ViewStyles.modal1d}>
         <VStack center>
           <Icon name="life-buoy" size={48} color={Color.MiddleTerritory} style={ViewStyles.mb4} />
           <Text style={ViewStyles.mb4}>{t("first_aid_notice")}</Text>

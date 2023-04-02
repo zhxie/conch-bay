@@ -313,21 +313,7 @@ const ResultView = (props: ResultViewProps) => {
     setHidePlayerNames(!hidePlayerNames);
   };
 
-  const renderItem = (result: { item: ResultProps | number; index: number }) => {
-    if (typeof result.item === "number") {
-      return (
-        <VStack flex style={ViewStyles.px4}>
-          <BattleButton
-            isLoading={true}
-            isFirst={result.index === 0}
-            color={Color.MiddleTerritory}
-            rule=""
-            stage=""
-            weapon=""
-          />
-        </VStack>
-      );
-    }
+  const renderItem = (result: { item: ResultProps; index: number }) => {
     if (result.item.battle) {
       return (
         <VStack flex style={ViewStyles.px4}>
@@ -399,11 +385,8 @@ const ResultView = (props: ResultViewProps) => {
     <VStack flex>
       <FlashList
         refreshControl={props.refreshControl}
-        data={props.results ?? new Array(8).fill(0)}
-        keyExtractor={(result, i) => {
-          if (typeof result === "number") {
-            return String(i);
-          }
+        data={props.results}
+        keyExtractor={(result) => {
           if (result.battle) {
             return result.battle.vsHistoryDetail!.id;
           }
@@ -411,6 +394,21 @@ const ResultView = (props: ResultViewProps) => {
         }}
         renderItem={renderItem}
         estimatedItemSize={64}
+        ListEmptyComponent={
+          <VStack flex style={ViewStyles.px4}>
+            {new Array(props.results === undefined ? 8 : 0).fill(0).map((_, i) => (
+              <BattleButton
+                key={i}
+                isLoading={true}
+                isFirst={i === 0}
+                color={Color.MiddleTerritory}
+                rule=""
+                stage=""
+                weapon=""
+              />
+            ))}
+          </VStack>
+        }
         ListHeaderComponent={props.header}
         ListFooterComponent={props.footer}
         onScrollEndDrag={props.onScrollEndDrag}
