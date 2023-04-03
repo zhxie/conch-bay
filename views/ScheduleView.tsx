@@ -336,7 +336,11 @@ const ScheduleView = (props: ScheduleViewProps) => {
           <ScheduleButton
             color={shopColor}
             rule={t("gesotown")}
-            stages={[t(props.shop.gesotown.pickupBrand.brand.id)]}
+            stages={[t(props.shop.gesotown.pickupBrand.brand.id)].concat(
+              props.shop.gesotown.limitedGears.length > 0
+                ? [props.shop.gesotown.limitedGears[0].gear.name]
+                : []
+            )}
             onPress={onShopPress}
           />
         )}

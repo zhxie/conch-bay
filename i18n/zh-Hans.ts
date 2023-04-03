@@ -58,7 +58,7 @@ const zhHans = {
   auto_refresh_enabled: "已启用自动刷新",
   // Shop.
   gesotown: "鱿鱼须商城",
-  order_in_nintendo_switch_online: "在Nintendo Switch Online中预定",
+  order_in_nintendo_switch_online: "在Nintendo Switch Online中预订",
   // Filter.
   filter: "筛选",
   clear_filter: "清除筛选",

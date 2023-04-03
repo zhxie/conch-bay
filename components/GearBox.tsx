@@ -10,9 +10,9 @@ interface GearBoxProps {
   isFirst?: boolean;
   isLast?: boolean;
   image: ImageSource;
-  brandImage: ImageSource;
+  brandImage?: ImageSource;
   name: string;
-  brand: string;
+  brand?: string;
   primaryAbility: ImageSource;
   additionalAbility: ImageSource[];
   paddingTo: number;
@@ -57,7 +57,8 @@ const GearBox = (props: GearBoxProps) => {
           </Center>
           <HStack flex>
             <Marquee>
-              <Text style={TextStyles.subtle}>{props.brand}</Text> {props.name}
+              <Text style={TextStyles.subtle}>{props.brand} </Text>
+              {props.name}
             </Marquee>
           </HStack>
         </HStack>
