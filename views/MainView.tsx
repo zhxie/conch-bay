@@ -78,6 +78,7 @@ import FilterView from "./FilterView";
 import FriendView from "./FriendView";
 import ResultView from "./ResultView";
 import ScheduleView from "./ScheduleView";
+import ShopView from "./ShopView";
 import StatsView from "./StatsView";
 
 let autoRefreshTimeout: NodeJS.Timeout | undefined;
@@ -776,6 +777,7 @@ const MainView = () => {
       // Regenerate bullet token if necessary.
       if (!newBulletToken) {
         newBulletToken = await generateBulletToken();
+        setBulletToken(newBulletToken);
       }
 
       // Preload weapon, equipments, badge images from API.
@@ -916,7 +918,9 @@ const MainView = () => {
                   </HStack>
                 </VStack>
               )}
-              <ScheduleView schedules={schedules} shop={shop} style={ViewStyles.mb4} />
+              <ScheduleView schedules={schedules} style={ViewStyles.mb4}>
+                {shop && <ShopView shop={shop} />}
+              </ScheduleView>
               {sessionToken.length > 0 &&
                 (friends === undefined || friends.friends.nodes.length > 0) && (
                   <FriendView friends={friends} style={ViewStyles.mb4} />
