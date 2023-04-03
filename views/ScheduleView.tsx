@@ -25,9 +25,9 @@ import {
   CoopSupplyWeapon,
   CurrentFest,
   FestMatchSetting,
-  GesotownResult,
   RegularMatchSetting,
-  StageScheduleResult,
+  Schedules,
+  Shop,
   VsSchedule,
   VsStage,
   XMatchSetting,
@@ -35,8 +35,8 @@ import {
 import { getGearPadding, getImageCacheSource } from "../utils/ui";
 
 interface ScheduleViewProps {
-  schedules?: StageScheduleResult;
-  shop?: GesotownResult;
+  schedules?: Schedules;
+  shop?: Shop;
   style?: StyleProp<ViewStyle>;
 }
 interface DisplayProps {

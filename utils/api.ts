@@ -8,14 +8,14 @@ import {
   CoopHistoryDetailVariables,
   CoopHistoryResult,
   FriendListResult,
-  GesotownResult,
   GraphQLSuccessResponse,
   HistoryRecordResult,
   MyOutfitCommonDataEquipmentsResult,
   PrivateBattleHistoriesResult,
   RegularBattleHistoriesResult,
   RequestId,
-  StageScheduleResult,
+  SchedulesQuery,
+  ShopQuery,
   VsHistoryDetailResult,
   VsHistoryDetailVariables,
   WeaponRecordResult,
@@ -46,12 +46,30 @@ const fetchRetry = async (input: RequestInfo, init?: RequestInit) => {
 export const fetchSchedules = async () => {
   const res = await fetchRetry("https://splatoon3.ink/data/schedules.json", {});
   const json = await res.json();
-  return (json as GraphQLSuccessResponse<StageScheduleResult>).data;
+  return (json as SchedulesQuery).data;
 };
-export const fetchShop = async () => {
-  const res = await fetchRetry("https://splatoon3.ink/data/gear.json", {});
-  const json = await res.json();
-  return (json as GraphQLSuccessResponse<GesotownResult>).data;
+export const fetchShop = async (language: string) => {
+  const [res, locale] = await Promise.all([
+    fetchRetry("https://splatoon3.ink/data/gear.json", {}),
+    fetchRetry(`https://splatoon3.ink/data/locale/${language}.json`, {}),
+  ]);
+  const [json, localeJson] = await Promise.all([res.json(), locale.json()]);
+  const shop = (json as ShopQuery).data;
+  shop.gesotown.pickupBrand.brandGears.forEach((gear) => {
+    try {
+      gear.gear.name = localeJson["gear"][gear.gear.__splatoon3ink_id]["name"];
+    } catch {
+      /* empty */
+    }
+  });
+  shop.gesotown.limitedGears.forEach((gear) => {
+    try {
+      gear.gear.name = localeJson["gear"][gear.gear.__splatoon3ink_id]["name"];
+    } catch {
+      /* empty */
+    }
+  });
+  return shop;
 };
 
 export const updateNsoVersion = async () => {

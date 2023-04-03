@@ -41,8 +41,8 @@ import t from "../i18n";
 import {
   CoopHistoryDetailResult,
   FriendListResult,
-  GesotownResult,
-  StageScheduleResult,
+  Schedules,
+  Shop,
   VsHistoryDetailResult,
   WeaponRecordResult,
 } from "../models/types";
@@ -122,8 +122,8 @@ const MainView = () => {
   const [grade, setGrade, clearGrade] = useAsyncStorage("grade");
 
   const [apiUpdated, setApiUpdated] = useState(false);
-  const [schedules, setSchedules] = useState<StageScheduleResult>();
-  const [shop, setShop] = useState<GesotownResult>();
+  const [schedules, setSchedules] = useState<Schedules>();
+  const [shop, setShop] = useState<Shop>();
   const [friends, setFriends] = useState<FriendListResult>();
   const [results, setResults] =
     useState<{ battle?: VsHistoryDetailResult; coop?: CoopHistoryDetailResult }[]>();
@@ -283,7 +283,7 @@ const MainView = () => {
     setRefreshing(true);
     try {
       // Fetch schedules and shop.
-      const [schedules, shop] = await Promise.all([fetchSchedules(), fetchShop()]);
+      const [schedules, shop] = await Promise.all([fetchSchedules(), fetchShop(t("lang"))]);
       setSchedules(schedules);
       setShop(shop);
       if (sessionToken) {
