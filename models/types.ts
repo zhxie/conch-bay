@@ -14,6 +14,7 @@ import {
   FestMatchSetting_schedule,
   Fest_schedule,
   Friend_friendList,
+  GesotownResult,
   RegularMatchSetting_schedule,
   VsSchedule_bankara,
   VsSchedule_fest,
@@ -32,6 +33,7 @@ export {
   FestDragonCert,
   FriendListResult,
   FriendOnlineState,
+  GesotownResult,
   GraphQLSuccessResponse,
   HistoryRecordResult,
   Judgement,
@@ -75,7 +77,15 @@ export type CoopWaveResult = NotNullable<
 export type CurrentFest = Fest_schedule;
 export type FestMatchSetting = FestMatchSetting_schedule;
 export type Friend = Friend_friendList;
+export type Gear =
+  | VsPlayer["headGear"]
+  | VsPlayer["clothingGear"]
+  | VsPlayer["shoesGear"]
+  | SaleGear["gear"];
 export type RegularMatchSetting = RegularMatchSetting_schedule;
+export type SaleGear =
+  | GesotownResult["gesotown"]["pickupBrand"]["brandGears"][0]
+  | GesotownResult["gesotown"]["limitedGears"][0];
 export type VsHistoryDetailResult =
   | VsHistoryDetailQuery_291295a
   | VsHistoryDetailQuery_2b08598

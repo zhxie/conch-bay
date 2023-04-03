@@ -15,13 +15,18 @@ const ja = {
     "ログアウトすると、ホラガイベイに保存されているすべてのデータが削除されます！続行する前にバックアップを完了してください。",
   log_out_continue: "データを削除してログアウト",
   logging_out: "ログアウト中",
-  filter: "フィルター",
+  failed_to_check_api_update: "APIのアップデートを確認できませんでした",
+  reacquiring_tokens: "トークン再取得中",
+  loading_n_results: "%{n}件のリザルトを読み込む中",
+  loaded_n_results: "%{n}件のリザルトを読み込みました",
+  loaded_n_results_fail_failed: "%{n}件のリザルトを読み込み、%{fail}件は失敗しました",
+  loaded_n_results_skip_skipped: "%{n}件のリザルトを読み込み、%{skip}件はスキップしました",
+  loaded_n_results_fail_failed_skip_skipped:
+    "%{n}件のリザルトを読み込み、%{fail}件は失敗、%{skip}件はスキップしました",
   load_more: "もっと読み込む",
   loading_more: "もっと読み込む中",
   loaded_all: "すべてを読み込みました",
   load_more_notice: "もっと読み込むを長押しして、すべてのリザルトを読み込みます。",
-  stats: "統計",
-  stats_notice: "現在ロードされているリザルトからの統計。",
   import: "インポート",
   export: "エクスポート",
   exporting: "エクスポート中",
@@ -55,23 +60,27 @@ const ja = {
   license: "ライセンス",
   first_aid_notice:
     "データベースが壊れているため、ロードできません。リザルトをエクスポートして、ホラガイベイを再インストールしてください。",
-  failed_to_check_api_update: "APIのアップデートを確認できませんでした",
-  reacquiring_tokens: "トークン再取得中",
-  loading_n_results: "%{n}件のリザルトを読み込む中",
-  loaded_n_results: "%{n}件のリザルトを読み込みました",
-  loaded_n_results_fail_failed: "%{n}件のリザルトを読み込み、%{fail}件は失敗しました",
-  loaded_n_results_skip_skipped: "%{n}件のリザルトを読み込み、%{skip}件はスキップしました",
-  loaded_n_results_fail_failed_skip_skipped:
-    "%{n}件のリザルトを読み込み、%{fail}件は失敗、%{skip}件はスキップしました",
   auto_refresh_enabled: "自動更新が有効になりました",
+  // Shop.
+  gesotown: "ゲソタウン",
+  order_in_nintendo_switch_online: "Nintendo Switch Onlineで注文",
+  // Filter.
+  filter: "フィルター",
   clear_filter: "フィルターを消す",
+  // Result.
   n_x_battle: "%{n}倍マッチ",
   n_win_strike: "%{n}連勝",
+  score_score: "%{score}カウント",
+  knock_out: "ノックアウト！",
+  no_contest: "無効試合になりました。",
+  penalty: "正常に試合が終了しませんでした。",
+  exemption: "通信を切断したプレイヤーがいたため、負けとしてカウントされませんでした。",
   hide_player_names: "プレイヤー名を隠す",
   show_player_names: "プレイヤー名を表示",
   show_raw_data: "生データを表示",
   open_in_nintendo_switch_online: "Nintendo Switch Onlineでチェック",
   // Stats.
+  stats: "統計",
   count: "カウント",
   database: "データベース",
   victory: "WIN!",
@@ -87,6 +96,7 @@ const ja = {
   power_eggs_collected: "集めたイクラ",
   rescued: "たすけた",
   be_rescued: "たすけてもらった",
+  stats_notice: "現在ロードされているリザルトからの統計。",
   // Modes.
   modes: "モード",
   battle: "バトル",
@@ -308,12 +318,6 @@ const ja = {
   // King Salmonids.
   Q29vcEVuZW15LTIz: "ヨコヅナ",
   Q29vcEVuZW15LTI0: "タツ",
-  // Results.
-  score_score: "%{score}カウント",
-  knock_out: "ノックアウト！",
-  no_contest: "無効試合になりました。",
-  penalty: "正常に試合が終了しませんでした。",
-  exemption: "通信を切断したプレイヤーがいたため、負けとしてカウントされませんでした。",
 };
 
 export default ja;

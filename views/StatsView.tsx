@@ -3,7 +3,6 @@ import { StyleProp, ViewStyle } from "react-native";
 import {
   Center,
   Display,
-  HStack,
   Modal,
   Text,
   TextStyles,

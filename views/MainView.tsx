@@ -41,6 +41,7 @@ import t from "../i18n";
 import {
   CoopHistoryDetailResult,
   FriendListResult,
+  GesotownResult,
   StageScheduleResult,
   VsHistoryDetailResult,
   WeaponRecordResult,
@@ -52,6 +53,7 @@ import {
   fetchCoopResult,
   fetchEquipments,
   fetchFriends,
+  fetchShop,
   fetchSchedules,
   fetchSummary,
   fetchVsHistoryDetail,
@@ -121,6 +123,7 @@ const MainView = () => {
 
   const [apiUpdated, setApiUpdated] = useState(false);
   const [schedules, setSchedules] = useState<StageScheduleResult>();
+  const [shop, setShop] = useState<GesotownResult>();
   const [friends, setFriends] = useState<FriendListResult>();
   const [results, setResults] =
     useState<{ battle?: VsHistoryDetailResult; coop?: CoopHistoryDetailResult }[]>();
@@ -279,9 +282,10 @@ const MainView = () => {
   const refresh = async () => {
     setRefreshing(true);
     try {
-      // Fetch schedules.
-      const schedules = await fetchSchedules();
+      // Fetch schedules and shop.
+      const [schedules, shop] = await Promise.all([fetchSchedules(), fetchShop()]);
       setSchedules(schedules);
+      setShop(shop);
       if (sessionToken) {
         // Attempt to friends.
         let newBulletToken = "";
@@ -912,7 +916,7 @@ const MainView = () => {
                   </HStack>
                 </VStack>
               )}
-              <ScheduleView schedules={schedules} style={ViewStyles.mb4} />
+              <ScheduleView schedules={schedules} shop={shop} style={ViewStyles.mb4} />
               {sessionToken.length > 0 &&
                 (friends === undefined || friends.friends.nodes.length > 0) && (
                   <FriendView friends={friends} style={ViewStyles.mb4} />

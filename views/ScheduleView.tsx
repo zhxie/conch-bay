@@ -1,15 +1,20 @@
 import dayjs from "dayjs";
 import "dayjs/plugin/advancedFormat";
 import { useState } from "react";
-import { ScrollView, StyleProp, ViewStyle } from "react-native";
+import { Linking, ScrollView, StyleProp, ViewStyle, useColorScheme } from "react-native";
 import {
+  Button,
   Color,
+  GearBox,
   HStack,
+  Marquee,
   Modal,
   ScheduleBox,
   ScheduleButton,
   ShiftBox,
+  TextStyles,
   TitledList,
+  VStack,
   ViewStyles,
 } from "../components";
 import t, { td } from "../i18n";
@@ -20,16 +25,18 @@ import {
   CoopSupplyWeapon,
   CurrentFest,
   FestMatchSetting,
+  GesotownResult,
   RegularMatchSetting,
   StageScheduleResult,
   VsSchedule,
   VsStage,
   XMatchSetting,
 } from "../models/types";
-import { getImageCacheSource } from "../utils/ui";
+import { getGearPadding, getImageCacheSource } from "../utils/ui";
 
 interface ScheduleViewProps {
   schedules?: StageScheduleResult;
+  shop?: GesotownResult;
   style?: StyleProp<ViewStyle>;
 }
 interface DisplayProps {
@@ -42,10 +49,15 @@ interface DisplayProps {
 }
 
 const ScheduleView = (props: ScheduleViewProps) => {
+  const colorScheme = useColorScheme();
+  const shopColor = colorScheme === "light" ? Color.LightText : Color.DarkText;
+  const reverseTextColor = colorScheme === "light" ? TextStyles.dark : TextStyles.light;
+
   const [display, setDisplay] = useState<DisplayProps>();
   const [displaySplatfest, setDisplaySplatfest] = useState(false);
   const [displaySchedules, setDisplaySchedules] = useState(false);
   const [displayShifts, setDisplayShifts] = useState(false);
+  const [displayShop, setDisplayShop] = useState(false);
 
   const getMatchSetting = (schedule: VsSchedule, index?: number) => {
     const regularMatchSetting = schedule["regularMatchSetting"];
@@ -211,6 +223,9 @@ const ScheduleView = (props: ScheduleViewProps) => {
     });
     setDisplayShifts(true);
   };
+  const onShopPress = () => {
+    setDisplayShop(true);
+  };
   const onDisplaySchedulesClose = () => {
     setDisplaySchedules(false);
   };
@@ -219,6 +234,12 @@ const ScheduleView = (props: ScheduleViewProps) => {
   };
   const onDisplayShiftsClose = () => {
     setDisplayShifts(false);
+  };
+  const onDisplayShopClose = () => {
+    setDisplayShop(false);
+  };
+  const onOrderInNintendoSwitchOnlinePress = async () => {
+    await Linking.openURL("com.nintendo.znca://znca/game/4834290508791808?p=/gesotown");
   };
 
   return (
@@ -229,7 +250,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
     >
       <HStack style={ViewStyles.px4}>
         {!props.schedules &&
-          new Array(8)
+          new Array(9)
             .fill(0)
             .map((_, i) => (
               <ScheduleButton
@@ -308,6 +329,15 @@ const ScheduleView = (props: ScheduleViewProps) => {
             rule={t("salmon_run")}
             stages={[td(regularShifts[0].setting!.coopStage)]}
             onPress={onRegularShiftPress}
+            style={ViewStyles.mr2}
+          />
+        )}
+        {props.shop && (
+          <ScheduleButton
+            color={shopColor}
+            rule={t("gesotown")}
+            stages={[t(props.shop.gesotown.pickupBrand.brand.id)]}
+            onPress={onShopPress}
           />
         )}
       </HStack>
@@ -361,6 +391,55 @@ const ScheduleView = (props: ScheduleViewProps) => {
                   style={i !== shifts.length - 1 ? ViewStyles.mb2 : undefined}
                 />
               ))}
+        </TitledList>
+      </Modal>
+      <Modal isVisible={displayShop} onClose={onDisplayShopClose} style={ViewStyles.modal2d}>
+        <TitledList color={shopColor} title={t("gesotown")}>
+          {props.shop && (
+            <VStack center style={ViewStyles.mb2}>
+              {props.shop.gesotown.pickupBrand.brandGears.map((gear, i, gears) => (
+                <GearBox
+                  key={gear.id}
+                  isFirst={i === 0}
+                  isLast={i === gears.length - 1}
+                  image={getImageCacheSource(gear.gear.image.url)}
+                  brandImage={getImageCacheSource(gear.gear.brand.image.url)}
+                  name={gear.gear.name}
+                  brand={t(gear.gear.brand.id)}
+                  primaryAbility={getImageCacheSource(gear.gear.primaryGearPower.image.url)}
+                  additionalAbility={gear.gear.additionalGearPowers.map((gearPower) =>
+                    getImageCacheSource(gearPower.image.url)
+                  )}
+                  paddingTo={getGearPadding(gears.map((gear) => gear.gear))}
+                />
+              ))}
+            </VStack>
+          )}
+          {props.shop && (
+            <VStack center style={ViewStyles.mb2}>
+              {props.shop.gesotown.limitedGears.map((gear, i, gears) => (
+                <GearBox
+                  key={gear.id}
+                  isFirst={i === 0}
+                  isLast={i === gears.length - 1}
+                  image={getImageCacheSource(gear.gear.image.url)}
+                  brandImage={getImageCacheSource(gear.gear.brand.image.url)}
+                  name={gear.gear.name}
+                  brand={t(gear.gear.brand.id)}
+                  primaryAbility={getImageCacheSource(gear.gear.primaryGearPower.image.url)}
+                  additionalAbility={gear.gear.additionalGearPowers.map((gearPower) =>
+                    getImageCacheSource(gearPower.image.url)
+                  )}
+                  paddingTo={getGearPadding(gears.map((gear) => gear.gear))}
+                />
+              ))}
+            </VStack>
+          )}
+          <VStack style={ViewStyles.wf}>
+            <Button style={ViewStyles.accent} onPress={onOrderInNintendoSwitchOnlinePress}>
+              <Marquee style={reverseTextColor}>{t("order_in_nintendo_switch_online")}</Marquee>
+            </Button>
+          </VStack>
         </TitledList>
       </Modal>
     </ScrollView>

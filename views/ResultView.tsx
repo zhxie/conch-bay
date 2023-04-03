@@ -58,6 +58,7 @@ import {
   getColor,
   getVsModeColor,
   getVsSelfPlayer,
+  getGearPadding,
 } from "../utils/ui";
 
 export interface ResultProps {
@@ -222,13 +223,6 @@ const ResultView = (props: ResultViewProps) => {
       }
     }
     return " ";
-  };
-  const formatGearPadding = (player: VsPlayer) => {
-    return Math.max(
-      player.headGear.additionalGearPowers.length,
-      player.clothingGear.additionalGearPowers.length,
-      player.shoesGear.additionalGearPowers.length
-    );
   };
   const formatWaterLevel = (waveResult: CoopWaveResult) => {
     switch (waveResult.waterLevel) {
@@ -573,7 +567,11 @@ const ResultView = (props: ResultViewProps) => {
                         additionalAbility={gear.additionalGearPowers.map((gearPower) =>
                           getImageCacheSource(gearPower.image.url)
                         )}
-                        paddingTo={formatGearPadding(battlePlayer)}
+                        paddingTo={getGearPadding([
+                          battlePlayer.headGear,
+                          battlePlayer.clothingGear,
+                          battlePlayer.shoesGear,
+                        ])}
                       />
                     )
                   )}

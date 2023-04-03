@@ -8,6 +8,7 @@ import {
   CoopHistoryDetailVariables,
   CoopHistoryResult,
   FriendListResult,
+  GesotownResult,
   GraphQLSuccessResponse,
   HistoryRecordResult,
   MyOutfitCommonDataEquipmentsResult,
@@ -46,6 +47,11 @@ export const fetchSchedules = async () => {
   const res = await fetchRetry("https://splatoon3.ink/data/schedules.json", {});
   const json = await res.json();
   return (json as GraphQLSuccessResponse<StageScheduleResult>).data;
+};
+export const fetchShop = async () => {
+  const res = await fetchRetry("https://splatoon3.ink/data/gear.json", {});
+  const json = await res.json();
+  return (json as GraphQLSuccessResponse<GesotownResult>).data;
 };
 
 export const updateNsoVersion = async () => {

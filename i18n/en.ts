@@ -15,13 +15,18 @@ const en = {
     "Logging out will remove all stored data from Conch Bay! Please complete backup before proceeding.",
   log_out_continue: "Remove Data and Log Out",
   logging_out: "Logging out",
-  filter: "Filter",
+  failed_to_check_api_update: "Failed to check API update",
+  reacquiring_tokens: "Reacquiring tokens",
+  loading_n_results: "Loading %{n} result(s)",
+  loaded_n_results: "Loaded %{n} result(s)",
+  loaded_n_results_fail_failed: "Loaded %{n} result(s), %{fail} failed",
+  loaded_n_results_skip_skipped: "Loaded %{n} result(s), %{skip} skipped",
+  loaded_n_results_fail_failed_skip_skipped:
+    "Loaded %{n} result(s), %{fail} failed, %{skip} skipped",
   load_more: "Load more",
   loading_more: "Loading more",
   loaded_all: "Loaded all",
   load_more_notice: "Long press on Load more to load all results.",
-  stats: "Stats",
-  stats_notice: "Statistics from currently loaded results.",
   import: "Import",
   export: "Export",
   exporting: "Exporting",
@@ -55,23 +60,28 @@ const en = {
   license: "License",
   first_aid_notice:
     "The database is corrupted and cannot be loaded. Please export results and reinstall Conch Bay.",
-  failed_to_check_api_update: "Failed to check API update",
-  reacquiring_tokens: "Reacquiring tokens",
-  loading_n_results: "Loading %{n} result(s)",
-  loaded_n_results: "Loaded %{n} result(s)",
-  loaded_n_results_fail_failed: "Loaded %{n} result(s), %{fail} failed",
-  loaded_n_results_skip_skipped: "Loaded %{n} result(s), %{skip} skipped",
-  loaded_n_results_fail_failed_skip_skipped:
-    "Loaded %{n} result(s), %{fail} failed, %{skip} skipped",
   auto_refresh_enabled: "Auto refresh enabled",
+  // Shop.
+  gesotown: "SplatNet Shop",
+  order_in_nintendo_switch_online: "Order in Nintendo Switch Online",
+  // Filter.
+  filter: "Filter",
   clear_filter: "Clear Filter",
+  // Result.
   n_x_battle: "%{n}x Battle",
   n_win_strike: "%{n}-WIN STRIKE",
+  score_score: "Score %{score}",
+  knock_out: "KNOCKOUT!",
+  no_contest: "No contest.",
+  penalty: "The match was not fully completed.",
+  exemption:
+    "Because one or more players were not able to continue, the match will not count as a loss.",
   hide_player_names: "Hide Player Names",
   show_player_names: "Show Player Names",
   show_raw_data: "Show Raw Data",
   open_in_nintendo_switch_online: "Open in Nintendo Switch Online",
   // Stats.
+  stats: "Stats",
   count: "Count",
   database: "Database",
   victory: "VICTORY",
@@ -87,6 +97,7 @@ const en = {
   power_eggs_collected: "Power Eggs Collected",
   rescued: "Rescued",
   be_rescued: "Be Rescued",
+  stats_notice: "Statistics from currently loaded results.",
   // Modes.
   modes: "Modes",
   battle: "Battle",
@@ -308,13 +319,6 @@ const en = {
   // King Salmonids.
   Q29vcEVuZW15LTIz: "Cohozuna",
   Q29vcEVuZW15LTI0: "Horrorboros",
-  // Results.
-  score_score: "Score %{score}",
-  knock_out: "KNOCKOUT!",
-  no_contest: "No contest.",
-  penalty: "The match was not fully completed.",
-  exemption:
-    "Because one or more players were not able to continue, the match will not count as a loss.",
 };
 
 export default en;

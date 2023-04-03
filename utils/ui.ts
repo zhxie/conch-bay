@@ -6,6 +6,7 @@ import {
   VsStage,
   CoopRule,
   FriendOnlineState,
+  Gear,
 } from "../models/types";
 import { getAuthorityAndPath } from "./url";
 
@@ -106,6 +107,10 @@ export const getFriendOutline = (friend: Friend) => {
     case FriendOnlineState.OFFLINE:
       return "transparent";
   }
+};
+
+export const getGearPadding = (gears: Gear[]) => {
+  return Math.max(...gears.map((gear) => gear.additionalGearPowers.length));
 };
 
 export const getVsSelfPlayer = (battle: VsHistoryDetailResult) => {
