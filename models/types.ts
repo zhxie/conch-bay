@@ -7,7 +7,10 @@ import {
   VsHistoryDetailQuery_2b08598,
   VsHistoryDetailQuery_cd82f2a,
 } from "splatnet3-types/dist/generated/types";
-import { Friend_friendList } from "splatnet3-types/dist/splatnet3";
+import {
+  Friend_friendList,
+  MyOutfitCommonDataEquipmentsResult,
+} from "splatnet3-types/dist/splatnet3";
 import { Gear as ShopQuery, Schedules as SchedulesQuery } from "splatnet3-types/dist/splatoon3ink";
 
 export {
@@ -85,7 +88,10 @@ export type Gear =
   | VsPlayer["headGear"]
   | VsPlayer["clothingGear"]
   | VsPlayer["shoesGear"]
-  | SaleGear["gear"];
+  | SaleGear["gear"]
+  | MyOutfitCommonDataEquipmentsResult["headGears"]["nodes"][0]
+  | MyOutfitCommonDataEquipmentsResult["clothingGears"]["nodes"][0]
+  | MyOutfitCommonDataEquipmentsResult["shoesGears"]["nodes"][0];
 export type VsHistoryDetailResult =
   | VsHistoryDetailQuery_291295a
   | VsHistoryDetailQuery_2b08598

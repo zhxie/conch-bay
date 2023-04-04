@@ -41,6 +41,7 @@ import t from "../i18n";
 import {
   CoopHistoryDetailResult,
   FriendListResult,
+  MyOutfitCommonDataEquipmentsResult,
   Schedules,
   Shop,
   VsHistoryDetailResult,
@@ -507,6 +508,31 @@ const MainView = () => {
       setLoggingOut(false);
     }
   };
+  const onEquipmentsRefresh = async () => {
+    try {
+      let newBulletToken = "";
+      let equipmentsAttempt: MyOutfitCommonDataEquipmentsResult | undefined;
+      if (bulletToken.length > 0) {
+        try {
+          equipmentsAttempt = await fetchEquipments(bulletToken, language);
+          newBulletToken = bulletToken;
+        } catch {
+          /* empty */
+        }
+      }
+
+      // Regenerate bullet token if necessary.
+      if (!newBulletToken) {
+        newBulletToken = await generateBulletToken();
+        setBulletToken(newBulletToken);
+      }
+
+      const equipments = equipmentsAttempt || (await fetchEquipments(bulletToken));
+      return equipments;
+    } catch (e) {
+      showToast(ToastLevel.Error, e);
+    }
+  };
   const onChangeFilterPress = (filter?: Database.FilterProps) => {
     setFilter(filter);
   };
@@ -919,7 +945,13 @@ const MainView = () => {
                 </VStack>
               )}
               <ScheduleView schedules={schedules} style={ViewStyles.mb4}>
-                {shop && <ShopView shop={shop} />}
+                {shop && (
+                  <ShopView
+                    shop={shop}
+                    isEquipmentsAvailable={!!sessionToken}
+                    onRefresh={onEquipmentsRefresh}
+                  />
+                )}
               </ScheduleView>
               {sessionToken.length > 0 &&
                 (friends === undefined || friends.friends.nodes.length > 0) && (
@@ -1267,7 +1299,7 @@ const MainView = () => {
           </VStack>
         </VStack>
       </Modal>
-      <Modal isVisible={firstAid} fade style={ViewStyles.modal1d}>
+      <Modal isVisible={firstAid} style={ViewStyles.modal1d}>
         <VStack center>
           <Icon name="life-buoy" size={48} color={Color.MiddleTerritory} style={ViewStyles.mb4} />
           <Text style={ViewStyles.mb4}>{t("first_aid_notice")}</Text>

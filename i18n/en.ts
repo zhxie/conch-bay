@@ -64,6 +64,11 @@ const en = {
   // Shop.
   gesotown: "SplatNet Shop",
   order_in_nintendo_switch_online: "Order in Nintendo Switch Online",
+  display_owned_gears: "Display Owned Gears",
+  loading_owned_gears: "Loading Owned Gears",
+  headgear: "Headgear",
+  clothes: "Clothes",
+  shoes: "Shoes",
   // Filter.
   filter: "Filter",
   clear_filter: "Clear Filter",
