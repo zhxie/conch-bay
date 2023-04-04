@@ -4,6 +4,7 @@ import {
   Button,
   Color,
   FilterButton,
+  FlashModal,
   GearBox,
   HStack,
   Marquee,
@@ -15,7 +16,7 @@ import {
   ViewStyles,
 } from "../components";
 import t from "../i18n";
-import { MyOutfitCommonDataEquipmentsResult, Shop } from "../models/types";
+import { MyGear, MyOutfitCommonDataEquipmentsResult, Shop } from "../models/types";
 import { getGearPadding, getImageCacheSource } from "../utils/ui";
 
 interface ShopViewProps {
@@ -49,7 +50,11 @@ const ShopView = (props: ShopViewProps) => {
   const onDisplayMyGearsPress = async () => {
     setDisplayEquipments(true);
     const equipments = await props.onRefresh();
-    setEquipments(equipments);
+    if (equipments) {
+      setEquipments(equipments);
+    } else {
+      setDisplayEquipments(false);
+    }
   };
   const onDisplayMyGearsClose = () => {
     setDisplayEquipments(false);
@@ -57,6 +62,24 @@ const ShopView = (props: ShopViewProps) => {
   const onDisplayMyGearsHide = () => {
     setEquipments(undefined);
   };
+
+  const renderItem = (gear: { item: MyGear; index: number }) => (
+    <VStack style={ViewStyles.px4}>
+      <GearBox
+        isFirst={gear.index === 0}
+        isLast={gear.index === equipments![filter].nodes.length - 1}
+        image={getImageCacheSource(gear.item.image.url)}
+        brandImage={getImageCacheSource(gear.item.brand.image.url)}
+        name={gear.item.name}
+        brand={t(gear.item.brand.id)}
+        primaryAbility={getImageCacheSource(gear.item.primaryGearPower.image.url)}
+        additionalAbility={gear.item.additionalGearPowers.map((gearPower) =>
+          getImageCacheSource(gearPower.image.url)
+        )}
+        paddingTo={getGearPadding(equipments![filter].nodes)}
+      />
+    </VStack>
+  );
 
   return (
     <>
@@ -129,64 +152,51 @@ const ShopView = (props: ShopViewProps) => {
             )}
           </VStack>
         </TitledList>
-        <Modal
+        <FlashModal
           isVisible={!!equipments && displayEquipments}
+          data={equipments?.[filter].nodes ?? []}
+          keyExtractor={(gear) => gear.name}
+          renderItem={renderItem}
+          estimatedItemSize={48}
+          ListHeaderComponent={
+            <HStack style={[ViewStyles.px4, { flexWrap: "wrap" }]}>
+              <FilterButton
+                color={filter === "headGears" ? Color.AccentColor : undefined}
+                textColor={Color.DarkText}
+                title={t("headgear")}
+                style={[ViewStyles.mr2, ViewStyles.mb2]}
+                onPress={() => {
+                  setFilter("headGears");
+                }}
+              />
+              <FilterButton
+                color={filter === "clothingGears" ? Color.AccentColor : undefined}
+                textColor={Color.DarkText}
+                title={t("clothes")}
+                style={[ViewStyles.mr2, ViewStyles.mb2]}
+                onPress={() => {
+                  setFilter("clothingGears");
+                }}
+              />
+              <FilterButton
+                color={filter === "shoesGears" ? Color.AccentColor : undefined}
+                textColor={Color.DarkText}
+                title={t("shoes")}
+                style={[ViewStyles.mr2, ViewStyles.mb2]}
+                onPress={() => {
+                  setFilter("shoesGears");
+                }}
+              />
+            </HStack>
+          }
           onClose={onDisplayMyGearsClose}
           onModalHide={onDisplayMyGearsHide}
-          style={ViewStyles.modal1d}
-        >
-          {equipments && (
-            <VStack>
-              <HStack style={{ flexWrap: "wrap" }}>
-                <FilterButton
-                  color={filter === "headGears" ? Color.AccentColor : undefined}
-                  textColor={Color.DarkText}
-                  title={t("headgear")}
-                  style={[ViewStyles.mr2, ViewStyles.mb2]}
-                  onPress={() => {
-                    setFilter("headGears");
-                  }}
-                />
-                <FilterButton
-                  color={filter === "clothingGears" ? Color.AccentColor : undefined}
-                  textColor={Color.DarkText}
-                  title={t("clothes")}
-                  style={[ViewStyles.mr2, ViewStyles.mb2]}
-                  onPress={() => {
-                    setFilter("clothingGears");
-                  }}
-                />
-                <FilterButton
-                  color={filter === "shoesGears" ? Color.AccentColor : undefined}
-                  textColor={Color.DarkText}
-                  title={t("shoes")}
-                  style={[ViewStyles.mr2, ViewStyles.mb2]}
-                  onPress={() => {
-                    setFilter("shoesGears");
-                  }}
-                />
-              </HStack>
-              <VStack center>
-                {equipments[filter].nodes.map((gear, i, gears) => (
-                  <GearBox
-                    key={i}
-                    isFirst={i === 0}
-                    isLast={i === gears.length - 1}
-                    image={getImageCacheSource(gear.image.url)}
-                    brandImage={getImageCacheSource(gear.brand.image.url)}
-                    name={gear.name}
-                    brand={t(gear.brand.id)}
-                    primaryAbility={getImageCacheSource(gear.primaryGearPower.image.url)}
-                    additionalAbility={gear.additionalGearPowers.map((gearPower) =>
-                      getImageCacheSource(gearPower.image.url)
-                    )}
-                    paddingTo={getGearPadding(gears)}
-                  />
-                ))}
-              </VStack>
-            </VStack>
-          )}
-        </Modal>
+          style={[
+            ViewStyles.modal1d,
+            // HACK: fixed height should be provided to FlashList.
+            { height: 72 + 48 * (equipments?.[filter].nodes.length ?? 0), paddingHorizontal: 0 },
+          ]}
+        />
       </Modal>
     </>
   );

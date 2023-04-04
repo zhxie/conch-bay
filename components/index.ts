@@ -18,7 +18,7 @@ export { default as IconButton } from "./IconButton";
 export { default as Image } from "./Image";
 export { default as KingSalmonidBox } from "./KingSalmonidBox";
 export { default as Marquee } from "./Marquee";
-export { default as Modal } from "./Modal";
+export { Modal, FlashModal } from "./Modal";
 export { default as Picker } from "./Picker";
 export { default as ScheduleButton } from "./ScheduleButton";
 export { default as ScheduleBox } from "./ScheduleBox";

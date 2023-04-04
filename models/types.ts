@@ -89,6 +89,8 @@ export type Gear =
   | VsPlayer["clothingGear"]
   | VsPlayer["shoesGear"]
   | SaleGear["gear"]
+  | MyGear;
+export type MyGear =
   | MyOutfitCommonDataEquipmentsResult["headGears"]["nodes"][0]
   | MyOutfitCommonDataEquipmentsResult["clothingGears"]["nodes"][0]
   | MyOutfitCommonDataEquipmentsResult["shoesGears"]["nodes"][0];
