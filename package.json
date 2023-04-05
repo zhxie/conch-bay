@@ -12,6 +12,7 @@
     "ios": "expo start --ios",
     "eject": "expo eject",
     "postinstall": "patch-package && cp -f node_modules/lucide-static/font/lucide.ttf assets/fonts/Lucide.ttf && node tools/gen-lucide-glyphmap.mjs",
+    "compile": "tsc --noEmit",
     "lint": "eslint . --ext .tsx --ext .ts",
     "format": "prettier --check ."
   },
