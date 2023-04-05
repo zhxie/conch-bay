@@ -2,7 +2,7 @@ import { useState } from "react";
 import { StyleProp, StyleSheet, ViewStyle, useColorScheme } from "react-native";
 import Button from "./Button";
 import Marquee from "./Marquee";
-import Modal from "./Modal";
+import { Modal } from "./Modal";
 import { VStack } from "./Stack";
 import { Color, TextStyles, ViewStyles } from "./Styles";
 import Text from "./Text";
