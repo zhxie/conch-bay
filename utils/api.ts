@@ -38,9 +38,9 @@ const fetchRetry = async (input: RequestInfo, init?: RequestInit) => {
   return await pRetry(
     async () => {
       // TODO: the timeout should be tuned since it is too long to wait for.
-      return await fetchTimeout(input, init, 60000);
+      return await fetchTimeout(input, init, 10000);
     },
-    { retries: 3 }
+    { retries: 1 }
   );
 };
 export const fetchSchedules = async () => {
