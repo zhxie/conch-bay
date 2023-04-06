@@ -527,7 +527,7 @@ const MainView = () => {
         setBulletToken(newBulletToken);
       }
 
-      const equipments = equipmentsAttempt || (await fetchEquipments(newBulletToken));
+      const equipments = equipmentsAttempt || (await fetchEquipments(newBulletToken, language));
       return equipments;
     } catch (e) {
       showToast(ToastLevel.Error, e);
