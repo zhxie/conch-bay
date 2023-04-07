@@ -14,7 +14,8 @@
     "postinstall": "patch-package && cp -f node_modules/lucide-static/font/lucide.ttf assets/fonts/Lucide.ttf && node tools/gen-lucide-glyphmap.mjs",
     "compile": "tsc --noEmit",
     "lint": "eslint . --ext .tsx --ext .ts",
-    "format": "prettier --check ."
+    "format": "prettier --check .",
+    "license": "node tools/gen-oss-licenses-md.mjs"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "1.17.11",
@@ -55,6 +56,7 @@
     "@typescript-eslint/parser": "^5.47.0",
     "eslint": "^8.30.0",
     "eslint-config-prettier": "^8.5.0",
+    "license-checker": "^25.0.1",
     "lucide-static": "^0.107.0",
     "patch-package": "^6.5.0",
     "prettier": "^2.8.1",
