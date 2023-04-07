@@ -7,6 +7,6 @@ init({ start: ".", customFormat: { licenseText: "" } }, (_, ret) => {
   for (const name in ret) {
     const repository = ret[name]["repository"] ?? "";
     const licenseText = ret[name]["licenseText"] ?? "";
-    licenseFile.write(`# [${name}](${repository})\n${licenseText}\n`);
+    licenseFile.write(`# [${name}](${repository})\n\n~~~\n${licenseText}\n~~~\n\n`);
   }
 });
