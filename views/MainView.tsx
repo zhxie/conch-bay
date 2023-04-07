@@ -878,13 +878,16 @@ const MainView = () => {
     setAcknowledgments(false);
   };
   const onSplatoon3InkPress = async () => {
-    await Linking.openURL("https://splatoon3.ink/");
+    await WebBrowser.openBrowserAsync("https://splatoon3.ink/");
   };
   const onIminkFApiPress = async () => {
-    await Linking.openURL("https://github.com/imink-app/f-API");
+    await WebBrowser.openBrowserAsync("https://github.com/imink-app/f-API");
   };
   const onNintendoAppVersionsPress = async () => {
-    await Linking.openURL("https://github.com/nintendoapis/nintendo-app-versions");
+    await WebBrowser.openBrowserAsync("https://github.com/nintendoapis/nintendo-app-versions");
+  };
+  const onOssLicensesPress = async () => {
+    await WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay/wiki/OSS-Licenses");
   };
   const onAutoRefreshPress = async () => {
     if (!autoRefresh) {
@@ -1267,7 +1270,7 @@ const MainView = () => {
                 cacheKey: "1afd1450a5a5ebec",
               }}
               onPress={async () => {
-                await Linking.openURL("https://weibo.com/u/2269567390");
+                await WebBrowser.openBrowserAsync("https://weibo.com/u/2269567390");
               }}
               style={ViewStyles.mr2}
             />
@@ -1278,7 +1281,7 @@ const MainView = () => {
                 cacheKey: "4b98d8291ae60b8c",
               }}
               onPress={async () => {
-                await Linking.openURL("https://weibo.com/u/6622470330");
+                await WebBrowser.openBrowserAsync("https://weibo.com/u/6622470330");
               }}
               style={ViewStyles.mr2}
             />
@@ -1290,11 +1293,14 @@ const MainView = () => {
             <Text style={[TextStyles.link, ViewStyles.mb1]} onPress={onSplatoon3InkPress}>
               Splatoon3.ink
             </Text>
-            <Text style={TextStyles.link} onPress={onIminkFApiPress}>
+            <Text style={[TextStyles.link, ViewStyles.mb1]} onPress={onIminkFApiPress}>
               imink f API
             </Text>
-            <Text style={TextStyles.link} onPress={onNintendoAppVersionsPress}>
+            <Text style={[TextStyles.link, ViewStyles.mb1]} onPress={onNintendoAppVersionsPress}>
               Nintendo app versions
+            </Text>
+            <Text style={TextStyles.link} onPress={onOssLicensesPress}>
+              {t("oss_licenses")}
             </Text>
           </VStack>
         </VStack>

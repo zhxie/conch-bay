@@ -58,6 +58,7 @@ const ja = {
   acknowledgments: "謝辞",
   creators: "クリエーター",
   license: "ライセンス",
+  oss_licenses: "オープンソースソフトウェアライセンス",
   first_aid_notice:
     "データベースが壊れているため、ロードできません。リザルトをエクスポートして、ホラガイベイを再インストールしてください。",
   auto_refresh_enabled: "自動更新が有効になりました",
