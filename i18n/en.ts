@@ -70,6 +70,10 @@ const en = {
   headgear: "Headgear",
   clothes: "Clothes",
   shoes: "Shoes",
+  // Friend.
+  playing: "Playing",
+  online: "Online",
+  offline: "Offline",
   // Filter.
   filter: "Filter",
   clear_filter: "Clear Filter",

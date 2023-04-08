@@ -1,13 +1,5 @@
 import { Color } from "../components";
-import {
-  Friend,
-  VsMode,
-  VsHistoryDetailResult,
-  VsStage,
-  CoopRule,
-  FriendOnlineState,
-  Gear,
-} from "../models/types";
+import { VsMode, VsHistoryDetailResult, VsStage, CoopRule, Gear } from "../models/types";
 import { getAuthorityAndPath } from "./url";
 
 export const getImageExpires = (image: string) => {
@@ -77,35 +69,6 @@ export const getCoopRuleColor = (rule: string) => {
       return Color.SalmonRun;
     case CoopRule.BIG_RUN:
       return Color.BigRun;
-  }
-};
-
-export const getFriendColor = (friend: Friend) => {
-  switch (friend.onlineState) {
-    case FriendOnlineState.VS_MODE_FIGHTING:
-      return getVsModeColor(friend.vsMode!);
-    case FriendOnlineState.COOP_MODE_FIGHTING:
-      return getCoopRuleColor(friend.coopRule!);
-    case FriendOnlineState.VS_MODE_MATCHING:
-    case FriendOnlineState.COOP_MODE_MATCHING:
-    case FriendOnlineState.ONLINE:
-      return undefined;
-    case FriendOnlineState.OFFLINE:
-      return "transparent";
-  }
-};
-export const getFriendOutline = (friend: Friend) => {
-  switch (friend.onlineState) {
-    case FriendOnlineState.VS_MODE_MATCHING:
-      return getVsModeColor(friend.vsMode!);
-    case FriendOnlineState.COOP_MODE_MATCHING:
-      return getCoopRuleColor(friend.coopRule!);
-    case FriendOnlineState.ONLINE:
-      return Color.Online;
-    case FriendOnlineState.VS_MODE_FIGHTING:
-    case FriendOnlineState.COOP_MODE_FIGHTING:
-    case FriendOnlineState.OFFLINE:
-      return "transparent";
   }
 };
 

@@ -65,6 +65,10 @@ const zhHans = {
   headgear: "头部装备",
   clothes: "服装",
   shoes: "鞋子",
+  // Friend.
+  playing: "比赛中",
+  online: "线上",
+  offline: "离线",
   // Filter.
   filter: "筛选",
   clear_filter: "清除筛选",

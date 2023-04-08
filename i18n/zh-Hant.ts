@@ -65,6 +65,10 @@ const zhHant = {
   headgear: "頭部裝備",
   clothes: "服裝",
   shoes: "鞋子",
+  // Friend.
+  playing: "比賽中",
+  online: "線上",
+  offline: "離線",
   // Filter.
   filter: "篩選",
   clear_filter: "清除篩選",

@@ -44,4 +44,5 @@ const Avatar = (props: AvatarProps) => {
   );
 };
 
+export { BadgeProps };
 export default Avatar;

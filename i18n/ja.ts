@@ -70,6 +70,10 @@ const ja = {
   headgear: "アタマ",
   clothes: "フク",
   shoes: "クツ",
+  // Friend.
+  playing: "試合中",
+  online: "オンライン",
+  offline: "オフライン",
   // Filter.
   filter: "フィルター",
   clear_filter: "フィルターを消す",

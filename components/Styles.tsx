@@ -14,19 +14,16 @@ export enum Color {
   Death = "#ef4444",
   Special = "#eab308",
   UltraSignal = "#06b6d4",
-  // Splatoon.
+  // Splatoon (UI-adjusted).
   RegularBattle = "#22c55e",
   AnarchyBattle = "#ea580c",
   XBattle = "#34d399",
   PrivateBattle = "#c026d3",
-  Shiver = "#0034ff",
-  Frye = "#ffff00",
-  BigMan = "#999999",
   SalmonRun = "#f97316",
   BigRun = "#9333ea",
-  Online = "#6af6cd",
+  // Splatoon.
   Playing = "#f02d7d",
-  Working = "#f02d7d",
+  Online = "#6af6cd",
   PowerEgg = "#ff6200",
   GoldenEgg = "#ffce00",
   GoldScale = "#e4b23e",
@@ -46,6 +43,7 @@ export const TextStyles = StyleSheet.create({
   },
   p: {
     fontSize: 14,
+    fontWeight: "normal",
   },
   b: {
     fontWeight: "bold",
@@ -66,6 +64,7 @@ export const TextStyles = StyleSheet.create({
   },
   h3: {
     fontSize: 16,
+    fontWeight: "normal",
   },
   h5: {
     fontSize: 12,
@@ -73,6 +72,7 @@ export const TextStyles = StyleSheet.create({
   },
   h6: {
     fontSize: 12,
+    fontWeight: "normal",
   },
   h7: {
     fontSize: 10,
