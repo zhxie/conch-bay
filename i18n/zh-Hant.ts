@@ -7,7 +7,7 @@ const zhHant = {
   // UI.
   log_in: "登錄",
   log_in_notice:
-    "法螺灣需要獲取令牌以訪問魷魚圈3。該過程涉及向非任天堂的imink發送含有最少的非身份資訊的安全請求，並且這些資訊不會被記錄或存儲。請參閱隱私政策以獲取更多資訊。",
+    "法螺灣需要獲取令牌以訪問魷魚圈3。該過程涉及向非任天堂的imink發送含有最少的非身份資訊的安全請求。這些資訊不會被記錄或存儲，請參閱隱私政策以獲取更多資訊。",
   imink_privacy_policy: "imink隱私政策",
   log_in_continue: "我已閱讀並理解",
   logging_in: "獲取令牌中",
@@ -30,6 +30,9 @@ const zhHant = {
   exporting: "匯出中",
   disclaimer: "本應用是使用魷魚圈3的資訊的非官方應用，與任天堂有限公司無關。",
   support: "支援",
+  alternative_log_in_notice:
+    "如果您擁有會話令牌並希望跳過由法螺灣獲取令牌，您可以復制會話令牌並完成登錄。",
+  log_in_with_session_token: "通過會話令牌登錄",
   language_notice:
     "如果您的遊戲語言與顯示語言不一致，您可以在此修改。這將使法螺灣載入對應語言的記錄。",
   change_game_language_language: "修改遊戲語言 (%{language})",

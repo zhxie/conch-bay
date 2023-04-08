@@ -7,7 +7,7 @@ const en = {
   // UI.
   log_in: "Log In",
   log_in_notice:
-    "Conch Bay requires acquiring tokens to access SplatNet 3. The process involves making a secure request to non-Nintendo imink with minimal, non-identifying information, and this information will not be logged or stored. See the privacy policy for more information.",
+    "Conch Bay requires acquiring tokens to access SplatNet 3. The process involves making a secure request to non-Nintendo imink with minimal, non-identifying information. This information will not be logged or stored, please see the privacy policy for more information.",
   imink_privacy_policy: "imink Privacy Policy",
   log_in_continue: "I have read and understand",
   logging_in: "Acquiring tokens",
@@ -33,6 +33,9 @@ const en = {
   disclaimer:
     "This app is an unofficial app which uses the information of SplatNet 3, and is not related to Nintendo Co., Ltd.",
   support: "Support",
+  alternative_log_in_notice:
+    "If you have session token and want to skip acquiring tokens by Conch Bay, you can copy the session token and complete logging in alternatively.",
+  log_in_with_session_token: "Log In with Session Token",
   language_notice:
     "If your game language is inconsistent with the display one, you can change it here. This will allow Conch Bay to loading results with the corresponding language.",
   change_game_language_language: "Change Game Language (%{language})",

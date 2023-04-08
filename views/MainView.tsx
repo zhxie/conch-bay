@@ -650,6 +650,18 @@ const MainView = () => {
       setSupport(false);
     }
   };
+  const onAlternativeLogInPress = async () => {
+    try {
+      setLoggingIn(true);
+      await setSessionToken(await Clipboard.getStringAsync());
+      setLoggingIn(false);
+      setLogIn(false);
+      setLogOut(false);
+    } catch (e) {
+      showToast(ToastLevel.Error, e);
+      setLoggingIn(false);
+    }
+  };
   const onGameLanguageSelected = async (language: string) => {
     if (language === t("lang")) {
       await clearLanguage();
@@ -1151,6 +1163,23 @@ const MainView = () => {
       <Modal isVisible={support} onClose={onSupportClose} style={ViewStyles.modal1d}>
         <VStack center>
           <Icon name="help-circle" size={48} color={Color.MiddleTerritory} style={ViewStyles.mb4} />
+          {sessionToken.length === 0 && (
+            <VStack style={[ViewStyles.mb4, ViewStyles.wf]}>
+              <VStack center>
+                <Text style={ViewStyles.mb2}>{t("alternative_log_in_notice")}</Text>
+              </VStack>
+              <Button
+                isDisabled={refreshing}
+                isLoading={loggingIn}
+                isLoadingText={t("logging_in")}
+                style={ViewStyles.accent}
+                textStyle={reverseTextColor}
+                onPress={onAlternativeLogInPress}
+              >
+                <Marquee style={reverseTextColor}>{t("log_in_with_session_token")}</Marquee>
+              </Button>
+            </VStack>
+          )}
           <VStack style={[ViewStyles.mb4, ViewStyles.wf]}>
             <VStack center>
               <Text style={ViewStyles.mb2}>{t("language_notice")}</Text>
@@ -1228,7 +1257,7 @@ const MainView = () => {
               </Button>
             </VStack>
           )}
-          <VStack style={[ViewStyles.mb4, ViewStyles.wf]}>
+          <VStack style={[sessionToken.length > 0 && ViewStyles.mb4, ViewStyles.wf]}>
             <VStack center>
               <Text style={ViewStyles.mb2}>{t("feedback_notice")}</Text>
             </VStack>
@@ -1239,20 +1268,22 @@ const MainView = () => {
               <Marquee style={reverseTextColor}>{t("send_a_mail")}</Marquee>
             </Button>
           </VStack>
-          <VStack style={ViewStyles.wf}>
-            <VStack center>
-              <Text style={ViewStyles.mb2}>{t("debug_notice")}</Text>
+          {sessionToken.length > 0 && (
+            <VStack style={ViewStyles.wf}>
+              <VStack center>
+                <Text style={ViewStyles.mb2}>{t("debug_notice")}</Text>
+              </VStack>
+              <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onCopySessionTokenPress}>
+                <Marquee style={reverseTextColor}>{t("copy_session_token")}</Marquee>
+              </Button>
+              <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onCopyBulletTokenPress}>
+                <Marquee style={reverseTextColor}>{t("copy_bullet_token")}</Marquee>
+              </Button>
+              <Button style={ViewStyles.accent} onPress={onExportDatabasePress}>
+                <Marquee style={reverseTextColor}>{t("export_database")}</Marquee>
+              </Button>
             </VStack>
-            <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onCopySessionTokenPress}>
-              <Marquee style={reverseTextColor}>{t("copy_session_token")}</Marquee>
-            </Button>
-            <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onCopyBulletTokenPress}>
-              <Marquee style={reverseTextColor}>{t("copy_bullet_token")}</Marquee>
-            </Button>
-            <Button style={ViewStyles.accent} onPress={onExportDatabasePress}>
-              <Marquee style={reverseTextColor}>{t("export_database")}</Marquee>
-            </Button>
-          </VStack>
+          )}
         </VStack>
       </Modal>
       <Modal
