@@ -1,6 +1,5 @@
 import { fromByteArray as encode64 } from "base64-js";
 import * as Crypto from "expo-crypto";
-import pRetry from "p-retry";
 import {
   BankaraBattleHistoriesResult,
   CatalogResult,
@@ -27,31 +26,15 @@ import { formUrlEncoded, getParam, parameterize } from "./url";
 let NSO_VERSION = "2.5.0";
 let SPLATNET_VERSION = "3.0.0-0742bda0";
 
-// https://stackoverflow.com/a/54208009.
-const fetchTimeout = async (input: RequestInfo, init: RequestInit | undefined, timeout: number) => {
-  return Promise.race([
-    fetch(input, init),
-    new Promise<Response>((_, reject) => setTimeout(() => reject(new Error("Timeout")), timeout)),
-  ]);
-};
-const fetchRetry = async (input: RequestInfo, init?: RequestInit) => {
-  return await pRetry(
-    async () => {
-      // TODO: the timeout should be tuned since it is too long to wait for.
-      return await fetchTimeout(input, init, 10000);
-    },
-    { retries: 1 }
-  );
-};
 export const fetchSchedules = async () => {
-  const res = await fetchRetry("https://splatoon3.ink/data/schedules.json", {});
+  const res = await fetch("https://splatoon3.ink/data/schedules.json");
   const json = await res.json();
   return (json as SchedulesQuery).data;
 };
 export const fetchShop = async (language: string) => {
   const [res, locale] = await Promise.all([
-    fetchRetry("https://splatoon3.ink/data/gear.json", {}),
-    fetchRetry(`https://splatoon3.ink/data/locale/${language}.json`, {}),
+    fetch("https://splatoon3.ink/data/gear.json"),
+    fetch(`https://splatoon3.ink/data/locale/${language}.json`),
   ]);
   const [json, localeJson] = await Promise.all([res.json(), locale.json()]);
   const shop = (json as ShopQuery).data;
@@ -73,13 +56,13 @@ export const fetchShop = async (language: string) => {
 };
 
 export const updateNsoVersion = async () => {
-  const res = await fetchRetry("https://itunes.apple.com/lookup?id=1234806557");
+  const res = await fetch("https://itunes.apple.com/lookup?id=1234806557");
   const json = await res.json();
 
   NSO_VERSION = json["results"][0]["version"];
 };
 export const updateSplatnetVersion = async () => {
-  const res = await fetchRetry(
+  const res = await fetch(
     "https://cdn.jsdelivr.net/gh/nintendoapis/nintendo-app-versions/data/splatnet3-app.json"
   );
   const json = await res.json();
@@ -87,7 +70,7 @@ export const updateSplatnetVersion = async () => {
   SPLATNET_VERSION = json["web_app_ver"];
 };
 const callIminkFApi = async (idToken: string, step: number) => {
-  const res = await fetchRetry("https://api.imink.app/f", {
+  const res = await fetch("https://api.imink.app/f", {
     method: "POST",
     headers: {
       "Content-Type": "application/json; charset=utf-8",
@@ -129,7 +112,7 @@ export const getSessionToken = async (url: string, cv: string) => {
   if (!sessionTokenCode) {
     return undefined;
   }
-  const res = await fetchRetry("https://accounts.nintendo.com/connect/1.0.0/api/session_token", {
+  const res = await fetch("https://accounts.nintendo.com/connect/1.0.0/api/session_token", {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
@@ -146,7 +129,7 @@ export const getSessionToken = async (url: string, cv: string) => {
 };
 export const getWebServiceToken = async (sessionToken: string) => {
   // Get tokens.
-  const res = await fetchRetry("https://accounts.nintendo.com/connect/1.0.0/api/token", {
+  const res = await fetch("https://accounts.nintendo.com/connect/1.0.0/api/token", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -162,7 +145,7 @@ export const getWebServiceToken = async (sessionToken: string) => {
   const { access_token: accessToken, id_token: idToken } = json;
 
   // Get user info.
-  const res2 = await fetchRetry("https://api.accounts.nintendo.com/2.0.0/users/me", {
+  const res2 = await fetch("https://api.accounts.nintendo.com/2.0.0/users/me", {
     headers: {
       Authorization: `Bearer ${accessToken}`,
       "Content-Type": "application/json",
@@ -175,7 +158,7 @@ export const getWebServiceToken = async (sessionToken: string) => {
   // Get access token.
   const json3 = await callIminkFApi(idToken, 1);
   const { f, request_id: requestId, timestamp } = json3;
-  const res4 = await fetchRetry("https://api-lp1.znc.srv.nintendo.net/v3/Account/Login", {
+  const res4 = await fetch("https://api-lp1.znc.srv.nintendo.net/v3/Account/Login", {
     method: "POST",
     headers: {
       "Content-Type": "application/json; charset=utf-8",
@@ -200,7 +183,7 @@ export const getWebServiceToken = async (sessionToken: string) => {
   // Get web service token.
   const json5 = await callIminkFApi(idToken2, 2);
   const { f: f2, request_id: requestId2, timestamp: timestamp2 } = json5;
-  const res6 = await fetchRetry("https://api-lp1.znc.srv.nintendo.net/v2/Game/GetWebServiceToken", {
+  const res6 = await fetch("https://api-lp1.znc.srv.nintendo.net/v2/Game/GetWebServiceToken", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${idToken2}`,
@@ -227,7 +210,7 @@ export const getBulletToken = async (
   country: string,
   language?: string
 ) => {
-  const res = await fetchRetry("https://api.lp1.av5ja.srv.nintendo.net/api/bullet_tokens", {
+  const res = await fetch("https://api.lp1.av5ja.srv.nintendo.net/api/bullet_tokens", {
     method: "POST",
     headers: {
       "Accept-Language": language ?? "*",
@@ -246,7 +229,7 @@ const fetchGraphQl = async <T>(
   language?: string,
   variables?: T
 ) => {
-  const res = await fetchRetry("https://api.lp1.av5ja.srv.nintendo.net/api/graphql", {
+  const res = await fetch("https://api.lp1.av5ja.srv.nintendo.net/api/graphql", {
     method: "POST",
     headers: {
       "Accept-Language": language || "*",

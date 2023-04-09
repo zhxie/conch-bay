@@ -285,9 +285,10 @@ const MainView = () => {
     setRefreshing(true);
     try {
       // Fetch schedules and shop.
-      const [schedules, shop] = await Promise.all([fetchSchedules(), fetchShop(t("lang"))]);
-      setSchedules(schedules);
-      setShop(shop);
+      await Promise.all([
+        fetchSchedules().then((schedules) => setSchedules(schedules)),
+        fetchShop(t("lang")).then((shop) => setShop(shop)),
+      ]);
       if (sessionToken) {
         // Attempt to friends.
         let newBulletToken = "";
@@ -376,9 +377,11 @@ const MainView = () => {
         }
         const results = await Promise.all(
           newIds.map((id) =>
-            fetchVsHistoryDetail(id, bulletToken, language).then(async (detail) => {
-              return await ok(Database.addBattle(detail));
-            })
+            ok(
+              fetchVsHistoryDetail(id, bulletToken, language).then(async (detail) => {
+                return await Database.addBattle(detail);
+              })
+            )
           )
         );
         return results.filter((result) => !result).length;
@@ -402,9 +405,11 @@ const MainView = () => {
         }
         const results = await Promise.all(
           newIds.map((id) =>
-            fetchCoopHistoryDetail(id, bulletToken, language).then(async (detail) => {
-              return await ok(Database.addCoop(detail));
-            })
+            ok(
+              fetchCoopHistoryDetail(id, bulletToken, language).then(async (detail) => {
+                return await Database.addCoop(detail);
+              })
+            )
           )
         );
         return results.filter((result) => !result).length;
