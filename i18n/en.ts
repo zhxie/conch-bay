@@ -75,6 +75,7 @@ const en = {
   shoes: "Shoes",
   // Friend.
   playing: "Playing",
+  working: "Working",
   online: "Online",
   offline: "Offline",
   // Filter.
@@ -122,6 +123,7 @@ const en = {
   private_battle: "Private Battle",
   splatfest_battle: "Splatfest Battle",
   tricolor_battle: "Tricolor Battle",
+  tableturf_battle: "Tableturf Battle",
   "VnNNb2RlLTE=": "Regular Battle",
   "VnNNb2RlLTI=": "Anarchy Battle (Series)",
   "VnNNb2RlLTM=": "X Battle",

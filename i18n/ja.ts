@@ -75,6 +75,7 @@ const ja = {
   shoes: "クツ",
   // Friend.
   playing: "試合中",
+  working: "バイト中",
   online: "オンライン",
   offline: "オフライン",
   // Filter.
@@ -121,6 +122,7 @@ const ja = {
   private_battle: "プライベートマッチ",
   splatfest_battle: "フェスマッチ",
   tricolor_battle: "トリカラマッチ",
+  tableturf_battle: "陣取大戦ナワバトラー",
   "VnNNb2RlLTE=": "レギュラーマッチ",
   "VnNNb2RlLTI=": "バンカラマッチ (チャレンジ)",
   "VnNNb2RlLTM=": "Xマッチ",

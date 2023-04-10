@@ -41,6 +41,8 @@ const FriendView = (props: FriendViewProps) => {
         return getCoopRuleColor(friend.coopRule!);
       case FriendOnlineState.VS_MODE_MATCHING:
       case FriendOnlineState.COOP_MODE_MATCHING:
+      case FriendOnlineState.MINI_GAME_PLAYING:
+        return Color.TableturfBattle;
       case FriendOnlineState.ONLINE:
         return undefined;
       case FriendOnlineState.OFFLINE:
@@ -57,6 +59,7 @@ const FriendView = (props: FriendViewProps) => {
         return Color.Online;
       case FriendOnlineState.VS_MODE_FIGHTING:
       case FriendOnlineState.COOP_MODE_FIGHTING:
+      case FriendOnlineState.MINI_GAME_PLAYING:
       case FriendOnlineState.OFFLINE:
         return "transparent";
     }
@@ -67,6 +70,8 @@ const FriendView = (props: FriendViewProps) => {
         return getVsModeColor(friend.vsMode!);
       case FriendOnlineState.COOP_MODE_FIGHTING:
         return getCoopRuleColor(friend.coopRule!);
+      case FriendOnlineState.MINI_GAME_PLAYING:
+        return Color.TableturfBattle;
       case FriendOnlineState.VS_MODE_MATCHING:
       case FriendOnlineState.COOP_MODE_MATCHING:
       case FriendOnlineState.ONLINE:
@@ -78,10 +83,12 @@ const FriendView = (props: FriendViewProps) => {
   const formatFriendOnlineStatus = (friend: Friend) => {
     switch (friend.onlineState) {
       case FriendOnlineState.VS_MODE_FIGHTING:
-      case FriendOnlineState.COOP_MODE_FIGHTING:
         return "playing";
+      case FriendOnlineState.COOP_MODE_FIGHTING:
+        return "working";
       case FriendOnlineState.VS_MODE_MATCHING:
       case FriendOnlineState.COOP_MODE_MATCHING:
+      case FriendOnlineState.MINI_GAME_PLAYING:
       case FriendOnlineState.ONLINE:
         return "online";
       case FriendOnlineState.OFFLINE:
@@ -170,6 +177,9 @@ const FriendView = (props: FriendViewProps) => {
               )}
               {friend.coopRule && (
                 <Badge color={getCoopRuleColor(friend.coopRule)!} title={t(friend.coopRule)} />
+              )}
+              {friend.onlineState === FriendOnlineState.MINI_GAME_PLAYING && (
+                <Badge color={Color.TableturfBattle} title={t("tableturf_battle")} />
               )}
             </HStack>
           </VStack>

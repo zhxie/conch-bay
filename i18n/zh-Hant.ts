@@ -70,6 +70,7 @@ const zhHant = {
   shoes: "鞋子",
   // Friend.
   playing: "比賽中",
+  working: "打工中",
   online: "線上",
   offline: "離線",
   // Filter.
@@ -116,6 +117,7 @@ const zhHant = {
   private_battle: "私人比賽",
   splatfest_battle: "祭典比賽",
   tricolor_battle: "三色奪寶比賽",
+  tableturf_battle: "占地鬥士",
   "VnNNb2RlLTE=": "一般比賽",
   "VnNNb2RlLTI=": "蠻頹比賽 (挑戰)",
   "VnNNb2RlLTM=": "X比賽",
