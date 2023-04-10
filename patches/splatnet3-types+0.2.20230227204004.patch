@@ -9,11 +9,14 @@ index a6001cc..c448e28 100644
  export declare type OperationFieldType<ParentTypeName extends string, TypeName extends string, Type> = ParentTypeName extends keyof OperationFields ? TypeName extends keyof OperationFields[ParentTypeName] ? UnknownScalarType extends Type ? OperationFields[ParentTypeName][TypeName] : null extends OperationFields[ParentTypeName][TypeName] ? Type | null : Type : Type : Type;
  export declare type UnknownScalarType = unknown & (string | number | boolean);
 diff --git a/node_modules/splatnet3-types/dist/splatoon3ink.d.ts b/node_modules/splatnet3-types/dist/splatoon3ink.d.ts
-index ac30c0a..b433138 100644
+index ac30c0a..1543cfa 100644
 --- a/node_modules/splatnet3-types/dist/splatoon3ink.d.ts
 +++ b/node_modules/splatnet3-types/dist/splatoon3ink.d.ts
-@@ -23,9 +23,9 @@ declare type CoopGroupingSchedule_splatoon3ink = Omit<StageScheduleQuery_730cd98
+@@ -21,11 +21,12 @@ declare type StageScheduleResult_splatoon3ink = Omit<StageScheduleQuery_730cd98,
+ declare type CoopGroupingSchedule_splatoon3ink = Omit<StageScheduleQuery_730cd98['coopGroupingSchedule'], 'regularSchedules' | 'bigRunSchedules'> & {
+     regularSchedules: Pick<Connection<CoopSchedule_splatoon3ink>, 'nodes'>;
      bigRunSchedules: Pick<Connection<CoopSchedule_splatoon3ink>, 'nodes'>;
++    teamContestSchedules: Pick<Connection<CoopSchedule_splatoon3ink>, 'nodes'>;
  };
  declare type CoopSchedule_splatoon3ink = Omit<CoopSchedule_schedule, 'setting'> & {
 -    setting: CoopSetting_splatoon3ink;

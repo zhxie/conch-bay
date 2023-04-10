@@ -81,6 +81,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
   );
   const xSchedules = props.schedules?.xSchedules.nodes.filter((node) => getMatchSetting(node));
   const bigRunShifts = props.schedules?.coopGroupingSchedule.bigRunSchedules.nodes;
+  const eggstraWorkShifts = props.schedules?.coopGroupingSchedule.teamContestSchedules.nodes;
   const regularShifts = props.schedules?.coopGroupingSchedule.regularSchedules.nodes;
 
   const isScheduleStarted = (schedule: VsSchedule | CoopGroupingSchedule) => {
@@ -204,6 +205,14 @@ const ScheduleView = (props: ScheduleViewProps) => {
     });
     setDisplayShifts(true);
   };
+  const onEggstraWorkShiftPress = () => {
+    setDisplay({
+      title: t("eggstra_work"),
+      color: Color.EggstraWork,
+      shifts: eggstraWorkShifts,
+    });
+    setDisplayShifts(true);
+  };
   const onRegularShiftPress = () => {
     setDisplay({
       title: t("salmon_run"),
@@ -230,7 +239,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
     >
       <HStack style={ViewStyles.px4}>
         {!props.schedules &&
-          new Array(8)
+          new Array(9)
             .fill(0)
             .map((_, i) => (
               <ScheduleButton
@@ -300,6 +309,15 @@ const ScheduleView = (props: ScheduleViewProps) => {
             rule={t("big_run")}
             stages={[td(bigRunShifts[0].setting!.coopStage)]}
             onPress={onBigRunShiftPress}
+            style={ViewStyles.mr2}
+          />
+        )}
+        {eggstraWorkShifts?.[0] && (
+          <ScheduleButton
+            color={isScheduleStarted(eggstraWorkShifts[0]) ? Color.EggstraWork : undefined}
+            rule={t("eggstra_work")}
+            stages={[td(eggstraWorkShifts[0].setting!.coopStage)]}
+            onPress={onEggstraWorkShiftPress}
             style={ViewStyles.mr2}
           />
         )}

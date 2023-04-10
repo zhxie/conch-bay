@@ -136,6 +136,7 @@ const en = {
   OPEN: "Open",
   salmon_run: "Salmon Run",
   big_run: "Big Run",
+  eggstra_work: "Eggstra Work",
   // Rules.
   rules: "Rules",
   "VnNSdWxlLTA=": "Turf War",
@@ -146,6 +147,7 @@ const en = {
   "VnNSdWxlLTU=": "Tricolor Turf War",
   REGULAR: "Salmon Run",
   BIG_RUN: "Big Run",
+  TEAM_CONTEST: "Eggstra Work",
   // Stages.
   stages: "Stages",
   VnNTdGFnZS0x: "Scorch Gorge",

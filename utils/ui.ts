@@ -69,6 +69,8 @@ export const getCoopRuleColor = (rule: string) => {
       return Color.SalmonRun;
     case CoopRule.BIG_RUN:
       return Color.BigRun;
+    case CoopRule.TEAM_CONTEST:
+      return Color.EggstraWork;
   }
 };
 

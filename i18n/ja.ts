@@ -135,6 +135,7 @@ const ja = {
   OPEN: "オープン",
   salmon_run: "サーモンラン",
   big_run: "ビッグラン",
+  eggstra_work: "バイトチームコンテスト",
   // Rules.
   rules: "ルール",
   "VnNSdWxlLTA=": "ナワバリバトル",
@@ -145,6 +146,7 @@ const ja = {
   "VnNSdWxlLTU=": "トリカラバトル",
   REGULAR: "サーモンラン",
   BIG_RUN: "ビッグラン",
+  TEAM_CONTEST: "バイトチームコンテスト",
   // Stages.
   stages: "ステージ",
   VnNTdGFnZS0x: "ユノハナ大渓谷",

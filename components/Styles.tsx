@@ -21,6 +21,7 @@ export enum Color {
   PrivateBattle = "#c026d3",
   SalmonRun = "#f97316",
   BigRun = "#9333ea",
+  EggstraWork = "#facc15",
   TableturfBattle = "#6d28d9",
   // Splatoon.
   Playing = "#f02d7d",

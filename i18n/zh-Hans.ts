@@ -130,6 +130,7 @@ const zhHans = {
   OPEN: "开放",
   salmon_run: "鲑鱼跑",
   big_run: "大型跑",
+  eggstra_work: "团队打工竞赛",
   // Rules.
   rules: "规则",
   "VnNSdWxlLTA=": "占地对战",
@@ -140,6 +141,7 @@ const zhHans = {
   "VnNSdWxlLTU=": "三色夺宝对战",
   REGULAR: "鲑鱼跑",
   BIG_RUN: "大型跑",
+  TEAM_CONTEST: "团队打工竞赛",
   // Stages.
   stages: "场地",
   VnNTdGFnZS0x: "温泉花大峡谷",

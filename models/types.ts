@@ -44,7 +44,8 @@ export type BankaraMatchSetting =
   SchedulesQuery["data"]["bankaraSchedules"]["nodes"][0]["bankaraMatchSettings"][0];
 export type CoopGroupingSchedule =
   | SchedulesQuery["data"]["coopGroupingSchedule"]["regularSchedules"]["nodes"][0]
-  | SchedulesQuery["data"]["coopGroupingSchedule"]["bigRunSchedules"]["nodes"][0];
+  | SchedulesQuery["data"]["coopGroupingSchedule"]["bigRunSchedules"]["nodes"][0]
+  | SchedulesQuery["data"]["coopGroupingSchedule"]["teamContestSchedules"]["nodes"][0];
 export type CurrentFest = NotNullable<SchedulesQuery["data"]["currentFest"]>;
 export type FestMatchSetting = NotNullable<
   SchedulesQuery["data"]["festSchedules"]["nodes"][0]["festMatchSetting"]
