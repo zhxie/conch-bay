@@ -90,7 +90,7 @@ const ResultView = (props: ResultViewProps) => {
   const [hidePlayerNames, setHidePlayerNames] = useState(false);
 
   const isVsPlayerDragon = (player: VsPlayer) => {
-    switch (player.festDragonCert) {
+    switch (player.festDragonCert as FestDragonCert) {
       case FestDragonCert.NONE:
         return false;
       case FestDragonCert.DRAGON:
@@ -118,7 +118,7 @@ const ResultView = (props: ResultViewProps) => {
   };
 
   const formatJudgement = (battle: VsHistoryDetailResult) => {
-    switch (battle.vsHistoryDetail!.judgement) {
+    switch (battle.vsHistoryDetail!.judgement as Judgement) {
       case Judgement.WIN:
         return 1;
       case Judgement.DRAW:
@@ -132,7 +132,9 @@ const ResultView = (props: ResultViewProps) => {
   };
   const formatDragon = (battle: VsHistoryDetailResult) => {
     if (battle.vsHistoryDetail!.festMatch) {
-      switch (battle.vsHistoryDetail!.festMatch.dragonMatchType) {
+      switch (battle.vsHistoryDetail!.festMatch.dragonMatchType as DragonMatchType) {
+        case DragonMatchType.NORMAL:
+          return undefined;
         case DragonMatchType.DECUPLE:
           return t("n_x_battle", { n: 10 });
         case DragonMatchType.DRAGON:
@@ -144,7 +146,7 @@ const ResultView = (props: ResultViewProps) => {
   };
   const formatName = (name: string, species: Enum<typeof Species>, isSelf: boolean) => {
     if (hidePlayerNames && !isSelf) {
-      switch (species) {
+      switch (species as Species) {
         case Species.INKLING:
           return "ᔦꙬᔨ三ᔦꙬᔨ✧‧˚";
         case Species.OCTOLING:
@@ -179,7 +181,7 @@ const ResultView = (props: ResultViewProps) => {
     return "";
   };
   const formatAnnotation = (battle: VsHistoryDetailResult) => {
-    switch (battle.vsHistoryDetail!.judgement) {
+    switch (battle.vsHistoryDetail!.judgement as Judgement) {
       case Judgement.WIN:
       case Judgement.LOSE:
         return undefined;

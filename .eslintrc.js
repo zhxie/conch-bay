@@ -12,6 +12,7 @@ module.exports = {
     "@typescript-eslint/no-non-null-assertion": "off",
     "@typescript-eslint/prefer-nullish-coalescing": "off",
     "@typescript-eslint/require-await": 2,
+    "@typescript-eslint/switch-exhaustiveness-check": "error",
     "no-unused-vars": "off",
   },
   root: true,

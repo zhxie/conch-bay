@@ -68,7 +68,7 @@ const StatsView = (props: StatsViewProps) => {
     props.results?.forEach((result) => {
       if (result.battle) {
         battle += 1;
-        switch (result.battle.vsHistoryDetail!.judgement) {
+        switch (result.battle.vsHistoryDetail!.judgement as Judgement) {
           case Judgement.WIN:
             win += 1;
             break;
