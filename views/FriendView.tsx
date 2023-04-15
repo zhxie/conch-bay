@@ -39,10 +39,10 @@ const FriendView = (props: FriendViewProps) => {
         return getVsModeColor(friend.vsMode!);
       case FriendOnlineState.COOP_MODE_FIGHTING:
         return getCoopRuleColor(friend.coopRule!);
-      case FriendOnlineState.VS_MODE_MATCHING:
-      case FriendOnlineState.COOP_MODE_MATCHING:
       case FriendOnlineState.MINI_GAME_PLAYING:
         return Color.TableturfBattle;
+      case FriendOnlineState.VS_MODE_MATCHING:
+      case FriendOnlineState.COOP_MODE_MATCHING:
       case FriendOnlineState.ONLINE:
         return undefined;
       case FriendOnlineState.OFFLINE:
