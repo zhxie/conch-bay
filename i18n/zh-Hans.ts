@@ -51,6 +51,7 @@ const zhHans = {
   debug_notice: "以下信息仅用于调试。请不要与他人分享。",
   copy_session_token: "复制会话令牌",
   copy_bullet_token: "复制Bullet令牌",
+  copied_to_clipboard: "已复制到剪贴板",
   export_results: "导出记录",
   export_database: "导出数据库",
   privacy_policy: "隐私政策",

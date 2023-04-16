@@ -51,6 +51,7 @@ const zhHant = {
   debug_notice: "以下資訊僅用於調試。請不要與他人分享。",
   copy_session_token: "複製會話令牌",
   copy_bullet_token: "複製Bullet令牌",
+  copied_to_clipboard: "已復製到剪貼板",
   export_results: "匯出記錄",
   export_database: "匯出資料庫",
   privacy_policy: "隱私政策",

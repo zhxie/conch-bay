@@ -55,6 +55,7 @@ const en = {
   debug_notice: "The following information is for debug only. Please do NOT share with others.",
   copy_session_token: "Copy Session Token",
   copy_bullet_token: "Copy Bullet Token",
+  copied_to_clipboard: "Copied to clipboard",
   export_results: "Export Results",
   export_database: "Export Database",
   privacy_policy: "Privacy Policy",

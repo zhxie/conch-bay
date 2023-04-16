@@ -13,6 +13,7 @@ import {
 } from "react-native";
 import JSONTree from "react-native-json-tree";
 import {
+  BannerLevel,
   BattleButton,
   BattlePlayerButton,
   BattleWeaponBox,
@@ -36,6 +37,7 @@ import {
   ViewStyles,
   WaveBox,
   WorkSuitBox,
+  useBanner,
 } from "../components";
 import t, { ScopeWithDefaultValue, td } from "../i18n";
 import {
@@ -78,6 +80,8 @@ interface ResultViewProps {
 const ResultView = (props: ResultViewProps) => {
   const colorScheme = useColorScheme();
   const reverseTextColor = colorScheme === "light" ? TextStyles.dark : TextStyles.light;
+
+  const showBanner = useBanner();
 
   const [result, setResult] = useState<ResultProps>();
   const [displayResult, setDisplayResult] = useState(false);
@@ -302,6 +306,7 @@ const ResultView = (props: ResultViewProps) => {
   };
   const onCopyRawValue = async (value: any) => {
     await Clipboard.setStringAsync(value.toString());
+    showBanner(BannerLevel.Info, t("copied_to_clipboard"));
   };
   const onModalHide = () => {
     if (willDisplayResult.current) {

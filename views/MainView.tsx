@@ -18,10 +18,10 @@ import {
   useColorScheme,
 } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
-import { Transition, useToastBannerToggler } from "react-native-toast-banner";
 import {
   AvatarButton,
   Badge,
+  BannerLevel,
   Button,
   Center,
   Color,
@@ -36,6 +36,7 @@ import {
   ToolButton,
   VStack,
   ViewStyles,
+  useBanner,
 } from "../components";
 import t from "../i18n";
 import {
@@ -91,7 +92,7 @@ const MainView = () => {
 
   const insets = useSafeAreaInsets();
 
-  const { showBanner } = useToastBannerToggler();
+  const showBanner = useBanner();
 
   const [ready, setReady] = useState(false);
   const [logIn, setLogIn] = useState(false);
@@ -145,7 +146,7 @@ const MainView = () => {
           await loadResults(20, false);
           setReady(true);
         } catch (e) {
-          showToast(ToastLevel.Error, e);
+          showBanner(BannerLevel.Error, e);
           setFirstAid(true);
         }
       })();
@@ -196,44 +197,6 @@ const MainView = () => {
     }
   }, [refreshing, bulletToken, autoRefresh, language]);
 
-  enum ToastLevel {
-    Success,
-    Info,
-    Warn,
-    Error,
-  }
-  const showToast = (level: ToastLevel, content: any) => {
-    let backgroundColor: string;
-    switch (level) {
-      case ToastLevel.Success:
-        backgroundColor = Color.KillAndRescue;
-        break;
-      case ToastLevel.Info:
-        backgroundColor = Color.UltraSignal;
-        break;
-      case ToastLevel.Warn:
-        backgroundColor = Color.Special;
-        break;
-      case ToastLevel.Error:
-        backgroundColor = Color.Death;
-        break;
-    }
-    if (content instanceof Error) {
-      content = content.message;
-    }
-    showBanner({
-      contentView: (
-        <Text
-          style={[ViewStyles.px4, ViewStyles.py2, TextStyles.h2, TextStyles.c, TextStyles.dark]}
-        >
-          {content}
-        </Text>
-      ),
-      backgroundColor,
-      transitions: [Transition.MoveLinear],
-    });
-  };
-
   const loadResults = async (length: number, forceUpdate: boolean) => {
     setLoadingMore(true);
     let offset: number, limit: number;
@@ -271,7 +234,7 @@ const MainView = () => {
   };
   const generateBulletToken = async () => {
     if (bulletToken.length > 0) {
-      showToast(ToastLevel.Info, t("reacquiring_tokens"));
+      showBanner(BannerLevel.Info, t("reacquiring_tokens"));
     }
 
     const res = await getWebServiceToken(sessionToken);
@@ -317,7 +280,7 @@ const MainView = () => {
           if (nsoUpdated && splatnetUpdated) {
             setApiUpdated(true);
           } else {
-            showToast(ToastLevel.Warn, t("failed_to_check_api_update"));
+            showBanner(BannerLevel.Warn, t("failed_to_check_api_update"));
           }
         }
 
@@ -345,7 +308,7 @@ const MainView = () => {
         await loadResults(20, true);
       }
     } catch (e) {
-      showToast(ToastLevel.Error, e);
+      showBanner(BannerLevel.Error, e);
     }
     setRefreshing(false);
   };
@@ -373,7 +336,7 @@ const MainView = () => {
         const newIds = ids.filter((_, i) => !existed[i]);
         n += newIds.length;
         if (n !== newIds.length) {
-          showToast(ToastLevel.Info, t("loading_n_results", { n }));
+          showBanner(BannerLevel.Info, t("loading_n_results", { n }));
         }
         const results = await Promise.all(
           newIds.map((id) =>
@@ -401,7 +364,7 @@ const MainView = () => {
         const newIds = ids.filter((_, i) => !existed[i]);
         n += newIds.length;
         if (n !== newIds.length) {
-          showToast(ToastLevel.Info, t("loading_n_results", { n }));
+          showBanner(BannerLevel.Info, t("loading_n_results", { n }));
         }
         const results = await Promise.all(
           newIds.map((id) =>
@@ -419,9 +382,9 @@ const MainView = () => {
     if (n > 0) {
       const fail = battleFail + coopFail;
       if (fail > 0) {
-        showToast(ToastLevel.Warn, t("loaded_n_results_fail_failed", { n, fail }));
+        showBanner(BannerLevel.Warn, t("loaded_n_results_fail_failed", { n, fail }));
       } else {
-        showToast(ToastLevel.Success, t("loaded_n_results", { n }));
+        showBanner(BannerLevel.Success, t("loaded_n_results", { n }));
       }
 
       await loadResults(20, true);
@@ -472,7 +435,7 @@ const MainView = () => {
       setLogIn(false);
       setLogOut(false);
     } catch (e) {
-      showToast(ToastLevel.Error, e);
+      showBanner(BannerLevel.Error, e);
       setLoggingIn(false);
     }
   };
@@ -509,7 +472,7 @@ const MainView = () => {
       setLoggingOut(false);
       setLogOut(false);
     } catch (e) {
-      showToast(ToastLevel.Error, e);
+      showBanner(BannerLevel.Error, e);
       setLoggingOut(false);
     }
   };
@@ -535,7 +498,7 @@ const MainView = () => {
       const equipments = equipmentsAttempt || (await fetchEquipments(newBulletToken, language));
       return equipments;
     } catch (e) {
-      showToast(ToastLevel.Error, e);
+      showBanner(BannerLevel.Error, e);
     }
   };
   const onChangeFilterPress = (filter?: Database.FilterProps) => {
@@ -559,7 +522,7 @@ const MainView = () => {
       setRefreshing(true);
       const result = JSON.parse(await FileSystem.readAsStringAsync(uri));
       const n = result["battles"].length + result["coops"].length;
-      showToast(ToastLevel.Info, t("loading_n_results", { n }));
+      showBanner(BannerLevel.Info, t("loading_n_results", { n }));
       const battleExisted = await Promise.all(
         result["battles"].map((battle: VsHistoryDetailResult) =>
           Database.isExist(battle.vsHistoryDetail!.id)
@@ -587,16 +550,16 @@ const MainView = () => {
         }
       }
       if (fail > 0 && skip > 0) {
-        showToast(
-          ToastLevel.Warn,
+        showBanner(
+          BannerLevel.Warn,
           t("loaded_n_results_fail_failed_skip_skipped", { n, fail, skip })
         );
       } else if (fail > 0) {
-        showToast(ToastLevel.Warn, t("loaded_n_results_fail_failed", { n, fail }));
+        showBanner(BannerLevel.Warn, t("loaded_n_results_fail_failed", { n, fail }));
       } else if (skip > 0) {
-        showToast(ToastLevel.Success, t("loaded_n_results_skip_skipped", { n, skip }));
+        showBanner(BannerLevel.Success, t("loaded_n_results_skip_skipped", { n, skip }));
       } else {
-        showToast(ToastLevel.Success, t("loaded_n_results", { n }));
+        showBanner(BannerLevel.Success, t("loaded_n_results", { n }));
       }
 
       // Query stored latest results if updated.
@@ -604,14 +567,14 @@ const MainView = () => {
         await loadResults(20, true);
       }
     } catch (e) {
-      showToast(ToastLevel.Error, e);
+      showBanner(BannerLevel.Error, e);
     }
 
     // Clean up.
     try {
       await FileSystem.deleteAsync(uri, { idempotent: true });
     } catch (e) {
-      showToast(ToastLevel.Error, e);
+      showBanner(BannerLevel.Error, e);
     }
     setRefreshing(false);
   };
@@ -636,14 +599,14 @@ const MainView = () => {
       });
       await Sharing.shareAsync(uri, { UTI: "public.json" });
     } catch (e) {
-      showToast(ToastLevel.Error, e);
+      showBanner(BannerLevel.Error, e);
     }
 
     // Clean up.
     try {
       await FileSystem.deleteAsync(uri, { idempotent: true });
     } catch (e) {
-      showToast(ToastLevel.Error, e);
+      showBanner(BannerLevel.Error, e);
     }
     setExporting(false);
   };
@@ -663,7 +626,7 @@ const MainView = () => {
       setLogIn(false);
       setLogOut(false);
     } catch (e) {
-      showToast(ToastLevel.Error, e);
+      showBanner(BannerLevel.Error, e);
       setLoggingIn(false);
     }
   };
@@ -682,7 +645,7 @@ const MainView = () => {
     try {
       await Image.clearDiskCache();
     } catch (e) {
-      showToast(ToastLevel.Error, e);
+      showBanner(BannerLevel.Error, e);
     }
     setClearingCache(false);
   };
@@ -860,7 +823,7 @@ const MainView = () => {
       // HACK: add a hashtag do not break the URL. Here the cache key will be appended after the hashtag.
       Image.prefetch(Array.from(resources).map((resource) => `${resource[1]}#${resource[0]}`));
     } catch (e) {
-      showToast(ToastLevel.Error, e);
+      showBanner(BannerLevel.Error, e);
     }
     setPreloadingResources(false);
   };
@@ -873,11 +836,13 @@ const MainView = () => {
   const onCopySessionTokenPress = async () => {
     if (sessionToken.length > 0) {
       await Clipboard.setStringAsync(sessionToken);
+      showBanner(BannerLevel.Info, t("copied_to_clipboard"));
     }
   };
   const onCopyBulletTokenPress = async () => {
     if (bulletToken.length > 0) {
       await Clipboard.setStringAsync(bulletToken);
+      showBanner(BannerLevel.Info, t("copied_to_clipboard"));
     }
   };
   const onExportDatabasePress = async () => {
@@ -885,7 +850,7 @@ const MainView = () => {
     try {
       await Sharing.shareAsync(uri, { UTI: "public.database" });
     } catch (e) {
-      showToast(ToastLevel.Error, e);
+      showBanner(BannerLevel.Error, e);
     }
   };
   const onAcknowledgmentsPress = () => {
@@ -908,7 +873,7 @@ const MainView = () => {
   };
   const onAutoRefreshPress = async () => {
     if (!autoRefresh) {
-      showToast(ToastLevel.Info, t("auto_refresh_enabled"));
+      showBanner(BannerLevel.Info, t("auto_refresh_enabled"));
       await activateKeepAwakeAsync();
     } else {
       await deactivateKeepAwake();

@@ -55,6 +55,7 @@ const ja = {
   debug_notice: "次の情報はデバッグ専用です。他の人と共有しないでください。",
   copy_session_token: "セッショントークンをコピー",
   copy_bullet_token: "ブレットトークンをコピー",
+  copied_to_clipboard: "クリップボードにコピーされました",
   export_results: "リザルトをエクスポート",
   export_database: "データーベースをエクスポート",
   privacy_policy: "プライバシーポリシー",
