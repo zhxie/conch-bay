@@ -1,9 +1,47 @@
-# Add skipKeys to skip rendering on nodes with certain keys.
+# Add skipKeys to skip rendering on nodes with certain keys and add onValuePress call back.
 diff --git a/node_modules/react-native-json-tree/src/Nodes.js b/node_modules/react-native-json-tree/src/Nodes.js
-index 5f01f12..645b026 100644
+index 5f01f12..a20d579 100644
 --- a/node_modules/react-native-json-tree/src/Nodes.js
 +++ b/node_modules/react-native-json-tree/src/Nodes.js
-@@ -168,6 +168,7 @@ function renderChildNodes(props, from, to) {
+@@ -38,6 +38,7 @@ const JSONValueNode = ({
+   labelRenderer,
+   keyPath,
+   valueRenderer,
++  onValuePress,
+   value,
+   valueGetter,
+ }) => (
+@@ -45,7 +46,12 @@ const JSONValueNode = ({
+     <Text {...styling(['label', 'valueLabel'], nodeType, keyPath)}>
+       {labelRenderer(keyPath, nodeType, false, false)}
+     </Text>
+-    <Text {...styling('valueText', nodeType, keyPath)}>
++    <Text
++      {...styling('valueText', nodeType, keyPath)}
++      onPress={() => {
++        onValuePress(value);
++      }}
++    >
+       {valueRenderer(valueGetter(value), value, ...keyPath)}
+     </Text>
+   </View>
+@@ -74,6 +80,7 @@ export const JSONNode = ({
+   styling,
+   value,
+   valueRenderer,
++  onValuePress,
+   ...rest
+ }) => {
+   const nodeType = isCustomNode(value) ? 'Custom' : objType(value)
+@@ -87,6 +94,7 @@ export const JSONNode = ({
+     styling,
+     value,
+     valueRenderer,
++    onValuePress,
+   }
+ 
+   const nestedNodeProps = {
+@@ -168,6 +176,7 @@ function renderChildNodes(props, from, to) {
      circularCache,
      keyPath,
      postprocessValue,
@@ -11,7 +49,7 @@ index 5f01f12..645b026 100644
      sortObjectKeys,
    } = props
  
-@@ -195,6 +196,10 @@ function renderChildNodes(props, from, to) {
+@@ -195,6 +204,10 @@ function renderChildNodes(props, from, to) {
        const { key, value } = entry
        const isCircular = circularCache.indexOf(value) !== -1
  
@@ -23,7 +61,7 @@ index 5f01f12..645b026 100644
          <JSONNode
            {...props}
 diff --git a/node_modules/react-native-json-tree/src/index.js b/node_modules/react-native-json-tree/src/index.js
-index c6a197c..e53b0b7 100644
+index c6a197c..e003e0c 100644
 --- a/node_modules/react-native-json-tree/src/index.js
 +++ b/node_modules/react-native-json-tree/src/index.js
 @@ -82,6 +82,7 @@ class JSONTree extends React.Component {
@@ -34,7 +72,7 @@ index c6a197c..e53b0b7 100644
      sortObjectKeys: PropTypes.oneOfType([PropTypes.func, PropTypes.bool]),
      theme: PropTypes.oneOfType([PropTypes.object, PropTypes.string]),
    };
-@@ -94,6 +95,7 @@ class JSONTree extends React.Component {
+@@ -94,10 +95,12 @@ class JSONTree extends React.Component {
      labelRenderer: defaultLabelRenderer,
      valueRenderer: identity,
      postprocessValue: identity,
@@ -42,7 +80,12 @@ index c6a197c..e53b0b7 100644
      isCustomNode: noCustomNode,
      collectionLimit: 50,
      invertTheme: true,
-@@ -125,6 +127,7 @@ class JSONTree extends React.Component {
+     sortObjectKeys: true,
++    onValuePress: identity,
+   };
+ 
+   constructor(props) {
+@@ -125,6 +128,7 @@ class JSONTree extends React.Component {
        data: value,
        keyPath,
        postprocessValue,
@@ -50,7 +93,7 @@ index c6a197c..e53b0b7 100644
        hideRoot,
        theme, // eslint-disable-line no-unused-vars
        invertTheme: _, // eslint-disable-line no-unused-vars
-@@ -136,7 +139,7 @@ class JSONTree extends React.Component {
+@@ -136,7 +140,7 @@ class JSONTree extends React.Component {
      return (
        <View {...styling('tree')}>
          <JSONNode
@@ -60,10 +103,10 @@ index c6a197c..e53b0b7 100644
            value={postprocessValue(value)}
          />
 diff --git a/node_modules/react-native-json-tree/src/types/index.d.ts b/node_modules/react-native-json-tree/src/types/index.d.ts
-index 1780dc4..2f86f5b 100644
+index 1780dc4..983c0e1 100644
 --- a/node_modules/react-native-json-tree/src/types/index.d.ts
 +++ b/node_modules/react-native-json-tree/src/types/index.d.ts
-@@ -20,6 +20,7 @@ declare module 'react-native-json-tree' {
+@@ -20,10 +20,12 @@ declare module 'react-native-json-tree' {
        expandable?: boolean,
      ) => JSX.Element;
      postprocessValue?: (value: Renderable) => any;
@@ -71,3 +114,8 @@ index 1780dc4..2f86f5b 100644
      sortObjectKeys?: boolean | ((a: Renderable, b: Renderable) => number);
      shouldExpandNode?: (_keyName: any, _data: any, level: number) => boolean;
      theme?: Theme;
+     valueRenderer?: (value: Renderable | undefined) => ReactNode;
++    onValuePress?: (value: any) => void;
+   }
+ 
+   export default class JSONTree extends Component<JSONTreeProps> {}

@@ -1,4 +1,5 @@
 import { FlashList } from "@shopify/flash-list";
+import * as Clipboard from "expo-clipboard";
 import { useRef, useState } from "react";
 import {
   Linking,
@@ -299,6 +300,9 @@ const ResultView = (props: ResultViewProps) => {
       );
     }
   };
+  const onCopyRawValue = async (value: any) => {
+    await Clipboard.setStringAsync(value.toString());
+  };
   const onModalHide = () => {
     if (willDisplayResult.current) {
       willDisplayResult.current = false;
@@ -440,6 +444,7 @@ const ResultView = (props: ResultViewProps) => {
               "nextHistoryDetail",
               "previousHistoryDetail",
             ]}
+            onValuePress={onCopyRawValue}
           />
         )}
       </Modal>
