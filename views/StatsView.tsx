@@ -90,7 +90,7 @@ const StatsView = (props: StatsViewProps) => {
         if (resultWave >= 0) {
           if (resultWave === 0) {
             clear += 1;
-            wave += 3;
+            wave += result.coop!.coopHistoryDetail!.waveResults.length;
           }
           wave += resultWave - 1;
         }
