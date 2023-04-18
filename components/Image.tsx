@@ -12,10 +12,10 @@ const Image = (props: ImageProps) => {
   const colorScheme = useColorScheme();
   const imageStyle = colorScheme === "light" ? ViewStyles.lightTerritory : ViewStyles.darkTerritory;
 
-  // HACK: forcly cast.
   return (
     <EImage
       source={props.source}
+      // HACK: forcly cast.
       style={[imageStyle, props.style as any]}
       transition={300}
       recyclingKey={props.recyclingKey}

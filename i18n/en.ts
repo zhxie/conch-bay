@@ -109,6 +109,7 @@ const en = {
   failure: "Defeat",
   waves_cleared: "Waves Cleared",
   boss_salmonids_defeated: "Boss Salmonids Defeated",
+  king_salmonids_defeated: "King Salmonids Defeated",
   golden_eggs_collected: "Golden Eggs Collected",
   power_eggs_collected: "Power Eggs Collected",
   rescued: "Rescued",

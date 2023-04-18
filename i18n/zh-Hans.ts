@@ -103,6 +103,7 @@ const zhHans = {
   failure: "Failure",
   waves_cleared: "通关的WAVE",
   boss_salmonids_defeated: "击倒的巨大鲑鱼",
+  king_salmonids_defeated: "击倒的头目鲑鱼",
   golden_eggs_collected: "收集的金鲑鱼卵",
   power_eggs_collected: "收集的鲑鱼卵",
   rescued: "救援",

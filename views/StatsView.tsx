@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { StyleProp, ViewStyle } from "react-native";
 import {
+  AccordionDisplay,
   Center,
   Display,
   Modal,
@@ -12,6 +13,7 @@ import {
 } from "../components";
 import t from "../i18n";
 import { Judgement } from "../models/types";
+import { decode64Index } from "../utils/codec";
 import { getVsSelfPlayer } from "../utils/ui";
 import { ResultProps } from "./ResultView";
 
@@ -20,6 +22,10 @@ interface StatsViewProps {
   total: number;
   results?: ResultProps[];
   style?: StyleProp<ViewStyle>;
+}
+interface Defeat {
+  id: string;
+  count: number;
 }
 interface CountProps {
   battle: {
@@ -35,7 +41,10 @@ interface CountProps {
     count: number;
     clear: number;
     wave: number;
-    defeat: number;
+    bossDefeat: number;
+    bossDefeats: Defeat[];
+    kingDefeat: number;
+    kingDefeats: Defeat[];
     deliverGoldenEgg: number;
     assistGoldenEgg: number;
     powerEgg: number;
@@ -59,12 +68,15 @@ const StatsView = (props: StatsViewProps) => {
       coop = 0,
       clear = 0,
       wave = 0,
-      defeat = 0,
+      bossDefeat = 0,
+      kingDefeat = 0,
       deliverGoldenEgg = 0,
       assistGoldenEgg = 0,
       powerEgg = 0,
       rescue = 0,
       rescued = 0;
+    const bossMap = new Map(),
+      kingMap = new Map();
     props.results?.forEach((result) => {
       if (result.battle) {
         battle += 1;
@@ -94,7 +106,25 @@ const StatsView = (props: StatsViewProps) => {
           }
           wave += resultWave - 1;
         }
-        defeat += result.coop!.coopHistoryDetail!.myResult.defeatEnemyCount;
+        bossDefeat += result.coop!.coopHistoryDetail!.myResult.defeatEnemyCount;
+        for (const enemyResult of result.coop!.coopHistoryDetail!.enemyResults) {
+          if (enemyResult.defeatCount > 0) {
+            if (!bossMap.has(enemyResult.enemy.id)) {
+              bossMap.set(enemyResult.enemy.id, 0);
+            }
+            bossMap.set(enemyResult.enemy.id, bossMap.get(enemyResult.enemy.id) + 1);
+          }
+        }
+        kingDefeat += result.coop!.coopHistoryDetail!.bossResult?.hasDefeatBoss ?? false ? 1 : 0;
+        if (result.coop!.coopHistoryDetail!.bossResult?.hasDefeatBoss ?? false) {
+          if (!kingMap.has(result.coop!.coopHistoryDetail!.bossResult!.boss.id)) {
+            kingMap.set(result.coop!.coopHistoryDetail!.bossResult!.boss.id, 0);
+          }
+          kingMap.set(
+            result.coop!.coopHistoryDetail!.bossResult!.boss.id,
+            kingMap.get(result.coop!.coopHistoryDetail!.bossResult!.boss.id) + 1
+          );
+        }
         deliverGoldenEgg += result.coop!.coopHistoryDetail!.myResult.goldenDeliverCount;
         assistGoldenEgg += result.coop!.coopHistoryDetail!.myResult.goldenAssistCount;
         powerEgg += result.coop!.coopHistoryDetail!.myResult.deliverCount;
@@ -102,6 +132,16 @@ const StatsView = (props: StatsViewProps) => {
         rescued += result.coop!.coopHistoryDetail!.myResult.rescuedCount;
       }
     });
+    const bossDefeats = Array.from(bossMap, (boss) => ({
+      id: boss[0],
+      count: boss[1],
+    }));
+    bossDefeats.sort((a, b) => decode64Index(a.id) - decode64Index(b.id));
+    const kingDefeats = Array.from(kingMap, (king) => ({
+      id: king[0],
+      count: king[1],
+    }));
+    kingDefeats.sort((a, b) => decode64Index(a.id) - decode64Index(b.id));
     setCount({
       battle: {
         count: battle,
@@ -116,7 +156,10 @@ const StatsView = (props: StatsViewProps) => {
         count: coop,
         clear,
         wave,
-        defeat,
+        bossDefeat,
+        bossDefeats,
+        kingDefeat,
+        kingDefeats,
         deliverGoldenEgg,
         assistGoldenEgg,
         powerEgg,
@@ -232,11 +275,28 @@ const StatsView = (props: StatsViewProps) => {
                       {formatTotalAndAverage(count.coop.wave, count.coop.count)}
                     </Text>
                   </Display>
-                  <Display title={t("boss_salmonids_defeated")}>
+                  <AccordionDisplay
+                    title={t("boss_salmonids_defeated")}
+                    subChildren={count.coop.bossDefeats.map((bossDefeat) => (
+                      <Display key={bossDefeat.id} title={t(bossDefeat.id)}>
+                        <Text numberOfLines={1}>{bossDefeat.count}</Text>
+                      </Display>
+                    ))}
+                  >
                     <Text numberOfLines={1}>
-                      {formatTotalAndAverage(count.coop.defeat, count.coop.count)}
+                      {formatTotalAndAverage(count.coop.bossDefeat, count.coop.count)}
                     </Text>
-                  </Display>
+                  </AccordionDisplay>
+                  <AccordionDisplay
+                    title={t("king_salmonids_defeated")}
+                    subChildren={count.coop.kingDefeats.map((kingDefeat) => (
+                      <Display key={kingDefeat.id} title={t(kingDefeat.id)}>
+                        <Text numberOfLines={1}>{kingDefeat.count}</Text>
+                      </Display>
+                    ))}
+                  >
+                    <Text numberOfLines={1}>{count.coop.kingDefeat}</Text>
+                  </AccordionDisplay>
                   <Display title={t("golden_eggs_collected")}>
                     {formatTotalAndAverageGoldenEggs(
                       count.coop.deliverGoldenEgg,

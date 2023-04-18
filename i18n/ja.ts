@@ -108,6 +108,7 @@ const ja = {
   failure: "Failure",
   waves_cleared: "クリアWAVE",
   boss_salmonids_defeated: "倒したオオモノシャケ",
+  king_salmonids_defeated: "倒したオカシラシャケ",
   golden_eggs_collected: "集めた金イクラ",
   power_eggs_collected: "集めたイクラ",
   rescued: "たすけた",
