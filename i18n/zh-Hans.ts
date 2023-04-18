@@ -59,6 +59,7 @@ const zhHans = {
   creators: "创作者",
   license: "许可",
   oss_licenses: "开源软件许可",
+  source_code_repository: "源代码库",
   first_aid_notice: "数据库已损坏并无法加载。请导出记录并重新安装法螺湾。",
   auto_refresh_enabled: "已启用自动刷新",
   // Shop.

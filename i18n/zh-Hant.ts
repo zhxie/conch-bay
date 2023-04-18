@@ -59,6 +59,7 @@ const zhHant = {
   creators: "創作者",
   license: "許可",
   oss_licenses: "開源軟體許可",
+  source_code_repository: "源代碼庫",
   first_aid_notice: "資料庫已損壞並無法載入。請匯出記錄並重新安裝法螺灣。",
   auto_refresh_enabled: "已啟用自動刷新",
   // Shop.

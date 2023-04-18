@@ -63,6 +63,7 @@ const en = {
   creators: "Creators",
   license: "License",
   oss_licenses: "Open-Source Softwares Licenses",
+  source_code_repository: "Source Code Repository",
   first_aid_notice:
     "The database is corrupted and cannot be loaded. Please export results and reinstall Conch Bay.",
   auto_refresh_enabled: "Auto refresh enabled",

@@ -871,6 +871,9 @@ const MainView = () => {
   const onOssLicensesPress = async () => {
     await WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay/wiki/OSS-Licenses");
   };
+  const onSourceCodeRepositoryPress = async () => {
+    await WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay");
+  };
   const onAutoRefreshPress = async () => {
     if (!autoRefresh) {
       showBanner(BannerLevel.Info, t("auto_refresh_enabled"));
@@ -1288,7 +1291,7 @@ const MainView = () => {
             />
           </HStack>
         </VStack>
-        <VStack center>
+        <VStack center style={ViewStyles.mb3}>
           <Marquee style={[TextStyles.h3, ViewStyles.mb2]}>{t("license")}</Marquee>
           <VStack center>
             <Text style={[TextStyles.link, ViewStyles.mb1]} onPress={onSplatoon3InkPress}>
@@ -1302,6 +1305,14 @@ const MainView = () => {
             </Text>
             <Text style={TextStyles.link} onPress={onOssLicensesPress}>
               {t("oss_licenses")}
+            </Text>
+          </VStack>
+        </VStack>
+        <VStack center>
+          <Marquee style={[TextStyles.h3, ViewStyles.mb2]}>{t("source_code_repository")}</Marquee>
+          <VStack center>
+            <Text style={[TextStyles.link, ViewStyles.mb1]} onPress={onSourceCodeRepositoryPress}>
+              GitHub
             </Text>
           </VStack>
         </VStack>
