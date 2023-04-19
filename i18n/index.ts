@@ -11,10 +11,19 @@ interface ScopeWithDefaultValue {
 }
 
 const i18n = new I18n();
-i18n.translations = { en, ja, "zh-Hans": zhHans, "zh-Hant": zhHant };
+i18n.translations = {
+  en,
+  ja,
+  zh: zhHans,
+  "zh-Hans": zhHans,
+  "zh-Hant": zhHant,
+  "zh-CN": zhHans,
+  "zh-HK": zhHant,
+  "zh-TW": zhHant,
+};
 i18n.enableFallback = true;
 i18n.defaultLocale = "en";
-i18n.locale = Localization.locale;
+i18n.locale = Localization.getLocales()[0].languageTag;
 
 const t = (f: Scope, options?: TranslateOptions) => {
   if (options) {
