@@ -17,9 +17,6 @@ i18n.translations = {
   zh: zhHans,
   "zh-Hans": zhHans,
   "zh-Hant": zhHant,
-  "zh-CN": zhHans,
-  "zh-HK": zhHant,
-  "zh-TW": zhHant,
 };
 i18n.enableFallback = true;
 i18n.defaultLocale = "en";
