@@ -79,7 +79,7 @@ const ResultButton = (props: ResultButtonProps) => {
                   style={ViewStyles.mr1}
                 />
               )}
-              <HStack center style={[!!props.badge && ViewStyles.mr1, ViewStyles.i]}>
+              <HStack style={[!!props.badge && ViewStyles.mr1, ViewStyles.i]}>
                 <Marquee style={[TextStyles.h2, !!props.color && { color: props.color }]}>
                   {props.title}
                 </Marquee>

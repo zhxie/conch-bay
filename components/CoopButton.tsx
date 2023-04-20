@@ -1,4 +1,6 @@
-import { StyleProp, ViewStyle } from "react-native";
+import { StyleProp, ViewStyle, useColorScheme } from "react-native";
+import Icon from "./Icon";
+import Pressable from "./Pressable";
 import ResultButton from "./ResultButton";
 import { Circle } from "./Shape";
 import { HStack } from "./Stack";
@@ -17,17 +19,24 @@ interface CoopButtonProps {
   wave: string;
   isClear: boolean;
   hazardLevel: string;
+  grade?: string;
+  gradePoint: number;
+  gradeChange: number;
+  displayGrade: boolean;
   goldenEgg: number;
   powerEgg: number;
   style?: StyleProp<ViewStyle>;
   onPress?: () => void;
+  onDisplayGradePress: () => void;
 }
 
 const CoopButton = (props: CoopButtonProps) => {
-  const waveStyle = props.isClear ? [TextStyles.b, { color: props.color }] : undefined;
+  const colorScheme = useColorScheme();
+  const clearStyle = [TextStyles.b, { color: props.color }];
+  const waveStyle = props.isClear ? clearStyle : undefined;
+  const arrowColor = colorScheme === "light" ? Color.LightText : Color.DarkText;
 
-  const subtitle =
-    props.kingSalmonid !== undefined ? `${props.stage} / ${props.kingSalmonid}` : `${props.stage}`;
+  props.displayGrade && props.grade && props.hazardLevel;
 
   return (
     <ResultButton
@@ -37,14 +46,40 @@ const CoopButton = (props: CoopButtonProps) => {
       isLast={props.isLast}
       result={props.result}
       title={props.rule}
-      subtitle={subtitle}
+      subtitle={
+        props.kingSalmonid !== undefined
+          ? `${props.stage} / ${props.kingSalmonid}`
+          : `${props.stage}`
+      }
       subChildren={
-        <HStack center>
-          <Text numberOfLines={1} style={[ViewStyles.mr1, waveStyle]}>
-            {props.wave}
-          </Text>
-          <Text numberOfLines={1}>{props.hazardLevel}</Text>
-        </HStack>
+        <Text
+          numberOfLines={1}
+          onPress={props.grade && props.hazardLevel ? props.onDisplayGradePress : undefined}
+        >
+          {(props.displayGrade && props.grade) || !props.hazardLevel ? (
+            props.grade ? (
+              <Text numberOfLines={1} style={props.gradeChange > 0 ? clearStyle : undefined}>
+                <Icon
+                  name={
+                    props.gradeChange > 0
+                      ? "arrow-up"
+                      : props.gradeChange === 0
+                      ? "arrow-right"
+                      : "arrow-down"
+                  }
+                  size={14}
+                  color={props.gradeChange > 0 ? props.color : arrowColor}
+                />
+                {` ${props.grade} ${props.gradePoint}`}
+              </Text>
+            ) : undefined
+          ) : (
+            <Text numberOfLines={1} style={waveStyle}>
+              {props.wave}
+            </Text>
+          )}
+          <Text numberOfLines={1}>{props.hazardLevel ? ` ${props.hazardLevel}` : ""}</Text>
+        </Text>
       }
       style={props.style}
       onPress={props.onPress}

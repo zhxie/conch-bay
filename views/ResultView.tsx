@@ -1,4 +1,4 @@
-import { FlashList } from "@shopify/flash-list";
+import { FlashList, ListRenderItemInfo } from "@shopify/flash-list";
 import * as Clipboard from "expo-clipboard";
 import { useRef, useState } from "react";
 import {
@@ -84,6 +84,7 @@ const ResultView = (props: ResultViewProps) => {
   const showBanner = useBanner();
 
   const [result, setResult] = useState<ResultProps>();
+  const [displayCoopGrade, setDisplayCoopGrade] = useState(false);
   const [displayResult, setDisplayResult] = useState(false);
   const [displayBattle, setDisplayBattle] = useState(false);
   const [battlePlayer, setBattlePlayer] = useState<VsPlayer>();
@@ -269,6 +270,9 @@ const ResultView = (props: ResultViewProps) => {
     return result;
   };
 
+  const onDisplayCoopGradePress = () => {
+    setDisplayCoopGrade(!displayCoopGrade);
+  };
   const onDisplayResultClose = () => {
     setDisplayResult(false);
   };
@@ -318,7 +322,7 @@ const ResultView = (props: ResultViewProps) => {
     setHidePlayerNames(!hidePlayerNames);
   };
 
-  const renderItem = (result: { item: ResultProps; index: number }) => {
+  const renderItem = (result: ListRenderItemInfo<ResultProps>) => {
     if (result.item.battle) {
       return (
         <VStack flex style={ViewStyles.px4}>
@@ -368,19 +372,34 @@ const ResultView = (props: ResultViewProps) => {
           rule={t(result.item.coop!.coopHistoryDetail!.rule)}
           stage={td(result.item.coop!.coopHistoryDetail!.coopStage)}
           kingSalmonid={
-            result.item.coop!.coopHistoryDetail!.bossResult !== null
+            result.item.coop!.coopHistoryDetail!.bossResult
               ? td(result.item.coop!.coopHistoryDetail!.bossResult.boss)
               : undefined
           }
           wave={formatWave(result.item.coop!)!}
           isClear={IsCoopClear(result.item.coop!)}
           hazardLevel={formatHazardLevel(result.item.coop!)}
+          grade={
+            result.item.coop!.coopHistoryDetail!.afterGrade
+              ? td(result.item.coop!.coopHistoryDetail!.afterGrade)
+              : undefined
+          }
+          gradePoint={result.item.coop!.coopHistoryDetail!.afterGradePoint || 0}
+          gradeChange={
+            result.item.coop!.coopHistoryDetail!.resultWave === 0
+              ? 1
+              : result.item.coop!.coopHistoryDetail!.resultWave < 3
+              ? -1
+              : 0
+          }
+          displayGrade={result.extraData}
           powerEgg={powerEgg}
           goldenEgg={goldenEgg}
           onPress={() => {
             setResult({ coop: (result.item as ResultProps).coop });
             setDisplayCoop(true);
           }}
+          onDisplayGradePress={onDisplayCoopGradePress}
         />
       </VStack>
     );
@@ -398,6 +417,7 @@ const ResultView = (props: ResultViewProps) => {
           return result.coop!.coopHistoryDetail!.id;
         }}
         renderItem={renderItem}
+        extraData={displayCoopGrade}
         estimatedItemSize={64}
         ListEmptyComponent={
           <VStack flex style={ViewStyles.px4}>
