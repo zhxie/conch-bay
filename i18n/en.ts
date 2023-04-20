@@ -15,6 +15,7 @@ const en = {
     "Logging out will remove all stored data from Conch Bay! Please complete backup before proceeding.",
   log_out_continue: "Remove Data and Log Out",
   logging_out: "Logging out",
+  failed_to_check_update: "Failed to check update",
   failed_to_check_api_update: "Failed to check API update",
   reacquiring_tokens: "Reacquiring tokens",
   loading_n_results: "Loading %{n} result(s)",
@@ -32,6 +33,7 @@ const en = {
   exporting: "Exporting",
   disclaimer:
     "This app is an unofficial app which uses the information of SplatNet 3, and is not related to Nintendo Co., Ltd.",
+  update: "Update",
   support: "Support",
   alternative_log_in_notice:
     "If you have session token and want to skip acquiring tokens by Conch Bay, you can copy the session token and complete logging in alternatively.",

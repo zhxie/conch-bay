@@ -13,6 +13,7 @@ import {
   Linking,
   NativeScrollEvent,
   NativeSyntheticEvent,
+  Platform,
   RefreshControl,
   ScrollView,
   useColorScheme,
@@ -66,6 +67,7 @@ import {
   getWebServiceToken,
   updateNsoVersion,
   updateSplatnetVersion,
+  fetchLatestVersion,
 } from "../utils/api";
 import * as Database from "../utils/database";
 import { useAsyncStorage } from "../utils/hooks";
@@ -95,6 +97,7 @@ const MainView = () => {
   const showBanner = useBanner();
 
   const [ready, setReady] = useState(false);
+  const [update, setUpdate] = useState(false);
   const [logIn, setLogIn] = useState(false);
   const [loggingIn, setLoggingIn] = useState(false);
   const [logOut, setLogOut] = useState(false);
@@ -163,6 +166,20 @@ const MainView = () => {
         // HACK: avoid animation racing.
         setTimeout(() => {
           refresh();
+          Platform.OS === "android" &&
+            fetchLatestVersion()
+              .then((version) => {
+                const versionRegex = /(\d+)\.(\d+)\.(\d+)/g;
+                const current = versionRegex.exec(Application.nativeApplicationVersion!);
+                const tagRegex = /v(\d+)\.(\d+)\.(\d+)/g;
+                const latest = tagRegex.exec(version ?? "");
+                if (current!.slice(1) < latest!.slice(1)) {
+                  setUpdate(true);
+                }
+              })
+              .catch((_) => {
+                showBanner(BannerLevel.Warn, t("failed_to_check_update"));
+              });
         }, 100);
       });
     }
@@ -610,6 +627,9 @@ const MainView = () => {
     }
     setExporting(false);
   };
+  const onUpdatePress = async () => {
+    await WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay/releases");
+  };
   const onSupportPress = () => {
     setSupport(true);
   };
@@ -1030,9 +1050,16 @@ const MainView = () => {
                   {t("disclaimer")}
                 </Text>
                 <VStack center>
-                  <Text
-                    style={TextStyles.subtle}
-                  >{`${Application.applicationName} ${Application.nativeApplicationVersion} (${Application.nativeBuildVersion})`}</Text>
+                  <HStack center>
+                    <Text
+                      style={[update && ViewStyles.mr1, TextStyles.subtle]}
+                    >{`${Application.applicationName} ${Application.nativeApplicationVersion} (${Application.nativeBuildVersion})`}</Text>
+                    {update && (
+                      <Text style={[TextStyles.link, TextStyles.subtle]} onPress={onUpdatePress}>
+                        {t("update")}
+                      </Text>
+                    )}
+                  </HStack>
                   <HStack center>
                     <Text
                       style={[TextStyles.link, TextStyles.subtle, ViewStyles.mr2]}

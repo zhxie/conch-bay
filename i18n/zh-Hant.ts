@@ -14,6 +14,7 @@ const zhHant = {
   log_out_notice: "登出將清除法螺灣所有存儲的數據！請在繼續之前完成備份。",
   log_out_continue: "清除數據並登出",
   logging_out: "登出中",
+  failed_to_check_update: "未能檢查更新",
   failed_to_check_api_update: "未能檢查API更新",
   reacquiring_tokens: "重新獲取令牌中",
   loading_n_results: "載入%{n}項記錄中",
@@ -29,6 +30,7 @@ const zhHant = {
   export: "匯出",
   exporting: "匯出中",
   disclaimer: "本應用是使用魷魚圈3的資訊的非官方應用，與任天堂有限公司無關。",
+  update: "更新",
   support: "支援",
   alternative_log_in_notice:
     "如果您擁有會話令牌並希望跳過由法螺灣獲取令牌，您可以復制會話令牌並完成登錄。",

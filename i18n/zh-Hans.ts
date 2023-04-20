@@ -14,6 +14,7 @@ const zhHans = {
   log_out_notice: "登出将清除法螺湾所有存储的数据！请在继续之前完成备份。",
   log_out_continue: "清除数据并登出",
   logging_out: "登出中",
+  failed_to_check_update: "未能检查更新",
   failed_to_check_api_update: "未能检查API更新",
   reacquiring_tokens: "重新获取令牌中",
   loading_n_results: "加载%{n}项记录中",
@@ -29,6 +30,7 @@ const zhHans = {
   export: "导出",
   exporting: "导出中",
   disclaimer: "本应用是使用鱿鱼圈3的信息的非官方应用，与任天堂有限公司无关。",
+  update: "更新",
   support: "支持",
   alternative_log_in_notice:
     "如果您拥有会话令牌并希望跳过由法螺湾获取令牌，您可以复制会话令牌并完成登录。",

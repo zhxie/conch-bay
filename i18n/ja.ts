@@ -15,6 +15,7 @@ const ja = {
     "ログアウトすると、ホラガイベイに保存されているすべてのデータが削除されます！続行する前にバックアップを完了してください。",
   log_out_continue: "データを削除してログアウト",
   logging_out: "ログアウト中",
+  failed_to_check_update: "アップデートを確認できませんでした",
   failed_to_check_api_update: "APIのアップデートを確認できませんでした",
   reacquiring_tokens: "トークン再取得中",
   loading_n_results: "%{n}件のリザルトを読み込む中",
@@ -32,6 +33,7 @@ const ja = {
   exporting: "エクスポート中",
   disclaimer:
     "当アプリは、イカリング3の情報を利用した非公式アプリであり、任天堂株式会社とは一切関係はございません。",
+  update: "アップデート",
   support: "サポート",
   alternative_log_in_notice:
     "セッショントークンを持っていて、ホラガイベイによるトークンの取得をスキップしたい場合は、代わりにセッショントークンをコピーしてログインを完了することができます。",
