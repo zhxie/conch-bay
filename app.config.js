@@ -3,7 +3,7 @@ import withAndroidLocalizedName from "@mmomtchev/expo-android-localized-app-name
 const config = {
   name: "Conch Bay",
   slug: "conch-bay",
-  version: "1.4.0",
+  version: "1.3.1",
   orientation: "portrait",
   userInterfaceStyle: "automatic",
   icon: "./assets/icon.png",
