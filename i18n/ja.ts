@@ -69,6 +69,7 @@ const ja = {
   first_aid_notice:
     "データベースが壊れているため、ロードできません。リザルトをエクスポートして、ホラガイベイを再インストールしてください。",
   auto_refresh_enabled: "自動更新が有効になりました",
+  auto_refresh_disabled: "自動更新が無効になりました",
   // Shop.
   gesotown: "ゲソタウン",
   order_in_nintendo_switch_online: "Nintendo Switch Onlineで注文",

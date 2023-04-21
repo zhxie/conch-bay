@@ -69,6 +69,7 @@ const en = {
   first_aid_notice:
     "The database is corrupted and cannot be loaded. Please export results and reinstall Conch Bay.",
   auto_refresh_enabled: "Auto refresh enabled",
+  auto_refresh_disabled: "Auto refresh disabled",
   // Shop.
   gesotown: "SplatNet Shop",
   order_in_nintendo_switch_online: "Order in Nintendo Switch Online",

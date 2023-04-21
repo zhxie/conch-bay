@@ -899,6 +899,7 @@ const MainView = () => {
       showBanner(BannerLevel.Info, t("auto_refresh_enabled"));
       await activateKeepAwakeAsync();
     } else {
+      showBanner(BannerLevel.Info, t("auto_refresh_disabled"));
       await deactivateKeepAwake();
     }
     setAutoRefresh(!autoRefresh);

@@ -64,6 +64,7 @@ const zhHans = {
   source_code_repository: "源代码库",
   first_aid_notice: "数据库已损坏并无法加载。请导出记录并重新安装法螺湾。",
   auto_refresh_enabled: "已启用自动刷新",
+  auto_refresh_disabled: "已停用自动刷新",
   // Shop.
   gesotown: "鱿鱼须商城",
   order_in_nintendo_switch_online: "在Nintendo Switch Online中预订",
