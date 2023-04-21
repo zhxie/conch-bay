@@ -27,9 +27,9 @@ let NSO_VERSION = "2.5.0";
 let SPLATNET_VERSION = "3.0.0-0742bda0";
 
 export const fetchLatestVersion = async () => {
-  const res = await fetch("https://api.github.com/repos/zhxie/conch-bay/tags");
+  const res = await fetch("https://api.github.com/repos/zhxie/conch-bay/releases");
   const json = await res.json();
-  return json[0]["name"];
+  return json.find((release) => !release["prerelease"])["tag_name"];
 };
 
 export const fetchSchedules = async () => {
