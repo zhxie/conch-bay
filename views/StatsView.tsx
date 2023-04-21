@@ -23,64 +23,23 @@ interface StatsViewProps {
   results?: ResultProps[];
   style?: StyleProp<ViewStyle>;
 }
-interface Defeat {
-  id: string;
-  count: number;
-}
-interface CountProps {
-  battle: {
-    count: number;
-    win: number;
-    lose: number;
-    kill: number;
-    assist: number;
-    death: number;
-    special: number;
-  };
-  coop: {
-    count: number;
-    clear: number;
-    wave: number;
-    bossDefeat: number;
-    bossDefeats: Defeat[];
-    kingDefeat: number;
-    kingDefeats: Defeat[];
-    deliverGoldenEgg: number;
-    assistGoldenEgg: number;
-    powerEgg: number;
-    rescue: number;
-    rescued: number;
-  };
-}
 
 const StatsView = (props: StatsViewProps) => {
   const [stats, setStats] = useState(false);
-  const [count, setCount] = useState<CountProps>();
 
-  const onStatsPress = () => {
+  const formatBattle = () => {
     let battle = 0,
       win = 0,
       lose = 0,
       kill = 0,
       assist = 0,
       death = 0,
-      special = 0,
-      coop = 0,
-      clear = 0,
-      wave = 0,
-      bossDefeat = 0,
-      kingDefeat = 0,
-      deliverGoldenEgg = 0,
-      assistGoldenEgg = 0,
-      powerEgg = 0,
-      rescue = 0,
-      rescued = 0;
-    const bossMap = new Map(),
-      kingMap = new Map();
-    props.results?.forEach((result) => {
-      if (result.battle) {
+      special = 0;
+    props.results
+      ?.filter((result) => result.battle)
+      .forEach((result) => {
         battle += 1;
-        switch (result.battle.vsHistoryDetail!.judgement as Judgement) {
+        switch (result.battle!.vsHistoryDetail!.judgement as Judgement) {
           case Judgement.WIN:
             win += 1;
             break;
@@ -92,11 +51,37 @@ const StatsView = (props: StatsViewProps) => {
           case Judgement.DRAW:
             break;
         }
-        kill += getVsSelfPlayer(result.battle).result?.kill ?? 0;
-        assist += getVsSelfPlayer(result.battle).result?.assist ?? 0;
-        death += getVsSelfPlayer(result.battle).result?.death ?? 0;
-        special += getVsSelfPlayer(result.battle).result?.special ?? 0;
-      } else {
+        kill += getVsSelfPlayer(result.battle!).result?.kill ?? 0;
+        assist += getVsSelfPlayer(result.battle!).result?.assist ?? 0;
+        death += getVsSelfPlayer(result.battle!).result?.death ?? 0;
+        special += getVsSelfPlayer(result.battle!).result?.special ?? 0;
+      });
+    return {
+      count: battle,
+      win,
+      lose,
+      kill,
+      assist,
+      death,
+      special,
+    };
+  };
+  const formatCoop = () => {
+    let coop = 0,
+      clear = 0,
+      wave = 0,
+      bossDefeat = 0,
+      kingDefeat = 0,
+      deliverGoldenEgg = 0,
+      assistGoldenEgg = 0,
+      powerEgg = 0,
+      rescue = 0,
+      rescued = 0;
+    const bossMap = new Map(),
+      kingMap = new Map();
+    props.results
+      ?.filter((result) => result.coop)
+      .forEach((result) => {
         coop += 1;
         const resultWave = result.coop!.coopHistoryDetail!.resultWave;
         if (resultWave >= 0) {
@@ -130,8 +115,7 @@ const StatsView = (props: StatsViewProps) => {
         powerEgg += result.coop!.coopHistoryDetail!.myResult.deliverCount;
         rescue += result.coop!.coopHistoryDetail!.myResult.rescueCount;
         rescued += result.coop!.coopHistoryDetail!.myResult.rescuedCount;
-      }
-    });
+      });
     const bossDefeats = Array.from(bossMap, (boss) => ({
       id: boss[0],
       count: boss[1],
@@ -142,31 +126,26 @@ const StatsView = (props: StatsViewProps) => {
       count: king[1],
     }));
     kingDefeats.sort((a, b) => decode64Index(a.id) - decode64Index(b.id));
-    setCount({
-      battle: {
-        count: battle,
-        win,
-        lose,
-        kill,
-        assist,
-        death,
-        special,
-      },
-      coop: {
-        count: coop,
-        clear,
-        wave,
-        bossDefeat,
-        bossDefeats,
-        kingDefeat,
-        kingDefeats,
-        deliverGoldenEgg,
-        assistGoldenEgg,
-        powerEgg,
-        rescue,
-        rescued,
-      },
-    });
+    return {
+      count: coop,
+      clear,
+      wave,
+      bossDefeat,
+      bossDefeats,
+      kingDefeat,
+      kingDefeats,
+      deliverGoldenEgg,
+      assistGoldenEgg,
+      powerEgg,
+      rescue,
+      rescued,
+    };
+  };
+
+  const battle = formatBattle();
+  const coop = formatCoop();
+
+  const onStatsPress = () => {
     setStats(true);
   };
   const onStatsClose = () => {
@@ -214,7 +193,7 @@ const StatsView = (props: StatsViewProps) => {
     <Center style={props.style}>
       <ToolButton icon="bar-chart-2" title={t("stats")} onPress={onStatsPress} />
       <Modal isVisible={stats} onClose={onStatsClose} style={ViewStyles.modal2d}>
-        <VStack style={[ViewStyles.mb2, ViewStyles.wf]}>
+        <VStack style={ViewStyles.mb2}>
           <Display isFirst title={t("count")}>
             <Text numberOfLines={1}>{props.results?.length ?? 0}</Text>
           </Display>
@@ -222,108 +201,86 @@ const StatsView = (props: StatsViewProps) => {
             <Text numberOfLines={1}>{`${props.count} / ${props.total}`}</Text>
           </Display>
         </VStack>
-        {!!count && (
-          <VStack style={[ViewStyles.mb2, ViewStyles.wf]}>
-            <VStack style={ViewStyles.mb2}>
-              <Display isFirst isLast={count.battle.count === 0} title={t("battle")}>
-                <Text numberOfLines={1}>{count.battle.count}</Text>
-              </Display>
-              {count.battle.count > 0 && (
-                <VStack>
-                  <Display title={t("victory")}>
-                    <Text numberOfLines={1}>{count.battle.win}</Text>
-                  </Display>
-                  <Display title={t("defeat")}>
-                    <Text numberOfLines={1}>{count.battle.lose}</Text>
-                  </Display>
-                  <Display title={t("splatted")}>
-                    <Text numberOfLines={1}>
-                      {formatTotalAndAverageKillAndAssist(
-                        count.battle.kill,
-                        count.battle.assist,
-                        count.battle.count
-                      )}
-                    </Text>
-                  </Display>
-                  <Display title={t("be_splatted")}>
-                    <Text numberOfLines={1}>
-                      {formatTotalAndAverage(count.battle.death, count.battle.count)}
-                    </Text>
-                  </Display>
-                  <Display isLast title={t("special_weapon_uses")}>
-                    <Text numberOfLines={1}>
-                      {formatTotalAndAverage(count.battle.special, count.battle.count)}
-                    </Text>
-                  </Display>
-                </VStack>
-              )}
-            </VStack>
+        <VStack style={ViewStyles.mb2}>
+          <Display isFirst isLast={battle.count === 0} title={t("battle")}>
+            <Text numberOfLines={1}>{battle.count}</Text>
+          </Display>
+          {battle.count > 0 && (
             <VStack>
-              <Display isFirst isLast={count.coop.count === 0} title={t("salmon_run")}>
-                <Text numberOfLines={1}>{count.coop.count}</Text>
+              <Display title={t("victory")}>
+                <Text numberOfLines={1}>{battle.win}</Text>
               </Display>
-              {count.coop.count > 0 && (
-                <VStack>
-                  <Display title={t("clear")}>
-                    <Text numberOfLines={1}>{count.coop.clear}</Text>
-                  </Display>
-                  <Display title={t("failure")}>
-                    <Text numberOfLines={1}>{count.coop.count - count.coop.clear}</Text>
-                  </Display>
-                  <Display title={t("waves_cleared")}>
-                    <Text numberOfLines={1}>
-                      {formatTotalAndAverage(count.coop.wave, count.coop.count)}
-                    </Text>
-                  </Display>
-                  <AccordionDisplay
-                    title={t("boss_salmonids_defeated")}
-                    subChildren={count.coop.bossDefeats.map((bossDefeat) => (
-                      <Display key={bossDefeat.id} title={t(bossDefeat.id)}>
-                        <Text numberOfLines={1}>{bossDefeat.count}</Text>
-                      </Display>
-                    ))}
-                  >
-                    <Text numberOfLines={1}>
-                      {formatTotalAndAverage(count.coop.bossDefeat, count.coop.count)}
-                    </Text>
-                  </AccordionDisplay>
-                  <AccordionDisplay
-                    title={t("king_salmonids_defeated")}
-                    subChildren={count.coop.kingDefeats.map((kingDefeat) => (
-                      <Display key={kingDefeat.id} title={t(kingDefeat.id)}>
-                        <Text numberOfLines={1}>{kingDefeat.count}</Text>
-                      </Display>
-                    ))}
-                  >
-                    <Text numberOfLines={1}>{count.coop.kingDefeat}</Text>
-                  </AccordionDisplay>
-                  <Display title={t("golden_eggs_collected")}>
-                    {formatTotalAndAverageGoldenEggs(
-                      count.coop.deliverGoldenEgg,
-                      count.coop.assistGoldenEgg,
-                      count.coop.count
-                    )}
-                  </Display>
-                  <Display title={t("power_eggs_collected")}>
-                    <Text numberOfLines={1}>
-                      {formatTotalAndAverage(count.coop.powerEgg, count.coop.count)}
-                    </Text>
-                  </Display>
-                  <Display title={t("rescued")}>
-                    <Text numberOfLines={1}>
-                      {formatTotalAndAverage(count.coop.rescue, count.coop.count)}
-                    </Text>
-                  </Display>
-                  <Display isLast title={t("be_rescued")}>
-                    <Text numberOfLines={1}>
-                      {formatTotalAndAverage(count.coop.rescued, count.coop.count)}
-                    </Text>
-                  </Display>
-                </VStack>
-              )}
+              <Display title={t("defeat")}>
+                <Text numberOfLines={1}>{battle.lose}</Text>
+              </Display>
+              <Display title={t("splatted")}>
+                <Text numberOfLines={1}>
+                  {formatTotalAndAverageKillAndAssist(battle.kill, battle.assist, battle.count)}
+                </Text>
+              </Display>
+              <Display title={t("be_splatted")}>
+                <Text numberOfLines={1}>{formatTotalAndAverage(battle.death, battle.count)}</Text>
+              </Display>
+              <Display isLast title={t("special_weapon_uses")}>
+                <Text numberOfLines={1}>{formatTotalAndAverage(battle.special, battle.count)}</Text>
+              </Display>
             </VStack>
-          </VStack>
-        )}
+          )}
+        </VStack>
+        <VStack style={ViewStyles.mb2}>
+          <Display isFirst isLast={coop.count === 0} title={t("salmon_run")}>
+            <Text numberOfLines={1}>{coop.count}</Text>
+          </Display>
+          {coop.count > 0 && (
+            <VStack>
+              <Display title={t("clear")}>
+                <Text numberOfLines={1}>{coop.clear}</Text>
+              </Display>
+              <Display title={t("failure")}>
+                <Text numberOfLines={1}>{coop.count - coop.clear}</Text>
+              </Display>
+              <Display title={t("waves_cleared")}>
+                <Text numberOfLines={1}>{formatTotalAndAverage(coop.wave, coop.count)}</Text>
+              </Display>
+              <AccordionDisplay
+                title={t("boss_salmonids_defeated")}
+                subChildren={coop.bossDefeats.map((bossDefeat) => (
+                  <Display key={bossDefeat.id} title={t(bossDefeat.id)}>
+                    <Text numberOfLines={1}>{bossDefeat.count}</Text>
+                  </Display>
+                ))}
+              >
+                <Text numberOfLines={1}>{formatTotalAndAverage(coop.bossDefeat, coop.count)}</Text>
+              </AccordionDisplay>
+              <AccordionDisplay
+                title={t("king_salmonids_defeated")}
+                subChildren={coop.kingDefeats.map((kingDefeat) => (
+                  <Display key={kingDefeat.id} title={t(kingDefeat.id)}>
+                    <Text numberOfLines={1}>{kingDefeat.count}</Text>
+                  </Display>
+                ))}
+              >
+                <Text numberOfLines={1}>{coop.kingDefeat}</Text>
+              </AccordionDisplay>
+              <Display title={t("golden_eggs_collected")}>
+                {formatTotalAndAverageGoldenEggs(
+                  coop.deliverGoldenEgg,
+                  coop.assistGoldenEgg,
+                  coop.count
+                )}
+              </Display>
+              <Display title={t("power_eggs_collected")}>
+                <Text numberOfLines={1}>{formatTotalAndAverage(coop.powerEgg, coop.count)}</Text>
+              </Display>
+              <Display title={t("rescued")}>
+                <Text numberOfLines={1}>{formatTotalAndAverage(coop.rescue, coop.count)}</Text>
+              </Display>
+              <Display isLast title={t("be_rescued")}>
+                <Text numberOfLines={1}>{formatTotalAndAverage(coop.rescued, coop.count)}</Text>
+              </Display>
+            </VStack>
+          )}
+        </VStack>
         <Text center>{t("stats_notice")}</Text>
       </Modal>
     </Center>

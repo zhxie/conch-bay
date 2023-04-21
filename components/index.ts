@@ -7,6 +7,7 @@ export { default as BattlePlayerButton } from "./BattlePlayerButton";
 export { default as BattleWeaponBox } from "./BattleWeaponBox";
 export { default as BossSalmonidBox } from "./BossSalmonidBox";
 export { default as Button } from "./Button";
+export * from "./Chart";
 export { default as CoopButton } from "./CoopButton";
 export { default as CoopPlayerButton } from "./CoopPlayerButton";
 export { default as CoopWeaponBox } from "./CoopWeaponBox";

@@ -1,6 +1,5 @@
 import { StyleProp, ViewStyle, useColorScheme } from "react-native";
 import Icon from "./Icon";
-import Pressable from "./Pressable";
 import ResultButton from "./ResultButton";
 import { Circle } from "./Shape";
 import { HStack } from "./Stack";

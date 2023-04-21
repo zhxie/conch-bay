@@ -62,7 +62,7 @@ interface AccordionDisplayProps extends DisplayProps {
 }
 
 const AccordionDisplay = (props: AccordionDisplayProps) => {
-  const { subChildren, ...rest } = props;
+  const { subChildren, isLast, ...rest } = props;
 
   const [expand, setExpand] = useState(false);
 
@@ -75,9 +75,13 @@ const AccordionDisplay = (props: AccordionDisplayProps) => {
   }
 
   return (
-    <Pressable onPress={onPress}>
+    <Pressable onPress={onPress} style={{ backgroundColor: "transparent" }}>
       <VStack>
-        <Display icon={expand ? "chevron-down" : "chevron-right"} {...rest} />
+        <Display
+          isLast={isLast && !expand}
+          icon={expand ? "chevron-down" : "chevron-right"}
+          {...rest}
+        />
         {expand && props.subChildren}
       </VStack>
     </Pressable>

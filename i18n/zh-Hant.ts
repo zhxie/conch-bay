@@ -112,6 +112,10 @@ const zhHant = {
   rescued: "救援",
   be_rescued: "被救助",
   stats_notice: "由當前已載入的記錄統計。",
+  // Trend.
+  trend: "趨勢",
+  splatted_including_assisted: "擊倒 (含助攻)",
+  golden_eggs_collected_including_assisted: "收集的金鮭魚卵 (含助攻)",
   // Modes.
   modes: "模式",
   battle: "對戰",

@@ -84,6 +84,7 @@ import ResultView from "./ResultView";
 import ScheduleView from "./ScheduleView";
 import ShopView from "./ShopView";
 import StatsView from "./StatsView";
+import TrendView from "./TrendView";
 
 let autoRefreshTimeout: NodeJS.Timeout | undefined;
 
@@ -1022,6 +1023,12 @@ const MainView = () => {
                 >
                   <HStack flex center style={ViewStyles.px4}>
                     <StatsView
+                      count={count}
+                      total={total}
+                      results={results}
+                      style={ViewStyles.mr2}
+                    />
+                    <TrendView
                       count={count}
                       total={total}
                       results={results}

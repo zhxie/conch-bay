@@ -117,6 +117,10 @@ const ja = {
   rescued: "たすけた",
   be_rescued: "たすけてもらった",
   stats_notice: "現在ロードされているリザルトからの統計。",
+  // Trend.
+  trend: "トレンド",
+  splatted_including_assisted: "たおした (アシスト含む)",
+  golden_eggs_collected_including_assisted: "集めた金イクラ (含助攻)",
   // Modes.
   modes: "モード",
   battle: "バトル",

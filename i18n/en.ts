@@ -118,6 +118,10 @@ const en = {
   rescued: "Rescued",
   be_rescued: "Be Rescued",
   stats_notice: "Statistics from currently loaded results.",
+  // Trend.
+  trend: "Trend",
+  splatted_including_assisted: "Splatted (Including Assisted)",
+  golden_eggs_collected_including_assisted: "Golden Eggs Collected (Including Assisted)",
   // Modes.
   modes: "Modes",
   battle: "Battle",
