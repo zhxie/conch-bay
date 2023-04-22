@@ -229,6 +229,24 @@ const TrendView = (props: TrendViewProps) => {
                 }
               />
               <AccordionDisplay
+                title={t("hazard_level")}
+                subChildren={
+                  <AreaChart
+                    data={coopGroups
+                      .map(
+                        (coopGroup) =>
+                          coopGroup
+                            .map((coop) => coop.coopHistoryDetail!.dangerRate * 100)
+                            .reduce((prev, current) => prev + current, 0) / coopGroup.length
+                      )
+                      .map((value, i) => ({ x: i, y: value }))}
+                    color={Color.SalmonRun}
+                    padding={{ top: 10, bottom: 10 }}
+                    style={[style, { height: 150, width: "100%" }]}
+                  />
+                }
+              />
+              <AccordionDisplay
                 title={t("boss_salmonids_defeated")}
                 subChildren={
                   <AreaChart

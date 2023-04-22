@@ -121,6 +121,7 @@ const en = {
   // Trend.
   trend: "Trend",
   splatted_including_assisted: "Splatted (Including Assisted)",
+  hazard_level: "Hazard Level",
   golden_eggs_collected_including_assisted: "Golden Eggs Collected (Including Assisted)",
   // Modes.
   modes: "Modes",
