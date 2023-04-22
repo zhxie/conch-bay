@@ -14,6 +14,7 @@ import {
 import { Gear as ShopQuery, Schedules as SchedulesQuery } from "splatnet3-types/dist/splatoon3ink";
 
 export {
+  AwardRank,
   BankaraBattleHistoriesResult,
   CatalogResult,
   CoopHistoryDetailVariables,
@@ -63,6 +64,7 @@ export type SaleGear =
   | ShopQuery["data"]["gesotown"]["pickupBrand"]["brandGears"][0]
   | ShopQuery["data"]["gesotown"]["limitedGears"][0];
 
+export type Award = NotNullable<VsHistoryDetailResult["vsHistoryDetail"]>["awards"][0];
 export type Badge =
   | NotNullable<VsPlayer["nameplate"]>["badges"][0]
   | NotNullable<CoopPlayerResult["player"]["nameplate"]>["badges"][0];

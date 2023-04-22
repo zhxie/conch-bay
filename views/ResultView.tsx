@@ -1,4 +1,6 @@
 import { FlashList, ListRenderItemInfo } from "@shopify/flash-list";
+import dayjs from "dayjs";
+import duration from "dayjs/plugin/duration";
 import * as Clipboard from "expo-clipboard";
 import { useRef, useState } from "react";
 import {
@@ -13,6 +15,7 @@ import {
 } from "react-native";
 import JSONTree from "react-native-json-tree";
 import {
+  AccordionDisplay,
   BannerLevel,
   BattleButton,
   BattlePlayerButton,
@@ -24,6 +27,7 @@ import {
   CoopButton,
   CoopPlayerButton,
   CoopWeaponBox,
+  Display,
   GearBox,
   HStack,
   KingSalmonidBox,
@@ -41,6 +45,8 @@ import {
 } from "../components";
 import t, { ScopeWithDefaultValue, td } from "../i18n";
 import {
+  Award,
+  AwardRank,
   Badge,
   CoopHistoryDetailResult,
   CoopMemberResult,
@@ -63,6 +69,8 @@ import {
   getVsSelfPlayer,
   getGearPadding,
 } from "../utils/ui";
+
+dayjs.extend(duration);
 
 export interface ResultProps {
   battle?: VsHistoryDetailResult;
@@ -166,6 +174,20 @@ const ResultView = (props: ResultViewProps) => {
       return getImageCacheSource(badge.image.url);
     }
     return null;
+  };
+  const formatPlayedTime = (playedTime: string) => {
+    return dayjs(playedTime).format("YYYY/M/D HH:mm:ss");
+  };
+  const formatDuration = (duration: number) => {
+    return dayjs.duration(duration, "second").format("m:ss");
+  };
+  const formatMedalColor = (medal: Award) => {
+    switch (medal.rank as AwardRank) {
+      case AwardRank.GOLD:
+        return Color.GoldScale;
+      case AwardRank.SILVER:
+        return Color.SilverScale;
+    }
   };
   const formatWave = (coop: CoopHistoryDetailResult) => {
     switch (coop.coopHistoryDetail!.resultWave) {
@@ -547,6 +569,78 @@ const ResultView = (props: ResultViewProps) => {
                   ))}
                 </VStack>
               ))}
+              <VStack style={ViewStyles.mb2}>
+                <AccordionDisplay
+                  isFirst
+                  isLast
+                  title={t("details")}
+                  subChildren={
+                    <VStack>
+                      {result.battle.vsHistoryDetail!.bankaraMatch?.earnedUdemaePoint && (
+                        <Display title={t("rank_points")}>
+                          <Text numberOfLines={1}>
+                            {`${
+                              result.battle.vsHistoryDetail!.bankaraMatch.earnedUdemaePoint > 0
+                                ? "+"
+                                : ""
+                            }${result.battle.vsHistoryDetail!.bankaraMatch.earnedUdemaePoint}p`}
+                          </Text>
+                        </Display>
+                      )}
+                      {result.battle.vsHistoryDetail!.xMatch?.lastXPower && (
+                        <Display title={t("x_power")}>
+                          <Text numberOfLines={1}>
+                            {`${result.battle.vsHistoryDetail!.xMatch.lastXPower.toFixed(1)}`}
+                          </Text>
+                        </Display>
+                      )}
+                      {result.battle.vsHistoryDetail!.festMatch && (
+                        <VStack>
+                          <Display title={t("clout")}>
+                            <Text numberOfLines={1}>
+                              {`${result.battle.vsHistoryDetail!.festMatch.contribution}`}
+                            </Text>
+                          </Display>
+                          <Display title={t("festival_shell")}>
+                            <Text numberOfLines={1}>
+                              {`${result.battle.vsHistoryDetail!.festMatch.jewel}`}
+                            </Text>
+                          </Display>
+                          {result.battle.vsHistoryDetail!.festMatch.myFestPower && (
+                            <Display title={t("splatfest_power")}>
+                              <Text numberOfLines={1}>
+                                {`${result.battle.vsHistoryDetail!.festMatch.myFestPower.toFixed(
+                                  1
+                                )}`}
+                              </Text>
+                            </Display>
+                          )}
+                        </VStack>
+                      )}
+                      {result.battle.vsHistoryDetail!.awards.map((award, i) => (
+                        <Display title={i === 0 ? t("medals_earned") : ""}>
+                          <HStack center>
+                            <Circle
+                              size={12}
+                              color={formatMedalColor(award)}
+                              style={ViewStyles.mr1}
+                            />
+                            <Text numberOfLines={1}>{award.name}</Text>
+                          </HStack>
+                        </Display>
+                      ))}
+                      <Display isLast title={t("played_time")}>
+                        <Text numberOfLines={1}>
+                          {formatPlayedTime(result.battle.vsHistoryDetail!.playedTime)}
+                          <Text numberOfLines={1} style={TextStyles.h6}>
+                            {`+${formatDuration(result.battle.vsHistoryDetail!.duration)}`}
+                          </Text>
+                        </Text>
+                      </Display>
+                    </VStack>
+                  }
+                />
+              </VStack>
               <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onHidePlayerNamesPress}>
                 <Marquee style={reverseTextColor}>
                   {hidePlayerNames ? t("show_player_names") : t("hide_player_names")}
