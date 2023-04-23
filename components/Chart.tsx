@@ -1,50 +1,29 @@
 import { StyleProp, ViewStyle, useColorScheme } from "react-native";
-import {
-  Area,
-  Chart,
-  ChartDataPoint,
-  Line,
-  Padding,
-  VerticalAxis,
-} from "react-native-responsive-linechart";
+import { Area, Chart, Line, Padding, VerticalAxis } from "react-native-responsive-linechart";
 import { Color, TextStyles } from "./Styles";
 
-interface AreaChartProps {
-  data: ChartDataPoint[];
-  max?: number;
+interface ChartData {
+  data: number[];
   color: string;
-  padding?: Padding;
-  style?: StyleProp<ViewStyle>;
+  max?: number;
+  relative?: boolean;
 }
 
-const AreaChart = (props: AreaChartProps) => {
+interface LineProps {
+  data: number[];
+  color: string;
+}
+
+const AreaLine = (props: LineProps) => {
   const colorScheme = useColorScheme();
   const color = colorScheme === "light" ? Color.LightTerritory : Color.DarkTerritory;
 
-  const max = Math.max(...props.data.map((datum) => datum.y));
+  const data = props.data.map((datum, i) => ({ x: i, y: datum }));
 
   return (
-    <Chart
-      style={props.style}
-      data={props.data}
-      yDomain={{ min: 0, max: props.max || max }}
-      disableTouch
-      disableGestures
-      padding={props.padding || { bottom: 5, top: 5 }}
-    >
-      <VerticalAxis
-        tickCount={3}
-        theme={{
-          axis: { visible: false },
-          grid: { stroke: { color: Color.MiddleTerritory, opacity: 0.5, dashArray: [5] } },
-          ticks: { visible: false },
-          labels: {
-            label: { ...TextStyles.subtle, dx: 40 },
-            formatter: (v) => v.toFixed(1),
-          },
-        }}
-      />
+    <>
       <Area
+        data={data}
         smoothing="cubic-spline"
         theme={{
           gradient: {
@@ -53,7 +32,9 @@ const AreaChart = (props: AreaChartProps) => {
           },
         }}
       />
+      {/* TODO: using scatter line will lead to layout area over lines. */}
       <Line
+        data={data}
         smoothing="cubic-spline"
         theme={{
           stroke: { color: props.color, width: 3 },
@@ -68,6 +49,7 @@ const AreaChart = (props: AreaChartProps) => {
         }}
       />
       <Line
+        data={data}
         smoothing="cubic-spline"
         theme={{
           stroke: { width: 0 },
@@ -81,8 +63,113 @@ const AreaChart = (props: AreaChartProps) => {
           },
         }}
       />
+    </>
+  );
+};
+
+const ScatterLine = (props: LineProps) => {
+  const colorScheme = useColorScheme();
+  const color = colorScheme === "light" ? Color.LightTerritory : Color.DarkTerritory;
+
+  const data = props.data.map((datum, i) => ({ x: i, y: datum }));
+
+  return (
+    <>
+      <Line
+        data={data}
+        smoothing="cubic-spline"
+        theme={{
+          stroke: { color: props.color, width: 3 },
+          scatter: {
+            default: {
+              width: 8,
+              height: 8,
+              rx: 8,
+              color: props.color,
+            },
+          },
+        }}
+      />
+      <Line
+        data={data}
+        smoothing="cubic-spline"
+        theme={{
+          stroke: { width: 0 },
+          scatter: {
+            default: {
+              width: 4,
+              height: 4,
+              rx: 4,
+              color,
+            },
+          },
+        }}
+      />
+    </>
+  );
+};
+
+interface CompareChartProps {
+  dataGroup: ChartData[];
+  padding?: Padding;
+  style?: StyleProp<ViewStyle>;
+}
+
+const CompareChart = (props: CompareChartProps) => {
+  const max =
+    Math.max(
+      ...props.dataGroup
+        .filter((data) => !data.relative)
+        .map((data) => {
+          if (data.max !== undefined) {
+            return data.max;
+          }
+          return Math.max(...data.data);
+        }),
+      0
+    ) || 100;
+
+  const normalize = (data: ChartData) => {
+    if (!data.relative) {
+      return data.data;
+    }
+
+    return data.data.map((datum) => (datum / (data.max || Math.max(...data.data))) * max);
+  };
+
+  return (
+    <Chart
+      style={props.style}
+      xDomain={{ min: 0, max: props.dataGroup[0].data.length - 1 }}
+      yDomain={{
+        min: 0,
+        max: max,
+      }}
+      disableTouch
+      disableGestures
+      padding={props.padding || { bottom: 10, top: 10 }}
+    >
+      <VerticalAxis
+        tickCount={3}
+        theme={{
+          axis: { visible: false },
+          grid: { stroke: { color: Color.MiddleTerritory, opacity: 0.5, dashArray: [5] } },
+          ticks: { visible: false },
+          labels: {
+            label: { ...TextStyles.subtle, dx: 40 },
+            formatter: (v) => v.toFixed(1),
+          },
+        }}
+      />
+      {props.dataGroup.map((data, i, dataGroup) =>
+        dataGroup.length === 1 ? (
+          <AreaLine key={i} data={normalize(data)} color={data.color} />
+        ) : (
+          <ScatterLine key={i} data={normalize(data)} color={data.color} />
+        )
+      )}
     </Chart>
   );
 };
 
-export { AreaChart };
+export { ChartData, CompareChart };

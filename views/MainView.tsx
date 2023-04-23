@@ -1028,12 +1028,7 @@ const MainView = () => {
                       results={results}
                       style={ViewStyles.mr2}
                     />
-                    <TrendView
-                      count={count}
-                      total={total}
-                      results={results}
-                      style={ViewStyles.mr2}
-                    />
+                    <TrendView results={results} style={ViewStyles.mr2} />
                     <ToolButton
                       isLoading={false}
                       isLoadingText=""

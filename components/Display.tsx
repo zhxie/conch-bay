@@ -58,13 +58,14 @@ const Display = (props: DisplayProps) => {
 };
 
 interface AccordionDisplayProps extends DisplayProps {
+  expand?: boolean;
   subChildren?: React.ReactNode;
 }
 
 const AccordionDisplay = (props: AccordionDisplayProps) => {
   const { subChildren, isLast, ...rest } = props;
 
-  const [expand, setExpand] = useState(false);
+  const [expand, setExpand] = useState(props.expand ?? false);
 
   const onPress = () => {
     setExpand(!expand);

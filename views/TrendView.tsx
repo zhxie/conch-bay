@@ -1,11 +1,13 @@
 import { useState } from "react";
-import { StyleProp, ViewStyle, useColorScheme } from "react-native";
+import { Dimensions, ScrollView, StyleProp, ViewStyle, useColorScheme } from "react-native";
 import {
-  AccordionDisplay,
-  AreaChart,
   Center,
+  ChartData,
   Color,
+  CompareChart,
   Display,
+  FilterButton,
+  HStack,
   Modal,
   Text,
   ToolButton,
@@ -17,17 +19,34 @@ import { getVsSelfPlayer } from "../utils/ui";
 import { ResultProps } from "./ResultView";
 
 interface TrendViewProps {
-  count: number;
-  total: number;
   results?: ResultProps[];
   style?: StyleProp<ViewStyle>;
 }
+
+type BattleDimension =
+  | "VICTORY"
+  | "SPLATTED"
+  | "SPLATTED_INCLUDING_ASSISTED"
+  | "BE_SPLATTED"
+  | "SPECIAL_WEAPON_USES";
+type CoopDimension =
+  | "CLEAR"
+  | "WAVES_CLEARED"
+  | "HAZARD_LEVEL"
+  | "BOSS_SALMONIDS_DEFEATED"
+  | "GOLDEN_EGGS_COLLECTED"
+  | "GOLDEN_EGGS_COLLECTED_INCLUDING_ASSISTED"
+  | "POWER_EGGS_COLLECTED"
+  | "RESCUED"
+  | "BE_RESCUED";
 
 const TrendView = (props: TrendViewProps) => {
   const colorScheme = useColorScheme();
   const style = colorScheme === "light" ? ViewStyles.lightTerritory : ViewStyles.darkTerritory;
 
   const [trend, setTrend] = useState(false);
+  const [battleDimensions, setBattleDimensions] = useState<BattleDimension[]>(["VICTORY"]);
+  const [coopDimensions, setCoopDimensions] = useState<CoopDimension[]>(["CLEAR"]);
 
   const split = <T,>(arr: T[], count: number) => {
     const result: T[][] = [];
@@ -44,10 +63,115 @@ const TrendView = (props: TrendViewProps) => {
     return result;
   };
 
+  const pointCount = Math.round(Dimensions.get("screen").width / 20);
   const battles = props.results?.filter((result) => result.battle).map((result) => result.battle!);
-  const battleGroups = battles ? split(battles, 20) : [];
+  const battleGroups = battles ? split(battles, pointCount) : [];
   const coops = props.results?.filter((result) => result.coop).map((result) => result.coop!);
-  const coopGroups = coops ? split(coops, 20) : [];
+  const coopGroups = coops ? split(coops, pointCount) : [];
+
+  const formatBattleGroup = () => {
+    const victory: ChartData = { data: [], color: Color.AccentColor, max: 100, relative: true },
+      splatted: ChartData = { data: [], color: Color.KillAndRescue },
+      splattedIncludingAssisted: ChartData = { data: [], color: Color.KillAndRescue },
+      beSplatted: ChartData = { data: [], color: Color.Death },
+      specialWeaponUses: ChartData = { data: [], color: Color.Special };
+
+    for (const battleGroup of battleGroups) {
+      let v = 0,
+        k = 0,
+        a = 0,
+        d = 0,
+        sp = 0;
+      for (const battle of battleGroup) {
+        if (battle.vsHistoryDetail!.judgement === "WIN") {
+          v += 100;
+        }
+        k += getVsSelfPlayer(battle).result?.kill ?? 0;
+        a += getVsSelfPlayer(battle).result?.assist ?? 0;
+        d += getVsSelfPlayer(battle).result?.death ?? 0;
+        sp += getVsSelfPlayer(battle).result?.special ?? 0;
+      }
+      victory.data.push(v / battleGroup.length);
+      splatted.data.push(k / battleGroup.length);
+      splattedIncludingAssisted.data.push((k + a) / battleGroup.length);
+      beSplatted.data.push(d / battleGroup.length);
+      specialWeaponUses.data.push(sp / battleGroup.length);
+    }
+
+    return {
+      victory,
+      splatted,
+      splattedIncludingAssisted,
+      beSplatted,
+      specialWeaponUses,
+    };
+  };
+  const formatCoopGroup = () => {
+    const clear: ChartData = { data: [], color: Color.AccentColor, max: 100, relative: true },
+      wavesCleared: ChartData = { data: [], color: Color.SalmonRun },
+      hazardLevel: ChartData = { data: [], color: Color.BigRun },
+      bossSalmonidsDefeated: ChartData = { data: [], color: Color.KillAndRescue },
+      goldenEggsCollected: ChartData = { data: [], color: Color.GoldenEgg },
+      goldenEggsCollectedIncludingAssisted: ChartData = { data: [], color: Color.GoldenEgg },
+      powerEggsCollected: ChartData = { data: [], color: Color.PowerEgg },
+      rescued: ChartData = { data: [], color: Color.KillAndRescue },
+      beRescued: ChartData = { data: [], color: Color.Death };
+
+    for (const coopGroup of coopGroups) {
+      let c = 0,
+        w = 0,
+        h = 0,
+        k = 0,
+        g = 0,
+        a = 0,
+        p = 0,
+        r = 0,
+        d = 0;
+      for (const coop of coopGroup) {
+        if (coop.coopHistoryDetail!.resultWave === 0) {
+          c += 100;
+        }
+        if (coop.coopHistoryDetail!.resultWave >= 0) {
+          if (coop.coopHistoryDetail!.resultWave === 0) {
+            w += coop.coopHistoryDetail!.waveResults.length;
+          } else {
+            w += coop.coopHistoryDetail!.resultWave - 1;
+          }
+        }
+        h += coop.coopHistoryDetail!.dangerRate * 100;
+        k += coop.coopHistoryDetail!.myResult.defeatEnemyCount;
+        g += coop.coopHistoryDetail!.myResult.goldenDeliverCount;
+        a += coop.coopHistoryDetail!.myResult.goldenAssistCount;
+        p += coop.coopHistoryDetail!.myResult.deliverCount;
+        r += coop.coopHistoryDetail!.myResult.rescueCount;
+        d += coop.coopHistoryDetail!.myResult.rescuedCount;
+      }
+      clear.data.push(c / coopGroup.length);
+      wavesCleared.data.push(w / coopGroup.length);
+      hazardLevel.data.push(h / coopGroup.length);
+      bossSalmonidsDefeated.data.push(k / coopGroup.length);
+      goldenEggsCollected.data.push(g / coopGroup.length);
+      goldenEggsCollectedIncludingAssisted.data.push((g + a) / coopGroup.length);
+      powerEggsCollected.data.push(p / coopGroup.length);
+      rescued.data.push(r / coopGroup.length);
+      beRescued.data.push(d / coopGroup.length);
+    }
+
+    return {
+      clear,
+      wavesCleared,
+      hazardLevel,
+      bossSalmonidsDefeated,
+      goldenEggsCollected,
+      goldenEggsCollectedIncludingAssisted,
+      powerEggsCollected,
+      rescued,
+      beRescued,
+    };
+  };
+
+  const battleData = formatBattleGroup();
+  const coopData = formatCoopGroup();
 
   const onTrendPress = () => {
     setTrend(true);
@@ -55,310 +179,232 @@ const TrendView = (props: TrendViewProps) => {
   const onTrendClose = () => {
     setTrend(false);
   };
+  const getBattleData = (dimension: BattleDimension) => {
+    switch (dimension) {
+      case "VICTORY":
+        return battleData.victory;
+      case "SPLATTED":
+        return battleData.splatted;
+      case "SPLATTED_INCLUDING_ASSISTED":
+        return battleData.splattedIncludingAssisted;
+      case "BE_SPLATTED":
+        return battleData.beSplatted;
+      case "SPECIAL_WEAPON_USES":
+        return battleData.specialWeaponUses;
+    }
+  };
+  const getCoopData = (dimension: CoopDimension) => {
+    switch (dimension) {
+      case "CLEAR":
+        return coopData.clear;
+      case "WAVES_CLEARED":
+        return coopData.wavesCleared;
+      case "HAZARD_LEVEL":
+        return coopData.hazardLevel;
+      case "BOSS_SALMONIDS_DEFEATED":
+        return coopData.bossSalmonidsDefeated;
+      case "GOLDEN_EGGS_COLLECTED":
+        return coopData.goldenEggsCollected;
+      case "GOLDEN_EGGS_COLLECTED_INCLUDING_ASSISTED":
+        return coopData.goldenEggsCollectedIncludingAssisted;
+      case "POWER_EGGS_COLLECTED":
+        return coopData.powerEggsCollected;
+      case "RESCUED":
+        return coopData.rescued;
+      case "BE_RESCUED":
+        return coopData.beRescued;
+    }
+  };
+  const onBattleDimensionPress = (dimension: BattleDimension) => {
+    const newBattleDimensions = battleDimensions.map((dimension) => dimension);
+    if (newBattleDimensions.includes(dimension)) {
+      const i = newBattleDimensions.indexOf(dimension);
+      newBattleDimensions.splice(i, 1);
+    } else {
+      newBattleDimensions.push(dimension);
+    }
+    setBattleDimensions(newBattleDimensions);
+  };
+  const onCoopDimensionPress = (dimension: CoopDimension) => {
+    const newCoopDimensions = coopDimensions.map((dimension) => dimension);
+    if (newCoopDimensions.includes(dimension)) {
+      const i = newCoopDimensions.indexOf(dimension);
+      newCoopDimensions.splice(i, 1);
+    } else {
+      newCoopDimensions.push(dimension);
+    }
+    setCoopDimensions(newCoopDimensions);
+  };
 
   return (
     <Center style={props.style}>
       <ToolButton icon="trending-up" title={t("trend")} onPress={onTrendPress} />
       <Modal isVisible={trend} onClose={onTrendClose} style={ViewStyles.modal2d}>
-        <VStack style={[ViewStyles.mb2, ViewStyles.wf]}>
-          <Display isFirst title={t("count")}>
-            <Text numberOfLines={1}>{props.results?.length ?? 0}</Text>
-          </Display>
-          <Display isLast title={t("database")}>
-            <Text numberOfLines={1}>{`${props.count} / ${props.total}`}</Text>
-          </Display>
-        </VStack>
         <VStack style={ViewStyles.mb2}>
-          <Display isFirst isLast={!battles || battles.length === 0} title={t("battle")}>
+          <Display isFirst isLast={battleGroups.length === 0} title={t("battle")}>
             <Text numberOfLines={1}>{battles?.length ?? 0}</Text>
           </Display>
           {battleGroups.length > 0 && (
-            <VStack>
-              <AccordionDisplay
-                title={t("victory")}
-                subChildren={
-                  <AreaChart
-                    data={battleGroups
-                      .map(
-                        (battleGroup) =>
-                          battleGroup
-                            .map((battle) => (battle.vsHistoryDetail!.judgement == "WIN" ? 1 : 0))
-                            .reduce((prev: number, current) => prev + current, 0) /
-                          battleGroup.length
-                      )
-                      .map((value, i) => ({ x: i, y: value }))}
-                    max={1}
-                    color={Color.AccentColor}
-                    padding={{ top: 10, bottom: 10 }}
-                    style={[style, { height: 150, width: "100%" }]}
+            <VStack style={[ViewStyles.rb2, style]}>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                <HStack flex center>
+                  <FilterButton
+                    color={battleDimensions.includes("VICTORY") ? Color.AccentColor : undefined}
+                    title={`${t("victory")} (%)`}
+                    style={[ViewStyles.mr2, { backgroundColor: "transparent" }]}
+                    onPress={() => {
+                      onBattleDimensionPress("VICTORY");
+                    }}
                   />
-                }
-              />
-              <AccordionDisplay
-                title={t("splatted")}
-                subChildren={
-                  <AreaChart
-                    data={battleGroups
-                      .map(
-                        (battleGroup) =>
-                          battleGroup
-                            .map((battle) => getVsSelfPlayer(battle).result?.kill ?? 0)
-                            .reduce((prev, current) => prev + current, 0) / battleGroup.length
-                      )
-                      .map((value, i) => ({ x: i, y: value }))}
-                    color={Color.KillAndRescue}
-                    padding={{ top: 10, bottom: 10 }}
-                    style={[style, { height: 150, width: "100%" }]}
+                  <FilterButton
+                    color={battleDimensions.includes("SPLATTED") ? Color.KillAndRescue : undefined}
+                    title={t("splatted")}
+                    style={[ViewStyles.mr2, { backgroundColor: "transparent" }]}
+                    onPress={() => {
+                      onBattleDimensionPress("SPLATTED");
+                    }}
                   />
-                }
-              />
-              <AccordionDisplay
-                title={t("splatted_including_assisted")}
-                subChildren={
-                  <AreaChart
-                    data={battleGroups
-                      .map(
-                        (battleGroup) =>
-                          battleGroup
-                            .map(
-                              (battle) =>
-                                (getVsSelfPlayer(battle).result?.kill ?? 0) +
-                                (getVsSelfPlayer(battle).result?.assist ?? 0)
-                            )
-                            .reduce((prev, current) => prev + current, 0) / battleGroup.length
-                      )
-                      .map((value, i) => ({ x: i, y: value }))}
-                    color={Color.KillAndRescue}
-                    padding={{ top: 10, bottom: 10 }}
-                    style={[style, { height: 150, width: "100%" }]}
+                  <FilterButton
+                    color={
+                      battleDimensions.includes("SPLATTED_INCLUDING_ASSISTED")
+                        ? Color.KillAndRescue
+                        : undefined
+                    }
+                    title={t("splatted_including_assisted")}
+                    style={[ViewStyles.mr2, { backgroundColor: "transparent" }]}
+                    onPress={() => {
+                      onBattleDimensionPress("SPLATTED_INCLUDING_ASSISTED");
+                    }}
                   />
-                }
-              />
-              <AccordionDisplay
-                title={t("be_splatted")}
-                subChildren={
-                  <AreaChart
-                    data={battleGroups
-                      .map(
-                        (battleGroup) =>
-                          battleGroup
-                            .map((battle) => getVsSelfPlayer(battle).result?.death ?? 0)
-                            .reduce((prev, current) => prev + current, 0) / battleGroup.length
-                      )
-                      .map((value, i) => ({ x: i, y: value }))}
-                    color={Color.Death}
-                    padding={{ top: 10, bottom: 10 }}
-                    style={[style, { height: 150, width: "100%" }]}
+                  <FilterButton
+                    color={battleDimensions.includes("BE_SPLATTED") ? Color.Death : undefined}
+                    title={t("be_splatted")}
+                    style={[ViewStyles.mr2, { backgroundColor: "transparent" }]}
+                    onPress={() => {
+                      onBattleDimensionPress("BE_SPLATTED");
+                    }}
                   />
-                }
-              />
-              <AccordionDisplay
-                title={t("special_weapon_uses")}
-                isLast
-                subChildren={
-                  <AreaChart
-                    data={battleGroups
-                      .map(
-                        (battleGroup) =>
-                          battleGroup
-                            .map((battle) => getVsSelfPlayer(battle).result?.special ?? 0)
-                            .reduce((prev, current) => prev + current, 0) / battleGroup.length
-                      )
-                      .map((value, i) => ({ x: i, y: value }))}
-                    color={Color.Special}
-                    padding={{ top: 10, bottom: 10 }}
-                    style={[ViewStyles.rb2, style, { height: 150, width: "100%" }]}
+                  <FilterButton
+                    color={
+                      battleDimensions.includes("SPECIAL_WEAPON_USES") ? Color.Special : undefined
+                    }
+                    title={t("special_weapon_uses")}
+                    style={{ backgroundColor: "transparent" }}
+                    onPress={() => {
+                      onBattleDimensionPress("SPECIAL_WEAPON_USES");
+                    }}
                   />
-                }
-              />
+                </HStack>
+              </ScrollView>
+              {battleDimensions.length > 0 && (
+                <CompareChart
+                  dataGroup={battleDimensions.map((dimension) => getBattleData(dimension))}
+                  style={[ViewStyles.rb2, style, { height: 150, width: "100%" }]}
+                />
+              )}
             </VStack>
           )}
         </VStack>
         <VStack style={ViewStyles.mb2}>
-          <Display isFirst isLast={!coops || coops.length === 0} title={t("salmon_run")}>
+          <Display isFirst isLast={coopGroups.length === 0} title={t("salmon_run")}>
             <Text numberOfLines={1}>{coops?.length ?? 0}</Text>
           </Display>
           {coopGroups.length > 0 && (
-            <VStack>
-              <AccordionDisplay
-                title={t("clear")}
-                subChildren={
-                  <AreaChart
-                    data={coopGroups
-                      .map(
-                        (coopGroup) =>
-                          coopGroup
-                            .map((coop) => (coop.coopHistoryDetail!.resultWave === 0 ? 1 : 0))
-                            .reduce((prev: number, current) => prev + current, 0) / coopGroup.length
-                      )
-                      .map((value, i) => ({ x: i, y: value }))}
-                    max={1}
-                    color={Color.AccentColor}
-                    padding={{ top: 10, bottom: 10 }}
-                    style={[style, { height: 150, width: "100%" }]}
+            <VStack style={[ViewStyles.rb2, style]}>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                <HStack flex center>
+                  <FilterButton
+                    color={coopDimensions.includes("CLEAR") ? Color.AccentColor : undefined}
+                    title={`${t("clear")} (%)`}
+                    style={[ViewStyles.mr2, { backgroundColor: "transparent" }]}
+                    onPress={() => {
+                      onCoopDimensionPress("CLEAR");
+                    }}
                   />
-                }
-              />
-              <AccordionDisplay
-                title={t("waves_cleared")}
-                subChildren={
-                  <AreaChart
-                    data={coopGroups
-                      .map(
-                        (coopGroup) =>
-                          coopGroup
-                            .map((coop) => {
-                              if (coop.coopHistoryDetail!.resultWave >= 0) {
-                                if (coop.coopHistoryDetail!.resultWave == 0) {
-                                  return coop.coopHistoryDetail!.waveResults.length;
-                                }
-                                return coop.coopHistoryDetail!.resultWave - 1;
-                              }
-                              return 0;
-                            })
-                            .reduce((prev, current) => prev + current, 0) / coopGroup.length
-                      )
-                      .map((value, i) => ({ x: i, y: value }))}
-                    max={Math.max(
-                      ...coops!.map((coop) => coop.coopHistoryDetail!.waveResults.length)
-                    )}
-                    color={Color.SalmonRun}
-                    padding={{ top: 10, bottom: 10 }}
-                    style={[style, { height: 150, width: "100%" }]}
+                  <FilterButton
+                    color={coopDimensions.includes("WAVES_CLEARED") ? Color.SalmonRun : undefined}
+                    title={t("waves_cleared")}
+                    style={[ViewStyles.mr2, { backgroundColor: "transparent" }]}
+                    onPress={() => {
+                      onCoopDimensionPress("WAVES_CLEARED");
+                    }}
                   />
-                }
-              />
-              <AccordionDisplay
-                title={t("hazard_level")}
-                subChildren={
-                  <AreaChart
-                    data={coopGroups
-                      .map(
-                        (coopGroup) =>
-                          coopGroup
-                            .map((coop) => coop.coopHistoryDetail!.dangerRate * 100)
-                            .reduce((prev, current) => prev + current, 0) / coopGroup.length
-                      )
-                      .map((value, i) => ({ x: i, y: value }))}
-                    color={Color.SalmonRun}
-                    padding={{ top: 10, bottom: 10 }}
-                    style={[style, { height: 150, width: "100%" }]}
+                  <FilterButton
+                    color={coopDimensions.includes("HAZARD_LEVEL") ? Color.BigRun : undefined}
+                    title={t("hazard_level")}
+                    style={[ViewStyles.mr2, { backgroundColor: "transparent" }]}
+                    onPress={() => {
+                      onCoopDimensionPress("HAZARD_LEVEL");
+                    }}
                   />
-                }
-              />
-              <AccordionDisplay
-                title={t("boss_salmonids_defeated")}
-                subChildren={
-                  <AreaChart
-                    data={coopGroups
-                      .map(
-                        (coopGroup) =>
-                          coopGroup
-                            .map((coop) => coop.coopHistoryDetail!.myResult.defeatEnemyCount)
-                            .reduce((prev, current) => prev + current, 0) / coopGroup.length
-                      )
-                      .map((value, i) => ({ x: i, y: value }))}
-                    color={Color.KillAndRescue}
-                    padding={{ top: 10, bottom: 10 }}
-                    style={[style, { height: 150, width: "100%" }]}
+                  <FilterButton
+                    color={
+                      coopDimensions.includes("BOSS_SALMONIDS_DEFEATED")
+                        ? Color.KillAndRescue
+                        : undefined
+                    }
+                    title={t("boss_salmonids_defeated")}
+                    style={[ViewStyles.mr2, { backgroundColor: "transparent" }]}
+                    onPress={() => {
+                      onCoopDimensionPress("BOSS_SALMONIDS_DEFEATED");
+                    }}
                   />
-                }
-              />
-              <AccordionDisplay
-                title={t("golden_eggs_collected")}
-                subChildren={
-                  <AreaChart
-                    data={coopGroups
-                      .map(
-                        (coopGroup) =>
-                          coopGroup
-                            .map((coop) => coop.coopHistoryDetail!.myResult.goldenDeliverCount)
-                            .reduce((prev, current) => prev + current, 0) / coopGroup.length
-                      )
-                      .map((value, i) => ({ x: i, y: value }))}
-                    color={Color.GoldenEgg}
-                    padding={{ top: 10, bottom: 10 }}
-                    style={[style, { height: 150, width: "100%" }]}
+                  <FilterButton
+                    color={
+                      coopDimensions.includes("GOLDEN_EGGS_COLLECTED") ? Color.GoldenEgg : undefined
+                    }
+                    title={t("golden_eggs_collected")}
+                    style={[ViewStyles.mr2, { backgroundColor: "transparent" }]}
+                    onPress={() => {
+                      onCoopDimensionPress("GOLDEN_EGGS_COLLECTED");
+                    }}
                   />
-                }
-              />
-              <AccordionDisplay
-                title={t("golden_eggs_collected_including_assisted")}
-                subChildren={
-                  <AreaChart
-                    data={coopGroups
-                      .map(
-                        (coopGroup) =>
-                          coopGroup
-                            .map(
-                              (coop) =>
-                                coop.coopHistoryDetail!.myResult.goldenDeliverCount +
-                                coop.coopHistoryDetail!.myResult.goldenAssistCount
-                            )
-                            .reduce((prev, current) => prev + current, 0) / coopGroup.length
-                      )
-                      .map((value, i) => ({ x: i, y: value }))}
-                    color={Color.GoldenEgg}
-                    padding={{ top: 10, bottom: 10 }}
-                    style={[style, { height: 150, width: "100%" }]}
+                  <FilterButton
+                    color={
+                      coopDimensions.includes("GOLDEN_EGGS_COLLECTED_INCLUDING_ASSISTED")
+                        ? Color.GoldenEgg
+                        : undefined
+                    }
+                    title={t("golden_eggs_collected_including_assisted")}
+                    style={[ViewStyles.mr2, { backgroundColor: "transparent" }]}
+                    onPress={() => {
+                      onCoopDimensionPress("GOLDEN_EGGS_COLLECTED_INCLUDING_ASSISTED");
+                    }}
                   />
-                }
-              />
-              <AccordionDisplay
-                title={t("power_eggs_collected")}
-                subChildren={
-                  <AreaChart
-                    data={coopGroups
-                      .map(
-                        (coopGroup) =>
-                          coopGroup
-                            .map((coop) => coop.coopHistoryDetail!.myResult.deliverCount)
-                            .reduce((prev, current) => prev + current, 0) / coopGroup.length
-                      )
-                      .map((value, i) => ({ x: i, y: value }))}
-                    color={Color.PowerEgg}
-                    padding={{ top: 10, bottom: 10 }}
-                    style={[style, { height: 150, width: "100%" }]}
+                  <FilterButton
+                    color={
+                      coopDimensions.includes("POWER_EGGS_COLLECTED") ? Color.PowerEgg : undefined
+                    }
+                    title={t("power_eggs_collected")}
+                    style={[ViewStyles.mr2, { backgroundColor: "transparent" }]}
+                    onPress={() => {
+                      onCoopDimensionPress("POWER_EGGS_COLLECTED");
+                    }}
                   />
-                }
-              />
-              <AccordionDisplay
-                title={t("rescued")}
-                subChildren={
-                  <AreaChart
-                    data={coopGroups
-                      .map(
-                        (coopGroup) =>
-                          coopGroup
-                            .map((coop) => coop.coopHistoryDetail!.myResult.rescueCount)
-                            .reduce((prev, current) => prev + current, 0) / coopGroup.length
-                      )
-                      .map((value, i) => ({ x: i, y: value }))}
-                    color={Color.KillAndRescue}
-                    padding={{ top: 10, bottom: 10 }}
-                    style={[style, { height: 150, width: "100%" }]}
+                  <FilterButton
+                    color={coopDimensions.includes("RESCUED") ? Color.KillAndRescue : undefined}
+                    title={t("rescued")}
+                    style={[ViewStyles.mr2, { backgroundColor: "transparent" }]}
+                    onPress={() => {
+                      onCoopDimensionPress("RESCUED");
+                    }}
                   />
-                }
-              />
-              <AccordionDisplay
-                title={t("be_rescued")}
-                isLast
-                subChildren={
-                  <AreaChart
-                    data={coopGroups
-                      .map(
-                        (coopGroup) =>
-                          coopGroup
-                            .map((coop) => coop.coopHistoryDetail!.myResult.rescuedCount)
-                            .reduce((prev, current) => prev + current, 0) / coopGroup.length
-                      )
-                      .map((value, i) => ({ x: i, y: value }))}
-                    color={Color.Death}
-                    padding={{ top: 10, bottom: 10 }}
-                    style={[ViewStyles.rb2, style, { height: 150, width: "100%" }]}
+                  <FilterButton
+                    color={coopDimensions.includes("BE_RESCUED") ? Color.Death : undefined}
+                    title={t("be_rescued")}
+                    style={{ backgroundColor: "transparent" }}
+                    onPress={() => {
+                      onCoopDimensionPress("BE_RESCUED");
+                    }}
                   />
-                }
-              />
+                </HStack>
+              </ScrollView>
+              {coopDimensions.length > 0 && (
+                <CompareChart
+                  dataGroup={coopDimensions.map((dimension) => getCoopData(dimension))}
+                  style={[ViewStyles.rb2, style, { height: 150, width: "100%" }]}
+                />
+              )}
             </VStack>
           )}
         </VStack>
