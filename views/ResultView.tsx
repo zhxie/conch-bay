@@ -618,7 +618,7 @@ const ResultView = (props: ResultViewProps) => {
                         </VStack>
                       )}
                       {result.battle.vsHistoryDetail!.awards.map((award, i) => (
-                        <Display title={i === 0 ? t("medals_earned") : ""}>
+                        <Display key={i} title={i === 0 ? t("medals_earned") : ""}>
                           <HStack center>
                             <Circle
                               size={12}
@@ -838,6 +838,51 @@ const ResultView = (props: ResultViewProps) => {
                     />
                   ))}
                 </VStack>
+              </VStack>
+              <VStack style={[ViewStyles.mb2, ViewStyles.px4]}>
+                <AccordionDisplay
+                  isFirst
+                  isLast
+                  title={t("details")}
+                  subChildren={
+                    <VStack>
+                      <Display title={t("your_points")}>
+                        <Text numberOfLines={1}>
+                          {result.coop.coopHistoryDetail!.jobPoint ?? "-"}
+                        </Text>
+                      </Display>
+                      <Display title={t("job_score")}>
+                        <Text numberOfLines={1}>
+                          {result.coop.coopHistoryDetail!.jobScore ?? "-"}
+                        </Text>
+                      </Display>
+                      <Display title={t("pay_grade")}>
+                        <Text numberOfLines={1}>
+                          {result.coop.coopHistoryDetail!.jobRate?.toFixed(2) ?? "-"}
+                        </Text>
+                      </Display>
+                      <Display title={t("clear_bonus")}>
+                        <Text numberOfLines={1}>
+                          {result.coop.coopHistoryDetail!.jobBonus ?? "-"}
+                        </Text>
+                      </Display>
+                      {result.coop.coopHistoryDetail!.smellMeter !== null && (
+                        <VStack>
+                          <Display title={t("smell")}>
+                            <Text numberOfLines={1}>
+                              {`${result.coop.coopHistoryDetail!.smellMeter}/5`}
+                            </Text>
+                          </Display>
+                        </VStack>
+                      )}
+                      <Display isLast title={t("played_time")}>
+                        <Text numberOfLines={1}>
+                          {formatPlayedTime(result.coop.coopHistoryDetail!.playedTime)}
+                        </Text>
+                      </Display>
+                    </VStack>
+                  }
+                />
               </VStack>
               <VStack style={ViewStyles.px4}>
                 <Button
