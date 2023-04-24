@@ -87,7 +87,7 @@ interface ResultViewProps {
 
 const ResultView = (props: ResultViewProps) => {
   const colorScheme = useColorScheme();
-  const reverseTextColor = colorScheme === "light" ? TextStyles.dark : TextStyles.light;
+  const reverseTextStyle = colorScheme === "light" ? TextStyles.dark : TextStyles.light;
 
   const showBanner = useBanner();
 
@@ -642,15 +642,15 @@ const ResultView = (props: ResultViewProps) => {
                 />
               </VStack>
               <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onHidePlayerNamesPress}>
-                <Marquee style={reverseTextColor}>
+                <Marquee style={reverseTextStyle}>
                   {hidePlayerNames ? t("show_player_names") : t("hide_player_names")}
                 </Marquee>
               </Button>
               <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onShowRawResultPress}>
-                <Marquee style={reverseTextColor}>{t("show_raw_data")}</Marquee>
+                <Marquee style={reverseTextStyle}>{t("show_raw_data")}</Marquee>
               </Button>
               <Button style={ViewStyles.accent} onPress={onOpenInNintendoSwitchOnlinePress}>
-                <Marquee style={reverseTextColor}>{t("open_in_nintendo_switch_online")}</Marquee>
+                <Marquee style={reverseTextStyle}>{t("open_in_nintendo_switch_online")}</Marquee>
               </Button>
             </VStack>
             <Modal
@@ -889,15 +889,15 @@ const ResultView = (props: ResultViewProps) => {
                   style={[ViewStyles.mb2, ViewStyles.accent]}
                   onPress={onHidePlayerNamesPress}
                 >
-                  <Marquee style={reverseTextColor}>
+                  <Marquee style={reverseTextStyle}>
                     {hidePlayerNames ? t("show_player_names") : t("hide_player_names")}
                   </Marquee>
                 </Button>
                 <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onShowRawResultPress}>
-                  <Marquee style={reverseTextColor}>{t("show_raw_data")}</Marquee>
+                  <Marquee style={reverseTextStyle}>{t("show_raw_data")}</Marquee>
                 </Button>
                 <Button style={ViewStyles.accent} onPress={onOpenInNintendoSwitchOnlinePress}>
-                  <Marquee style={reverseTextColor}>{t("open_in_nintendo_switch_online")}</Marquee>
+                  <Marquee style={reverseTextStyle}>{t("open_in_nintendo_switch_online")}</Marquee>
                 </Button>
               </VStack>
             </VStack>

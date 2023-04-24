@@ -22,7 +22,7 @@ interface PickerProps {
 const Picker = (props: PickerProps) => {
   const colorScheme = useColorScheme();
   const borderColor = colorScheme === "light" ? Color.LightBackground : Color.DarkBackground;
-  const reverseTextColor = colorScheme === "light" ? TextStyles.dark : TextStyles.light;
+  const reverseTextStyle = colorScheme === "light" ? TextStyles.dark : TextStyles.light;
 
   const [open, setOpen] = useState(false);
 
@@ -39,7 +39,7 @@ const Picker = (props: PickerProps) => {
       style={[ViewStyles.accent, props.style]}
       onPress={onPress}
     >
-      <Text numberOfLines={1} style={reverseTextColor}>
+      <Text numberOfLines={1} style={reverseTextStyle}>
         {props.title}
       </Text>
       <Modal isVisible={open} onClose={onClose} style={ViewStyles.modal0_5d}>
@@ -66,7 +66,7 @@ const Picker = (props: PickerProps) => {
                 onClose();
               }}
             >
-              <Marquee style={reverseTextColor}>{item.value}</Marquee>
+              <Marquee style={reverseTextStyle}>{item.value}</Marquee>
             </Button>
           ))}
         </VStack>

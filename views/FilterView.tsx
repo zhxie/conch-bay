@@ -63,7 +63,7 @@ const SalmonRunFilterProps = {
 
 const FilterView = (props: FilterViewProps) => {
   const colorScheme = useColorScheme();
-  const reverseTextColor = colorScheme === "light" ? TextStyles.dark : TextStyles.light;
+  const reverseTextStyle = colorScheme === "light" ? TextStyles.dark : TextStyles.light;
 
   const [filter, setFilter] = useState(false);
 
@@ -283,7 +283,7 @@ const FilterView = (props: FilterViewProps) => {
               style={ViewStyles.accent}
               onPress={onClearFilterPress}
             >
-              <Marquee style={reverseTextColor}>{t("clear_filter")}</Marquee>
+              <Marquee style={reverseTextStyle}>{t("clear_filter")}</Marquee>
             </Button>
           </VStack>
         </VStack>

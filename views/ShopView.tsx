@@ -29,7 +29,7 @@ interface ShopViewProps {
 const ShopView = (props: ShopViewProps) => {
   const colorScheme = useColorScheme();
   const shopColor = colorScheme === "light" ? Color.LightText : Color.DarkText;
-  const reverseTextColor = colorScheme === "light" ? TextStyles.dark : TextStyles.light;
+  const reverseTextStyle = colorScheme === "light" ? TextStyles.dark : TextStyles.light;
 
   const [displayShop, setDisplayShop] = useState(false);
   const [equipments, setEquipments] = useState<MyOutfitCommonDataEquipmentsResult>();
@@ -137,17 +137,17 @@ const ShopView = (props: ShopViewProps) => {
               style={[props.isEquipmentsAvailable && ViewStyles.mb2, ViewStyles.accent]}
               onPress={onOrderInNintendoSwitchOnlinePress}
             >
-              <Marquee style={reverseTextColor}>{t("order_in_nintendo_switch_online")}</Marquee>
+              <Marquee style={reverseTextStyle}>{t("order_in_nintendo_switch_online")}</Marquee>
             </Button>
             {props.isEquipmentsAvailable && (
               <Button
                 isLoading={!equipments && displayEquipments}
                 isLoadingText={t("loading_owned_gears")}
                 style={ViewStyles.accent}
-                textStyle={reverseTextColor}
+                textStyle={reverseTextStyle}
                 onPress={onDisplayMyGearsPress}
               >
-                <Marquee style={reverseTextColor}>{t("display_owned_gears")}</Marquee>
+                <Marquee style={reverseTextStyle}>{t("display_owned_gears")}</Marquee>
               </Button>
             )}
           </VStack>

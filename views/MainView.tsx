@@ -18,6 +18,7 @@ import {
   ScrollView,
   useColorScheme,
 } from "react-native";
+import * as Progress from "react-native-progress";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   AvatarButton,
@@ -90,8 +91,9 @@ let autoRefreshTimeout: NodeJS.Timeout | undefined;
 
 const MainView = () => {
   const colorScheme = useColorScheme();
+  const backgroundColor = colorScheme === "light" ? Color.LightTerritory : Color.DarkTerritory;
   const backgroundStyle = colorScheme === "light" ? ViewStyles.light : ViewStyles.dark;
-  const reverseTextColor = colorScheme === "light" ? TextStyles.dark : TextStyles.light;
+  const reverseTextStyle = colorScheme === "light" ? TextStyles.dark : TextStyles.light;
 
   const insets = useSafeAreaInsets();
 
@@ -104,6 +106,8 @@ const MainView = () => {
   const [logOut, setLogOut] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [progressTotal, setProgressTotal] = useState(0);
   const [loadingMore, setLoadingMore] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [support, setSupport] = useState(false);
@@ -209,6 +213,7 @@ const MainView = () => {
           } catch (e) {
             await refresh();
           }
+          setProgressTotal(0);
           setRefreshing(false);
         }, 10000);
       }
@@ -328,10 +333,13 @@ const MainView = () => {
     } catch (e) {
       showBanner(BannerLevel.Error, e);
     }
+    setProgressTotal(0);
     setRefreshing(false);
   };
   const refreshResults = async (bulletToken: string) => {
     // Fetch results.
+    setProgress(0);
+    setProgressTotal(0);
     let n = 0;
     const [battleFail, coopFail] = await Promise.all([
       fetchBattleHistories(bulletToken).then(async (battleHistories) => {
@@ -352,6 +360,7 @@ const MainView = () => {
 
         const existed = await Promise.all(ids.map((id) => Database.isExist(id)));
         const newIds = ids.filter((_, i) => !existed[i]);
+        setProgressTotal((progressTotal) => progressTotal + newIds.length);
         n += newIds.length;
         if (n !== newIds.length) {
           showBanner(BannerLevel.Info, t("loading_n_results", { n }));
@@ -360,6 +369,7 @@ const MainView = () => {
           newIds.map((id) =>
             ok(
               fetchVsHistoryDetail(id, bulletToken, language).then(async (detail) => {
+                setProgress((progress) => progress + 1);
                 return await Database.addBattle(detail);
               })
             )
@@ -380,6 +390,7 @@ const MainView = () => {
 
         const existed = await Promise.all(ids.map((id) => Database.isExist(id)));
         const newIds = ids.filter((_, i) => !existed[i]);
+        setProgressTotal((progressTotal) => progressTotal + newIds.length);
         n += newIds.length;
         if (n !== newIds.length) {
           showBanner(BannerLevel.Info, t("loading_n_results", { n }));
@@ -388,6 +399,7 @@ const MainView = () => {
           newIds.map((id) =>
             ok(
               fetchCoopHistoryDetail(id, bulletToken, language).then(async (detail) => {
+                setProgress((progress) => progress + 1);
                 return await Database.addCoop(detail);
               })
             )
@@ -924,7 +936,7 @@ const MainView = () => {
               {!sessionToken && (
                 <Center flex style={[ViewStyles.px4, ViewStyles.mb4]}>
                   <Button style={ViewStyles.accent} onPress={onLogInPress}>
-                    <Marquee style={reverseTextColor}>{t("log_in")}</Marquee>
+                    <Marquee style={reverseTextStyle}>{t("log_in")}</Marquee>
                   </Button>
                 </Center>
               )}
@@ -952,6 +964,19 @@ const MainView = () => {
                     )}
                     {grade.length > 0 && <Badge color={Color.SalmonRun} title={t(grade)} />}
                   </HStack>
+                  {progressTotal > 0 && progress < progressTotal && (
+                    <Progress.Bar
+                      animated
+                      progress={progress / progressTotal}
+                      color={Color.AccentColor}
+                      unfilledColor={backgroundColor}
+                      borderColor={Color.AccentColor}
+                      width={64}
+                      borderRadius={2}
+                      useNativeDriver
+                      style={{ position: "absolute", top: 50 }}
+                    />
+                  )}
                 </VStack>
               )}
               <ScheduleView schedules={schedules} style={ViewStyles.mb4}>
@@ -1122,10 +1147,10 @@ const MainView = () => {
               isLoading={loggingIn}
               isLoadingText={t("logging_in")}
               style={ViewStyles.accent}
-              textStyle={reverseTextColor}
+              textStyle={reverseTextStyle}
               onPress={onLogInContinuePress}
             >
-              <Marquee style={reverseTextColor}>{t("log_in_continue")}</Marquee>
+              <Marquee style={reverseTextStyle}>{t("log_in_continue")}</Marquee>
             </Button>
           </VStack>
         </VStack>
@@ -1145,20 +1170,20 @@ const MainView = () => {
               isLoading={loggingIn}
               isLoadingText={t("logging_in")}
               style={[ViewStyles.mb2, ViewStyles.accent]}
-              textStyle={reverseTextColor}
+              textStyle={reverseTextStyle}
               onPress={onLogInContinuePress}
             >
-              <Marquee style={reverseTextColor}>{t("relog_in")}</Marquee>
+              <Marquee style={reverseTextStyle}>{t("relog_in")}</Marquee>
             </Button>
             <Button
               isDisabled={loggingIn || refreshing || loadingMore || exporting}
               isLoading={loggingOut}
               isLoadingText={t("logging_out")}
               style={ViewStyles.danger}
-              textStyle={reverseTextColor}
+              textStyle={reverseTextStyle}
               onPress={onLogOutContinuePress}
             >
-              <Marquee style={reverseTextColor}>{t("log_out_continue")}</Marquee>
+              <Marquee style={reverseTextStyle}>{t("log_out_continue")}</Marquee>
             </Button>
           </VStack>
         </VStack>
@@ -1176,10 +1201,10 @@ const MainView = () => {
                 isLoading={loggingIn}
                 isLoadingText={t("logging_in")}
                 style={ViewStyles.accent}
-                textStyle={reverseTextColor}
+                textStyle={reverseTextStyle}
                 onPress={onAlternativeLogInPress}
               >
-                <Marquee style={reverseTextColor}>{t("log_in_with_session_token")}</Marquee>
+                <Marquee style={reverseTextStyle}>{t("log_in_with_session_token")}</Marquee>
               </Button>
             </VStack>
           )}
@@ -1210,10 +1235,10 @@ const MainView = () => {
             />
             <Button
               style={ViewStyles.accent}
-              textStyle={reverseTextColor}
+              textStyle={reverseTextStyle}
               onPress={onChangeDisplayLanguagePress}
             >
-              <Marquee style={reverseTextColor}>
+              <Marquee style={reverseTextStyle}>
                 {t("change_display_language_language", { language: t(t("lang")) })}
               </Marquee>
             </Button>
@@ -1228,10 +1253,10 @@ const MainView = () => {
                 isLoading={loggingIn}
                 isLoadingText={t("logging_in")}
                 style={ViewStyles.accent}
-                textStyle={reverseTextColor}
+                textStyle={reverseTextStyle}
                 onPress={onLogInContinuePress}
               >
-                <Marquee style={reverseTextColor}>{t("relog_in")}</Marquee>
+                <Marquee style={reverseTextStyle}>{t("relog_in")}</Marquee>
               </Button>
             </VStack>
           )}
@@ -1244,19 +1269,19 @@ const MainView = () => {
                 isLoading={clearingCache}
                 isLoadingText={t("clearing_cache")}
                 style={[ViewStyles.accent, ViewStyles.mb2]}
-                textStyle={reverseTextColor}
+                textStyle={reverseTextStyle}
                 onPress={onClearCachePress}
               >
-                <Marquee style={reverseTextColor}>{t("clear_cache")}</Marquee>
+                <Marquee style={reverseTextStyle}>{t("clear_cache")}</Marquee>
               </Button>
               <Button
                 isLoading={preloadingResources}
                 isLoadingText={t("preloading_resources")}
                 style={ViewStyles.accent}
-                textStyle={reverseTextColor}
+                textStyle={reverseTextStyle}
                 onPress={onPreloadResourcesPress}
               >
-                <Marquee style={reverseTextColor}>{t("preload_resources")}</Marquee>
+                <Marquee style={reverseTextStyle}>{t("preload_resources")}</Marquee>
               </Button>
             </VStack>
           )}
@@ -1265,10 +1290,10 @@ const MainView = () => {
               <Text style={ViewStyles.mb2}>{t("feedback_notice")}</Text>
             </VStack>
             <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onCreateAGithubIssuePress}>
-              <Marquee style={reverseTextColor}>{t("create_a_github_issue")}</Marquee>
+              <Marquee style={reverseTextStyle}>{t("create_a_github_issue")}</Marquee>
             </Button>
             <Button style={ViewStyles.accent} onPress={onSendAMailPress}>
-              <Marquee style={reverseTextColor}>{t("send_a_mail")}</Marquee>
+              <Marquee style={reverseTextStyle}>{t("send_a_mail")}</Marquee>
             </Button>
           </VStack>
           {sessionToken.length > 0 && (
@@ -1277,13 +1302,13 @@ const MainView = () => {
                 <Text style={ViewStyles.mb2}>{t("debug_notice")}</Text>
               </VStack>
               <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onCopySessionTokenPress}>
-                <Marquee style={reverseTextColor}>{t("copy_session_token")}</Marquee>
+                <Marquee style={reverseTextStyle}>{t("copy_session_token")}</Marquee>
               </Button>
               <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onCopyBulletTokenPress}>
-                <Marquee style={reverseTextColor}>{t("copy_bullet_token")}</Marquee>
+                <Marquee style={reverseTextStyle}>{t("copy_bullet_token")}</Marquee>
               </Button>
               <Button style={ViewStyles.accent} onPress={onExportDatabasePress}>
-                <Marquee style={reverseTextColor}>{t("export_database")}</Marquee>
+                <Marquee style={reverseTextStyle}>{t("export_database")}</Marquee>
               </Button>
             </VStack>
           )}
@@ -1356,13 +1381,13 @@ const MainView = () => {
               isLoading={exporting}
               isLoadingText={t("exporting")}
               style={[ViewStyles.mb2, ViewStyles.accent]}
-              textStyle={reverseTextColor}
+              textStyle={reverseTextStyle}
               onPress={onExportPress}
             >
-              <Marquee style={reverseTextColor}>{t("export_results")}</Marquee>
+              <Marquee style={reverseTextStyle}>{t("export_results")}</Marquee>
             </Button>
             <Button style={ViewStyles.accent} onPress={onExportDatabasePress}>
-              <Marquee style={reverseTextColor}>{t("export_database")}</Marquee>
+              <Marquee style={reverseTextStyle}>{t("export_database")}</Marquee>
             </Button>
           </VStack>
         </VStack>
