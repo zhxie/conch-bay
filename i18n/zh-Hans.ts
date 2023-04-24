@@ -126,7 +126,7 @@ const zhHans = {
   be_rescued: "被救助",
   stats_notice: "由当前已加载的记录统计。",
   // Trend.
-  trend: "趋势",
+  trends: "趋势",
   hazard_level: "危险度",
   splatted_including_assisted: "击倒 (含助攻)",
   golden_eggs_collected_including_assisted: "收集的金鲑鱼卵 (含助攻)",

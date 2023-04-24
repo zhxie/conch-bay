@@ -132,7 +132,7 @@ const en = {
   be_rescued: "Be Rescued",
   stats_notice: "Statistics from currently loaded results.",
   // Trend.
-  trend: "Trend",
+  trends: "Trends",
   splatted_including_assisted: "Splatted (Including Assisted)",
   hazard_level: "Hazard Level",
   golden_eggs_collected_including_assisted: "Golden Eggs Collected (Including Assisted)",

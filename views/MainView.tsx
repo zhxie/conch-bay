@@ -85,7 +85,7 @@ import ResultView from "./ResultView";
 import ScheduleView from "./ScheduleView";
 import ShopView from "./ShopView";
 import StatsView from "./StatsView";
-import TrendView from "./TrendView";
+import TrendsView from "./TrendsView";
 
 let autoRefreshTimeout: NodeJS.Timeout | undefined;
 
@@ -1053,7 +1053,7 @@ const MainView = () => {
                       results={results}
                       style={ViewStyles.mr2}
                     />
-                    <TrendView results={results} style={ViewStyles.mr2} />
+                    <TrendsView results={results} style={ViewStyles.mr2} />
                     <ToolButton
                       isLoading={false}
                       isLoadingText=""

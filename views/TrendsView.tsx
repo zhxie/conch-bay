@@ -40,11 +40,11 @@ type CoopDimension =
   | "RESCUED"
   | "BE_RESCUED";
 
-const TrendView = (props: TrendViewProps) => {
+const TrendsView = (props: TrendViewProps) => {
   const colorScheme = useColorScheme();
   const style = colorScheme === "light" ? ViewStyles.lightTerritory : ViewStyles.darkTerritory;
 
-  const [trend, setTrend] = useState(false);
+  const [trends, setTrends] = useState(false);
   const [battleDimensions, setBattleDimensions] = useState<BattleDimension[]>(["VICTORY"]);
   const [coopDimensions, setCoopDimensions] = useState<CoopDimension[]>(["CLEAR"]);
 
@@ -173,11 +173,11 @@ const TrendView = (props: TrendViewProps) => {
   const battleData = formatBattleGroup();
   const coopData = formatCoopGroup();
 
-  const onTrendPress = () => {
-    setTrend(true);
+  const onTrendsPress = () => {
+    setTrends(true);
   };
-  const onTrendClose = () => {
-    setTrend(false);
+  const onTrendsClose = () => {
+    setTrends(false);
   };
   const getBattleData = (dimension: BattleDimension) => {
     switch (dimension) {
@@ -238,8 +238,8 @@ const TrendView = (props: TrendViewProps) => {
 
   return (
     <Center style={props.style}>
-      <ToolButton icon="trending-up" title={t("trend")} onPress={onTrendPress} />
-      <Modal isVisible={trend} onClose={onTrendClose} style={ViewStyles.modal2d}>
+      <ToolButton icon="trending-up" title={t("trends")} onPress={onTrendsPress} />
+      <Modal isVisible={trends} onClose={onTrendsClose} style={ViewStyles.modal2d}>
         <VStack style={ViewStyles.mb2}>
           <Display isFirst isLast={battleGroups.length === 0} title={t("battle")}>
             <Text numberOfLines={1}>{battles?.length ?? 0}</Text>
@@ -414,4 +414,4 @@ const TrendView = (props: TrendViewProps) => {
   );
 };
 
-export default TrendView;
+export default TrendsView;
