@@ -18,7 +18,7 @@ import {
   ViewStyles,
 } from "../components";
 import t from "../i18n";
-import { getVsSelfPlayer } from "../utils/ui";
+import { burnColor, getVsSelfPlayer } from "../utils/ui";
 import { ResultProps } from "./ResultView";
 
 interface TrendViewProps {
@@ -85,17 +85,25 @@ const TrendsView = (props: TrendViewProps) => {
   const formatBattleGroup = () => {
     const victory: ChartData = { data: [], color: Color.AccentColor, max: 100, relative: true },
       splatted: ChartData = { data: [], color: Color.KillAndRescue },
-      splattedTeamAverage: ChartData = { data: [], color: Color.KillAndRescue, dash: true },
+      splattedTeamAverage: ChartData = {
+        data: [],
+        color: burnColor(Color.KillAndRescue),
+        dash: true,
+      },
       splattedIncludingAssisted: ChartData = { data: [], color: Color.KillAndRescue },
       splattedIncludingAssistedTeamAverage: ChartData = {
         data: [],
-        color: Color.KillAndRescue,
+        color: burnColor(Color.KillAndRescue),
         dash: true,
       },
       beSplatted: ChartData = { data: [], color: Color.Death },
-      beSplattedTeamAverage: ChartData = { data: [], color: Color.Death, dash: true },
+      beSplattedTeamAverage: ChartData = { data: [], color: burnColor(Color.Death), dash: true },
       specialWeaponUses: ChartData = { data: [], color: Color.Special },
-      specialWeaponUsesTeamAverage: ChartData = { data: [], color: Color.Special, dash: true };
+      specialWeaponUsesTeamAverage: ChartData = {
+        data: [],
+        color: burnColor(Color.Special),
+        dash: true,
+      };
 
     for (const battleGroup of battleGroups) {
       let v = 0,
@@ -166,23 +174,35 @@ const TrendsView = (props: TrendViewProps) => {
       bossSalmonidsDefeated: ChartData = { data: [], color: Color.KillAndRescue },
       bossSalmonidsDefeatedTeamAverage: ChartData = {
         data: [],
-        color: Color.KillAndRescue,
+        color: burnColor(Color.KillAndRescue),
         dash: true,
       },
       goldenEggsCollected: ChartData = { data: [], color: Color.GoldenEgg },
-      goldenEggsCollectedTeamAverage: ChartData = { data: [], color: Color.GoldenEgg, dash: true },
+      goldenEggsCollectedTeamAverage: ChartData = {
+        data: [],
+        color: burnColor(Color.GoldenEgg),
+        dash: true,
+      },
       goldenEggsCollectedIncludingAssisted: ChartData = { data: [], color: Color.GoldenEgg },
       goldenEggsCollectedIncludingAssistedTeamAverage: ChartData = {
         data: [],
-        color: Color.GoldenEgg,
+        color: burnColor(Color.GoldenEgg),
         dash: true,
       },
       powerEggsCollected: ChartData = { data: [], color: Color.PowerEgg },
-      powerEggsCollectedTeamAverage: ChartData = { data: [], color: Color.PowerEgg, dash: true },
+      powerEggsCollectedTeamAverage: ChartData = {
+        data: [],
+        color: burnColor(Color.PowerEgg),
+        dash: true,
+      },
       rescued: ChartData = { data: [], color: Color.KillAndRescue },
-      rescuedTeamAverage: ChartData = { data: [], color: Color.KillAndRescue, dash: true },
+      rescuedTeamAverage: ChartData = {
+        data: [],
+        color: burnColor(Color.KillAndRescue),
+        dash: true,
+      },
       beRescued: ChartData = { data: [], color: Color.Death },
-      beRescuedTeamAverage: ChartData = { data: [], color: Color.Death, dash: true };
+      beRescuedTeamAverage: ChartData = { data: [], color: burnColor(Color.Death), dash: true };
 
     for (const coopGroup of coopGroups) {
       let c = 0,

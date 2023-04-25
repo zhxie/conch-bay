@@ -1,3 +1,4 @@
+import * as Convert from "color-convert";
 import { Color } from "../components";
 import { VsMode, VsHistoryDetailResult, VsStage, CoopRule, Gear } from "../models/types";
 import { getAuthorityAndPath } from "./url";
@@ -37,6 +38,16 @@ export const getColor = (color: { a: number; b: number; g: number; r: number }) 
   return `rgba(${Math.round(color.r * 255)}, ${Math.round(color.g * 255)}, ${Math.round(
     color.b * 255
   )}, ${Math.round(color.a * 255)})`;
+};
+export const burnColor = (color: string) => {
+  const hsl = Convert.hex.hsl(color.replace("#", ""));
+  const hex = Convert.hsl.hex([hsl[0], hsl[1], hsl[2] * 0.7]);
+  return `#${hex}`;
+};
+export const dodgeColor = (color: string) => {
+  const hsl = Convert.hex.hsl(color.replace("#", ""));
+  const hex = Convert.hsl.hex([hsl[0], hsl[1], Math.min(hsl[2] * 1.3, 100)]);
+  return `#${hex}`;
 };
 
 export const convertStageImageUrl = (stage: VsStage) => {
