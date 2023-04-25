@@ -7,11 +7,13 @@ interface ChartData {
   color: string;
   max?: number;
   relative?: boolean;
+  dash?: boolean;
 }
 
 interface LineProps {
   data: number[];
   color: string;
+  dash?: boolean;
 }
 
 const AreaLine = (props: LineProps) => {
@@ -37,7 +39,7 @@ const AreaLine = (props: LineProps) => {
         data={data}
         smoothing="cubic-spline"
         theme={{
-          stroke: { color: props.color, width: 3 },
+          stroke: { color: props.color, width: 3, dashArray: props.dash ? [5] : [] },
           scatter: {
             default: {
               width: 8,
@@ -79,7 +81,7 @@ const ScatterLine = (props: LineProps) => {
         data={data}
         smoothing="cubic-spline"
         theme={{
-          stroke: { color: props.color, width: 3 },
+          stroke: { color: props.color, width: 3, dashArray: props.dash ? [5] : [] },
           scatter: {
             default: {
               width: 8,
@@ -163,9 +165,9 @@ const CompareChart = (props: CompareChartProps) => {
       />
       {props.dataGroup.map((data, i, dataGroup) =>
         dataGroup.length === 1 ? (
-          <AreaLine key={i} data={normalize(data)} color={data.color} />
+          <AreaLine key={i} data={normalize(data)} color={data.color} dash={data.dash} />
         ) : (
-          <ScatterLine key={i} data={normalize(data)} color={data.color} />
+          <ScatterLine key={i} data={normalize(data)} color={data.color} dash={data.dash} />
         )
       )}
     </Chart>

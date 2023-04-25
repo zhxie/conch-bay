@@ -131,11 +131,12 @@ const en = {
   rescued: "Rescued",
   be_rescued: "Be Rescued",
   stats_notice: "Statistics from currently loaded results.",
-  // Trend.
+  // Trends.
   trends: "Trends",
   splatted_including_assisted: "Splatted (Including Assisted)",
   hazard_level: "Hazard Level",
   golden_eggs_collected_including_assisted: "Golden Eggs Collected (Including Assisted)",
+  trends_notice: "Long press on buttons to show team's average.",
   // Modes.
   modes: "Modes",
   battle: "Battle",

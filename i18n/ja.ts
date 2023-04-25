@@ -135,6 +135,7 @@ const ja = {
   hazard_level: "キケン度",
   splatted_including_assisted: "たおした (アシスト含む)",
   golden_eggs_collected_including_assisted: "集めた金イクラ (含助攻)",
+  trends_notice: "ボタンを長押しして、チームの平均値が表示されます。",
   // Modes.
   modes: "モード",
   battle: "バトル",

@@ -130,6 +130,7 @@ const zhHant = {
   hazard_level: "危險度",
   splatted_including_assisted: "擊倒 (含助攻)",
   golden_eggs_collected_including_assisted: "收集的金鮭魚卵 (含助攻)",
+  trends_notice: "長按按鍵以顯示團隊平均值。",
   // Modes.
   modes: "模式",
   battle: "對戰",

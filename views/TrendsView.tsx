@@ -8,8 +8,11 @@ import {
   Display,
   FilterButton,
   HStack,
+  Icon,
+  Marquee,
   Modal,
   Text,
+  TextStyles,
   ToolButton,
   VStack,
   ViewStyles,
@@ -26,19 +29,29 @@ interface TrendViewProps {
 type BattleDimension =
   | "VICTORY"
   | "SPLATTED"
+  | "SPLATTED_TEAM_AVERAGE"
   | "SPLATTED_INCLUDING_ASSISTED"
+  | "SPLATTED_INCLUDING_ASSISTED_TEAM_AVERAGE"
   | "BE_SPLATTED"
-  | "SPECIAL_WEAPON_USES";
+  | "BE_SPLATTED_TEAM_AVERAGE"
+  | "SPECIAL_WEAPON_USES"
+  | "SPECIAL_WEAPON_USES_TEAM_AVERAGE";
 type CoopDimension =
   | "CLEAR"
   | "WAVES_CLEARED"
   | "HAZARD_LEVEL"
   | "BOSS_SALMONIDS_DEFEATED"
+  | "BOSS_SALMONIDS_DEFEATED_TEAM_AVERAGE"
   | "GOLDEN_EGGS_COLLECTED"
+  | "GOLDEN_EGGS_COLLECTED_TEAM_AVERAGE"
   | "GOLDEN_EGGS_COLLECTED_INCLUDING_ASSISTED"
+  | "GOLDEN_EGGS_COLLECTED_INCLUDING_ASSISTED_TEAM_AVERAGE"
   | "POWER_EGGS_COLLECTED"
+  | "POWER_EGGS_COLLECTED_TEAM_AVERAGE"
   | "RESCUED"
-  | "BE_RESCUED";
+  | "RESCUED_TEAM_AVERAGE"
+  | "BE_RESCUED"
+  | "BE_RESCUED_TEAM_AVERAGE";
 
 const TrendsView = (props: TrendViewProps) => {
   const colorScheme = useColorScheme();
@@ -63,7 +76,7 @@ const TrendsView = (props: TrendViewProps) => {
     return result;
   };
 
-  const pointCount = Math.round(Dimensions.get("screen").width / 20);
+  const pointCount = Math.max(Math.round(Dimensions.get("window").width / 20), 20);
   const battles = props.results?.filter((result) => result.battle).map((result) => result.battle!);
   const battleGroups = battles ? split(battles, pointCount) : [];
   const coops = props.results?.filter((result) => result.coop).map((result) => result.coop!);
@@ -72,38 +85,78 @@ const TrendsView = (props: TrendViewProps) => {
   const formatBattleGroup = () => {
     const victory: ChartData = { data: [], color: Color.AccentColor, max: 100, relative: true },
       splatted: ChartData = { data: [], color: Color.KillAndRescue },
+      splattedTeamAverage: ChartData = { data: [], color: Color.KillAndRescue, dash: true },
       splattedIncludingAssisted: ChartData = { data: [], color: Color.KillAndRescue },
+      splattedIncludingAssistedTeamAverage: ChartData = {
+        data: [],
+        color: Color.KillAndRescue,
+        dash: true,
+      },
       beSplatted: ChartData = { data: [], color: Color.Death },
-      specialWeaponUses: ChartData = { data: [], color: Color.Special };
+      beSplattedTeamAverage: ChartData = { data: [], color: Color.Death, dash: true },
+      specialWeaponUses: ChartData = { data: [], color: Color.Special },
+      specialWeaponUsesTeamAverage: ChartData = { data: [], color: Color.Special, dash: true };
 
     for (const battleGroup of battleGroups) {
       let v = 0,
         k = 0,
+        kt = 0,
         a = 0,
+        at = 0,
         d = 0,
-        sp = 0;
+        dt = 0,
+        sp = 0,
+        spt = 0;
       for (const battle of battleGroup) {
         if (battle.vsHistoryDetail!.judgement === "WIN") {
           v += 100;
         }
         k += getVsSelfPlayer(battle).result?.kill ?? 0;
+        kt +=
+          battle
+            .vsHistoryDetail!.myTeam.players.map((player) => player.result?.kill ?? 0)
+            .reduce((prev, current) => prev + current, 0) /
+          battle.vsHistoryDetail!.myTeam.players.length;
         a += getVsSelfPlayer(battle).result?.assist ?? 0;
+        at +=
+          battle
+            .vsHistoryDetail!.myTeam.players.map((player) => player.result?.assist ?? 0)
+            .reduce((prev, current) => prev + current, 0) /
+          battle.vsHistoryDetail!.myTeam.players.length;
         d += getVsSelfPlayer(battle).result?.death ?? 0;
+        dt +=
+          battle
+            .vsHistoryDetail!.myTeam.players.map((player) => player.result?.death ?? 0)
+            .reduce((prev, current) => prev + current, 0) /
+          battle.vsHistoryDetail!.myTeam.players.length;
         sp += getVsSelfPlayer(battle).result?.special ?? 0;
+        spt +=
+          battle
+            .vsHistoryDetail!.myTeam.players.map((player) => player.result?.special ?? 0)
+            .reduce((prev, current) => prev + current, 0) /
+          battle.vsHistoryDetail!.myTeam.players.length;
       }
       victory.data.push(v / battleGroup.length);
       splatted.data.push(k / battleGroup.length);
+      splattedTeamAverage.data.push(kt / battleGroup.length);
       splattedIncludingAssisted.data.push((k + a) / battleGroup.length);
+      splattedIncludingAssistedTeamAverage.data.push((kt + at) / battleGroup.length);
       beSplatted.data.push(d / battleGroup.length);
+      beSplattedTeamAverage.data.push(dt / battleGroup.length);
       specialWeaponUses.data.push(sp / battleGroup.length);
+      specialWeaponUsesTeamAverage.data.push(spt / battleGroup.length);
     }
 
     return {
       victory,
       splatted,
+      splattedTeamAverage,
       splattedIncludingAssisted,
+      splattedIncludingAssistedTeamAverage,
       beSplatted,
+      beSplattedTeamAverage,
       specialWeaponUses,
+      specialWeaponUsesTeamAverage,
     };
   };
   const formatCoopGroup = () => {
@@ -111,22 +164,42 @@ const TrendsView = (props: TrendViewProps) => {
       wavesCleared: ChartData = { data: [], color: Color.SalmonRun },
       hazardLevel: ChartData = { data: [], color: Color.BigRun },
       bossSalmonidsDefeated: ChartData = { data: [], color: Color.KillAndRescue },
+      bossSalmonidsDefeatedTeamAverage: ChartData = {
+        data: [],
+        color: Color.KillAndRescue,
+        dash: true,
+      },
       goldenEggsCollected: ChartData = { data: [], color: Color.GoldenEgg },
+      goldenEggsCollectedTeamAverage: ChartData = { data: [], color: Color.GoldenEgg, dash: true },
       goldenEggsCollectedIncludingAssisted: ChartData = { data: [], color: Color.GoldenEgg },
+      goldenEggsCollectedIncludingAssistedTeamAverage: ChartData = {
+        data: [],
+        color: Color.GoldenEgg,
+        dash: true,
+      },
       powerEggsCollected: ChartData = { data: [], color: Color.PowerEgg },
+      powerEggsCollectedTeamAverage: ChartData = { data: [], color: Color.PowerEgg, dash: true },
       rescued: ChartData = { data: [], color: Color.KillAndRescue },
-      beRescued: ChartData = { data: [], color: Color.Death };
+      rescuedTeamAverage: ChartData = { data: [], color: Color.KillAndRescue, dash: true },
+      beRescued: ChartData = { data: [], color: Color.Death },
+      beRescuedTeamAverage: ChartData = { data: [], color: Color.Death, dash: true };
 
     for (const coopGroup of coopGroups) {
       let c = 0,
         w = 0,
         h = 0,
         k = 0,
+        kt = 0,
         g = 0,
+        gt = 0,
         a = 0,
+        at = 0,
         p = 0,
+        pt = 0,
         r = 0,
-        d = 0;
+        rt = 0,
+        d = 0,
+        dt = 0;
       for (const coop of coopGroup) {
         if (coop.coopHistoryDetail!.resultWave === 0) {
           c += 100;
@@ -140,21 +213,57 @@ const TrendsView = (props: TrendViewProps) => {
         }
         h += coop.coopHistoryDetail!.dangerRate * 100;
         k += coop.coopHistoryDetail!.myResult.defeatEnemyCount;
+        kt +=
+          [coop.coopHistoryDetail!.myResult, ...coop.coopHistoryDetail!.memberResults]
+            .map((memberResult) => memberResult.defeatEnemyCount)
+            .reduce((prev, current) => prev + current, 0) /
+          (coop.coopHistoryDetail!.memberResults.length + 1);
         g += coop.coopHistoryDetail!.myResult.goldenDeliverCount;
+        gt +=
+          [coop.coopHistoryDetail!.myResult, ...coop.coopHistoryDetail!.memberResults]
+            .map((memberResult) => memberResult.goldenDeliverCount)
+            .reduce((prev, current) => prev + current, 0) /
+          (coop.coopHistoryDetail!.memberResults.length + 1);
         a += coop.coopHistoryDetail!.myResult.goldenAssistCount;
+        at +=
+          [coop.coopHistoryDetail!.myResult, ...coop.coopHistoryDetail!.memberResults]
+            .map((memberResult) => memberResult.goldenAssistCount)
+            .reduce((prev, current) => prev + current, 0) /
+          (coop.coopHistoryDetail!.memberResults.length + 1);
         p += coop.coopHistoryDetail!.myResult.deliverCount;
+        pt +=
+          [coop.coopHistoryDetail!.myResult, ...coop.coopHistoryDetail!.memberResults]
+            .map((memberResult) => memberResult.deliverCount)
+            .reduce((prev, current) => prev + current, 0) /
+          (coop.coopHistoryDetail!.memberResults.length + 1);
         r += coop.coopHistoryDetail!.myResult.rescueCount;
+        rt +=
+          [coop.coopHistoryDetail!.myResult, ...coop.coopHistoryDetail!.memberResults]
+            .map((memberResult) => memberResult.rescueCount)
+            .reduce((prev, current) => prev + current, 0) /
+          (coop.coopHistoryDetail!.memberResults.length + 1);
         d += coop.coopHistoryDetail!.myResult.rescuedCount;
+        dt +=
+          [coop.coopHistoryDetail!.myResult, ...coop.coopHistoryDetail!.memberResults]
+            .map((memberResult) => memberResult.rescuedCount)
+            .reduce((prev, current) => prev + current, 0) /
+          (coop.coopHistoryDetail!.memberResults.length + 1);
       }
       clear.data.push(c / coopGroup.length);
       wavesCleared.data.push(w / coopGroup.length);
       hazardLevel.data.push(h / coopGroup.length);
       bossSalmonidsDefeated.data.push(k / coopGroup.length);
+      bossSalmonidsDefeatedTeamAverage.data.push(kt / coopGroup.length);
       goldenEggsCollected.data.push(g / coopGroup.length);
+      goldenEggsCollectedTeamAverage.data.push(gt / coopGroup.length);
       goldenEggsCollectedIncludingAssisted.data.push((g + a) / coopGroup.length);
+      goldenEggsCollectedIncludingAssistedTeamAverage.data.push((gt + at) / coopGroup.length);
       powerEggsCollected.data.push(p / coopGroup.length);
+      powerEggsCollectedTeamAverage.data.push(pt / coopGroup.length);
       rescued.data.push(r / coopGroup.length);
+      rescuedTeamAverage.data.push(rt / coopGroup.length);
       beRescued.data.push(d / coopGroup.length);
+      beRescuedTeamAverage.data.push(dt / coopGroup.length);
     }
 
     return {
@@ -162,11 +271,17 @@ const TrendsView = (props: TrendViewProps) => {
       wavesCleared,
       hazardLevel,
       bossSalmonidsDefeated,
+      bossSalmonidsDefeatedTeamAverage,
       goldenEggsCollected,
+      goldenEggsCollectedTeamAverage,
       goldenEggsCollectedIncludingAssisted,
+      goldenEggsCollectedIncludingAssistedTeamAverage,
       powerEggsCollected,
+      powerEggsCollectedTeamAverage,
       rescued,
+      rescuedTeamAverage,
       beRescued,
+      beRescuedTeamAverage,
     };
   };
 
@@ -185,12 +300,20 @@ const TrendsView = (props: TrendViewProps) => {
         return battleData.victory;
       case "SPLATTED":
         return battleData.splatted;
+      case "SPLATTED_TEAM_AVERAGE":
+        return battleData.splattedTeamAverage;
       case "SPLATTED_INCLUDING_ASSISTED":
         return battleData.splattedIncludingAssisted;
+      case "SPLATTED_INCLUDING_ASSISTED_TEAM_AVERAGE":
+        return battleData.splattedIncludingAssistedTeamAverage;
       case "BE_SPLATTED":
         return battleData.beSplatted;
+      case "BE_SPLATTED_TEAM_AVERAGE":
+        return battleData.beSplattedTeamAverage;
       case "SPECIAL_WEAPON_USES":
         return battleData.specialWeaponUses;
+      case "SPECIAL_WEAPON_USES_TEAM_AVERAGE":
+        return battleData.specialWeaponUsesTeamAverage;
     }
   };
   const getCoopData = (dimension: CoopDimension) => {
@@ -203,16 +326,28 @@ const TrendsView = (props: TrendViewProps) => {
         return coopData.hazardLevel;
       case "BOSS_SALMONIDS_DEFEATED":
         return coopData.bossSalmonidsDefeated;
+      case "BOSS_SALMONIDS_DEFEATED_TEAM_AVERAGE":
+        return coopData.bossSalmonidsDefeatedTeamAverage;
       case "GOLDEN_EGGS_COLLECTED":
         return coopData.goldenEggsCollected;
+      case "GOLDEN_EGGS_COLLECTED_TEAM_AVERAGE":
+        return coopData.goldenEggsCollectedTeamAverage;
       case "GOLDEN_EGGS_COLLECTED_INCLUDING_ASSISTED":
         return coopData.goldenEggsCollectedIncludingAssisted;
+      case "GOLDEN_EGGS_COLLECTED_INCLUDING_ASSISTED_TEAM_AVERAGE":
+        return coopData.goldenEggsCollectedIncludingAssistedTeamAverage;
       case "POWER_EGGS_COLLECTED":
         return coopData.powerEggsCollected;
+      case "POWER_EGGS_COLLECTED_TEAM_AVERAGE":
+        return coopData.powerEggsCollectedTeamAverage;
       case "RESCUED":
         return coopData.rescued;
+      case "RESCUED_TEAM_AVERAGE":
+        return coopData.rescuedTeamAverage;
       case "BE_RESCUED":
         return coopData.beRescued;
+      case "BE_RESCUED_TEAM_AVERAGE":
+        return coopData.beRescuedTeamAverage;
     }
   };
   const onBattleDimensionPress = (dimension: BattleDimension) => {
@@ -257,16 +392,25 @@ const TrendsView = (props: TrendViewProps) => {
                     }}
                   />
                   <FilterButton
-                    color={battleDimensions.includes("SPLATTED") ? Color.KillAndRescue : undefined}
+                    color={
+                      battleDimensions.includes("SPLATTED") ||
+                      battleDimensions.includes("SPLATTED_TEAM_AVERAGE")
+                        ? Color.KillAndRescue
+                        : undefined
+                    }
                     title={t("splatted")}
                     style={[ViewStyles.mr2, { backgroundColor: "transparent" }]}
                     onPress={() => {
                       onBattleDimensionPress("SPLATTED");
                     }}
+                    onLongPress={() => {
+                      onBattleDimensionPress("SPLATTED_TEAM_AVERAGE");
+                    }}
                   />
                   <FilterButton
                     color={
-                      battleDimensions.includes("SPLATTED_INCLUDING_ASSISTED")
+                      battleDimensions.includes("SPLATTED_INCLUDING_ASSISTED") ||
+                      battleDimensions.includes("SPLATTED_INCLUDING_ASSISTED_TEAM_AVERAGE")
                         ? Color.KillAndRescue
                         : undefined
                     }
@@ -275,23 +419,40 @@ const TrendsView = (props: TrendViewProps) => {
                     onPress={() => {
                       onBattleDimensionPress("SPLATTED_INCLUDING_ASSISTED");
                     }}
+                    onLongPress={() => {
+                      onBattleDimensionPress("SPLATTED_INCLUDING_ASSISTED_TEAM_AVERAGE");
+                    }}
                   />
                   <FilterButton
-                    color={battleDimensions.includes("BE_SPLATTED") ? Color.Death : undefined}
+                    color={
+                      battleDimensions.includes("BE_SPLATTED") ||
+                      battleDimensions.includes("BE_SPLATTED_TEAM_AVERAGE")
+                        ? Color.Death
+                        : undefined
+                    }
                     title={t("be_splatted")}
                     style={[ViewStyles.mr2, { backgroundColor: "transparent" }]}
                     onPress={() => {
                       onBattleDimensionPress("BE_SPLATTED");
                     }}
+                    onLongPress={() => {
+                      onBattleDimensionPress("BE_SPLATTED_TEAM_AVERAGE");
+                    }}
                   />
                   <FilterButton
                     color={
-                      battleDimensions.includes("SPECIAL_WEAPON_USES") ? Color.Special : undefined
+                      battleDimensions.includes("SPECIAL_WEAPON_USES") ||
+                      battleDimensions.includes("SPECIAL_WEAPON_USES_TEAM_AVERAGE")
+                        ? Color.Special
+                        : undefined
                     }
                     title={t("special_weapon_uses")}
                     style={{ backgroundColor: "transparent" }}
                     onPress={() => {
                       onBattleDimensionPress("SPECIAL_WEAPON_USES");
+                    }}
+                    onLongPress={() => {
+                      onBattleDimensionPress("SPECIAL_WEAPON_USES_TEAM_AVERAGE");
                     }}
                   />
                 </HStack>
@@ -339,7 +500,8 @@ const TrendsView = (props: TrendViewProps) => {
                   />
                   <FilterButton
                     color={
-                      coopDimensions.includes("BOSS_SALMONIDS_DEFEATED")
+                      coopDimensions.includes("BOSS_SALMONIDS_DEFEATED") ||
+                      coopDimensions.includes("BOSS_SALMONIDS_DEFEATED_TEAM_AVERAGE")
                         ? Color.KillAndRescue
                         : undefined
                     }
@@ -348,20 +510,32 @@ const TrendsView = (props: TrendViewProps) => {
                     onPress={() => {
                       onCoopDimensionPress("BOSS_SALMONIDS_DEFEATED");
                     }}
+                    onLongPress={() => {
+                      onCoopDimensionPress("BOSS_SALMONIDS_DEFEATED_TEAM_AVERAGE");
+                    }}
                   />
                   <FilterButton
                     color={
-                      coopDimensions.includes("GOLDEN_EGGS_COLLECTED") ? Color.GoldenEgg : undefined
+                      coopDimensions.includes("GOLDEN_EGGS_COLLECTED") ||
+                      coopDimensions.includes("GOLDEN_EGGS_COLLECTED")
+                        ? Color.GoldenEgg
+                        : undefined
                     }
                     title={t("golden_eggs_collected")}
                     style={[ViewStyles.mr2, { backgroundColor: "transparent" }]}
                     onPress={() => {
                       onCoopDimensionPress("GOLDEN_EGGS_COLLECTED");
                     }}
+                    onLongPress={() => {
+                      onCoopDimensionPress("GOLDEN_EGGS_COLLECTED_TEAM_AVERAGE");
+                    }}
                   />
                   <FilterButton
                     color={
-                      coopDimensions.includes("GOLDEN_EGGS_COLLECTED_INCLUDING_ASSISTED")
+                      coopDimensions.includes("GOLDEN_EGGS_COLLECTED_INCLUDING_ASSISTED") ||
+                      coopDimensions.includes(
+                        "GOLDEN_EGGS_COLLECTED_INCLUDING_ASSISTED_TEAM_AVERAGE"
+                      )
                         ? Color.GoldenEgg
                         : undefined
                     }
@@ -370,31 +544,56 @@ const TrendsView = (props: TrendViewProps) => {
                     onPress={() => {
                       onCoopDimensionPress("GOLDEN_EGGS_COLLECTED_INCLUDING_ASSISTED");
                     }}
+                    onLongPress={() => {
+                      onCoopDimensionPress("GOLDEN_EGGS_COLLECTED_INCLUDING_ASSISTED_TEAM_AVERAGE");
+                    }}
                   />
                   <FilterButton
                     color={
-                      coopDimensions.includes("POWER_EGGS_COLLECTED") ? Color.PowerEgg : undefined
+                      coopDimensions.includes("POWER_EGGS_COLLECTED") ||
+                      coopDimensions.includes("POWER_EGGS_COLLECTED_TEAM_AVERAGE")
+                        ? Color.PowerEgg
+                        : undefined
                     }
                     title={t("power_eggs_collected")}
                     style={[ViewStyles.mr2, { backgroundColor: "transparent" }]}
                     onPress={() => {
                       onCoopDimensionPress("POWER_EGGS_COLLECTED");
                     }}
+                    onLongPress={() => {
+                      onCoopDimensionPress("POWER_EGGS_COLLECTED_TEAM_AVERAGE");
+                    }}
                   />
                   <FilterButton
-                    color={coopDimensions.includes("RESCUED") ? Color.KillAndRescue : undefined}
+                    color={
+                      coopDimensions.includes("RESCUED") ||
+                      coopDimensions.includes("RESCUED_TEAM_AVERAGE")
+                        ? Color.KillAndRescue
+                        : undefined
+                    }
                     title={t("rescued")}
                     style={[ViewStyles.mr2, { backgroundColor: "transparent" }]}
                     onPress={() => {
                       onCoopDimensionPress("RESCUED");
                     }}
+                    onLongPress={() => {
+                      onCoopDimensionPress("RESCUED_TEAM_AVERAGE");
+                    }}
                   />
                   <FilterButton
-                    color={coopDimensions.includes("BE_RESCUED") ? Color.Death : undefined}
+                    color={
+                      coopDimensions.includes("BE_RESCUED") ||
+                      coopDimensions.includes("BE_RESCUED_TEAM_AVERAGE")
+                        ? Color.Death
+                        : undefined
+                    }
                     title={t("be_rescued")}
                     style={{ backgroundColor: "transparent" }}
                     onPress={() => {
                       onCoopDimensionPress("BE_RESCUED");
+                    }}
+                    onLongPress={() => {
+                      onCoopDimensionPress("BE_RESCUED_TEAM_AVERAGE");
                     }}
                   />
                 </HStack>
@@ -408,7 +607,17 @@ const TrendsView = (props: TrendViewProps) => {
             </VStack>
           )}
         </VStack>
-        <Text center>{t("stats_notice")}</Text>
+        <Text center style={ViewStyles.mb2}>
+          {t("stats_notice")}
+        </Text>
+        {(battleGroups.length > 0 || coopGroups.length > 0) && (
+          <HStack style={ViewStyles.c}>
+            <Icon name="info" size={14} color={Color.MiddleTerritory} style={ViewStyles.mr1} />
+            <HStack style={ViewStyles.i}>
+              <Marquee style={TextStyles.subtle}>{t("trends_notice")}</Marquee>
+            </HStack>
+          </HStack>
+        )}
       </Modal>
     </Center>
   );

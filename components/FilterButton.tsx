@@ -12,6 +12,7 @@ interface FilterButtonProps {
   title: string;
   style?: StyleProp<ViewStyle>;
   onPress?: () => void;
+  onLongPress?: () => void;
 }
 
 const FilterButton = (props: FilterButtonProps) => {
@@ -25,6 +26,7 @@ const FilterButton = (props: FilterButtonProps) => {
         props.style,
       ]}
       onPress={props.onPress}
+      onLongPress={props.onLongPress}
     >
       <HStack flex center>
         {!props.textColor && (

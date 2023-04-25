@@ -246,7 +246,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
                 key={i}
                 rule=""
                 stages={[]}
-                style={props.children || i !== 7 ? ViewStyles.mr2 : undefined}
+                style={props.children || i !== 8 ? ViewStyles.mr2 : undefined}
               />
             ))}
         {splatfestSchedules?.[0] && (
