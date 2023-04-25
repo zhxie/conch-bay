@@ -340,7 +340,7 @@ const MainView = () => {
     // Fetch results.
     setProgress(0);
     setProgressTotal(0);
-    let n = 0;
+    let n = -1;
     const [battleFail, coopFail] = await Promise.all([
       fetchBattleHistories(bulletToken).then(async (battleHistories) => {
         // Fetch details.
@@ -360,10 +360,17 @@ const MainView = () => {
 
         const existed = await Promise.all(ids.map((id) => Database.isExist(id)));
         const newIds = ids.filter((_, i) => !existed[i]);
-        setProgressTotal((progressTotal) => progressTotal + newIds.length);
-        n += newIds.length;
-        if (n !== newIds.length) {
-          showBanner(BannerLevel.Info, t("loading_n_results", { n }));
+        if (n === -1) {
+          n = newIds.length;
+          if (n !== 0) {
+            setProgressTotal(250);
+          }
+        } else {
+          n += newIds.length;
+          setProgressTotal(n);
+          if (n > 0) {
+            showBanner(BannerLevel.Info, t("loading_n_results", { n }));
+          }
         }
         const results = await Promise.all(
           newIds.map((id) =>
@@ -391,9 +398,17 @@ const MainView = () => {
         const existed = await Promise.all(ids.map((id) => Database.isExist(id)));
         const newIds = ids.filter((_, i) => !existed[i]);
         setProgressTotal((progressTotal) => progressTotal + newIds.length);
-        n += newIds.length;
-        if (n !== newIds.length) {
-          showBanner(BannerLevel.Info, t("loading_n_results", { n }));
+        if (n === -1) {
+          n = newIds.length;
+          if (n !== 0) {
+            setProgressTotal(250);
+          }
+        } else {
+          n += newIds.length;
+          setProgressTotal(n);
+          if (n > 0) {
+            showBanner(BannerLevel.Info, t("loading_n_results", { n }));
+          }
         }
         const results = await Promise.all(
           newIds.map((id) =>
