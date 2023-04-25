@@ -26,6 +26,14 @@ Run the following command to extract data from a ikawidget3 database IKAX3 into 
 python3 tools/convert_ikax3.py <PATH_TO_CBLITE_TOOL> <PATH_TO_IKAX3>
 ```
 
+### Import data from salmdroidNW
+
+Run the following command to extract data from a salmdroidNW backup into `conch-bay-import.json`. You can then import it in Conch Bay.
+
+```sh
+python3 tools/convert_salmdroidnw_backup.py <PATH_TO_EXTRACTED_SALMDROIDNW_BACKUP>
+```
+
 ### Rescue data from a Conch Bay database
 
 Run the following command to extract data from a Conch Bay database into `conch-bay-import.json`. You can then import it in Conch Bay.
