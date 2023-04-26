@@ -113,6 +113,7 @@ const zhHant = {
   show_player_names: "顯示玩家名稱",
   show_raw_data: "顯示原始數據",
   open_in_nintendo_switch_online: "在Nintendo Switch Online中查看",
+  coop_notice: "在主屏幕點擊WAVE或危險度以顯示打工稱號。",
   // Stats.
   stats: "統計",
   count: "計數",

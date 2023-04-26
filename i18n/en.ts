@@ -119,6 +119,7 @@ const en = {
   show_player_names: "Show Player Names",
   show_raw_data: "Show Raw Data",
   open_in_nintendo_switch_online: "Open in Nintendo Switch Online",
+  coop_notice: "Press on wave or hazard level in the main screen to show job title.",
   // Stats.
   stats: "Stats",
   count: "Count",
