@@ -199,8 +199,23 @@ export const queryFilterOptions = async () => {
         // Move coop rules behind battle rules.
         if (a.startsWith("V") && b.startsWith("V")) {
           return decode64Index(a) - decode64Index(b);
+        } else if (a.startsWith("V")) {
+          return -1;
+        } else if (b.startsWith("V")) {
+          return 1;
         }
-        return b.localeCompare(a);
+        // Sort coop rules as REGULAR, BIG_RUN and TEAM_CONTEST.
+        const coopRuleMap = {
+          REGULAR: 1,
+          BIG_RUN: 2,
+          TEAM_CONTEST: 3,
+        };
+        const aSeq = coopRuleMap[a];
+        const bSeq = coopRuleMap[b];
+        if (aSeq && bSeq) {
+          return aSeq - bSeq;
+        }
+        return a.localeCompare(b);
       }),
     stages: stageRecord.rows
       .map((row) => row["stage"])
