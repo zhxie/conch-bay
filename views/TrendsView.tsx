@@ -627,7 +627,7 @@ const TrendsView = (props: TrendViewProps) => {
             </VStack>
           )}
         </VStack>
-        <Text center style={ViewStyles.mb2}>
+        <Text center style={(battleGroups.length > 0 || coopGroups.length > 0) && ViewStyles.mb2}>
           {t("stats_notice")}
         </Text>
         {(battleGroups.length > 0 || coopGroups.length > 0) && (
