@@ -1,3 +1,4 @@
+import { createContext, useContext } from "react";
 import { StyleProp, ViewStyle, useColorScheme } from "react-native";
 import Icon from "./Icon";
 import ResultButton from "./ResultButton";
@@ -5,6 +6,8 @@ import { Circle } from "./Shape";
 import { HStack } from "./Stack";
 import { Color, TextStyles, ViewStyles } from "./Styles";
 import Text from "./Text";
+
+const CoopButtonContext = createContext({ grade: false, changeGrade: () => {} });
 
 interface CoopButtonProps {
   color: string;
@@ -21,21 +24,19 @@ interface CoopButtonProps {
   grade?: string;
   gradePoint: number;
   gradeChange: number;
-  displayGrade: boolean;
   goldenEgg: number;
   powerEgg: number;
   style?: StyleProp<ViewStyle>;
   onPress?: () => void;
-  onDisplayGradePress: () => void;
 }
 
 const CoopButton = (props: CoopButtonProps) => {
+  const context = useContext(CoopButtonContext);
+
   const colorScheme = useColorScheme();
   const clearStyle = [TextStyles.b, { color: props.color }];
   const waveStyle = props.isClear ? clearStyle : undefined;
   const arrowColor = colorScheme === "light" ? Color.LightText : Color.DarkText;
-
-  props.displayGrade && props.grade && props.hazardLevel;
 
   return (
     <ResultButton
@@ -53,9 +54,9 @@ const CoopButton = (props: CoopButtonProps) => {
       subChildren={
         <Text
           numberOfLines={1}
-          onPress={props.grade && props.hazardLevel ? props.onDisplayGradePress : undefined}
+          onPress={props.grade && props.hazardLevel ? context.changeGrade : undefined}
         >
-          {(props.displayGrade && props.grade) || !props.hazardLevel ? (
+          {(context.grade && props.grade) || !props.hazardLevel ? (
             props.grade ? (
               <Text numberOfLines={1} style={props.gradeChange > 0 ? clearStyle : undefined}>
                 <Icon
@@ -97,4 +98,5 @@ const CoopButton = (props: CoopButtonProps) => {
   );
 };
 
+export { CoopButtonContext };
 export default CoopButton;
