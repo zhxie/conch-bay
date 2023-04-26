@@ -95,29 +95,34 @@ const rollback = async () => {
   return await exec("rollback", [], false);
 };
 
-const convertFilter = (filter: FilterProps) => {
+const convertFilter = (filter?: FilterProps, from?: number) => {
   const filters: string[] = [];
-  if (filter.modes.length > 0) {
-    filters.push(`(${filter.modes.map((mode) => `mode = '${mode}'`).join(" OR ")})`);
+  if (filter) {
+    if (filter.modes.length > 0) {
+      filters.push(`(${filter.modes.map((mode) => `mode = '${mode}'`).join(" OR ")})`);
+    }
+    if (filter.rules.length > 0) {
+      filters.push(`(${filter.rules.map((rule) => `rule = '${rule}'`).join(" OR ")})`);
+    }
+    if (filter.weapons.length > 0) {
+      filters.push(`(${filter.weapons.map((weapon) => `weapon = '${weapon}'`).join(" OR ")})`);
+    }
+    if (filter.stages.length > 0) {
+      filters.push(
+        `(${filter.stages
+          .map((stage) => {
+            // Includes Big Run stages.
+            if (stage === "VnNTdGFnZS0xNg==") {
+              return "stage = 'VnNTdGFnZS0xNg==' OR stage = 'Q29vcFN0YWdlLTEwMA=='";
+            }
+            return `stage = '${stage}'`;
+          })
+          .join(" OR ")})`
+      );
+    }
   }
-  if (filter.rules.length > 0) {
-    filters.push(`(${filter.rules.map((rule) => `rule = '${rule}'`).join(" OR ")})`);
-  }
-  if (filter.weapons.length > 0) {
-    filters.push(`(${filter.weapons.map((weapon) => `weapon = '${weapon}'`).join(" OR ")})`);
-  }
-  if (filter.stages.length > 0) {
-    filters.push(
-      `(${filter.stages
-        .map((stage) => {
-          // Includes Big Run stages.
-          if (stage === "VnNTdGFnZS0xNg==") {
-            return "stage = 'VnNTdGFnZS0xNg==' OR stage = 'Q29vcFN0YWdlLTEwMA=='";
-          }
-          return `stage = '${stage}'`;
-        })
-        .join(" OR ")})`
-    );
+  if (from) {
+    filters.push(`(time >= ${from})`);
   }
   const condition = filters.map((filter) => `(${filter})`).join(" AND ");
   if (!condition) {
@@ -127,7 +132,7 @@ const convertFilter = (filter: FilterProps) => {
 };
 
 export const query = async (offset: number, limit: number, filter?: FilterProps) => {
-  let condition: string | undefined = undefined;
+  let condition: string = "";
   if (filter) {
     condition = convertFilter(filter);
   }
@@ -238,10 +243,10 @@ export const queryFilterOptions = async () => {
       .sort((a, b) => decode64Index(a) - decode64Index(b)),
   };
 };
-export const count = async (filter?: FilterProps) => {
-  let condition: string | undefined = undefined;
-  if (filter) {
-    condition = convertFilter(filter);
+export const count = async (filter?: FilterProps, from?: number) => {
+  let condition: string = "";
+  if (filter || from) {
+    condition = convertFilter(filter, from);
   }
   const sql = `SELECT COUNT(1) FROM result ${condition}`;
   const record = await exec(sql, [], true);

@@ -1,3 +1,6 @@
+import dayjs from "dayjs";
+import quarterOfYear from "dayjs/plugin/quarterOfYear";
+import utc from "dayjs/plugin/utc";
 import * as Application from "expo-application";
 import * as Clipboard from "expo-clipboard";
 import * as DocumentPicker from "expo-document-picker";
@@ -87,12 +90,28 @@ import ShopView from "./ShopView";
 import StatsView from "./StatsView";
 import TrendsView from "./TrendsView";
 
+dayjs.extend(quarterOfYear);
+dayjs.extend(utc);
+
+enum TimeRange {
+  CurrentBattleSchedule = "current_battle_schedule",
+  CurrentSalmonRunSchedule = "current_salmon_run_schedule",
+  Today = "today",
+  ThisWeek = "this_week",
+  ThisMonth = "this_month",
+  ThisSeason = "this_season",
+  AllResults = "all_results",
+}
+
 let autoRefreshTimeout: NodeJS.Timeout | undefined;
 
 const MainView = () => {
   const colorScheme = useColorScheme();
   const backgroundColor = colorScheme === "light" ? Color.LightTerritory : Color.DarkTerritory;
   const backgroundStyle = colorScheme === "light" ? ViewStyles.light : ViewStyles.dark;
+  const territoryStyle =
+    colorScheme === "light" ? ViewStyles.lightTerritory : ViewStyles.darkTerritory;
+  const textStyle = colorScheme === "light" ? TextStyles.light : TextStyles.dark;
   const reverseTextStyle = colorScheme === "light" ? TextStyles.dark : TextStyles.light;
 
   const insets = useSafeAreaInsets();
@@ -550,10 +569,51 @@ const MainView = () => {
     setFilter(filter);
   };
   const onLoadMorePress = async () => {
+    if (loadedAll) {
+      return;
+    }
     await loadResults(results!.length + 20, true);
   };
-  const onLoadAllPress = async () => {
-    await loadResults(count, true);
+  const onLoadMoreSelected = async (key: TimeRange) => {
+    let num = 20;
+    switch (key) {
+      case TimeRange.CurrentBattleSchedule:
+        num = await Database.count(filter, new Date().valueOf() - (new Date().valueOf() % 7200000));
+        break;
+      case TimeRange.CurrentSalmonRunSchedule:
+        if (schedules) {
+          const current = new Date().valueOf();
+          const shift = [
+            ...schedules.coopGroupingSchedule.regularSchedules.nodes,
+            ...schedules.coopGroupingSchedule.bigRunSchedules.nodes,
+          ].find(
+            (shift) =>
+              current >= new Date(shift.startTime).valueOf() &&
+              current < new Date(shift.endTime).valueOf()
+          );
+          if (shift) {
+            num = await Database.count(filter, new Date(shift.startTime).valueOf());
+            break;
+          }
+        }
+        return;
+      case TimeRange.Today:
+        num = await Database.count(filter, dayjs().utc().startOf("day").valueOf());
+        break;
+      case TimeRange.ThisWeek:
+        num = await Database.count(filter, dayjs().utc().startOf("week").valueOf());
+        break;
+      case TimeRange.ThisMonth:
+        num = await Database.count(filter, dayjs().utc().startOf("month").valueOf());
+        break;
+      case TimeRange.ThisSeason:
+        num = await Database.count(filter, dayjs().utc().startOf("quarter").valueOf());
+        break;
+      case TimeRange.AllResults:
+        num = count;
+        break;
+    }
+    await loadResults(num, true);
   };
   const onImportPress = async () => {
     let uri = "";
@@ -1022,25 +1082,27 @@ const MainView = () => {
             <SafeAreaView edges={["bottom", "left", "right"]} style={{ alignItems: "center" }}>
               {sessionToken.length > 0 && (
                 <VStack style={[ViewStyles.mb4, ViewStyles.wf, ViewStyles.px4]}>
-                  <Button
-                    isDisabled={loadedAll}
+                  <Picker
                     isLoading={refreshing || loadingMore}
                     isLoadingText={t("loading_more")}
+                    title={loadedAll ? t("loaded_all") : t("load_more")}
+                    items={Object.values(TimeRange).map((range) => ({
+                      key: range,
+                      value: t(range),
+                    }))}
                     style={[
-                      (results?.length ?? 0) > 40 && (results?.length ?? 0) <= 60 && ViewStyles.mb2,
+                      (results?.length ?? 0) <= 20 && !loadedAll && ViewStyles.mb2,
                       results === undefined || results.length > 0 ? ViewStyles.rt0 : ViewStyles.rt2,
                       ViewStyles.rb2,
                       { height: 64 },
+                      territoryStyle,
                     ]}
-                    textStyle={TextStyles.h3}
+                    textStyle={[TextStyles.h3, textStyle]}
+                    // HACK: forcly cast.
+                    onSelected={onLoadMoreSelected as (_: string) => void}
                     onPress={onLoadMorePress}
-                    onLongPress={onLoadAllPress}
-                  >
-                    <Marquee style={TextStyles.h3}>
-                      {loadedAll ? t("loaded_all") : t("load_more")}
-                    </Marquee>
-                  </Button>
-                  {(results?.length ?? 0) > 40 && (results?.length ?? 0) <= 60 && (
+                  />
+                  {(results?.length ?? 0) <= 20 && !loadedAll && (
                     <HStack style={ViewStyles.c}>
                       <Icon
                         name="info"

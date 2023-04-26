@@ -1,11 +1,10 @@
 import { useState } from "react";
-import { StyleProp, StyleSheet, ViewStyle, useColorScheme } from "react-native";
+import { StyleProp, StyleSheet, TextStyle, ViewStyle, useColorScheme } from "react-native";
 import Button from "./Button";
 import Marquee from "./Marquee";
 import { Modal } from "./Modal";
 import { VStack } from "./Stack";
 import { Color, TextStyles, ViewStyles } from "./Styles";
-import Text from "./Text";
 
 interface PickerItemProps {
   key: string;
@@ -13,10 +12,14 @@ interface PickerItemProps {
 }
 interface PickerProps {
   isDisabled?: boolean;
+  isLoading?: boolean;
+  isLoadingText?: string;
   title: string;
   items: PickerItemProps[];
-  onSelected: (key: string) => void;
   style?: StyleProp<ViewStyle>;
+  textStyle?: StyleProp<TextStyle>;
+  onSelected: (key: string) => void;
+  onPress?: () => void;
 }
 
 const Picker = (props: PickerProps) => {
@@ -36,12 +39,14 @@ const Picker = (props: PickerProps) => {
   return (
     <Button
       isDisabled={props.isDisabled}
+      isLoading={props.isLoading}
+      isLoadingText={props.isLoadingText}
       style={[ViewStyles.accent, props.style]}
-      onPress={onPress}
+      textStyle={props.textStyle}
+      onPress={props.onPress ?? onPress}
+      onLongPress={props.onPress ? onPress : undefined}
     >
-      <Text numberOfLines={1} style={reverseTextStyle}>
-        {props.title}
-      </Text>
+      <Marquee style={[reverseTextStyle, props.textStyle]}>{props.title}</Marquee>
       <Modal isVisible={open} onClose={onClose} style={ViewStyles.modal0_5d}>
         <VStack flex style={ViewStyles.wf}>
           {props.items.map((item, i, items) => (
