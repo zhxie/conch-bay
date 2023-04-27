@@ -12,7 +12,7 @@ export { default as CoopButton, CoopButtonContext } from "./CoopButton";
 export { default as CoopPlayerButton } from "./CoopPlayerButton";
 export { default as CoopWeaponBox } from "./CoopWeaponBox";
 export { Display, AccordionDisplay } from "./Display";
-export { default as FilterButton } from "./FilterButton";
+export { FilterButton, ColorFilterButton } from "./FilterButton";
 export { default as FloatingActionButton } from "./FloatingActionButton";
 export { default as GearBox } from "./GearBox";
 export { default as Icon } from "./Icon";

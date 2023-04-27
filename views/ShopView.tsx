@@ -19,6 +19,12 @@ import t from "../i18n";
 import { MyGear, MyOutfitCommonDataEquipmentsResult, Shop } from "../models/types";
 import { getGearPadding, getImageCacheSource } from "../utils/ui";
 
+enum GearType {
+  HeadGears = "headGears",
+  ClothingGears = "clothingGears",
+  ShoesGears = "shoesGears",
+}
+
 interface ShopViewProps {
   shop: Shop;
   isEquipmentsAvailable: boolean;
@@ -34,7 +40,18 @@ const ShopView = (props: ShopViewProps) => {
   const [displayShop, setDisplayShop] = useState(false);
   const [equipments, setEquipments] = useState<MyOutfitCommonDataEquipmentsResult>();
   const [displayEquipments, setDisplayEquipments] = useState(false);
-  const [filter, setFilter] = useState("headGears");
+  const [filter, setFilter] = useState<GearType>(GearType.HeadGears);
+
+  const formatGearTypeName = (type: GearType) => {
+    switch (type) {
+      case GearType.HeadGears:
+        return "headgear";
+      case GearType.ClothingGears:
+        return "clothes";
+      case GearType.ShoesGears:
+        return "shoes";
+    }
+  };
 
   const onShopPress = () => {
     setDisplayShop(true);
@@ -159,34 +176,18 @@ const ShopView = (props: ShopViewProps) => {
           renderItem={renderItem}
           estimatedItemSize={48}
           ListHeaderComponent={
-            <HStack style={[ViewStyles.px4, { flexWrap: "wrap" }]}>
-              <FilterButton
-                color={filter === "headGears" ? Color.AccentColor : undefined}
-                textColor={Color.DarkText}
-                title={t("headgear")}
-                style={[ViewStyles.mr2, ViewStyles.mb2]}
-                onPress={() => {
-                  setFilter("headGears");
-                }}
-              />
-              <FilterButton
-                color={filter === "clothingGears" ? Color.AccentColor : undefined}
-                textColor={Color.DarkText}
-                title={t("clothes")}
-                style={[ViewStyles.mr2, ViewStyles.mb2]}
-                onPress={() => {
-                  setFilter("clothingGears");
-                }}
-              />
-              <FilterButton
-                color={filter === "shoesGears" ? Color.AccentColor : undefined}
-                textColor={Color.DarkText}
-                title={t("shoes")}
-                style={[ViewStyles.mr2, ViewStyles.mb2]}
-                onPress={() => {
-                  setFilter("shoesGears");
-                }}
-              />
+            <HStack style={[ViewStyles.pl4, ViewStyles.pr2, { flexWrap: "wrap" }]}>
+              {Object.values(GearType).map((type) => (
+                <FilterButton
+                  key={type}
+                  textColor={filter === type ? Color.DarkText : undefined}
+                  title={t(formatGearTypeName(type))}
+                  style={[ViewStyles.mr2, ViewStyles.mb2, filter === type && ViewStyles.accent]}
+                  onPress={() => {
+                    setFilter(type);
+                  }}
+                />
+              ))}
             </HStack>
           }
           onClose={onDisplayMyGearsClose}

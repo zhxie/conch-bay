@@ -4,9 +4,9 @@ import {
   Center,
   ChartData,
   Color,
+  ColorFilterButton,
   CompareChart,
   Display,
-  FilterButton,
   HStack,
   Icon,
   Marquee,
@@ -403,7 +403,7 @@ const TrendsView = (props: TrendViewProps) => {
             <VStack style={[ViewStyles.rb2, style]}>
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                 <HStack flex center>
-                  <FilterButton
+                  <ColorFilterButton
                     color={battleDimensions.includes("VICTORY") ? Color.AccentColor : undefined}
                     title={`${t("victory")} (%)`}
                     style={[ViewStyles.mr2, { backgroundColor: "transparent" }]}
@@ -411,7 +411,7 @@ const TrendsView = (props: TrendViewProps) => {
                       onBattleDimensionPress("VICTORY");
                     }}
                   />
-                  <FilterButton
+                  <ColorFilterButton
                     color={
                       battleDimensions.includes("SPLATTED") ||
                       battleDimensions.includes("SPLATTED_TEAM_AVERAGE")
@@ -427,7 +427,7 @@ const TrendsView = (props: TrendViewProps) => {
                       onBattleDimensionPress("SPLATTED_TEAM_AVERAGE");
                     }}
                   />
-                  <FilterButton
+                  <ColorFilterButton
                     color={
                       battleDimensions.includes("SPLATTED_INCLUDING_ASSISTED") ||
                       battleDimensions.includes("SPLATTED_INCLUDING_ASSISTED_TEAM_AVERAGE")
@@ -443,7 +443,7 @@ const TrendsView = (props: TrendViewProps) => {
                       onBattleDimensionPress("SPLATTED_INCLUDING_ASSISTED_TEAM_AVERAGE");
                     }}
                   />
-                  <FilterButton
+                  <ColorFilterButton
                     color={
                       battleDimensions.includes("BE_SPLATTED") ||
                       battleDimensions.includes("BE_SPLATTED_TEAM_AVERAGE")
@@ -459,7 +459,7 @@ const TrendsView = (props: TrendViewProps) => {
                       onBattleDimensionPress("BE_SPLATTED_TEAM_AVERAGE");
                     }}
                   />
-                  <FilterButton
+                  <ColorFilterButton
                     color={
                       battleDimensions.includes("SPECIAL_WEAPON_USES") ||
                       battleDimensions.includes("SPECIAL_WEAPON_USES_TEAM_AVERAGE")
@@ -494,7 +494,7 @@ const TrendsView = (props: TrendViewProps) => {
             <VStack style={[ViewStyles.rb2, style]}>
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                 <HStack flex center>
-                  <FilterButton
+                  <ColorFilterButton
                     color={coopDimensions.includes("CLEAR") ? Color.AccentColor : undefined}
                     title={`${t("clear")} (%)`}
                     style={[ViewStyles.mr2, { backgroundColor: "transparent" }]}
@@ -502,7 +502,7 @@ const TrendsView = (props: TrendViewProps) => {
                       onCoopDimensionPress("CLEAR");
                     }}
                   />
-                  <FilterButton
+                  <ColorFilterButton
                     color={coopDimensions.includes("WAVES_CLEARED") ? Color.SalmonRun : undefined}
                     title={t("waves_cleared")}
                     style={[ViewStyles.mr2, { backgroundColor: "transparent" }]}
@@ -510,7 +510,7 @@ const TrendsView = (props: TrendViewProps) => {
                       onCoopDimensionPress("WAVES_CLEARED");
                     }}
                   />
-                  <FilterButton
+                  <ColorFilterButton
                     color={coopDimensions.includes("HAZARD_LEVEL") ? Color.BigRun : undefined}
                     title={t("hazard_level")}
                     style={[ViewStyles.mr2, { backgroundColor: "transparent" }]}
@@ -518,7 +518,7 @@ const TrendsView = (props: TrendViewProps) => {
                       onCoopDimensionPress("HAZARD_LEVEL");
                     }}
                   />
-                  <FilterButton
+                  <ColorFilterButton
                     color={
                       coopDimensions.includes("BOSS_SALMONIDS_DEFEATED") ||
                       coopDimensions.includes("BOSS_SALMONIDS_DEFEATED_TEAM_AVERAGE")
@@ -534,7 +534,7 @@ const TrendsView = (props: TrendViewProps) => {
                       onCoopDimensionPress("BOSS_SALMONIDS_DEFEATED_TEAM_AVERAGE");
                     }}
                   />
-                  <FilterButton
+                  <ColorFilterButton
                     color={
                       coopDimensions.includes("GOLDEN_EGGS_COLLECTED") ||
                       coopDimensions.includes("GOLDEN_EGGS_COLLECTED")
@@ -550,7 +550,7 @@ const TrendsView = (props: TrendViewProps) => {
                       onCoopDimensionPress("GOLDEN_EGGS_COLLECTED_TEAM_AVERAGE");
                     }}
                   />
-                  <FilterButton
+                  <ColorFilterButton
                     color={
                       coopDimensions.includes("GOLDEN_EGGS_COLLECTED_INCLUDING_ASSISTED") ||
                       coopDimensions.includes(
@@ -568,7 +568,7 @@ const TrendsView = (props: TrendViewProps) => {
                       onCoopDimensionPress("GOLDEN_EGGS_COLLECTED_INCLUDING_ASSISTED_TEAM_AVERAGE");
                     }}
                   />
-                  <FilterButton
+                  <ColorFilterButton
                     color={
                       coopDimensions.includes("POWER_EGGS_COLLECTED") ||
                       coopDimensions.includes("POWER_EGGS_COLLECTED_TEAM_AVERAGE")
@@ -584,7 +584,7 @@ const TrendsView = (props: TrendViewProps) => {
                       onCoopDimensionPress("POWER_EGGS_COLLECTED_TEAM_AVERAGE");
                     }}
                   />
-                  <FilterButton
+                  <ColorFilterButton
                     color={
                       coopDimensions.includes("RESCUED") ||
                       coopDimensions.includes("RESCUED_TEAM_AVERAGE")
@@ -600,7 +600,7 @@ const TrendsView = (props: TrendViewProps) => {
                       onCoopDimensionPress("RESCUED_TEAM_AVERAGE");
                     }}
                   />
-                  <FilterButton
+                  <ColorFilterButton
                     color={
                       coopDimensions.includes("BE_RESCUED") ||
                       coopDimensions.includes("BE_RESCUED_TEAM_AVERAGE")

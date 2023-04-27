@@ -4,6 +4,7 @@ import {
   Button,
   Center,
   Color,
+  ColorFilterButton,
   FilterButton,
   HStack,
   IconButton,
@@ -146,7 +147,7 @@ const FilterView = (props: FilterViewProps) => {
         </Center>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <HStack flex center style={[ViewStyles.pl2, ViewStyles.pr4]}>
-            <FilterButton
+            <ColorFilterButton
               isDisabled={props.isDisabled}
               color={
                 isFilterEqual(props.filter, RegularBattleFilterProps)
@@ -159,7 +160,7 @@ const FilterView = (props: FilterViewProps) => {
                 onQuickFilterPress(RegularBattleFilterProps);
               }}
             />
-            <FilterButton
+            <ColorFilterButton
               isDisabled={props.isDisabled}
               color={
                 isFilterEqual(props.filter, AnarchyBattleFilterProps)
@@ -172,7 +173,7 @@ const FilterView = (props: FilterViewProps) => {
                 onQuickFilterPress(AnarchyBattleFilterProps);
               }}
             />
-            <FilterButton
+            <ColorFilterButton
               isDisabled={props.isDisabled}
               color={isFilterEqual(props.filter, XBattleFilterProps) ? Color.XBattle : undefined}
               title={t("x_battle")}
@@ -181,7 +182,7 @@ const FilterView = (props: FilterViewProps) => {
                 onQuickFilterPress(XBattleFilterProps);
               }}
             />
-            <FilterButton
+            <ColorFilterButton
               isDisabled={props.isDisabled}
               color={
                 isFilterEqual(props.filter, PrivateBattleFilterProps)
@@ -194,7 +195,7 @@ const FilterView = (props: FilterViewProps) => {
                 onQuickFilterPress(PrivateBattleFilterProps);
               }}
             />
-            <FilterButton
+            <ColorFilterButton
               isDisabled={props.isDisabled}
               color={
                 isFilterEqual(props.filter, SalmonRunFilterProps) ? Color.SalmonRun : undefined
@@ -219,10 +220,13 @@ const FilterView = (props: FilterViewProps) => {
               <FilterButton
                 key={mode}
                 isDisabled={props.isDisabled}
-                color={props.filter?.modes.includes(mode) ? Color.AccentColor : undefined}
-                textColor={Color.DarkText}
+                textColor={props.filter?.modes.includes(mode) ? Color.DarkText : undefined}
                 title={t(mode)}
-                style={[ViewStyles.mr2, ViewStyles.mb2]}
+                style={[
+                  ViewStyles.mr2,
+                  ViewStyles.mb2,
+                  props.filter?.modes.includes(mode) && ViewStyles.accent,
+                ]}
                 onPress={() => {
                   onOptionPress("modes", mode);
                 }}
@@ -235,10 +239,13 @@ const FilterView = (props: FilterViewProps) => {
               <FilterButton
                 key={rule}
                 isDisabled={props.isDisabled}
-                color={props.filter?.rules.includes(rule) ? Color.AccentColor : undefined}
-                textColor={Color.DarkText}
+                textColor={props.filter?.rules.includes(rule) ? Color.DarkText : undefined}
                 title={t(rule)}
-                style={[ViewStyles.mr2, ViewStyles.mb2]}
+                style={[
+                  ViewStyles.mr2,
+                  ViewStyles.mb2,
+                  props.filter?.rules.includes(rule) && ViewStyles.accent,
+                ]}
                 onPress={() => {
                   onOptionPress("rules", rule);
                 }}
@@ -251,10 +258,13 @@ const FilterView = (props: FilterViewProps) => {
               <FilterButton
                 key={stage}
                 isDisabled={props.isDisabled}
-                color={props.filter?.stages.includes(stage) ? Color.AccentColor : undefined}
-                textColor={Color.DarkText}
+                textColor={props.filter?.stages.includes(stage) ? Color.DarkText : undefined}
                 title={t(stage)}
-                style={[ViewStyles.mr2, ViewStyles.mb2]}
+                style={[
+                  ViewStyles.mr2,
+                  ViewStyles.mb2,
+                  props.filter?.stages.includes(stage) && ViewStyles.accent,
+                ]}
                 onPress={() => {
                   onOptionPress("stages", stage);
                 }}
@@ -267,10 +277,13 @@ const FilterView = (props: FilterViewProps) => {
               <FilterButton
                 key={weapon}
                 isDisabled={props.isDisabled}
-                color={props.filter?.weapons.includes(weapon) ? Color.AccentColor : undefined}
-                textColor={Color.DarkText}
+                textColor={props.filter?.weapons.includes(weapon) ? Color.DarkText : undefined}
                 title={t(weapon)}
-                style={[ViewStyles.mr2, ViewStyles.mb2]}
+                style={[
+                  ViewStyles.mr2,
+                  ViewStyles.mb2,
+                  props.filter?.weapons.includes(weapon) && ViewStyles.accent,
+                ]}
                 onPress={() => {
                   onOptionPress("weapons", weapon);
                 }}

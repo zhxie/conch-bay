@@ -7,7 +7,6 @@ import Text from "./Text";
 
 interface FilterButtonProps {
   isDisabled?: boolean;
-  color?: string;
   textColor?: string;
   title: string;
   style?: StyleProp<ViewStyle>;
@@ -19,27 +18,12 @@ const FilterButton = (props: FilterButtonProps) => {
   return (
     <Pressable
       isDisabled={props.isDisabled}
-      style={[
-        ViewStyles.p2,
-        { height: 32, borderRadius: 16 },
-        !!props.color && !!props.textColor && { backgroundColor: props.color },
-        props.style,
-      ]}
+      style={[ViewStyles.p2, { height: 32, borderRadius: 16 }, props.style]}
       onPress={props.onPress}
       onLongPress={props.onLongPress}
     >
       <HStack flex center>
-        {!props.textColor && (
-          <Circle
-            size={12}
-            color={Color.MiddleTerritory}
-            style={[ViewStyles.mr1, !!props.color && { backgroundColor: props.color }]}
-          />
-        )}
-        <Text
-          numberOfLines={1}
-          style={!!props.color && !!props.textColor && { color: props.textColor }}
-        >
+        <Text numberOfLines={1} style={!!props.textColor && { color: props.textColor }}>
           {props.title}
         </Text>
       </HStack>
@@ -47,4 +31,33 @@ const FilterButton = (props: FilterButtonProps) => {
   );
 };
 
-export default FilterButton;
+interface ColorFilterButtonProps {
+  isDisabled?: boolean;
+  color?: string;
+  title: string;
+  style?: StyleProp<ViewStyle>;
+  onPress?: () => void;
+  onLongPress?: () => void;
+}
+
+const ColorFilterButton = (props: ColorFilterButtonProps) => {
+  return (
+    <Pressable
+      isDisabled={props.isDisabled}
+      style={[ViewStyles.p2, { height: 32, borderRadius: 16 }, props.style]}
+      onPress={props.onPress}
+      onLongPress={props.onLongPress}
+    >
+      <HStack flex center>
+        <Circle
+          size={12}
+          color={Color.MiddleTerritory}
+          style={[ViewStyles.mr1, !!props.color && { backgroundColor: props.color }]}
+        />
+        <Text numberOfLines={1}>{props.title}</Text>
+      </HStack>
+    </Pressable>
+  );
+};
+
+export { FilterButton, ColorFilterButton };
