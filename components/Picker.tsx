@@ -47,7 +47,7 @@ const Picker = (props: PickerProps) => {
       onLongPress={props.onPress ? onPress : undefined}
     >
       <Marquee style={[reverseTextStyle, props.textStyle]}>{props.title}</Marquee>
-      <Modal isVisible={open} onClose={onClose} style={ViewStyles.modal0_5d}>
+      <Modal isVisible={open} onClose={onClose} style={ViewStyles.modal0_67d}>
         <VStack flex style={ViewStyles.wf}>
           {props.items.map((item, i, items) => (
             <Button

@@ -110,8 +110,8 @@ export const ViewStyles = StyleSheet.create({
   disabled: {
     opacity: 0.4,
   },
-  modal0_5d: {
-    maxHeight: 288,
+  modal0_67d: {
+    maxHeight: 384,
     width: "90%",
     position: "absolute",
     bottom: 0,
