@@ -2,9 +2,9 @@ import { useState } from "react";
 import { Dimensions, ScrollView, StyleProp, ViewStyle, useColorScheme } from "react-native";
 import {
   Center,
+  Chart,
   Color,
   ColorFilterButton,
-  CompareChart,
   Display,
   HStack,
   Icon,
@@ -268,7 +268,6 @@ const TrendsView = (props: TrendViewProps) => {
                   <ColorFilterButton
                     color={battleDimensions.includes("VICTORY") ? Color.AccentColor : undefined}
                     title={`${t("victory")} (%)`}
-                    style={[ViewStyles.mr2, { backgroundColor: "transparent" }]}
                     onPress={() => {
                       onBattleDimensionPress("VICTORY");
                     }}
@@ -281,7 +280,6 @@ const TrendsView = (props: TrendViewProps) => {
                         : undefined
                     }
                     title={t("splatted")}
-                    style={[ViewStyles.mr2, { backgroundColor: "transparent" }]}
                     onPress={() => {
                       onBattleDimensionPress("SPLATTED");
                     }}
@@ -297,7 +295,6 @@ const TrendsView = (props: TrendViewProps) => {
                         : undefined
                     }
                     title={t("splatted_including_assisted")}
-                    style={[ViewStyles.mr2, { backgroundColor: "transparent" }]}
                     onPress={() => {
                       onBattleDimensionPress("SPLATTED_INCLUDING_ASSISTED");
                     }}
@@ -313,7 +310,6 @@ const TrendsView = (props: TrendViewProps) => {
                         : undefined
                     }
                     title={t("be_splatted")}
-                    style={[ViewStyles.mr2, { backgroundColor: "transparent" }]}
                     onPress={() => {
                       onBattleDimensionPress("BE_SPLATTED");
                     }}
@@ -329,7 +325,6 @@ const TrendsView = (props: TrendViewProps) => {
                         : undefined
                     }
                     title={t("special_weapon_uses")}
-                    style={{ backgroundColor: "transparent" }}
                     onPress={() => {
                       onBattleDimensionPress("SPECIAL_WEAPON_USES");
                     }}
@@ -340,7 +335,7 @@ const TrendsView = (props: TrendViewProps) => {
                 </HStack>
               </ScrollView>
               {battleDimensions.length > 0 && (
-                <CompareChart
+                <Chart
                   dataGroup={battleDimensions.map((dimension) => getBattleData(dimension))}
                   style={[ViewStyles.rb2, style, { height: 150, width: "100%" }]}
                 />
@@ -359,7 +354,6 @@ const TrendsView = (props: TrendViewProps) => {
                   <ColorFilterButton
                     color={coopDimensions.includes("CLEAR") ? Color.AccentColor : undefined}
                     title={`${t("clear")} (%)`}
-                    style={[ViewStyles.mr2, { backgroundColor: "transparent" }]}
                     onPress={() => {
                       onCoopDimensionPress("CLEAR");
                     }}
@@ -367,7 +361,6 @@ const TrendsView = (props: TrendViewProps) => {
                   <ColorFilterButton
                     color={coopDimensions.includes("WAVES_CLEARED") ? Color.SalmonRun : undefined}
                     title={t("waves_cleared")}
-                    style={[ViewStyles.mr2, { backgroundColor: "transparent" }]}
                     onPress={() => {
                       onCoopDimensionPress("WAVES_CLEARED");
                     }}
@@ -375,7 +368,6 @@ const TrendsView = (props: TrendViewProps) => {
                   <ColorFilterButton
                     color={coopDimensions.includes("HAZARD_LEVEL") ? Color.BigRun : undefined}
                     title={t("hazard_level")}
-                    style={[ViewStyles.mr2, { backgroundColor: "transparent" }]}
                     onPress={() => {
                       onCoopDimensionPress("HAZARD_LEVEL");
                     }}
@@ -388,7 +380,6 @@ const TrendsView = (props: TrendViewProps) => {
                         : undefined
                     }
                     title={t("boss_salmonids_defeated")}
-                    style={[ViewStyles.mr2, { backgroundColor: "transparent" }]}
                     onPress={() => {
                       onCoopDimensionPress("BOSS_SALMONIDS_DEFEATED");
                     }}
@@ -404,7 +395,6 @@ const TrendsView = (props: TrendViewProps) => {
                         : undefined
                     }
                     title={t("golden_eggs_collected")}
-                    style={[ViewStyles.mr2, { backgroundColor: "transparent" }]}
                     onPress={() => {
                       onCoopDimensionPress("GOLDEN_EGGS_COLLECTED");
                     }}
@@ -422,7 +412,6 @@ const TrendsView = (props: TrendViewProps) => {
                         : undefined
                     }
                     title={t("golden_eggs_collected_including_assisted")}
-                    style={[ViewStyles.mr2, { backgroundColor: "transparent" }]}
                     onPress={() => {
                       onCoopDimensionPress("GOLDEN_EGGS_COLLECTED_INCLUDING_ASSISTED");
                     }}
@@ -438,7 +427,6 @@ const TrendsView = (props: TrendViewProps) => {
                         : undefined
                     }
                     title={t("power_eggs_collected")}
-                    style={[ViewStyles.mr2, { backgroundColor: "transparent" }]}
                     onPress={() => {
                       onCoopDimensionPress("POWER_EGGS_COLLECTED");
                     }}
@@ -454,7 +442,6 @@ const TrendsView = (props: TrendViewProps) => {
                         : undefined
                     }
                     title={t("rescued")}
-                    style={[ViewStyles.mr2, { backgroundColor: "transparent" }]}
                     onPress={() => {
                       onCoopDimensionPress("RESCUED");
                     }}
@@ -470,7 +457,6 @@ const TrendsView = (props: TrendViewProps) => {
                         : undefined
                     }
                     title={t("be_rescued")}
-                    style={{ backgroundColor: "transparent" }}
                     onPress={() => {
                       onCoopDimensionPress("BE_RESCUED");
                     }}
@@ -481,7 +467,7 @@ const TrendsView = (props: TrendViewProps) => {
                 </HStack>
               </ScrollView>
               {coopDimensions.length > 0 && (
-                <CompareChart
+                <Chart
                   dataGroup={coopDimensions.map((dimension) => getCoopData(dimension))}
                   style={[ViewStyles.rb2, style, { height: 150, width: "100%" }]}
                 />

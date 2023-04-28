@@ -1,5 +1,11 @@
 import { StyleProp, ViewStyle, useColorScheme } from "react-native";
-import { Area, Chart, Line, Padding, VerticalAxis } from "react-native-responsive-linechart";
+import {
+  Area,
+  Chart as RLChart,
+  Line,
+  Padding,
+  VerticalAxis,
+} from "react-native-responsive-linechart";
 import { Color, TextStyles } from "./Styles";
 
 interface ChartData {
@@ -111,13 +117,13 @@ const ScatterLine = (props: LineProps) => {
   );
 };
 
-interface CompareChartProps {
+interface ChartProps {
   dataGroup: ChartData[];
   padding?: Padding;
   style?: StyleProp<ViewStyle>;
 }
 
-const CompareChart = (props: CompareChartProps) => {
+const Chart = (props: ChartProps) => {
   const max =
     Math.max(
       ...props.dataGroup
@@ -140,7 +146,7 @@ const CompareChart = (props: CompareChartProps) => {
   };
 
   return (
-    <Chart
+    <RLChart
       style={props.style}
       xDomain={{ min: 0, max: props.dataGroup[0].data.length - 1 }}
       yDomain={{
@@ -170,8 +176,8 @@ const CompareChart = (props: CompareChartProps) => {
           <ScatterLine key={i} data={normalize(data)} color={data.color} dash={data.dash} />
         )
       )}
-    </Chart>
+    </RLChart>
   );
 };
 
-export { ChartData, CompareChart };
+export default Chart;
