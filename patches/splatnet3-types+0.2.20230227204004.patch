@@ -28,7 +28,7 @@ index ac30c0a..1543cfa 100644
  };
  declare type CoopSupplyWeapon_splatoon3ink = Pick<CoopSupplyWeapon, 'name' | 'image'> & {
 diff --git a/node_modules/splatnet3-types/dist/types.d.ts b/node_modules/splatnet3-types/dist/types.d.ts
-index 70103b3..4e26b51 100644
+index 70103b3..702ae86 100644
 --- a/node_modules/splatnet3-types/dist/types.d.ts
 +++ b/node_modules/splatnet3-types/dist/types.d.ts
 @@ -95,7 +95,7 @@ export interface PhotoAlbumItem {
@@ -40,6 +40,15 @@ index 70103b3..4e26b51 100644
      seasonName: string;
      seasonEndTime: string;
      bonus: CatalogBonus;
+@@ -261,7 +261,7 @@ export interface CoopHistoryDetail {
+     waveResults: CoopWaveResult[];
+     playedTime: string;
+     dangerRate: number;
+-    scenarioCode: unknown | null;
++    scenarioCode: string | null;
+     smellMeter: number | null;
+     scale: CoopScale | null;
+     jobPoint: number | null;
 @@ -270,8 +270,8 @@ export interface CoopHistoryDetail {
      jobBonus: number | null;
  }

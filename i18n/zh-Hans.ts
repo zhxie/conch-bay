@@ -111,6 +111,7 @@ const zhHans = {
   pay_grade: "评价倍率",
   clear_bonus: "通关奖励",
   smell: "气味",
+  scenario_code: "剧本代码",
   hide_player_names: "隐藏玩家名称",
   show_player_names: "显示玩家名称",
   show_raw_data: "显示原始数据",

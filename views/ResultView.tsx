@@ -291,6 +291,13 @@ const ResultView = (props: ResultViewProps) => {
     const result = current.map((_, i) => ({ use: current[i], used: last[i] }));
     return result;
   };
+  const formatScenarioCode = (scenarioCode: string) => {
+    const result: string[] = [];
+    for (let i = 0; i < scenarioCode.length; i += 4) {
+      result.push(scenarioCode.substring(i, i + 4));
+    }
+    return result.join("-");
+  };
 
   const onDisplayResultClose = () => {
     setDisplayResult(false);
@@ -328,8 +335,12 @@ const ResultView = (props: ResultViewProps) => {
     }
   };
   const onCopyRawValue = async (value: any) => {
-    await Clipboard.setStringAsync(value.toString());
-    showBanner(BannerLevel.Info, t("copied_to_clipboard"));
+    try {
+      await Clipboard.setStringAsync(value.toString());
+      showBanner(BannerLevel.Info, t("copied_to_clipboard"));
+    } catch {
+      /* empty */
+    }
   };
   const onModalHide = () => {
     if (willDisplayResult.current) {
@@ -558,7 +569,6 @@ const ResultView = (props: ResultViewProps) => {
                         setBattlePlayer(player);
                         setDisplayBattlePlayer(true);
                       }}
-                      style={{ alignItems: "center" }}
                     />
                   ))}
                 </VStack>
@@ -840,31 +850,42 @@ const ResultView = (props: ResultViewProps) => {
                   title={t("details")}
                   subChildren={
                     <VStack>
-                      <Display title={t("your_points")}>
-                        <Text numberOfLines={1}>
-                          {result.coop.coopHistoryDetail!.jobPoint ?? "-"}
-                        </Text>
-                      </Display>
-                      <Display title={t("job_score")}>
-                        <Text numberOfLines={1}>
-                          {result.coop.coopHistoryDetail!.jobScore ?? "-"}
-                        </Text>
-                      </Display>
-                      <Display title={t("pay_grade")}>
-                        <Text numberOfLines={1}>
-                          {result.coop.coopHistoryDetail!.jobRate?.toFixed(2) ?? "-"}
-                        </Text>
-                      </Display>
-                      <Display title={t("clear_bonus")}>
-                        <Text numberOfLines={1}>
-                          {result.coop.coopHistoryDetail!.jobBonus ?? "-"}
-                        </Text>
-                      </Display>
+                      {result.coop.coopHistoryDetail!.jobPoint !== null && (
+                        <VStack>
+                          <Display title={t("your_points")}>
+                            <Text numberOfLines={1}>{result.coop.coopHistoryDetail!.jobPoint}</Text>
+                          </Display>
+                          <Display title={t("job_score")}>
+                            <Text numberOfLines={1}>
+                              {result.coop.coopHistoryDetail!.jobScore ?? "-"}
+                            </Text>
+                          </Display>
+                          <Display title={t("pay_grade")}>
+                            <Text numberOfLines={1}>
+                              {result.coop.coopHistoryDetail!.jobRate?.toFixed(2) ?? "-"}
+                            </Text>
+                          </Display>
+                          <Display title={t("clear_bonus")}>
+                            <Text numberOfLines={1}>
+                              {result.coop.coopHistoryDetail!.jobBonus ?? "-"}
+                            </Text>
+                          </Display>
+                        </VStack>
+                      )}
                       {result.coop.coopHistoryDetail!.smellMeter !== null && (
                         <VStack>
                           <Display title={t("smell")}>
                             <Text numberOfLines={1}>
                               {`${result.coop.coopHistoryDetail!.smellMeter}/5`}
+                            </Text>
+                          </Display>
+                        </VStack>
+                      )}
+                      {result.coop.coopHistoryDetail!.scenarioCode && (
+                        <VStack>
+                          <Display title={t("scenario_code")}>
+                            <Text numberOfLines={1}>
+                              {formatScenarioCode(result.coop.coopHistoryDetail!.scenarioCode)}
                             </Text>
                           </Display>
                         </VStack>

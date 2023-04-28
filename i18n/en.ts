@@ -117,6 +117,7 @@ const en = {
   pay_grade: "Pay Grade",
   clear_bonus: "Clear Bonus",
   smell: "Smell",
+  scenario_code: "Scenario Code",
   hide_player_names: "Hide Player Names",
   show_player_names: "Show Player Names",
   show_raw_data: "Show Raw Data",

@@ -117,6 +117,7 @@ const ja = {
   pay_grade: "評価レート",
   clear_bonus: "クリアボーナス",
   smell: "ニオイ",
+  scenario_code: "シナリオコード",
   hide_player_names: "プレイヤー名を隠す",
   show_player_names: "プレイヤー名を表示",
   show_raw_data: "生データを表示",

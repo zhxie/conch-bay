@@ -111,6 +111,7 @@ const zhHant = {
   pay_grade: "評價倍率",
   clear_bonus: "完成獎勵",
   smell: "氣味",
+  scenario_code: "劇本代碼",
   hide_player_names: "隱藏玩家名稱",
   show_player_names: "顯示玩家名稱",
   show_raw_data: "顯示原始數據",
