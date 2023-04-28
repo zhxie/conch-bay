@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Dimensions, ScrollView, StyleProp, ViewStyle, useColorScheme } from "react-native";
 import {
   Center,
-  ChartData,
   Color,
   ColorFilterButton,
   CompareChart,
@@ -18,7 +17,7 @@ import {
   ViewStyles,
 } from "../components";
 import t from "../i18n";
-import { burnColor, getVsSelfPlayer } from "../utils/ui";
+import { burnColor, countBattles, countCoops } from "../utils/ui";
 import { ResultProps } from "./ResultView";
 
 interface TrendViewProps {
@@ -82,231 +81,8 @@ const TrendsView = (props: TrendViewProps) => {
   const coops = props.results?.filter((result) => result.coop).map((result) => result.coop!);
   const coopGroups = coops ? split(coops, pointCount) : [];
 
-  const formatBattleGroup = () => {
-    const victory: ChartData = { data: [], color: Color.AccentColor, max: 100, relative: true },
-      splatted: ChartData = { data: [], color: Color.KillAndRescue },
-      splattedTeamAverage: ChartData = {
-        data: [],
-        color: burnColor(Color.KillAndRescue),
-        dash: true,
-      },
-      splattedIncludingAssisted: ChartData = { data: [], color: Color.KillAndRescue },
-      splattedIncludingAssistedTeamAverage: ChartData = {
-        data: [],
-        color: burnColor(Color.KillAndRescue),
-        dash: true,
-      },
-      beSplatted: ChartData = { data: [], color: Color.Death },
-      beSplattedTeamAverage: ChartData = { data: [], color: burnColor(Color.Death), dash: true },
-      specialWeaponUses: ChartData = { data: [], color: Color.Special },
-      specialWeaponUsesTeamAverage: ChartData = {
-        data: [],
-        color: burnColor(Color.Special),
-        dash: true,
-      };
-
-    for (const battleGroup of battleGroups) {
-      let v = 0,
-        k = 0,
-        kt = 0,
-        a = 0,
-        at = 0,
-        d = 0,
-        dt = 0,
-        sp = 0,
-        spt = 0;
-      for (const battle of battleGroup) {
-        if (battle.vsHistoryDetail!.judgement === "WIN") {
-          v += 100;
-        }
-        k += getVsSelfPlayer(battle).result?.kill ?? 0;
-        kt +=
-          battle
-            .vsHistoryDetail!.myTeam.players.map((player) => player.result?.kill ?? 0)
-            .reduce((prev, current) => prev + current, 0) /
-          battle.vsHistoryDetail!.myTeam.players.length;
-        a += getVsSelfPlayer(battle).result?.assist ?? 0;
-        at +=
-          battle
-            .vsHistoryDetail!.myTeam.players.map((player) => player.result?.assist ?? 0)
-            .reduce((prev, current) => prev + current, 0) /
-          battle.vsHistoryDetail!.myTeam.players.length;
-        d += getVsSelfPlayer(battle).result?.death ?? 0;
-        dt +=
-          battle
-            .vsHistoryDetail!.myTeam.players.map((player) => player.result?.death ?? 0)
-            .reduce((prev, current) => prev + current, 0) /
-          battle.vsHistoryDetail!.myTeam.players.length;
-        sp += getVsSelfPlayer(battle).result?.special ?? 0;
-        spt +=
-          battle
-            .vsHistoryDetail!.myTeam.players.map((player) => player.result?.special ?? 0)
-            .reduce((prev, current) => prev + current, 0) /
-          battle.vsHistoryDetail!.myTeam.players.length;
-      }
-      victory.data.push(v / battleGroup.length);
-      splatted.data.push(k / battleGroup.length);
-      splattedTeamAverage.data.push(kt / battleGroup.length);
-      splattedIncludingAssisted.data.push((k + a) / battleGroup.length);
-      splattedIncludingAssistedTeamAverage.data.push((kt + at) / battleGroup.length);
-      beSplatted.data.push(d / battleGroup.length);
-      beSplattedTeamAverage.data.push(dt / battleGroup.length);
-      specialWeaponUses.data.push(sp / battleGroup.length);
-      specialWeaponUsesTeamAverage.data.push(spt / battleGroup.length);
-    }
-
-    return {
-      victory,
-      splatted,
-      splattedTeamAverage,
-      splattedIncludingAssisted,
-      splattedIncludingAssistedTeamAverage,
-      beSplatted,
-      beSplattedTeamAverage,
-      specialWeaponUses,
-      specialWeaponUsesTeamAverage,
-    };
-  };
-  const formatCoopGroup = () => {
-    const clear: ChartData = { data: [], color: Color.AccentColor, max: 100, relative: true },
-      wavesCleared: ChartData = { data: [], color: Color.SalmonRun },
-      hazardLevel: ChartData = { data: [], color: Color.BigRun },
-      bossSalmonidsDefeated: ChartData = { data: [], color: Color.KillAndRescue },
-      bossSalmonidsDefeatedTeamAverage: ChartData = {
-        data: [],
-        color: burnColor(Color.KillAndRescue),
-        dash: true,
-      },
-      goldenEggsCollected: ChartData = { data: [], color: Color.GoldenEgg },
-      goldenEggsCollectedTeamAverage: ChartData = {
-        data: [],
-        color: burnColor(Color.GoldenEgg),
-        dash: true,
-      },
-      goldenEggsCollectedIncludingAssisted: ChartData = { data: [], color: Color.GoldenEgg },
-      goldenEggsCollectedIncludingAssistedTeamAverage: ChartData = {
-        data: [],
-        color: burnColor(Color.GoldenEgg),
-        dash: true,
-      },
-      powerEggsCollected: ChartData = { data: [], color: Color.PowerEgg },
-      powerEggsCollectedTeamAverage: ChartData = {
-        data: [],
-        color: burnColor(Color.PowerEgg),
-        dash: true,
-      },
-      rescued: ChartData = { data: [], color: Color.KillAndRescue },
-      rescuedTeamAverage: ChartData = {
-        data: [],
-        color: burnColor(Color.KillAndRescue),
-        dash: true,
-      },
-      beRescued: ChartData = { data: [], color: Color.Death },
-      beRescuedTeamAverage: ChartData = { data: [], color: burnColor(Color.Death), dash: true };
-
-    for (const coopGroup of coopGroups) {
-      let c = 0,
-        w = 0,
-        h = 0,
-        k = 0,
-        kt = 0,
-        g = 0,
-        gt = 0,
-        a = 0,
-        at = 0,
-        p = 0,
-        pt = 0,
-        r = 0,
-        rt = 0,
-        d = 0,
-        dt = 0;
-      for (const coop of coopGroup) {
-        if (coop.coopHistoryDetail!.resultWave === 0) {
-          c += 100;
-        }
-        if (coop.coopHistoryDetail!.resultWave >= 0) {
-          if (coop.coopHistoryDetail!.resultWave === 0) {
-            w += coop.coopHistoryDetail!.waveResults.length;
-          } else {
-            w += coop.coopHistoryDetail!.resultWave - 1;
-          }
-        }
-        h += coop.coopHistoryDetail!.dangerRate * 100;
-        k += coop.coopHistoryDetail!.myResult.defeatEnemyCount;
-        kt +=
-          [coop.coopHistoryDetail!.myResult, ...coop.coopHistoryDetail!.memberResults]
-            .map((memberResult) => memberResult.defeatEnemyCount)
-            .reduce((prev, current) => prev + current, 0) /
-          (coop.coopHistoryDetail!.memberResults.length + 1);
-        g += coop.coopHistoryDetail!.myResult.goldenDeliverCount;
-        gt +=
-          [coop.coopHistoryDetail!.myResult, ...coop.coopHistoryDetail!.memberResults]
-            .map((memberResult) => memberResult.goldenDeliverCount)
-            .reduce((prev, current) => prev + current, 0) /
-          (coop.coopHistoryDetail!.memberResults.length + 1);
-        a += coop.coopHistoryDetail!.myResult.goldenAssistCount;
-        at +=
-          [coop.coopHistoryDetail!.myResult, ...coop.coopHistoryDetail!.memberResults]
-            .map((memberResult) => memberResult.goldenAssistCount)
-            .reduce((prev, current) => prev + current, 0) /
-          (coop.coopHistoryDetail!.memberResults.length + 1);
-        p += coop.coopHistoryDetail!.myResult.deliverCount;
-        pt +=
-          [coop.coopHistoryDetail!.myResult, ...coop.coopHistoryDetail!.memberResults]
-            .map((memberResult) => memberResult.deliverCount)
-            .reduce((prev, current) => prev + current, 0) /
-          (coop.coopHistoryDetail!.memberResults.length + 1);
-        r += coop.coopHistoryDetail!.myResult.rescueCount;
-        rt +=
-          [coop.coopHistoryDetail!.myResult, ...coop.coopHistoryDetail!.memberResults]
-            .map((memberResult) => memberResult.rescueCount)
-            .reduce((prev, current) => prev + current, 0) /
-          (coop.coopHistoryDetail!.memberResults.length + 1);
-        d += coop.coopHistoryDetail!.myResult.rescuedCount;
-        dt +=
-          [coop.coopHistoryDetail!.myResult, ...coop.coopHistoryDetail!.memberResults]
-            .map((memberResult) => memberResult.rescuedCount)
-            .reduce((prev, current) => prev + current, 0) /
-          (coop.coopHistoryDetail!.memberResults.length + 1);
-      }
-      clear.data.push(c / coopGroup.length);
-      wavesCleared.data.push(w / coopGroup.length);
-      hazardLevel.data.push(h / coopGroup.length);
-      bossSalmonidsDefeated.data.push(k / coopGroup.length);
-      bossSalmonidsDefeatedTeamAverage.data.push(kt / coopGroup.length);
-      goldenEggsCollected.data.push(g / coopGroup.length);
-      goldenEggsCollectedTeamAverage.data.push(gt / coopGroup.length);
-      goldenEggsCollectedIncludingAssisted.data.push((g + a) / coopGroup.length);
-      goldenEggsCollectedIncludingAssistedTeamAverage.data.push((gt + at) / coopGroup.length);
-      powerEggsCollected.data.push(p / coopGroup.length);
-      powerEggsCollectedTeamAverage.data.push(pt / coopGroup.length);
-      rescued.data.push(r / coopGroup.length);
-      rescuedTeamAverage.data.push(rt / coopGroup.length);
-      beRescued.data.push(d / coopGroup.length);
-      beRescuedTeamAverage.data.push(dt / coopGroup.length);
-    }
-
-    return {
-      clear,
-      wavesCleared,
-      hazardLevel,
-      bossSalmonidsDefeated,
-      bossSalmonidsDefeatedTeamAverage,
-      goldenEggsCollected,
-      goldenEggsCollectedTeamAverage,
-      goldenEggsCollectedIncludingAssisted,
-      goldenEggsCollectedIncludingAssistedTeamAverage,
-      powerEggsCollected,
-      powerEggsCollectedTeamAverage,
-      rescued,
-      rescuedTeamAverage,
-      beRescued,
-      beRescuedTeamAverage,
-    };
-  };
-
-  const battleData = formatBattleGroup();
-  const coopData = formatCoopGroup();
+  const battleStats = battleGroups.map((group) => countBattles(group));
+  const coopStats = coopGroups.map((group) => countCoops(group));
 
   const onTrendsPress = () => {
     setTrends(true);
@@ -317,57 +93,143 @@ const TrendsView = (props: TrendViewProps) => {
   const getBattleData = (dimension: BattleDimension) => {
     switch (dimension) {
       case "VICTORY":
-        return battleData.victory;
+        return {
+          data: battleStats.map((stat) => (stat.win * 100) / stat.count),
+          color: Color.AccentColor,
+          max: 100,
+          relative: true,
+        };
       case "SPLATTED":
-        return battleData.splatted;
+        return {
+          data: battleStats.map((stat) => stat.kill / stat.count),
+          color: Color.KillAndRescue,
+        };
       case "SPLATTED_TEAM_AVERAGE":
-        return battleData.splattedTeamAverage;
+        return {
+          data: battleStats.map((stat) => stat.killTeam / stat.member),
+          color: burnColor(Color.KillAndRescue),
+          dash: true,
+        };
       case "SPLATTED_INCLUDING_ASSISTED":
-        return battleData.splattedIncludingAssisted;
+        return {
+          data: battleStats.map((stat) => (stat.kill + stat.assist) / stat.count),
+          color: Color.KillAndRescue,
+        };
       case "SPLATTED_INCLUDING_ASSISTED_TEAM_AVERAGE":
-        return battleData.splattedIncludingAssistedTeamAverage;
+        return {
+          data: battleStats.map((stat) => (stat.killTeam + stat.assistTeam) / stat.member),
+          color: burnColor(Color.KillAndRescue),
+          dash: true,
+        };
       case "BE_SPLATTED":
-        return battleData.beSplatted;
+        return {
+          data: battleStats.map((stat) => stat.death / stat.count),
+          color: Color.Death,
+        };
       case "BE_SPLATTED_TEAM_AVERAGE":
-        return battleData.beSplattedTeamAverage;
+        return {
+          data: battleStats.map((stat) => stat.deathTeam / stat.member),
+          color: burnColor(Color.Death),
+          dash: true,
+        };
       case "SPECIAL_WEAPON_USES":
-        return battleData.specialWeaponUses;
+        return {
+          data: battleStats.map((stat) => stat.special / stat.count),
+          color: Color.Special,
+        };
       case "SPECIAL_WEAPON_USES_TEAM_AVERAGE":
-        return battleData.specialWeaponUsesTeamAverage;
+        return {
+          data: battleStats.map((stat) => stat.specialTeam / stat.member),
+          color: burnColor(Color.Special),
+          dash: true,
+        };
     }
   };
   const getCoopData = (dimension: CoopDimension) => {
     switch (dimension) {
       case "CLEAR":
-        return coopData.clear;
+        return {
+          data: coopStats.map((stat) => (stat.clear * 100) / stat.count),
+          color: Color.AccentColor,
+          max: 100,
+          relative: true,
+        };
       case "WAVES_CLEARED":
-        return coopData.wavesCleared;
+        return {
+          data: coopStats.map((stat) => stat.wave / stat.count),
+          color: Color.SalmonRun,
+        };
       case "HAZARD_LEVEL":
-        return coopData.hazardLevel;
+        return {
+          data: coopStats.map((stat) => (stat.hazardLevel * 100) / stat.count),
+          color: Color.BigRun,
+        };
       case "BOSS_SALMONIDS_DEFEATED":
-        return coopData.bossSalmonidsDefeated;
+        return {
+          data: coopStats.map((stat) => stat.defeat / stat.count),
+          color: Color.KillAndRescue,
+        };
       case "BOSS_SALMONIDS_DEFEATED_TEAM_AVERAGE":
-        return coopData.bossSalmonidsDefeatedTeamAverage;
+        return {
+          data: coopStats.map((stat) => stat.defeatTeam / stat.member),
+          color: burnColor(Color.KillAndRescue),
+          dash: true,
+        };
       case "GOLDEN_EGGS_COLLECTED":
-        return coopData.goldenEggsCollected;
+        return {
+          data: coopStats.map((stat) => stat.golden / stat.count),
+          color: Color.GoldenEgg,
+        };
       case "GOLDEN_EGGS_COLLECTED_TEAM_AVERAGE":
-        return coopData.goldenEggsCollectedTeamAverage;
+        return {
+          data: coopStats.map((stat) => stat.goldenTeam / stat.member),
+          color: burnColor(Color.GoldenEgg),
+          dash: true,
+        };
       case "GOLDEN_EGGS_COLLECTED_INCLUDING_ASSISTED":
-        return coopData.goldenEggsCollectedIncludingAssisted;
+        return {
+          data: coopStats.map((stat) => (stat.golden + stat.assist) / stat.count),
+          color: Color.GoldenEgg,
+        };
       case "GOLDEN_EGGS_COLLECTED_INCLUDING_ASSISTED_TEAM_AVERAGE":
-        return coopData.goldenEggsCollectedIncludingAssistedTeamAverage;
+        return {
+          data: coopStats.map((stat) => (stat.goldenTeam + stat.assistTeam) / stat.member),
+          color: burnColor(Color.GoldenEgg),
+          dash: true,
+        };
       case "POWER_EGGS_COLLECTED":
-        return coopData.powerEggsCollected;
+        return {
+          data: coopStats.map((stat) => stat.power / stat.count),
+          color: Color.PowerEgg,
+        };
       case "POWER_EGGS_COLLECTED_TEAM_AVERAGE":
-        return coopData.powerEggsCollectedTeamAverage;
+        return {
+          data: coopStats.map((stat) => stat.powerTeam / stat.member),
+          color: burnColor(Color.PowerEgg),
+          dash: true,
+        };
       case "RESCUED":
-        return coopData.rescued;
+        return {
+          data: coopStats.map((stat) => stat.rescue / stat.count),
+          color: Color.KillAndRescue,
+        };
       case "RESCUED_TEAM_AVERAGE":
-        return coopData.rescuedTeamAverage;
+        return {
+          data: coopStats.map((stat) => stat.rescueTeam / stat.member),
+          color: burnColor(Color.KillAndRescue),
+          dash: true,
+        };
       case "BE_RESCUED":
-        return coopData.beRescued;
+        return {
+          data: coopStats.map((stat) => stat.rescued / stat.count),
+          color: Color.Death,
+        };
       case "BE_RESCUED_TEAM_AVERAGE":
-        return coopData.beRescuedTeamAverage;
+        return {
+          data: coopStats.map((stat) => stat.rescuedTeam / stat.member),
+          color: burnColor(Color.Death),
+          dash: true,
+        };
     }
   };
   const onBattleDimensionPress = (dimension: BattleDimension) => {
