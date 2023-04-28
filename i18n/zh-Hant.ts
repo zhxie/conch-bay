@@ -27,6 +27,8 @@ const zhHant = {
   loaded_all: "已全部載入",
   current_battle_schedule: "現在的對戰時間表",
   current_salmon_run_schedule: "現在的鮭魚跑時間表",
+  loaded_n_total_results: "已載入%{n}/%{total}項記錄",
+  loaded_n_filtered_total_filtered_results: "已載入%{n}/%{filtered} (%{total})項篩選的記錄",
   today: "今日",
   this_week: "本週",
   this_month: "本月",
@@ -116,8 +118,6 @@ const zhHant = {
   coop_notice: "在主屏幕點擊WAVE或危險度以顯示打工稱號。",
   // Stats.
   stats: "統計",
-  count: "計數",
-  database: "資料庫",
   victory: "WIN!",
   defeat: "LOSE...",
   splatted: "擊倒",

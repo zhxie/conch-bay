@@ -16,6 +16,7 @@ interface PickerProps {
   isLoadingText?: string;
   title: string;
   items: PickerItemProps[];
+  header?: React.ReactNode;
   style?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
   onSelected: (key: string) => void;
@@ -49,6 +50,7 @@ const Picker = (props: PickerProps) => {
       <Marquee style={[reverseTextStyle, props.textStyle]}>{props.title}</Marquee>
       <Modal isVisible={open} onClose={onClose} style={ViewStyles.modal0_67d}>
         <VStack flex style={ViewStyles.wf}>
+          {props.header}
           {props.items.map((item, i, items) => (
             <Button
               key={item.key}

@@ -29,6 +29,8 @@ const en = {
   loaded_all: "Loaded all",
   current_battle_schedule: "Current Battle Schedule",
   current_salmon_run_schedule: "Current Salmon Run Schedule",
+  loaded_n_total_results: "Loaded %{n}/%{total} result(s)",
+  loaded_n_filtered_total_filtered_results: "Loaded %{n}/%{filtered} (%{total}) filtered result(s)",
   today: "Today",
   this_week: "This Week",
   this_month: "This Month",
@@ -122,8 +124,6 @@ const en = {
   coop_notice: "Press on wave or hazard level in the main screen to show job title.",
   // Stats.
   stats: "Stats",
-  count: "Count",
-  database: "Database",
   victory: "VICTORY",
   defeat: "DEFEAT",
   splatted: "Splatted",

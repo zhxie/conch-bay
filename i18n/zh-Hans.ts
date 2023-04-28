@@ -27,6 +27,8 @@ const zhHans = {
   loaded_all: "已全部加载",
   current_battle_schedule: "目前的对战日程",
   current_salmon_run_schedule: "目前的鲑鱼跑日程",
+  loaded_n_total_results: "已加载%{n}/%{total}项记录",
+  loaded_n_filtered_total_filtered_results: "已加载%{n}/%{filtered} (%{total})项筛选的记录",
   today: "今日",
   this_week: "本周",
   this_month: "本月",
@@ -116,8 +118,6 @@ const zhHans = {
   coop_notice: "在主屏幕点击WAVE或危险度以显示打工称号。",
   // Stats.
   stats: "统计",
-  count: "计数",
-  database: "数据库",
   victory: "WIN!",
   defeat: "LOSE...",
   splatted: "击倒",

@@ -29,6 +29,9 @@ const ja = {
   loaded_all: "すべてを読み込みました",
   current_battle_schedule: "いまのバトルスケジュール",
   current_salmon_run_schedule: "いまのサーモンランスケジュール",
+  loaded_n_total_results: "%{n}/%{total}件のリザルトを読み込みました",
+  loaded_n_filtered_total_filtered_results:
+    "%{n}/%{filtered} (%{total})件フィルタリングされたリザルトを読み込みました",
   today: "今日",
   this_week: "今週",
   this_month: "今月",
@@ -121,8 +124,6 @@ const ja = {
   coop_notice: "メイン画面のWAVEまたは危険度をタップして、バイト評価称号が表示されます。",
   // Stats.
   stats: "統計",
-  count: "カウント",
-  database: "データベース",
   victory: "WIN!",
   defeat: "LOSE...",
   splatted: "たおした",

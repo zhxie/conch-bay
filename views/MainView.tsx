@@ -1090,6 +1090,19 @@ const MainView = () => {
                       key: range,
                       value: t(range),
                     }))}
+                    header={
+                      <VStack center>
+                        <Marquee style={ViewStyles.mb2}>
+                          {count === total
+                            ? t("loaded_n_total_results", { n: results?.length ?? 0, total })
+                            : t("loaded_n_filtered_total_filtered_results", {
+                                n: results?.length ?? 0,
+                                filtered: count,
+                                total,
+                              })}
+                        </Marquee>
+                      </VStack>
+                    }
                     style={[
                       (results?.length ?? 0) <= 20 && !loadedAll && ViewStyles.mb2,
                       results === undefined || results.length > 0 ? ViewStyles.rt0 : ViewStyles.rt2,
@@ -1124,12 +1137,7 @@ const MainView = () => {
                   style={[ViewStyles.mb4, ViewStyles.wf]}
                 >
                   <HStack flex center style={ViewStyles.px4}>
-                    <StatsView
-                      count={count}
-                      total={total}
-                      results={results}
-                      style={ViewStyles.mr2}
-                    />
+                    <StatsView results={results} style={ViewStyles.mr2} />
                     <TrendsView results={results} style={ViewStyles.mr2} />
                     <ToolButton
                       isLoading={false}
