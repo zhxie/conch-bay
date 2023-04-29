@@ -25,7 +25,7 @@ interface BattlePlayerButtonProps {
 
 const BattlePlayerButton = (props: BattlePlayerButtonProps) => {
   const killAndAssist =
-    props.kill == undefined
+    props.kill === undefined
       ? "-"
       : props.assist! > 0
       ? `${props.kill}(${props.assist})`

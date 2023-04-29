@@ -2,6 +2,7 @@ import { useState } from "react";
 import {
   Dimensions,
   LayoutChangeEvent,
+  Platform,
   StyleProp,
   StyleSheet,
   View,
@@ -105,12 +106,15 @@ const Splashtag = (props: SplashtagProps) => {
       </Text>
       <Text
         numberOfLines={1}
-        style={{
-          position: "absolute",
-          color: props.color,
-          fontFamily: "Splatfont",
-          fontSize: (26 / 284) * width,
-        }}
+        style={[
+          {
+            position: "absolute",
+            color: props.color,
+            fontFamily: "Splatfont",
+            fontSize: (26 / 284) * width,
+          },
+          Platform.OS === "android" && { height: "100%", textAlignVertical: "center" },
+        ]}
       >
         {props.name}
       </Text>
