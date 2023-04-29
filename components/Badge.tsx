@@ -1,4 +1,5 @@
 import { StyleProp, StyleSheet, ViewStyle, useColorScheme } from "react-native";
+import Pressable from "./Pressable";
 import { Center } from "./Stack";
 import { TextStyles, ViewStyles } from "./Styles";
 import Text from "./Text";
@@ -29,6 +30,20 @@ const Badge = (props: BadgeProps) => {
   );
 };
 
+interface BadgeButtonProps extends BadgeProps {
+  onPress: () => void;
+}
+
+const BadgeButton = (props: BadgeButtonProps) => {
+  const { onPress, style, ...rest } = props;
+
+  return (
+    <Pressable onPress={onPress} style={style}>
+      <Badge {...rest} />
+    </Pressable>
+  );
+};
+
 const viewStyles = StyleSheet.create({
   small: {
     ...ViewStyles.px1,
@@ -49,4 +64,4 @@ const textStyles = StyleSheet.create({
   },
 });
 
-export default Badge;
+export { Badge, BadgeButton };

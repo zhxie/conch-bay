@@ -89,6 +89,7 @@ import ScheduleView from "./ScheduleView";
 import ShopView from "./ShopView";
 import StatsView from "./StatsView";
 import TrendsView from "./TrendsView";
+import XView from "./XView";
 
 dayjs.extend(quarterOfYear);
 dayjs.extend(utc);
@@ -149,6 +150,22 @@ const MainView = () => {
   const [catalogLevel, setCatalogLevel, clearCatalogLevel] = useAsyncStorage("catalogLevel");
   const [level, setLevel, clearLevel] = useAsyncStorage("level");
   const [rank, setRank, clearRank] = useAsyncStorage("rank");
+  const [splatZonesXPower, setSplatZonesXPower, clearSplatZonesXPower] = useAsyncStorage(
+    "splatZonesXPower",
+    "0"
+  );
+  const [towerControlXPower, setTowerControlXPower, clearTowerControlXPower] = useAsyncStorage(
+    "towerControlXPower",
+    "0"
+  );
+  const [rainmakerXPower, setRainmakerXPower, clearRainmakerXPower] = useAsyncStorage(
+    "rainmakerXPower",
+    "0"
+  );
+  const [clamBlitzXPower, setClamBlitzXPower, clearClamBlitzXPower] = useAsyncStorage(
+    "clamBlitzXPower",
+    "0"
+  );
   const [grade, setGrade, clearGrade] = useAsyncStorage("grade");
 
   const [apiUpdated, setApiUpdated] = useState(false);
@@ -362,6 +379,19 @@ const MainView = () => {
     let n = -1;
     const [battleFail, coopFail] = await Promise.all([
       fetchBattleHistories(bulletToken).then(async (battleHistories) => {
+        setSplatZonesXPower(
+          battleHistories.x.xBattleHistories.summary.xPowerAr?.lastXPower.toFixed(1) ?? "0"
+        );
+        setTowerControlXPower(
+          battleHistories.x.xBattleHistories.summary.xPowerLf?.lastXPower.toFixed(1) ?? "0"
+        );
+        setRainmakerXPower(
+          battleHistories.x.xBattleHistories.summary.xPowerGl?.lastXPower.toFixed(1) ?? "0"
+        );
+        setClamBlitzXPower(
+          battleHistories.x.xBattleHistories.summary.xPowerCl?.lastXPower.toFixed(1) ?? "0"
+        );
+
         // Fetch details.
         const ids: string[] = [];
         battleHistories.regular.regularBattleHistories.historyGroups.nodes.forEach((historyGroup) =>
@@ -530,6 +560,10 @@ const MainView = () => {
         clearCatalogLevel(),
         clearLevel(),
         clearRank(),
+        clearSplatZonesXPower(),
+        clearTowerControlXPower(),
+        clearRainmakerXPower(),
+        clearClamBlitzXPower(),
         clearGrade(),
         Database.clear(),
       ]);
@@ -1037,6 +1071,18 @@ const MainView = () => {
                     )}
                     {rank.length > 0 && (
                       <Badge color={Color.AnarchyBattle} title={rank} style={ViewStyles.mr1} />
+                    )}
+                    {(splatZonesXPower.length > 1 ||
+                      towerControlXPower.length > 1 ||
+                      rainmakerXPower.length > 1 ||
+                      clamBlitzXPower.length > 1) && (
+                      <XView
+                        splatZones={parseFloat(splatZonesXPower)}
+                        towerControl={parseFloat(towerControlXPower)}
+                        rainmaker={parseFloat(rainmakerXPower)}
+                        clamBlitz={parseFloat(clamBlitzXPower)}
+                        style={ViewStyles.mr1}
+                      />
                     )}
                     {grade.length > 0 && (
                       <Badge color={Color.SalmonRun} title={t(grade)} style={ViewStyles.mr1} />

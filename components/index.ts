@@ -1,6 +1,6 @@
 export { default as Avatar } from "./Avatar";
 export { default as AvatarButton } from "./AvatarButton";
-export { default as Badge } from "./Badge";
+export { Badge, BadgeButton } from "./Badge";
 export { default as useBanner, BannerLevel } from "./Banner";
 export { default as BattleButton } from "./BattleButton";
 export { default as BattlePlayerButton } from "./BattlePlayerButton";
@@ -33,5 +33,6 @@ export { default as TitledList } from "./TitledList";
 export { default as ToolButton } from "./ToolButton";
 export { default as WaveBox } from "./WaveBox";
 export { default as WorkSuitBox } from "./WorkSuitBox";
+export { default as XBox } from "./XBox";
 
 export * from "./Styles";
