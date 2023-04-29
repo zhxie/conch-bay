@@ -1023,7 +1023,8 @@ const MainView = () => {
                     onPress={onLogOutPress}
                     style={ViewStyles.mb2}
                   />
-                  <HStack>
+                  {/* TODO: better not to use. */}
+                  <HStack style={{ marginRight: -4 }}>
                     {catalogLevel.length > 0 && (
                       <Badge
                         color={Color.AccentColor}
@@ -1037,7 +1038,9 @@ const MainView = () => {
                     {rank.length > 0 && (
                       <Badge color={Color.AnarchyBattle} title={rank} style={ViewStyles.mr1} />
                     )}
-                    {grade.length > 0 && <Badge color={Color.SalmonRun} title={t(grade)} />}
+                    {grade.length > 0 && (
+                      <Badge color={Color.SalmonRun} title={t(grade)} style={ViewStyles.mr1} />
+                    )}
                   </HStack>
                   {progressTotal > 0 && progress < progressTotal && (
                     <Progress.Bar
