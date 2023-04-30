@@ -7,8 +7,8 @@ const zhHant = {
   // UI.
   log_in: "登錄",
   log_in_notice:
-    "法螺灣需要獲取令牌以訪問魷魚圈3。該過程涉及向非任天堂的imink發送含有最少的非身份資訊的安全請求。這些資訊不會被記錄或存儲，請參閱隱私政策以獲取更多資訊。",
-  imink_privacy_policy: "imink隱私政策",
+    "法螺灣需要獲取令牌以訪問魷魚圈3。該過程涉及向非任天堂的imink發送含有最少的非身份資訊的安全請求。這些資訊不會被記錄或存儲，請參閱私隱政策以獲取更多資訊。",
+  imink_privacy_policy: "imink私隱政策",
   log_in_continue: "我已閱讀並理解",
   logging_in: "獲取令牌中",
   log_out_notice: "登出將清除法螺灣所有存儲的數據！請在繼續之前完成備份。",
@@ -65,7 +65,7 @@ const zhHant = {
   copied_to_clipboard: "已復製到剪貼板",
   export_results: "匯出記錄",
   export_database: "匯出資料庫",
-  privacy_policy: "隱私政策",
+  privacy_policy: "私隱政策",
   acknowledgments: "致謝",
   creators: "創作者",
   license: "許可",
