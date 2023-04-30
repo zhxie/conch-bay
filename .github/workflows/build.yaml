@@ -104,8 +104,9 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     needs:
-      - format
+      - compile
       - lint
+      - format
 
     steps:
       - name: Checkout
