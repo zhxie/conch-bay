@@ -1,3 +1,4 @@
+# Fix and update definitions.
 diff --git a/node_modules/splatnet3-types/dist/generated-type-helpers.d.ts b/node_modules/splatnet3-types/dist/generated-type-helpers.d.ts
 index a6001cc..c448e28 100644
 --- a/node_modules/splatnet3-types/dist/generated-type-helpers.d.ts

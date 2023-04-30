@@ -1,3 +1,4 @@
+# Fix definitions.
 diff --git a/node_modules/react-native-responsive-linechart/lib/Chart.d.ts b/node_modules/react-native-responsive-linechart/lib/Chart.d.ts
 index abf6932..09998af 100644
 --- a/node_modules/react-native-responsive-linechart/lib/Chart.d.ts

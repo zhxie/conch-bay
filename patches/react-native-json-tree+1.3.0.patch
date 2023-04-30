@@ -1,4 +1,4 @@
-# Add skipKeys to skip rendering on nodes with certain keys and add onValuePress call back.
+# Add skipKeys to skip rendering on nodes with certain keys, add onValuePress call back and fix text wrap.
 diff --git a/node_modules/react-native-json-tree/src/Nodes.js b/node_modules/react-native-json-tree/src/Nodes.js
 index 5f01f12..a20d579 100644
 --- a/node_modules/react-native-json-tree/src/Nodes.js
@@ -60,6 +60,18 @@ index 5f01f12..a20d579 100644
        const node = (
          <JSONNode
            {...props}
+diff --git a/node_modules/react-native-json-tree/src/createStylingFromTheme.js b/node_modules/react-native-json-tree/src/createStylingFromTheme.js
+index aea79a5..1a80f85 100644
+--- a/node_modules/react-native-json-tree/src/createStylingFromTheme.js
++++ b/node_modules/react-native-json-tree/src/createStylingFromTheme.js
+@@ -59,6 +59,7 @@ const getStylingFromBase16 = (base16Theme) => {
+       style: {
+         color: valueColorMap(colors)[nodeType],
+         marginLeft: 5,
++        flexShrink: 1,
+         ...style,
+       },
+     }),
 diff --git a/node_modules/react-native-json-tree/src/index.js b/node_modules/react-native-json-tree/src/index.js
 index c6a197c..e003e0c 100644
 --- a/node_modules/react-native-json-tree/src/index.js
