@@ -92,6 +92,7 @@ const ShopView = (props: ShopViewProps) => {
         additionalAbility={gear.item.additionalGearPowers.map((gearPower) =>
           getImageCacheSource(gearPower.image.url)
         )}
+        recyclingKey={gear.item.name}
         paddingTo={getGearPadding(equipments![filter].nodes)}
       />
     </VStack>
