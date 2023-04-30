@@ -1,5 +1,5 @@
 import { StyleProp, ViewStyle } from "react-native";
-import Badge from "./Badge";
+import { Badge } from "./Badge";
 import Icon from "./Icon";
 import Image, { ImageSource } from "./Image";
 import Marquee from "./Marquee";
