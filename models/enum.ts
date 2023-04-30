@@ -1,3 +1,4 @@
+// HACK: the enum is used only for mapping weapon images to weapons in coop weapon filtering.
 export enum WeaponImage {
   "6e58a0747ab899badcb6f351512c6034e0a49bd6453281f32c7f550a2132fd65" = "V2VhcG9uLTA=",
   "8e134a80cd54f4235329493afd43ff754b367a65e460facfcca862b174754b0e" = "V2VhcG9uLTEw",

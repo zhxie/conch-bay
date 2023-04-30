@@ -40,7 +40,7 @@ const AreaLine = (props: LineProps) => {
           },
         }}
       />
-      {/* TODO: using scatter line will lead to layout area over lines. */}
+      {/* HACK: using scatter line will lead to layout area over lines. */}
       <Line
         data={data}
         smoothing="cubic-spline"

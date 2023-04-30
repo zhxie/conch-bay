@@ -1030,7 +1030,7 @@ const MainView = () => {
   return (
     <VStack flex style={backgroundStyle}>
       <Animated.View style={[ViewStyles.f, { opacity: fade }]}>
-        {/* TODO: it is a little bit weird concentrating on result list. */}
+        {/* HACK: it is a little bit weird concentrating on result list. */}
         <ResultView
           results={sessionToken.length > 0 ? results : []}
           refreshControl={
@@ -1057,7 +1057,7 @@ const MainView = () => {
                     onPress={onLogOutPress}
                     style={ViewStyles.mb2}
                   />
-                  {/* TODO: better not to use. */}
+                  {/* HACK: withdraw 4px margin in the last badge. */}
                   <HStack style={{ marginRight: -4 }}>
                     {catalogLevel.length > 0 && (
                       <Badge

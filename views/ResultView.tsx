@@ -683,7 +683,7 @@ const ResultView = (props: ResultViewProps) => {
                   />
                   {[battlePlayer.headGear, battlePlayer.clothingGear, battlePlayer.shoesGear].map(
                     (gear, i, gears) => (
-                      // TODO: show brands with its image, name and favorite.
+                      // TODO: show brands with its favorite.
                       <GearBox
                         key={i}
                         isFirst={i === 0}

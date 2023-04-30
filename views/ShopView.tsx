@@ -87,6 +87,7 @@ const ShopView = (props: ShopViewProps) => {
         isLast={gear.index === equipments![filter].nodes.length - 1}
         image={getImageCacheSource(gear.item.image.url)}
         brandImage={getImageCacheSource(gear.item.brand.image.url)}
+        // TODO: need translation.
         name={gear.item.name}
         brand={t(gear.item.brand.id)}
         primaryAbility={getImageCacheSource(gear.item.primaryGearPower.image.url)}

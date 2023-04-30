@@ -224,6 +224,7 @@ export const ViewStyles = StyleSheet.create({
     borderRightWidth: StyleSheet.hairlineWidth,
     borderRightColor: `${Color.MiddleTerritory}3f`,
   },
+  // TODO: prefer applying margins to lefts and tops.
   mr0_5: {
     marginRight: 2,
   },
