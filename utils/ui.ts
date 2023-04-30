@@ -30,6 +30,10 @@ export const isImageExpired = (image: string) => {
 export const getImageCacheKey = (image: string) => {
   return image.split("?")[0];
 };
+export const getImageHash = (image: string) => {
+  const splitted = image.split("?")[0].split("/");
+  return splitted[splitted.length - 1].split("_")[0];
+};
 export const getImageCacheSource = (image: string) => {
   return {
     uri: image,

@@ -1,7 +1,8 @@
 import * as SQLite from "expo-sqlite";
+import { WeaponImage } from "../models/enum";
 import { CoopHistoryDetailResult, VsHistoryDetailResult } from "../models/types";
 import { decode64Index } from "./codec";
-import { getVsSelfPlayer } from "./ui";
+import { getImageHash, getVsSelfPlayer } from "./ui";
 
 export interface FilterProps {
   modes: string[];
@@ -63,7 +64,38 @@ export const open = async () => {
     }
     version = 1;
   }
-  if (version != 1) {
+  if (version < 2) {
+    await beginTransaction();
+    try {
+      const records = await exec(
+        'SELECT * FROM result WHERE mode = "salmon_run" AND weapon = ""',
+        [],
+        true
+      );
+      await Promise.all(
+        records.rows.map((row) => {
+          const detail = JSON.parse(row["detail"]) as CoopHistoryDetailResult;
+          return exec(
+            "UPDATE result SET weapon = ? WHERE id = ?",
+            [
+              detail
+                .coopHistoryDetail!.myResult.weapons.map((weapon) => getImageHash(weapon.image.url))
+                .join(","),
+              detail.coopHistoryDetail!.id,
+            ],
+            false
+          );
+        })
+      );
+      await exec("PRAGMA user_version=2", [], false);
+      await commit();
+    } catch (e) {
+      await rollback();
+      throw e;
+    }
+    version = 2;
+  }
+  if (version != 2) {
     throw new Error(`unexpected database version ${version}`);
   }
 
@@ -105,7 +137,21 @@ const convertFilter = (filter?: FilterProps, from?: number) => {
       filters.push(`(${filter.rules.map((rule) => `rule = '${rule}'`).join(" OR ")})`);
     }
     if (filter.weapons.length > 0) {
-      filters.push(`(${filter.weapons.map((weapon) => `weapon = '${weapon}'`).join(" OR ")})`);
+      const map = new Map<string, string>();
+      for (const key of Object.keys(WeaponImage)) {
+        map.set(WeaponImage[key], key);
+      }
+      filters.push(
+        `(${filter.weapons
+          .map((weapon) => {
+            const image = map.get(weapon);
+            if (image) {
+              return `(weapon = '${weapon}') OR (instr(weapon, '${image}') > 0)`;
+            }
+            return `weapon = '${weapon}'`;
+          })
+          .join(" OR ")})`
+      );
     }
     if (filter.stages.length > 0) {
       filters.push(
@@ -128,6 +174,7 @@ const convertFilter = (filter?: FilterProps, from?: number) => {
   if (!condition) {
     return "";
   }
+  console.log(`WHERE ${condition}`);
   return `WHERE ${condition}`;
 };
 
@@ -174,6 +221,19 @@ export const queryFilterOptions = async () => {
     exec(stageSql, [], true),
     exec(weaponSql, [], true),
   ]);
+  const weaponSet = new Set<string>();
+  for (const row of weaponRecord.rows) {
+    const weapon = row["weapon"];
+    for (const w of weapon.split(",")) {
+      if (w.length > 0) {
+        if (WeaponImage[w]) {
+          weaponSet.add(WeaponImage[w]);
+        } else {
+          weaponSet.add(w);
+        }
+      }
+    }
+  }
   return {
     modes: modeRecord.rows
       .map((row) => row["mode"])
@@ -237,10 +297,31 @@ export const queryFilterOptions = async () => {
         }
         return decode64Index(a) - decode64Index(b);
       }),
-    weapons: weaponRecord.rows
-      .map((row) => row["weapon"])
-      .filter((weapon) => weapon !== "")
-      .sort((a, b) => decode64Index(a) - decode64Index(b)),
+    weapons: Array.from(weaponSet.values()).sort((a, b) => {
+      // Move grizzco weapons behind regular weapons.
+      if (a.startsWith("V") && b.startsWith("V")) {
+        return decode64Index(a) - decode64Index(b);
+      } else if (a.startsWith("V")) {
+        return -1;
+      } else if (b.startsWith("V")) {
+        return 1;
+      }
+      // Sort grizzco weapons in the order.
+      const grizzcoMap = {
+        grizzco_blaster: 1,
+        grizzco_brella: 2,
+        grizzco_charger: 3,
+        grizzco_slosher: 4,
+        grizzco_stringer: 5,
+        grizzco_splatana: 6,
+      };
+      const aSeq = grizzcoMap[a];
+      const bSeq = grizzcoMap[b];
+      if (aSeq && bSeq) {
+        return aSeq - bSeq;
+      }
+      return a.localeCompare(b);
+    }),
   };
 };
 export const count = async (filter?: FilterProps, from?: number) => {
@@ -298,7 +379,9 @@ export const addCoop = (coop: CoopHistoryDetailResult) => {
     new Date(coop.coopHistoryDetail!.playedTime).valueOf(),
     "salmon_run",
     coop.coopHistoryDetail!.rule,
-    "",
+    coop
+      .coopHistoryDetail!.myResult.weapons.map((weapon) => getImageHash(weapon.image.url))
+      .join(","),
     coop
       .coopHistoryDetail!.memberResults.map((memberResult) => memberResult.player.id)
       .concat(coop.coopHistoryDetail!.myResult.player.id),
@@ -309,4 +392,8 @@ export const addCoop = (coop: CoopHistoryDetailResult) => {
 export const clear = async () => {
   await exec("DELETE FROM result", [], false);
   await exec("VACUUM result", [], false);
+};
+export const drop = async () => {
+  await exec("PRAGMA user_version=0", [], false);
+  await exec("DROP TABLE result", [], false);
 };

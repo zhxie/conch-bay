@@ -295,6 +295,12 @@ const en = {
   "V2VhcG9uLTcwMjA=": "REEF-LUX 450",
   "V2VhcG9uLTgwMDA=": "Splatana Stamper",
   "V2VhcG9uLTgwMTA=": "Splatana Wiper",
+  grizzco_blaster: "Grizzco Blaster",
+  grizzco_brella: "Grizzco Brella",
+  grizzco_charger: "Grizzco Charger",
+  grizzco_slosher: "Grizzco Slosher",
+  grizzco_stringer: "Grizzco Stringer",
+  grizzco_splatana: "Grizzco Splatana",
   // Brands.
   "QnJhbmQtMA==": "SquidForce",
   "QnJhbmQtMQ==": "Zink",

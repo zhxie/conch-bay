@@ -289,6 +289,12 @@ const zhHant = {
   "V2VhcG9uLTcwMjA=": "LACT-450",
   "V2VhcG9uLTgwMDA=": "工作刮水刀",
   "V2VhcG9uLTgwMTA=": "雨刷刮水刀",
+  grizzco_blaster: "熊先生印章爆破槍",
+  grizzco_brella: "熊先生印章防空傘",
+  grizzco_charger: "熊先生印章狙擊槍",
+  grizzco_slosher: "熊先生印章潑桶",
+  grizzco_stringer: "熊先生印章獵魚弓",
+  grizzco_splatana: "熊先生印章刮水刀",
   // Brands.
   "QnJhbmQtMA==": "戰鬥魷魚",
   "QnJhbmQtMQ==": "鋼鐵先鋒",
