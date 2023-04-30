@@ -135,7 +135,7 @@ const StatsView = (props: StatsViewProps) => {
               <AccordionDisplay
                 title={t("boss_salmonids_defeated")}
                 subChildren={coopStats.bosses.map((boss) => (
-                  <Display key={boss.id} title={t(boss.id)}>
+                  <Display key={boss.id} level={1} title={t(boss.id)}>
                     <Text numberOfLines={1}>{boss.defeat}</Text>
                   </Display>
                 ))}
@@ -147,7 +147,7 @@ const StatsView = (props: StatsViewProps) => {
               <AccordionDisplay
                 title={t("king_salmonids_defeated")}
                 subChildren={coopStats.kings.map((king) => (
-                  <Display key={king.id} title={t(king.id)}>
+                  <Display key={king.id} level={1} title={t(king.id)}>
                     <Text numberOfLines={1}>{king.defeat}</Text>
                   </Display>
                 ))}

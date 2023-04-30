@@ -9,6 +9,7 @@ import { TextStyles, ViewStyles, useTheme } from "./Styles";
 interface DisplayProps {
   isFirst?: boolean;
   isLast?: boolean;
+  level?: number;
   icon?: string;
   title: string;
   style?: StyleProp<ViewStyle>;
@@ -36,6 +37,7 @@ const Display = (props: DisplayProps) => {
         style={[!props.isFirst && ViewStyles.sept, !props.isLast && ViewStyles.sepb]}
       >
         <HStack flex center style={ViewStyles.mr1}>
+          <HStack style={{ width: 16 * (props.level ?? 0) }} />
           {!!props.icon && (
             <Icon
               // HACK: forcly cast.
@@ -74,16 +76,16 @@ const AccordionDisplay = (props: AccordionDisplayProps) => {
   }
 
   return (
-    <Pressable onPress={onPress} style={{ backgroundColor: "transparent" }}>
-      <VStack>
+    <VStack>
+      <Pressable onPress={onPress} style={{ backgroundColor: "transparent" }}>
         <Display
           isLast={isLast && !expand}
           icon={expand ? "chevron-down" : "chevron-right"}
           {...rest}
         />
-        {expand && props.subChildren}
-      </VStack>
-    </Pressable>
+      </Pressable>
+      {expand && props.subChildren}
+    </VStack>
   );
 };
 

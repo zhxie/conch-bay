@@ -174,7 +174,6 @@ const convertFilter = (filter?: FilterProps, from?: number) => {
   if (!condition) {
     return "";
   }
-  console.log(`WHERE ${condition}`);
   return `WHERE ${condition}`;
 };
 

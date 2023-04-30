@@ -580,7 +580,7 @@ const ResultView = (props: ResultViewProps) => {
                   subChildren={
                     <VStack>
                       {result.battle.vsHistoryDetail!.bankaraMatch?.earnedUdemaePoint && (
-                        <Display title={t("rank_points")}>
+                        <Display level={1} title={t("rank_points")}>
                           <Text numberOfLines={1}>
                             {`${
                               result.battle.vsHistoryDetail!.bankaraMatch.earnedUdemaePoint > 0
@@ -591,7 +591,7 @@ const ResultView = (props: ResultViewProps) => {
                         </Display>
                       )}
                       {result.battle.vsHistoryDetail!.xMatch?.lastXPower && (
-                        <Display title={t("x_power")}>
+                        <Display level={1} title={t("x_power")}>
                           <Text numberOfLines={1}>
                             {`${result.battle.vsHistoryDetail!.xMatch.lastXPower.toFixed(1)}`}
                           </Text>
@@ -599,18 +599,18 @@ const ResultView = (props: ResultViewProps) => {
                       )}
                       {result.battle.vsHistoryDetail!.festMatch && (
                         <VStack>
-                          <Display title={t("clout")}>
+                          <Display level={1} title={t("clout")}>
                             <Text numberOfLines={1}>
                               {`${result.battle.vsHistoryDetail!.festMatch.contribution}`}
                             </Text>
                           </Display>
-                          <Display title={t("festival_shell")}>
+                          <Display level={1} title={t("festival_shell")}>
                             <Text numberOfLines={1}>
                               {`${result.battle.vsHistoryDetail!.festMatch.jewel}`}
                             </Text>
                           </Display>
                           {result.battle.vsHistoryDetail!.festMatch.myFestPower && (
-                            <Display title={t("splatfest_power")}>
+                            <Display level={1} title={t("splatfest_power")}>
                               <Text numberOfLines={1}>
                                 {`${result.battle.vsHistoryDetail!.festMatch.myFestPower.toFixed(
                                   1
@@ -621,7 +621,7 @@ const ResultView = (props: ResultViewProps) => {
                         </VStack>
                       )}
                       {result.battle.vsHistoryDetail!.awards.map((award, i) => (
-                        <Display key={i} title={i === 0 ? t("medals_earned") : ""}>
+                        <Display key={i} level={1} title={i === 0 ? t("medals_earned") : ""}>
                           <HStack center>
                             <Circle
                               size={12}
@@ -632,7 +632,7 @@ const ResultView = (props: ResultViewProps) => {
                           </HStack>
                         </Display>
                       ))}
-                      <Display isLast title={t("played_time")}>
+                      <Display isLast level={1} title={t("played_time")}>
                         <Text numberOfLines={1}>
                           {formatPlayedTime(result.battle.vsHistoryDetail!.playedTime)}
                           <Text numberOfLines={1} style={TextStyles.h6}>
@@ -853,20 +853,20 @@ const ResultView = (props: ResultViewProps) => {
                     <VStack>
                       {result.coop.coopHistoryDetail!.jobPoint !== null && (
                         <VStack>
-                          <Display title={t("your_points")}>
+                          <Display level={1} title={t("your_points")}>
                             <Text numberOfLines={1}>{result.coop.coopHistoryDetail!.jobPoint}</Text>
                           </Display>
-                          <Display title={t("job_score")}>
+                          <Display level={1} title={t("job_score")}>
                             <Text numberOfLines={1}>
                               {result.coop.coopHistoryDetail!.jobScore ?? "-"}
                             </Text>
                           </Display>
-                          <Display title={t("pay_grade")}>
+                          <Display level={1} title={t("pay_grade")}>
                             <Text numberOfLines={1}>
                               {result.coop.coopHistoryDetail!.jobRate?.toFixed(2) ?? "-"}
                             </Text>
                           </Display>
-                          <Display title={t("clear_bonus")}>
+                          <Display level={1} title={t("clear_bonus")}>
                             <Text numberOfLines={1}>
                               {result.coop.coopHistoryDetail!.jobBonus ?? "-"}
                             </Text>
@@ -875,7 +875,7 @@ const ResultView = (props: ResultViewProps) => {
                       )}
                       {result.coop.coopHistoryDetail!.smellMeter !== null && (
                         <VStack>
-                          <Display title={t("smell")}>
+                          <Display level={1} title={t("smell")}>
                             <Text numberOfLines={1}>
                               {`${result.coop.coopHistoryDetail!.smellMeter}/5`}
                             </Text>
@@ -884,14 +884,14 @@ const ResultView = (props: ResultViewProps) => {
                       )}
                       {result.coop.coopHistoryDetail!.scenarioCode && (
                         <VStack>
-                          <Display title={t("scenario_code")}>
+                          <Display level={1} title={t("scenario_code")}>
                             <Text numberOfLines={1}>
                               {formatScenarioCode(result.coop.coopHistoryDetail!.scenarioCode)}
                             </Text>
                           </Display>
                         </VStack>
                       )}
-                      <Display isLast title={t("played_time")}>
+                      <Display isLast level={1} title={t("played_time")}>
                         <Text numberOfLines={1}>
                           {formatPlayedTime(result.coop.coopHistoryDetail!.playedTime)}
                         </Text>
