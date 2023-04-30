@@ -1,8 +1,8 @@
-import { StyleProp, ViewStyle, useColorScheme } from "react-native";
+import { StyleProp, ViewStyle } from "react-native";
 import Image, { ImageSource } from "./Image";
 import Marquee from "./Marquee";
 import { HStack } from "./Stack";
-import { ViewStyles } from "./Styles";
+import { ViewStyles, useTheme } from "./Styles";
 
 interface WorkSuitBoxProps {
   image: ImageSource;
@@ -11,11 +11,12 @@ interface WorkSuitBoxProps {
 }
 
 const WorkSuitBox = (props: WorkSuitBoxProps) => {
-  const colorScheme = useColorScheme();
-  const style = colorScheme === "light" ? ViewStyles.lightTerritory : ViewStyles.darkTerritory;
+  const theme = useTheme();
 
   return (
-    <HStack style={[ViewStyles.px3, { height: 64 }, ViewStyles.r2, style, props.style]}>
+    <HStack
+      style={[ViewStyles.px3, { height: 64 }, ViewStyles.r2, theme.territoryStyle, props.style]}
+    >
       <HStack flex center style={[ViewStyles.py2]}>
         <Image source={props.image} style={[ViewStyles.mr3, { width: 48, height: 48 }]} />
         <HStack flex>

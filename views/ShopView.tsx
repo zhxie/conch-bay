@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Linking, StyleProp, ViewStyle, useColorScheme } from "react-native";
+import { Linking, StyleProp, ViewStyle } from "react-native";
 import {
   Button,
   Color,
@@ -10,10 +10,10 @@ import {
   Marquee,
   Modal,
   ScheduleButton,
-  TextStyles,
   TitledList,
   VStack,
   ViewStyles,
+  useTheme,
 } from "../components";
 import t from "../i18n";
 import { MyGear, MyOutfitCommonDataEquipmentsResult, Shop } from "../models/types";
@@ -33,9 +33,7 @@ interface ShopViewProps {
 }
 
 const ShopView = (props: ShopViewProps) => {
-  const colorScheme = useColorScheme();
-  const shopColor = colorScheme === "light" ? Color.LightText : Color.DarkText;
-  const reverseTextStyle = colorScheme === "light" ? TextStyles.dark : TextStyles.light;
+  const theme = useTheme();
 
   const [displayShop, setDisplayShop] = useState(false);
   const [equipments, setEquipments] = useState<MyOutfitCommonDataEquipmentsResult>();
@@ -102,7 +100,7 @@ const ShopView = (props: ShopViewProps) => {
   return (
     <>
       <ScheduleButton
-        color={shopColor}
+        color={theme.textColor}
         rule={t("gesotown")}
         stages={[t(props.shop.gesotown.pickupBrand.brand.id)].concat(
           props.shop.gesotown.limitedGears.length > 0
@@ -113,7 +111,7 @@ const ShopView = (props: ShopViewProps) => {
         style={props.style}
       />
       <Modal isVisible={displayShop} onClose={onDisplayShopClose} style={ViewStyles.modal2d}>
-        <TitledList color={shopColor} title={t("gesotown")}>
+        <TitledList color={theme.textColor} title={t("gesotown")}>
           <VStack center style={ViewStyles.mb2}>
             {props.shop.gesotown.pickupBrand.brandGears.map((gear, i, gears) => (
               <GearBox
@@ -155,17 +153,19 @@ const ShopView = (props: ShopViewProps) => {
               style={[props.isEquipmentsAvailable && ViewStyles.mb2, ViewStyles.accent]}
               onPress={onOrderInNintendoSwitchOnlinePress}
             >
-              <Marquee style={reverseTextStyle}>{t("order_in_nintendo_switch_online")}</Marquee>
+              <Marquee style={theme.reverseTextStyle}>
+                {t("order_in_nintendo_switch_online")}
+              </Marquee>
             </Button>
             {props.isEquipmentsAvailable && (
               <Button
                 isLoading={!equipments && displayEquipments}
                 isLoadingText={t("loading_owned_gears")}
                 style={ViewStyles.accent}
-                textStyle={reverseTextStyle}
+                textStyle={theme.reverseTextStyle}
                 onPress={onDisplayMyGearsPress}
               >
-                <Marquee style={reverseTextStyle}>{t("display_owned_gears")}</Marquee>
+                <Marquee style={theme.reverseTextStyle}>{t("display_owned_gears")}</Marquee>
               </Button>
             )}
           </VStack>

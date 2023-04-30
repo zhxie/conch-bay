@@ -1,4 +1,4 @@
-import { StyleProp, ViewStyle, useColorScheme } from "react-native";
+import { StyleProp, ViewStyle } from "react-native";
 import {
   Area,
   Chart as RLChart,
@@ -6,7 +6,7 @@ import {
   Padding,
   VerticalAxis,
 } from "react-native-responsive-linechart";
-import { Color, TextStyles } from "./Styles";
+import { Color, TextStyles, useTheme } from "./Styles";
 
 interface ChartData {
   data: number[];
@@ -23,8 +23,7 @@ interface LineProps {
 }
 
 const AreaLine = (props: LineProps) => {
-  const colorScheme = useColorScheme();
-  const color = colorScheme === "light" ? Color.LightTerritory : Color.DarkTerritory;
+  const theme = useTheme();
 
   const data = props.data.map((datum, i) => ({ x: i, y: datum }));
 
@@ -66,7 +65,7 @@ const AreaLine = (props: LineProps) => {
               width: 4,
               height: 4,
               rx: 4,
-              color,
+              color: theme.territoryColor,
             },
           },
         }}
@@ -76,8 +75,7 @@ const AreaLine = (props: LineProps) => {
 };
 
 const ScatterLine = (props: LineProps) => {
-  const colorScheme = useColorScheme();
-  const color = colorScheme === "light" ? Color.LightTerritory : Color.DarkTerritory;
+  const theme = useTheme();
 
   const data = props.data.map((datum, i) => ({ x: i, y: datum }));
 
@@ -108,7 +106,7 @@ const ScatterLine = (props: LineProps) => {
               width: 4,
               height: 4,
               rx: 4,
-              color,
+              color: theme.territoryColor,
             },
           },
         }}

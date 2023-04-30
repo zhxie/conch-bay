@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { StyleProp, ViewStyle, useColorScheme } from "react-native";
+import { StyleProp, ViewStyle } from "react-native";
 import Icon from "./Icon";
 import Marquee from "./Marquee";
 import Pressable from "./Pressable";
 import { HStack, VStack } from "./Stack";
-import { Color, TextStyles, ViewStyles } from "./Styles";
+import { TextStyles, ViewStyles, useTheme } from "./Styles";
 
 interface DisplayProps {
   isFirst?: boolean;
@@ -16,9 +16,7 @@ interface DisplayProps {
 }
 
 const Display = (props: DisplayProps) => {
-  const colorScheme = useColorScheme();
-  const style = colorScheme === "light" ? ViewStyles.lightTerritory : ViewStyles.darkTerritory;
-  const arrowColor = colorScheme === "light" ? Color.LightText : Color.DarkText;
+  const theme = useTheme();
 
   return (
     <HStack
@@ -27,7 +25,7 @@ const Display = (props: DisplayProps) => {
         { height: 32 },
         props.isFirst && ViewStyles.rt2,
         props.isLast && ViewStyles.rb2,
-        style,
+        theme.territoryStyle,
         props.style,
       ]}
     >
@@ -43,7 +41,7 @@ const Display = (props: DisplayProps) => {
               // HACK: forcly cast.
               name={props.icon as any}
               size={14}
-              color={arrowColor}
+              color={theme.textColor}
               style={ViewStyles.mr0_5}
             />
           )}

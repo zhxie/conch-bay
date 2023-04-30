@@ -1,5 +1,5 @@
-import { Text as RNText, TextProps as RNTextProps, useColorScheme } from "react-native";
-import { TextStyles } from "./Styles";
+import { Text as RNText, TextProps as RNTextProps } from "react-native";
+import { TextStyles, useTheme } from "./Styles";
 
 interface TextProps extends RNTextProps {
   center?: boolean;
@@ -8,10 +8,11 @@ interface TextProps extends RNTextProps {
 const Text = (props: TextProps) => {
   const { center, style, ...rest } = props;
 
-  const colorScheme = useColorScheme();
-  const textStyle = colorScheme === "light" ? TextStyles.light : TextStyles.dark;
+  const theme = useTheme();
 
-  return <RNText style={[TextStyles.p, textStyle, center && TextStyles.c, style]} {...rest} />;
+  return (
+    <RNText style={[TextStyles.p, theme.textStyle, center && TextStyles.c, style]} {...rest} />
+  );
 };
 
 export default Text;

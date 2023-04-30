@@ -1,9 +1,9 @@
-import { StyleProp, StyleSheet, ViewStyle, useColorScheme } from "react-native";
+import { StyleProp, StyleSheet, ViewStyle } from "react-native";
 import Image, { ImageSource } from "./Image";
 import Marquee from "./Marquee";
 import { Circle } from "./Shape";
 import { Center, HStack } from "./Stack";
-import { Color, ViewStyles } from "./Styles";
+import { Color, ViewStyles, useTheme } from "./Styles";
 
 interface BattleWeaponBoxProps {
   image: ImageSource;
@@ -14,12 +14,18 @@ interface BattleWeaponBoxProps {
 }
 
 const BattleWeaponBox = (props: BattleWeaponBoxProps) => {
-  const colorScheme = useColorScheme();
-  const style = colorScheme === "light" ? ViewStyles.lightTerritory : ViewStyles.darkTerritory;
+  const theme = useTheme();
 
   return (
     <HStack
-      style={[ViewStyles.px3, ViewStyles.py2, { height: 64 }, ViewStyles.r2, style, props.style]}
+      style={[
+        ViewStyles.px3,
+        ViewStyles.py2,
+        { height: 64 },
+        ViewStyles.r2,
+        theme.territoryStyle,
+        props.style,
+      ]}
     >
       <HStack flex center justify>
         <HStack flex center style={ViewStyles.mr1}>

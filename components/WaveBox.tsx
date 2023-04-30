@@ -1,8 +1,8 @@
-import { StyleProp, StyleSheet, ViewStyle, useColorScheme } from "react-native";
+import { StyleProp, StyleSheet, ViewStyle } from "react-native";
 import Marquee from "./Marquee";
 import { Circle } from "./Shape";
 import { Center, HStack, VStack } from "./Stack";
-import { Color, TextStyles, ViewStyles } from "./Styles";
+import { Color, TextStyles, ViewStyles, useTheme } from "./Styles";
 import Text from "./Text";
 
 interface SpecialWeaponProps {
@@ -23,14 +23,18 @@ interface WaveBoxProps {
 }
 
 const WaveBox = (props: WaveBoxProps) => {
-  const colorScheme = useColorScheme();
-  const style = colorScheme === "light" ? ViewStyles.lightTerritory : ViewStyles.darkTerritory;
-  const color = colorScheme === "light" ? Color.LightTerritory : Color.DarkTerritory;
+  const theme = useTheme();
 
   return (
     <VStack flex center style={props.style}>
       <VStack
-        style={[ViewStyles.mb1, ViewStyles.r2, ViewStyles.p2, { width: 125, height: 90 }, style]}
+        style={[
+          ViewStyles.mb1,
+          ViewStyles.r2,
+          ViewStyles.p2,
+          { width: 125, height: 90 },
+          theme.territoryStyle,
+        ]}
       >
         <VStack flex justify>
           <VStack style={ViewStyles.mb1}>
@@ -66,14 +70,7 @@ const WaveBox = (props: WaveBoxProps) => {
             <HStack key={i} style={ViewStyles.px1}>
               {new Array(props.specialWeaponSupplied).fill(0).map((_, j) => (
                 <Center key={j} style={ViewStyles.px0_25}>
-                  <Center
-                    style={[
-                      styles.specialWeapon,
-                      {
-                        backgroundColor: color,
-                      },
-                    ]}
-                  >
+                  <Center style={[styles.specialWeapon, theme.territoryStyle]}>
                     <Center
                       style={[
                         styles.specialWeapon,

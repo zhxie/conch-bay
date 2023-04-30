@@ -1,8 +1,8 @@
-import { StyleProp, ViewStyle, useColorScheme } from "react-native";
+import { StyleProp, ViewStyle } from "react-native";
 import Marquee from "./Marquee";
 import { Circle } from "./Shape";
 import { HStack, VStack } from "./Stack";
-import { Color, TextStyles, ViewStyles } from "./Styles";
+import { Color, TextStyles, ViewStyles, useTheme } from "./Styles";
 import Text from "./Text";
 
 interface BossSalmonidBoxProps {
@@ -15,14 +15,21 @@ interface BossSalmonidBoxProps {
 }
 
 const BossSalmonidBox = (props: BossSalmonidBoxProps) => {
-  const colorScheme = useColorScheme();
-  const style = colorScheme === "light" ? ViewStyles.lightTerritory : ViewStyles.darkTerritory;
+  const theme = useTheme();
 
   const defeat =
     props.defeat > 0 ? `${props.teamDefeat}(${props.defeat})` : String(props.teamDefeat);
 
   return (
-    <VStack style={[ViewStyles.r2, ViewStyles.p2, { width: 110, height: 80 }, style, props.style]}>
+    <VStack
+      style={[
+        ViewStyles.r2,
+        ViewStyles.p2,
+        { width: 110, height: 80 },
+        theme.territoryStyle,
+        props.style,
+      ]}
+    >
       <VStack flex justify>
         <Marquee
           style={[

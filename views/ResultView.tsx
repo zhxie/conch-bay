@@ -11,7 +11,6 @@ import {
   ScrollView,
   StyleProp,
   ViewStyle,
-  useColorScheme,
 } from "react-native";
 import JSONTree from "react-native-json-tree";
 import {
@@ -43,6 +42,7 @@ import {
   WaveBox,
   WorkSuitBox,
   useBanner,
+  useTheme,
 } from "../components";
 import t, { ScopeWithDefaultValue, td } from "../i18n";
 import {
@@ -87,8 +87,7 @@ interface ResultViewProps {
 }
 
 const ResultView = (props: ResultViewProps) => {
-  const colorScheme = useColorScheme();
-  const reverseTextStyle = colorScheme === "light" ? TextStyles.dark : TextStyles.light;
+  const theme = useTheme();
 
   const showBanner = useBanner();
 
@@ -646,15 +645,17 @@ const ResultView = (props: ResultViewProps) => {
                 />
               </VStack>
               <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onHidePlayerNamesPress}>
-                <Marquee style={reverseTextStyle}>
+                <Marquee style={theme.reverseTextStyle}>
                   {hidePlayerNames ? t("show_player_names") : t("hide_player_names")}
                 </Marquee>
               </Button>
               <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onShowRawResultPress}>
-                <Marquee style={reverseTextStyle}>{t("show_raw_data")}</Marquee>
+                <Marquee style={theme.reverseTextStyle}>{t("show_raw_data")}</Marquee>
               </Button>
               <Button style={ViewStyles.accent} onPress={onOpenInNintendoSwitchOnlinePress}>
-                <Marquee style={reverseTextStyle}>{t("open_in_nintendo_switch_online")}</Marquee>
+                <Marquee style={theme.reverseTextStyle}>
+                  {t("open_in_nintendo_switch_online")}
+                </Marquee>
               </Button>
             </VStack>
             <Modal
@@ -904,12 +905,12 @@ const ResultView = (props: ResultViewProps) => {
                   style={[ViewStyles.mb2, ViewStyles.accent]}
                   onPress={onHidePlayerNamesPress}
                 >
-                  <Marquee style={reverseTextStyle}>
+                  <Marquee style={theme.reverseTextStyle}>
                     {hidePlayerNames ? t("show_player_names") : t("hide_player_names")}
                   </Marquee>
                 </Button>
                 <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onShowRawResultPress}>
-                  <Marquee style={reverseTextStyle}>{t("show_raw_data")}</Marquee>
+                  <Marquee style={theme.reverseTextStyle}>{t("show_raw_data")}</Marquee>
                 </Button>
                 <Button
                   style={[
@@ -918,7 +919,9 @@ const ResultView = (props: ResultViewProps) => {
                   ]}
                   onPress={onOpenInNintendoSwitchOnlinePress}
                 >
-                  <Marquee style={reverseTextStyle}>{t("open_in_nintendo_switch_online")}</Marquee>
+                  <Marquee style={theme.reverseTextStyle}>
+                    {t("open_in_nintendo_switch_online")}
+                  </Marquee>
                 </Button>
                 {result.coop.coopHistoryDetail!.rule !== "TEAM_CONTEST" && (
                   <HStack style={ViewStyles.c}>

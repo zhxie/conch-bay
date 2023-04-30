@@ -1,9 +1,9 @@
-import { StyleProp, View, ViewStyle, useColorScheme } from "react-native";
+import { StyleProp, View, ViewStyle } from "react-native";
 import Image, { ImageSource } from "./Image";
 import Marquee from "./Marquee";
 import { Circle } from "./Shape";
 import { Center, HStack } from "./Stack";
-import { Color, TextStyles, ViewStyles } from "./Styles";
+import { Color, TextStyles, ViewStyles, useTheme } from "./Styles";
 import Text from "./Text";
 
 interface GearBoxProps {
@@ -20,8 +20,7 @@ interface GearBoxProps {
 }
 
 const GearBox = (props: GearBoxProps) => {
-  const colorScheme = useColorScheme();
-  const style = colorScheme === "light" ? ViewStyles.lightTerritory : ViewStyles.darkTerritory;
+  const theme = useTheme();
 
   return (
     <HStack
@@ -30,7 +29,7 @@ const GearBox = (props: GearBoxProps) => {
         { height: 48 },
         props.isFirst && ViewStyles.rt2,
         props.isLast && ViewStyles.rb2,
-        style,
+        theme.territoryStyle,
         props.style,
       ]}
     >

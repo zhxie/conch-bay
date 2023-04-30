@@ -1,6 +1,6 @@
-import { StyleProp, TextStyle, useColorScheme } from "react-native";
+import { StyleProp, TextStyle } from "react-native";
 import TextTicker from "react-native-text-ticker";
-import { TextStyles } from "./Styles";
+import { TextStyles, useTheme } from "./Styles";
 
 interface MarqueeProps {
   style?: StyleProp<TextStyle>;
@@ -8,8 +8,7 @@ interface MarqueeProps {
 }
 
 const Marquee = (props: MarqueeProps) => {
-  const colorScheme = useColorScheme();
-  const textStyle = colorScheme === "light" ? TextStyles.light : TextStyles.dark;
+  const theme = useTheme();
 
   return (
     <TextTicker
@@ -17,7 +16,7 @@ const Marquee = (props: MarqueeProps) => {
       repeatSpacer={20}
       easing={(value) => value}
       marqueeDelay={1000}
-      style={[TextStyles.p, textStyle, props.style]}
+      style={[TextStyles.p, theme.textStyle, props.style]}
     >
       {props.children}
     </TextTicker>

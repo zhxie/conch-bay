@@ -6,11 +6,10 @@ import {
   StyleProp,
   View,
   ViewStyle,
-  useColorScheme,
 } from "react-native";
 import ReactNativeModal from "react-native-modal";
 import { VStack } from "./Stack";
-import { ViewStyles } from "./Styles";
+import { ViewStyles, useTheme } from "./Styles";
 
 interface ModalProps {
   isVisible: boolean;
@@ -21,8 +20,7 @@ interface ModalProps {
 }
 
 const Modal = (props: ModalProps) => {
-  const colorScheme = useColorScheme();
-  const style = colorScheme === "light" ? ViewStyles.light : ViewStyles.dark;
+  const theme = useTheme();
 
   const onScrollEndDrag = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     if (!!props.onClose && event.nativeEvent.contentOffset.y < -80) {
@@ -42,7 +40,7 @@ const Modal = (props: ModalProps) => {
       <ScrollView
         showsHorizontalScrollIndicator={false}
         onScrollEndDrag={onScrollEndDrag}
-        style={[ViewStyles.r2, ViewStyles.px4, style, props.style]}
+        style={[ViewStyles.r2, ViewStyles.px4, theme.backgroundStyle, props.style]}
       >
         <View style={{ height: 16 }} />
         {props.children}
@@ -65,8 +63,7 @@ interface FlashModalProps<T> {
 }
 
 const FlashModal = <T,>(props: FlashModalProps<T>) => {
-  const colorScheme = useColorScheme();
-  const style = colorScheme === "light" ? ViewStyles.light : ViewStyles.dark;
+  const theme = useTheme();
 
   const onScrollEndDrag = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     if (!!props.onClose && event.nativeEvent.contentOffset.y < -80) {
@@ -83,7 +80,7 @@ const FlashModal = <T,>(props: FlashModalProps<T>) => {
       useNativeDriverForBackdrop
       style={ViewStyles.c}
     >
-      <VStack style={[ViewStyles.r2, ViewStyles.px4, style, props.style]}>
+      <VStack style={[ViewStyles.r2, ViewStyles.px4, theme.backgroundStyle, props.style]}>
         <FlashList
           showsHorizontalScrollIndicator={false}
           data={props.data}

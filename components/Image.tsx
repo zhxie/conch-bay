@@ -1,6 +1,6 @@
 import { Image as EImage, ImageSource } from "expo-image";
-import { ImageStyle, StyleProp, useColorScheme } from "react-native";
-import { ViewStyles } from "./Styles";
+import { ImageStyle, StyleProp } from "react-native";
+import { useTheme } from "./Styles";
 
 interface ImageProps {
   source?: ImageSource;
@@ -9,14 +9,13 @@ interface ImageProps {
 }
 
 const Image = (props: ImageProps) => {
-  const colorScheme = useColorScheme();
-  const imageStyle = colorScheme === "light" ? ViewStyles.lightTerritory : ViewStyles.darkTerritory;
+  const theme = useTheme();
 
   return (
     <EImage
       source={props.source}
       // HACK: forcly cast.
-      style={[imageStyle, props.style as any]}
+      style={[theme.territoryStyle, props.style as any]}
       transition={300}
       recyclingKey={props.recyclingKey}
     />

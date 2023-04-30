@@ -19,7 +19,6 @@ import {
   Platform,
   RefreshControl,
   ScrollView,
-  useColorScheme,
 } from "react-native";
 import * as Progress from "react-native-progress";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
@@ -42,6 +41,7 @@ import {
   VStack,
   ViewStyles,
   useBanner,
+  useTheme,
 } from "../components";
 import t from "../i18n";
 import {
@@ -107,13 +107,7 @@ enum TimeRange {
 let autoRefreshTimeout: NodeJS.Timeout | undefined;
 
 const MainView = () => {
-  const colorScheme = useColorScheme();
-  const backgroundColor = colorScheme === "light" ? Color.LightTerritory : Color.DarkTerritory;
-  const backgroundStyle = colorScheme === "light" ? ViewStyles.light : ViewStyles.dark;
-  const territoryStyle =
-    colorScheme === "light" ? ViewStyles.lightTerritory : ViewStyles.darkTerritory;
-  const textStyle = colorScheme === "light" ? TextStyles.light : TextStyles.dark;
-  const reverseTextStyle = colorScheme === "light" ? TextStyles.dark : TextStyles.light;
+  const theme = useTheme();
 
   const insets = useSafeAreaInsets();
 
@@ -1028,7 +1022,7 @@ const MainView = () => {
   };
 
   return (
-    <VStack flex style={backgroundStyle}>
+    <VStack flex style={theme.backgroundStyle}>
       <Animated.View style={[ViewStyles.f, { opacity: fade }]}>
         {/* HACK: it is a little bit weird concentrating on result list. */}
         <ResultView
@@ -1045,7 +1039,7 @@ const MainView = () => {
               {!sessionToken && (
                 <Center flex style={[ViewStyles.px4, ViewStyles.mb4]}>
                   <Button style={ViewStyles.accent} onPress={onLogInPress}>
-                    <Marquee style={reverseTextStyle}>{t("log_in")}</Marquee>
+                    <Marquee style={theme.reverseTextStyle}>{t("log_in")}</Marquee>
                   </Button>
                 </Center>
               )}
@@ -1093,7 +1087,7 @@ const MainView = () => {
                       animated
                       progress={progress / progressTotal}
                       color={Color.AccentColor}
-                      unfilledColor={backgroundColor}
+                      unfilledColor={theme.territoryColor}
                       borderColor={Color.AccentColor}
                       width={64}
                       borderRadius={2}
@@ -1157,9 +1151,9 @@ const MainView = () => {
                       results === undefined || results.length > 0 ? ViewStyles.rt0 : ViewStyles.rt2,
                       ViewStyles.rb2,
                       { height: 64 },
-                      territoryStyle,
+                      theme.territoryStyle,
                     ]}
-                    textStyle={[TextStyles.h3, textStyle]}
+                    textStyle={[TextStyles.h3, theme.textStyle]}
                     // HACK: forcly cast.
                     onSelected={onLoadMoreSelected as (_: string) => void}
                     onPress={onLoadMorePress}
@@ -1271,7 +1265,7 @@ const MainView = () => {
               style={[
                 ViewStyles.mb2,
                 { borderColor: Color.AccentColor, borderWidth: 1.5 },
-                backgroundStyle,
+                theme.backgroundStyle,
               ]}
               onPress={onPrivacyPolicyPress}
             >
@@ -1281,10 +1275,10 @@ const MainView = () => {
               isLoading={loggingIn}
               isLoadingText={t("logging_in")}
               style={ViewStyles.accent}
-              textStyle={reverseTextStyle}
+              textStyle={theme.reverseTextStyle}
               onPress={onLogInContinuePress}
             >
-              <Marquee style={reverseTextStyle}>{t("log_in_continue")}</Marquee>
+              <Marquee style={theme.reverseTextStyle}>{t("log_in_continue")}</Marquee>
             </Button>
           </VStack>
         </VStack>
@@ -1304,20 +1298,20 @@ const MainView = () => {
               isLoading={loggingIn}
               isLoadingText={t("logging_in")}
               style={[ViewStyles.mb2, ViewStyles.accent]}
-              textStyle={reverseTextStyle}
+              textStyle={theme.reverseTextStyle}
               onPress={onLogInContinuePress}
             >
-              <Marquee style={reverseTextStyle}>{t("relog_in")}</Marquee>
+              <Marquee style={theme.reverseTextStyle}>{t("relog_in")}</Marquee>
             </Button>
             <Button
               isDisabled={loggingIn || refreshing || loadingMore || exporting}
               isLoading={loggingOut}
               isLoadingText={t("logging_out")}
               style={ViewStyles.danger}
-              textStyle={reverseTextStyle}
+              textStyle={theme.reverseTextStyle}
               onPress={onLogOutContinuePress}
             >
-              <Marquee style={reverseTextStyle}>{t("log_out_continue")}</Marquee>
+              <Marquee style={theme.reverseTextStyle}>{t("log_out_continue")}</Marquee>
             </Button>
           </VStack>
         </VStack>
@@ -1335,10 +1329,10 @@ const MainView = () => {
                 isLoading={loggingIn}
                 isLoadingText={t("logging_in")}
                 style={ViewStyles.accent}
-                textStyle={reverseTextStyle}
+                textStyle={theme.reverseTextStyle}
                 onPress={onAlternativeLogInPress}
               >
-                <Marquee style={reverseTextStyle}>{t("log_in_with_session_token")}</Marquee>
+                <Marquee style={theme.reverseTextStyle}>{t("log_in_with_session_token")}</Marquee>
               </Button>
             </VStack>
           )}
@@ -1369,10 +1363,10 @@ const MainView = () => {
             />
             <Button
               style={ViewStyles.accent}
-              textStyle={reverseTextStyle}
+              textStyle={theme.reverseTextStyle}
               onPress={onChangeDisplayLanguagePress}
             >
-              <Marquee style={reverseTextStyle}>
+              <Marquee style={theme.reverseTextStyle}>
                 {t("change_display_language_language", { language: t(t("lang")) })}
               </Marquee>
             </Button>
@@ -1387,10 +1381,10 @@ const MainView = () => {
                 isLoading={loggingIn}
                 isLoadingText={t("logging_in")}
                 style={ViewStyles.accent}
-                textStyle={reverseTextStyle}
+                textStyle={theme.reverseTextStyle}
                 onPress={onLogInContinuePress}
               >
-                <Marquee style={reverseTextStyle}>{t("relog_in")}</Marquee>
+                <Marquee style={theme.reverseTextStyle}>{t("relog_in")}</Marquee>
               </Button>
             </VStack>
           )}
@@ -1403,19 +1397,19 @@ const MainView = () => {
                 isLoading={clearingCache}
                 isLoadingText={t("clearing_cache")}
                 style={[ViewStyles.accent, ViewStyles.mb2]}
-                textStyle={reverseTextStyle}
+                textStyle={theme.reverseTextStyle}
                 onPress={onClearCachePress}
               >
-                <Marquee style={reverseTextStyle}>{t("clear_cache")}</Marquee>
+                <Marquee style={theme.reverseTextStyle}>{t("clear_cache")}</Marquee>
               </Button>
               <Button
                 isLoading={preloadingResources}
                 isLoadingText={t("preloading_resources")}
                 style={ViewStyles.accent}
-                textStyle={reverseTextStyle}
+                textStyle={theme.reverseTextStyle}
                 onPress={onPreloadResourcesPress}
               >
-                <Marquee style={reverseTextStyle}>{t("preload_resources")}</Marquee>
+                <Marquee style={theme.reverseTextStyle}>{t("preload_resources")}</Marquee>
               </Button>
             </VStack>
           )}
@@ -1424,10 +1418,10 @@ const MainView = () => {
               <Text style={ViewStyles.mb2}>{t("feedback_notice")}</Text>
             </VStack>
             <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onCreateAGithubIssuePress}>
-              <Marquee style={reverseTextStyle}>{t("create_a_github_issue")}</Marquee>
+              <Marquee style={theme.reverseTextStyle}>{t("create_a_github_issue")}</Marquee>
             </Button>
             <Button style={ViewStyles.accent} onPress={onSendAMailPress}>
-              <Marquee style={reverseTextStyle}>{t("send_a_mail")}</Marquee>
+              <Marquee style={theme.reverseTextStyle}>{t("send_a_mail")}</Marquee>
             </Button>
           </VStack>
           {sessionToken.length > 0 && (
@@ -1436,13 +1430,13 @@ const MainView = () => {
                 <Text style={ViewStyles.mb2}>{t("debug_notice")}</Text>
               </VStack>
               <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onCopySessionTokenPress}>
-                <Marquee style={reverseTextStyle}>{t("copy_session_token")}</Marquee>
+                <Marquee style={theme.reverseTextStyle}>{t("copy_session_token")}</Marquee>
               </Button>
               <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onCopyBulletTokenPress}>
-                <Marquee style={reverseTextStyle}>{t("copy_bullet_token")}</Marquee>
+                <Marquee style={theme.reverseTextStyle}>{t("copy_bullet_token")}</Marquee>
               </Button>
               <Button style={ViewStyles.accent} onPress={onExportDatabasePress}>
-                <Marquee style={reverseTextStyle}>{t("export_database")}</Marquee>
+                <Marquee style={theme.reverseTextStyle}>{t("export_database")}</Marquee>
               </Button>
             </VStack>
           )}
@@ -1515,13 +1509,13 @@ const MainView = () => {
               isLoading={exporting}
               isLoadingText={t("exporting")}
               style={[ViewStyles.mb2, ViewStyles.accent]}
-              textStyle={reverseTextStyle}
+              textStyle={theme.reverseTextStyle}
               onPress={onExportPress}
             >
-              <Marquee style={reverseTextStyle}>{t("export_results")}</Marquee>
+              <Marquee style={theme.reverseTextStyle}>{t("export_results")}</Marquee>
             </Button>
             <Button style={ViewStyles.accent} onPress={onExportDatabasePress}>
-              <Marquee style={reverseTextStyle}>{t("export_database")}</Marquee>
+              <Marquee style={theme.reverseTextStyle}>{t("export_database")}</Marquee>
             </Button>
           </VStack>
         </VStack>

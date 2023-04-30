@@ -1,8 +1,8 @@
-import { StyleProp, ViewStyle, useColorScheme } from "react-native";
+import { StyleProp, ViewStyle } from "react-native";
 import Marquee from "./Marquee";
 import { Circle } from "./Shape";
 import { HStack, VStack } from "./Stack";
-import { Color, TextStyles, ViewStyles } from "./Styles";
+import { Color, TextStyles, ViewStyles, useTheme } from "./Styles";
 import Text from "./Text";
 
 interface XBoxProps {
@@ -12,12 +12,11 @@ interface XBoxProps {
 }
 
 const XBox = (props: XBoxProps) => {
-  const colorScheme = useColorScheme();
-  const style = colorScheme === "light" ? ViewStyles.lightTerritory : ViewStyles.darkTerritory;
+  const theme = useTheme();
 
   return (
     <VStack style={[ViewStyles.wf, props.style]}>
-      <VStack style={[ViewStyles.r2, ViewStyles.p2, { height: 80 }, style]}>
+      <VStack style={[ViewStyles.r2, ViewStyles.p2, { height: 80 }, theme.territoryStyle]}>
         <VStack flex justify>
           <VStack style={ViewStyles.mb1}>
             <Marquee

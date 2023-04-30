@@ -1,5 +1,5 @@
-import { StyleProp, TouchableOpacity, ViewStyle, useColorScheme } from "react-native";
-import { ViewStyles } from "./Styles";
+import { StyleProp, TouchableOpacity, ViewStyle } from "react-native";
+import { ViewStyles, useTheme } from "./Styles";
 
 interface PressableProps {
   isDisabled?: boolean;
@@ -10,14 +10,14 @@ interface PressableProps {
 }
 
 const Pressable = (props: PressableProps) => {
-  const colorScheme = useColorScheme();
-  const style = colorScheme === "light" ? ViewStyles.lightTerritory : ViewStyles.darkTerritory;
+  const theme = useTheme();
+
   const disabledStyle = props.isDisabled ? ViewStyles.disabled : undefined;
 
   return (
     <TouchableOpacity
       disabled={props.isDisabled}
-      style={[style, disabledStyle, props.style]}
+      style={[theme.territoryStyle, disabledStyle, props.style]}
       onPress={props.onPress}
       onLongPress={props.onLongPress}
     >

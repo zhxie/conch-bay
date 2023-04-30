@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { StyleProp, StyleSheet, TextStyle, ViewStyle, useColorScheme } from "react-native";
+import { StyleProp, StyleSheet, TextStyle, ViewStyle } from "react-native";
 import Button from "./Button";
 import Marquee from "./Marquee";
 import { Modal } from "./Modal";
 import { VStack } from "./Stack";
-import { Color, TextStyles, ViewStyles } from "./Styles";
+import { ViewStyles, useTheme } from "./Styles";
 
 interface PickerItemProps {
   key: string;
@@ -24,9 +24,7 @@ interface PickerProps {
 }
 
 const Picker = (props: PickerProps) => {
-  const colorScheme = useColorScheme();
-  const borderColor = colorScheme === "light" ? Color.LightBackground : Color.DarkBackground;
-  const reverseTextStyle = colorScheme === "light" ? TextStyles.dark : TextStyles.light;
+  const theme = useTheme();
 
   const [open, setOpen] = useState(false);
 
@@ -47,7 +45,7 @@ const Picker = (props: PickerProps) => {
       onPress={props.onPress ?? onPress}
       onLongPress={props.onPress ? onPress : undefined}
     >
-      <Marquee style={[reverseTextStyle, props.textStyle]}>{props.title}</Marquee>
+      <Marquee style={[theme.reverseTextStyle, props.textStyle]}>{props.title}</Marquee>
       <Modal isVisible={open} onClose={onClose} style={ViewStyles.modal0_67d}>
         <VStack flex style={ViewStyles.wf}>
           {props.header}
@@ -61,11 +59,11 @@ const Picker = (props: PickerProps) => {
                 i !== items.length - 1 && ViewStyles.rb0,
                 i !== 0 && {
                   borderTopWidth: StyleSheet.hairlineWidth * 2,
-                  borderTopColor: borderColor,
+                  borderTopColor: theme.backgroundColor,
                 },
                 i !== items.length - 1 && {
                   borderBottomWidth: StyleSheet.hairlineWidth * 2,
-                  borderBottomColor: borderColor,
+                  borderBottomColor: theme.backgroundColor,
                 },
               ]}
               onPress={() => {
@@ -73,7 +71,7 @@ const Picker = (props: PickerProps) => {
                 onClose();
               }}
             >
-              <Marquee style={reverseTextStyle}>{item.value}</Marquee>
+              <Marquee style={theme.reverseTextStyle}>{item.value}</Marquee>
             </Button>
           ))}
         </VStack>

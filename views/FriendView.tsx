@@ -1,6 +1,6 @@
 import { FlashList, ListRenderItemInfo } from "@shopify/flash-list";
 import { useState } from "react";
-import { Dimensions, StyleProp, ViewStyle, useColorScheme } from "react-native";
+import { Dimensions, StyleProp, ViewStyle } from "react-native";
 import {
   Avatar,
   AvatarButton,
@@ -13,6 +13,7 @@ import {
   TextStyles,
   VStack,
   ViewStyles,
+  useTheme,
 } from "../components";
 import t from "../i18n";
 import { Friend, FriendListResult, FriendOnlineState } from "../models/types";
@@ -26,9 +27,7 @@ interface FriendViewProps {
 const FriendView = (props: FriendViewProps) => {
   const placeholder = Math.ceil((Dimensions.get("window").width + 8) / 64);
 
-  const colorScheme = useColorScheme();
-  const style = colorScheme === "light" ? ViewStyles.lightTerritory : ViewStyles.darkTerritory;
-  const color = colorScheme === "light" ? Color.LightTerritory : Color.DarkTerritory;
+  const theme = useTheme();
 
   const [friend, setFriend] = useState<Friend>();
   const [displayFriend, setDisplayFriend] = useState(false);
@@ -131,7 +130,7 @@ const FriendView = (props: FriendViewProps) => {
           return friend.id;
         }}
         renderItem={renderItem}
-        extraData={color}
+        extraData={theme.territoryColor}
         estimatedItemSize={48}
         ListEmptyComponent={
           <HStack flex>
@@ -141,7 +140,7 @@ const FriendView = (props: FriendViewProps) => {
                 size={48}
                 style={[
                   i !== placeholder - 1 ? ViewStyles.mr2 : undefined,
-                  style,
+                  theme.territoryStyle,
                   ViewStyles.disabled,
                 ]}
               />

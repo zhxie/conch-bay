@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, useColorScheme } from "react-native";
 
 export enum Color {
   // UI.
@@ -328,3 +328,27 @@ export const ViewStyles = StyleSheet.create({
     paddingVertical: 16,
   },
 });
+
+export const useTheme = () => {
+  const colorScheme = useColorScheme();
+
+  const textColor = colorScheme === "light" ? Color.LightText : Color.DarkText;
+  const backgroundColor = colorScheme === "light" ? Color.LightBackground : Color.DarkBackground;
+  const territoryColor = colorScheme === "light" ? Color.LightTerritory : Color.DarkTerritory;
+  const textStyle = colorScheme === "light" ? TextStyles.light : TextStyles.dark;
+  const reverseTextStyle = colorScheme === "light" ? TextStyles.dark : TextStyles.light;
+  const backgroundStyle = colorScheme === "light" ? ViewStyles.light : ViewStyles.dark;
+  const territoryStyle =
+    colorScheme === "light" ? ViewStyles.lightTerritory : ViewStyles.darkTerritory;
+
+  return {
+    colorScheme,
+    textColor,
+    backgroundColor,
+    territoryColor,
+    textStyle,
+    reverseTextStyle,
+    backgroundStyle,
+    territoryStyle,
+  };
+};

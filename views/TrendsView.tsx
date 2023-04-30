@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Dimensions, ScrollView, StyleProp, ViewStyle, useColorScheme } from "react-native";
+import { Dimensions, ScrollView, StyleProp, ViewStyle } from "react-native";
 import {
   Center,
   Chart,
@@ -15,6 +15,7 @@ import {
   ToolButton,
   VStack,
   ViewStyles,
+  useTheme,
 } from "../components";
 import t from "../i18n";
 import { burnColor, countBattles, countCoops } from "../utils/ui";
@@ -53,8 +54,7 @@ type CoopDimension =
   | "BE_RESCUED_TEAM_AVERAGE";
 
 const TrendsView = (props: TrendViewProps) => {
-  const colorScheme = useColorScheme();
-  const style = colorScheme === "light" ? ViewStyles.lightTerritory : ViewStyles.darkTerritory;
+  const theme = useTheme();
 
   const [trends, setTrends] = useState(false);
   const [battleDimensions, setBattleDimensions] = useState<BattleDimension[]>(["VICTORY"]);
@@ -262,7 +262,7 @@ const TrendsView = (props: TrendViewProps) => {
             <Text numberOfLines={1}>{battles?.length ?? 0}</Text>
           </Display>
           {battleGroups.length > 0 && (
-            <VStack style={[ViewStyles.rb2, style]}>
+            <VStack style={[ViewStyles.rb2, theme.territoryStyle]}>
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                 <HStack flex center>
                   <ColorFilterButton
@@ -337,7 +337,7 @@ const TrendsView = (props: TrendViewProps) => {
               {battleDimensions.length > 0 && (
                 <Chart
                   dataGroup={battleDimensions.map((dimension) => getBattleData(dimension))}
-                  style={[ViewStyles.rb2, style, { height: 150, width: "100%" }]}
+                  style={[ViewStyles.rb2, theme.territoryStyle, { height: 150, width: "100%" }]}
                 />
               )}
             </VStack>
@@ -348,7 +348,7 @@ const TrendsView = (props: TrendViewProps) => {
             <Text numberOfLines={1}>{coops?.length ?? 0}</Text>
           </Display>
           {coopGroups.length > 0 && (
-            <VStack style={[ViewStyles.rb2, style]}>
+            <VStack style={[ViewStyles.rb2, theme.territoryStyle]}>
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                 <HStack flex center>
                   <ColorFilterButton
@@ -469,7 +469,7 @@ const TrendsView = (props: TrendViewProps) => {
               {coopDimensions.length > 0 && (
                 <Chart
                   dataGroup={coopDimensions.map((dimension) => getCoopData(dimension))}
-                  style={[ViewStyles.rb2, style, { height: 150, width: "100%" }]}
+                  style={[ViewStyles.rb2, theme.territoryStyle, { height: 150, width: "100%" }]}
                 />
               )}
             </VStack>

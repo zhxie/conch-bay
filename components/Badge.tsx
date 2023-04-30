@@ -1,7 +1,7 @@
-import { StyleProp, StyleSheet, ViewStyle, useColorScheme } from "react-native";
+import { StyleProp, StyleSheet, ViewStyle } from "react-native";
 import Pressable from "./Pressable";
 import { Center } from "./Stack";
-import { TextStyles, ViewStyles } from "./Styles";
+import { TextStyles, ViewStyles, useTheme } from "./Styles";
 import Text from "./Text";
 
 interface BadgeProps {
@@ -12,9 +12,9 @@ interface BadgeProps {
 }
 
 const Badge = (props: BadgeProps) => {
-  const colorScheme = useColorScheme();
-  const opacity = colorScheme === "light" ? "1f" : "af";
-  const fontColor = colorScheme === "light" ? props.color : "#ffffffaf";
+  const theme = useTheme();
+  const opacity = theme.colorScheme === "light" ? "1f" : "af";
+  const fontColor = theme.colorScheme === "light" ? props.color : "#ffffffaf";
 
   return (
     <Center

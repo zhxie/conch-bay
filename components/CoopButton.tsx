@@ -1,10 +1,10 @@
 import { createContext, useContext } from "react";
-import { StyleProp, ViewStyle, useColorScheme } from "react-native";
+import { StyleProp, ViewStyle } from "react-native";
 import Icon from "./Icon";
 import ResultButton from "./ResultButton";
 import { Circle } from "./Shape";
 import { HStack } from "./Stack";
-import { Color, TextStyles, ViewStyles } from "./Styles";
+import { Color, TextStyles, ViewStyles, useTheme } from "./Styles";
 import Text from "./Text";
 
 const CoopButtonContext = createContext({ grade: false, changeGrade: () => {} });
@@ -33,10 +33,10 @@ interface CoopButtonProps {
 const CoopButton = (props: CoopButtonProps) => {
   const context = useContext(CoopButtonContext);
 
-  const colorScheme = useColorScheme();
+  const theme = useTheme();
+
   const clearStyle = [TextStyles.b, { color: props.color }];
   const waveStyle = props.isClear ? clearStyle : undefined;
-  const arrowColor = colorScheme === "light" ? Color.LightText : Color.DarkText;
 
   return (
     <ResultButton
@@ -68,7 +68,7 @@ const CoopButton = (props: CoopButtonProps) => {
                       : "arrow-down"
                   }
                   size={14}
-                  color={props.gradeChange > 0 ? props.color : arrowColor}
+                  color={props.gradeChange > 0 ? props.color : theme.textColor}
                 />
                 {` ${props.grade} ${props.gradePoint}`}
               </Text>

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ScrollView, StyleProp, ViewStyle, useColorScheme } from "react-native";
+import { ScrollView, StyleProp, ViewStyle } from "react-native";
 import {
   Button,
   Center,
@@ -13,6 +13,7 @@ import {
   TextStyles,
   VStack,
   ViewStyles,
+  useTheme,
 } from "../components";
 import t from "../i18n";
 import { FilterProps } from "../utils/database";
@@ -63,8 +64,7 @@ const SalmonRunFilterProps = {
 };
 
 const FilterView = (props: FilterViewProps) => {
-  const colorScheme = useColorScheme();
-  const reverseTextStyle = colorScheme === "light" ? TextStyles.dark : TextStyles.light;
+  const theme = useTheme();
 
   const [filter, setFilter] = useState(false);
 
@@ -296,7 +296,7 @@ const FilterView = (props: FilterViewProps) => {
               style={ViewStyles.accent}
               onPress={onClearFilterPress}
             >
-              <Marquee style={reverseTextStyle}>{t("clear_filter")}</Marquee>
+              <Marquee style={theme.reverseTextStyle}>{t("clear_filter")}</Marquee>
             </Button>
           </VStack>
         </VStack>

@@ -1,8 +1,8 @@
-import { ImageStyle, StyleProp, ViewStyle, useColorScheme } from "react-native";
+import { ImageStyle, StyleProp, ViewStyle } from "react-native";
 import Image, { ImageSource } from "./Image";
 import { Circle } from "./Shape";
 import { Center } from "./Stack";
-import { ViewStyles } from "./Styles";
+import { useTheme } from "./Styles";
 
 interface BadgeProps {
   color?: string;
@@ -20,11 +20,10 @@ interface AvatarProps {
 const Avatar = (props: AvatarProps) => {
   const circle = { width: props.size, height: props.size, borderRadius: props.size / 2 };
 
-  const colorScheme = useColorScheme();
-  const style = colorScheme === "light" ? ViewStyles.lightTerritory : ViewStyles.darkTerritory;
+  const theme = useTheme();
 
   return (
-    <Center style={[circle, style, props.style]}>
+    <Center style={[circle, theme.territoryStyle, props.style]}>
       {props.image && (
         <Image
           source={props.image}
