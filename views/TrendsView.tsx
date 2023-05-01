@@ -62,15 +62,33 @@ const TrendsView = (props: TrendViewProps) => {
 
   const split = <T,>(arr: T[], count: number) => {
     const result: T[][] = [];
-    const size = Math.max(Math.ceil(arr.length / count), 1);
+    const size = Math.max(arr.length / count, 1);
     let start = arr.length - size;
+    let n = 0;
     while (start >= 0) {
       const part: T[] = [];
-      for (let i = start; i < start + size && i < arr.length; i++) {
+      for (let i = Math.ceil(start); i < start + size && i < arr.length; i++) {
         part.push(arr[i]);
+        n++;
       }
-      result.push(part.reverse());
+      if (part.length > 0) {
+        result.push(part.reverse());
+      }
       start -= size;
+    }
+    // HACK: complete remaining elements due to loss of precision.
+    if (n < arr.length) {
+      if (result.length === count) {
+        for (let i = arr.length - n - 1; i >= 0; i--) {
+          result[result.length - 1].push(arr[i]);
+        }
+      } else {
+        const part: T[] = [];
+        for (let i = arr.length - n - 1; i >= 0; i--) {
+          part.push(arr[i]);
+        }
+        result.push(part);
+      }
     }
     return result;
   };
