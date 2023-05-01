@@ -122,7 +122,7 @@ const ja = {
   show_player_names: "プレイヤー名を表示",
   show_raw_data: "生データを表示",
   open_in_nintendo_switch_online: "Nintendo Switch Onlineでチェック",
-  coop_notice: "メイン画面のWAVEまたは危険度をタップして、バイト評価称号が表示されます。",
+  coop_notice: "メイン画面のWAVEまたは危険度をタップして、バイト称号が表示されます。",
   // Stats.
   stats: "統計",
   victory: "WIN!",
