@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Dimensions, ScrollView, StyleProp, ViewStyle } from "react-native";
+import { Dimensions, LayoutChangeEvent, ScrollView, StyleProp, ViewStyle } from "react-native";
 import {
   Center,
   Chart,
@@ -56,6 +56,7 @@ type CoopDimension =
 const TrendsView = (props: TrendViewProps) => {
   const theme = useTheme();
 
+  const [point, setPoint] = useState(20);
   const [trends, setTrends] = useState(false);
   const [battleDimensions, setBattleDimensions] = useState<BattleDimension[]>(["VICTORY"]);
   const [coopDimensions, setCoopDimensions] = useState<CoopDimension[]>(["CLEAR"]);
@@ -93,15 +94,17 @@ const TrendsView = (props: TrendViewProps) => {
     return result;
   };
 
-  const pointCount = Math.max(Math.round(Dimensions.get("window").width / 20), 20);
   const battles = props.results?.filter((result) => result.battle).map((result) => result.battle!);
-  const battleGroups = battles ? split(battles, pointCount) : [];
+  const battleGroups = battles ? split(battles, point) : [];
   const coops = props.results?.filter((result) => result.coop).map((result) => result.coop!);
-  const coopGroups = coops ? split(coops, pointCount) : [];
+  const coopGroups = coops ? split(coops, point) : [];
 
   const battleStats = battleGroups.map((group) => countBattles(group));
   const coopStats = coopGroups.map((group) => countCoops(group));
 
+  const onLayout = (event: LayoutChangeEvent) => {
+    setPoint(Math.max(Math.round(event.nativeEvent.layout.width / 20), 20));
+  };
   const onTrendsPress = () => {
     setTrends(true);
   };
@@ -274,7 +277,12 @@ const TrendsView = (props: TrendViewProps) => {
   return (
     <Center style={props.style}>
       <ToolButton icon="trending-up" title={t("trends")} onPress={onTrendsPress} />
-      <Modal isVisible={trends} onClose={onTrendsClose} style={ViewStyles.modal2d}>
+      <Modal
+        isVisible={trends}
+        onClose={onTrendsClose}
+        onLayout={onLayout}
+        style={ViewStyles.modal2d}
+      >
         <VStack style={ViewStyles.mb2}>
           <Display isFirst isLast={battleGroups.length === 0} title={t("battle")}>
             <Text numberOfLines={1}>{battles?.length ?? 0}</Text>

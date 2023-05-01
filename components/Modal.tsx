@@ -1,5 +1,6 @@
 import { FlashList, ListRenderItem } from "@shopify/flash-list";
 import {
+  LayoutChangeEvent,
   NativeScrollEvent,
   NativeSyntheticEvent,
   ScrollView,
@@ -16,6 +17,7 @@ interface ModalProps {
   style?: StyleProp<ViewStyle>;
   onClose?: () => void;
   onModalHide?: () => void;
+  onLayout?: (event: LayoutChangeEvent) => void;
   children?: React.ReactNode;
 }
 
@@ -40,6 +42,7 @@ const Modal = (props: ModalProps) => {
       <ScrollView
         showsHorizontalScrollIndicator={false}
         onScrollEndDrag={onScrollEndDrag}
+        onLayout={props.onLayout}
         style={[ViewStyles.r2, ViewStyles.px4, theme.backgroundStyle, props.style]}
       >
         <View style={{ height: 16 }} />
