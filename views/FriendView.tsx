@@ -25,7 +25,7 @@ interface FriendViewProps {
 }
 
 const FriendView = (props: FriendViewProps) => {
-  const placeholder = Math.ceil((Dimensions.get("window").width + 8) / 64);
+  const placeholder = Math.ceil((Dimensions.get("window").width - 32) / 56);
 
   const theme = useTheme();
 
