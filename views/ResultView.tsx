@@ -579,24 +579,26 @@ const ResultView = (props: ResultViewProps) => {
                   title={t("details")}
                   subChildren={
                     <VStack>
-                      {result.battle.vsHistoryDetail!.bankaraMatch?.earnedUdemaePoint && (
-                        <Display level={1} title={t("rank_points")}>
-                          <Text numberOfLines={1}>
-                            {`${
-                              result.battle.vsHistoryDetail!.bankaraMatch.earnedUdemaePoint > 0
-                                ? "+"
-                                : ""
-                            }${result.battle.vsHistoryDetail!.bankaraMatch.earnedUdemaePoint}p`}
-                          </Text>
-                        </Display>
-                      )}
-                      {result.battle.vsHistoryDetail!.xMatch?.lastXPower && (
-                        <Display level={1} title={t("x_power")}>
-                          <Text numberOfLines={1}>
-                            {`${result.battle.vsHistoryDetail!.xMatch.lastXPower.toFixed(1)}`}
-                          </Text>
-                        </Display>
-                      )}
+                      {result.battle.vsHistoryDetail!.bankaraMatch &&
+                        result.battle.vsHistoryDetail!.bankaraMatch.earnedUdemaePoint !== null && (
+                          <Display level={1} title={t("rank_points")}>
+                            <Text numberOfLines={1}>
+                              {`${
+                                result.battle.vsHistoryDetail!.bankaraMatch.earnedUdemaePoint > 0
+                                  ? "+"
+                                  : ""
+                              }${result.battle.vsHistoryDetail!.bankaraMatch.earnedUdemaePoint}p`}
+                            </Text>
+                          </Display>
+                        )}
+                      {result.battle.vsHistoryDetail!.xMatch &&
+                        result.battle.vsHistoryDetail!.xMatch.lastXPower !== null && (
+                          <Display level={1} title={t("x_power")}>
+                            <Text numberOfLines={1}>
+                              {`${result.battle.vsHistoryDetail!.xMatch.lastXPower.toFixed(1)}`}
+                            </Text>
+                          </Display>
+                        )}
                       {result.battle.vsHistoryDetail!.festMatch && (
                         <VStack>
                           <Display level={1} title={t("clout")}>
@@ -609,7 +611,7 @@ const ResultView = (props: ResultViewProps) => {
                               {`${result.battle.vsHistoryDetail!.festMatch.jewel}`}
                             </Text>
                           </Display>
-                          {result.battle.vsHistoryDetail!.festMatch.myFestPower && (
+                          {result.battle.vsHistoryDetail!.festMatch.myFestPower !== null && (
                             <Display level={1} title={t("splatfest_power")}>
                               <Text numberOfLines={1}>
                                 {`${result.battle.vsHistoryDetail!.festMatch.myFestPower.toFixed(
