@@ -1035,7 +1035,11 @@ const MainView = () => {
             />
           }
           header={
-            <SafeAreaView edges={["top", "left", "right"]} style={{ alignItems: "center" }}>
+            <SafeAreaView
+              edges={["top", "left", "right"]}
+              // HACK: add additional 8px margin in the top.
+              style={{ marginTop: 8, alignItems: "center" }}
+            >
               {!sessionToken && (
                 <Center flex style={[ViewStyles.px4, ViewStyles.mb4]}>
                   <Button style={ViewStyles.accent} onPress={onLogInPress}>
@@ -1122,7 +1126,10 @@ const MainView = () => {
             </SafeAreaView>
           }
           footer={
-            <SafeAreaView edges={["bottom", "left", "right"]} style={{ alignItems: "center" }}>
+            <SafeAreaView
+              edges={["bottom", "left", "right"]}
+              style={[ViewStyles.mb2, { alignItems: "center" }]}
+            >
               {sessionToken.length > 0 && (
                 <VStack style={[ViewStyles.mb4, ViewStyles.wf, ViewStyles.px4]}>
                   <Picker
