@@ -16,7 +16,7 @@ export { FilterButton, ColorFilterButton } from "./FilterButton";
 export { default as FloatingActionButton } from "./FloatingActionButton";
 export { default as GearBox } from "./GearBox";
 export { default as Icon } from "./Icon";
-export { default as IconButton } from "./IconButton";
+export { IconButton, PureIconButton } from "./IconButton";
 export { default as Image } from "./Image";
 export { default as KingSalmonidBox } from "./KingSalmonidBox";
 export { default as Marquee } from "./Marquee";

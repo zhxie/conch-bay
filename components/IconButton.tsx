@@ -41,4 +41,30 @@ const IconButton = (props: IconButtonProps) => {
   );
 };
 
-export default IconButton;
+const PureIconButton = (props: IconButtonProps) => {
+  return (
+    <Pressable
+      isDisabled={props.isDisabled}
+      style={[
+        {
+          width: props.size,
+          height: props.size,
+          backgroundColor: "transparent",
+        },
+        props.style,
+      ]}
+      onPress={props.onPress}
+      onLongPress={props.onLongPress}
+    >
+      <Center flex>
+        <Icon
+          name={props.icon as any}
+          size={props.size}
+          color={props.color ? "white" : Color.MiddleTerritory}
+        />
+      </Center>
+    </Pressable>
+  );
+};
+
+export { IconButton, PureIconButton };

@@ -33,6 +33,7 @@ import {
   KingSalmonidBox,
   Marquee,
   Modal,
+  PureIconButton,
   Splashtag,
   Text,
   TextStyles,
@@ -99,7 +100,7 @@ const ResultView = (props: ResultViewProps) => {
   const [displayCoop, setDisplayCoop] = useState(false);
   const [coopPlayer, setCoopPlayer] = useState<CoopPlayerResult>();
   const [displayCoopPlayer, setDisplayCoopPlayer] = useState(false);
-  const willDisplayResult = useRef(false);
+  const willDisplayNext = useRef<number>();
   const [hidePlayerNames, setHidePlayerNames] = useState(false);
 
   const isVsPlayerDragon = (player: VsPlayer) => {
@@ -298,6 +299,16 @@ const ResultView = (props: ResultViewProps) => {
     return result.join("-");
   };
 
+  const findIndex = () => {
+    const id = result?.battle?.vsHistoryDetail?.id || result?.coop?.coopHistoryDetail?.id;
+    if (id) {
+      return props.results?.findIndex(
+        (result) =>
+          result.battle?.vsHistoryDetail?.id === id || result.coop?.coopHistoryDetail?.id === id
+      );
+    }
+  };
+
   const onDisplayResultClose = () => {
     setDisplayResult(false);
   };
@@ -313,8 +324,38 @@ const ResultView = (props: ResultViewProps) => {
   const onDisplayCoopPlayerClose = () => {
     setDisplayCoopPlayer(false);
   };
+  const onShowPreviousResultPress = () => {
+    const i = findIndex();
+    if (i !== undefined && i + 1 < props.results!.length) {
+      if (
+        (displayBattle && props.results![i + 1].battle) ||
+        (displayCoop && props.results![i + 1].coop)
+      ) {
+        setResult(props.results![i + 1]);
+        return;
+      }
+      willDisplayNext.current = i + 1;
+    }
+    setDisplayBattle(false);
+    setDisplayCoop(false);
+  };
+  const onShowNextResultPress = () => {
+    const i = findIndex();
+    if (i !== undefined && i - 1 >= 0) {
+      if (
+        (displayBattle && props.results![i - 1].battle) ||
+        (displayCoop && props.results![i - 1].coop)
+      ) {
+        setResult(props.results![i - 1]);
+        return;
+      }
+      willDisplayNext.current = i - 1;
+    }
+    setDisplayBattle(false);
+    setDisplayCoop(false);
+  };
   const onShowRawResultPress = () => {
-    willDisplayResult.current = true;
+    willDisplayNext.current = -1;
     setDisplayBattle(false);
     setDisplayCoop(false);
   };
@@ -342,9 +383,19 @@ const ResultView = (props: ResultViewProps) => {
     }
   };
   const onModalHide = () => {
-    if (willDisplayResult.current) {
-      willDisplayResult.current = false;
-      setDisplayResult(true);
+    if (willDisplayNext.current !== undefined) {
+      if (willDisplayNext.current < 0) {
+        setDisplayResult(true);
+      } else {
+        if (props.results?.[willDisplayNext.current].battle) {
+          setResult({ battle: props.results![willDisplayNext.current].battle });
+          setDisplayBattle(true);
+        } else if (props.results?.[willDisplayNext.current].coop) {
+          setResult({ coop: props.results![willDisplayNext.current].coop });
+          setDisplayCoop(true);
+        }
+      }
+      willDisplayNext.current = undefined;
     }
   };
   const onHidePlayerNamesPress = () => {
@@ -506,403 +557,148 @@ const ResultView = (props: ResultViewProps) => {
         style={ViewStyles.modal3d}
       >
         {result?.battle && (
-          <TitledList
-            color={getVsModeColor(result.battle.vsHistoryDetail!.vsMode)}
-            title={t(result.battle.vsHistoryDetail!.vsMode.id)}
-            subtitle={formatAnnotation(result.battle)}
-          >
-            <VStack style={ViewStyles.wf}>
-              {formatTeams(result.battle).map((team, i) => (
-                <VStack key={i} style={ViewStyles.mb2}>
-                  <HStack center justify style={ViewStyles.mb1}>
-                    <HStack flex center style={ViewStyles.mr1}>
-                      <Circle size={12} color={getColor(team.color)} style={ViewStyles.mr1} />
-                      <HStack flex>
-                        <Marquee style={[TextStyles.b, { color: getColor(team.color) }]}>
-                          {`${team.festTeamName ? `${team.festTeamName} ` : ""}${
-                            (team["festStreakWinCount"] ?? 0) > 1
-                              ? `${t("n_win_strike", { n: team["festStreakWinCount"] })} `
-                              : ""
-                          }${team["festUniformName"] ? `${team["festUniformName"]}` : ""}`}
-                        </Marquee>
+          <>
+            <TitledList
+              color={getVsModeColor(result.battle.vsHistoryDetail!.vsMode)}
+              title={t(result.battle.vsHistoryDetail!.vsMode.id)}
+              subtitle={formatAnnotation(result.battle)}
+            >
+              <VStack style={ViewStyles.wf}>
+                {formatTeams(result.battle).map((team, i) => (
+                  <VStack key={i} style={ViewStyles.mb2}>
+                    <HStack center justify style={ViewStyles.mb1}>
+                      <HStack flex center style={ViewStyles.mr1}>
+                        <Circle size={12} color={getColor(team.color)} style={ViewStyles.mr1} />
+                        <HStack flex>
+                          <Marquee style={[TextStyles.b, { color: getColor(team.color) }]}>
+                            {`${team.festTeamName ? `${team.festTeamName} ` : ""}${
+                              (team["festStreakWinCount"] ?? 0) > 1
+                                ? `${t("n_win_strike", { n: team["festStreakWinCount"] })} `
+                                : ""
+                            }${team["festUniformName"] ? `${team["festUniformName"]}` : ""}`}
+                          </Marquee>
+                        </HStack>
+                      </HStack>
+                      <HStack center>
+                        {!!team.result?.noroshi &&
+                          new Array(team.result.noroshi)
+                            .fill(0)
+                            .map((_, i) => (
+                              <Circle
+                                key={i}
+                                size={10}
+                                color={getColor(team.color)}
+                                style={ViewStyles.mr1}
+                              />
+                            ))}
+                        <Text
+                          numberOfLines={1}
+                          style={[TextStyles.b, { color: getColor(team.color) }]}
+                        >
+                          {formatTeamResult(team)}
+                        </Text>
                       </HStack>
                     </HStack>
-                    <HStack center>
-                      {!!team.result?.noroshi &&
-                        new Array(team.result.noroshi)
-                          .fill(0)
-                          .map((_, i) => (
-                            <Circle
-                              key={i}
-                              size={10}
-                              color={getColor(team.color)}
-                              style={ViewStyles.mr1}
-                            />
-                          ))}
-                      <Text
-                        numberOfLines={1}
-                        style={[TextStyles.b, { color: getColor(team.color) }]}
-                      >
-                        {formatTeamResult(team)}
-                      </Text>
-                    </HStack>
-                  </HStack>
-                  {team.players.map((player: VsPlayer, i: number, players: VsPlayer[]) => (
-                    <BattlePlayerButton
-                      key={i}
-                      isFirst={i === 0}
-                      isLast={i === players.length - 1}
-                      name={formatName(player.name, player.species, player.isMyself)}
-                      weapon={getImageCacheSource(player.weapon.image2d.url)}
-                      paint={player.paint}
-                      kill={player.result?.kill}
-                      assist={player.result?.assist}
-                      death={player.result?.death}
-                      special={player.result?.special}
-                      ultraSignal={
-                        team.tricolorRole !== "DEFENSE" ? player.result?.noroshiTry : undefined
-                      }
-                      crown={player.crown}
-                      dragon={isVsPlayerDragon(player) ? getColor(team.color) : undefined}
-                      onPress={() => {
-                        setBattlePlayer(player);
-                        setDisplayBattlePlayer(true);
-                      }}
-                    />
-                  ))}
-                </VStack>
-              ))}
-              <VStack style={ViewStyles.mb2}>
-                <AccordionDisplay
-                  isFirst
-                  isLast
-                  title={t("details")}
-                  subChildren={
-                    <VStack>
-                      {result.battle.vsHistoryDetail!.bankaraMatch &&
-                        result.battle.vsHistoryDetail!.bankaraMatch.earnedUdemaePoint !== null && (
-                          <Display level={1} title={t("rank_points")}>
-                            <Text numberOfLines={1}>
-                              {`${
-                                result.battle.vsHistoryDetail!.bankaraMatch.earnedUdemaePoint > 0
-                                  ? "+"
-                                  : ""
-                              }${result.battle.vsHistoryDetail!.bankaraMatch.earnedUdemaePoint}p`}
-                            </Text>
-                          </Display>
-                        )}
-                      {result.battle.vsHistoryDetail!.xMatch &&
-                        result.battle.vsHistoryDetail!.xMatch.lastXPower !== null && (
-                          <Display level={1} title={t("x_power")}>
-                            <Text numberOfLines={1}>
-                              {`${result.battle.vsHistoryDetail!.xMatch.lastXPower.toFixed(1)}`}
-                            </Text>
-                          </Display>
-                        )}
-                      {result.battle.vsHistoryDetail!.festMatch && (
-                        <VStack>
-                          <Display level={1} title={t("clout")}>
-                            <Text numberOfLines={1}>
-                              {`${result.battle.vsHistoryDetail!.festMatch.contribution}`}
-                            </Text>
-                          </Display>
-                          <Display level={1} title={t("festival_shell")}>
-                            <Text numberOfLines={1}>
-                              {`${result.battle.vsHistoryDetail!.festMatch.jewel}`}
-                            </Text>
-                          </Display>
-                          {result.battle.vsHistoryDetail!.festMatch.myFestPower !== null && (
-                            <Display level={1} title={t("splatfest_power")}>
+                    {team.players.map((player: VsPlayer, i: number, players: VsPlayer[]) => (
+                      <BattlePlayerButton
+                        key={i}
+                        isFirst={i === 0}
+                        isLast={i === players.length - 1}
+                        name={formatName(player.name, player.species, player.isMyself)}
+                        weapon={getImageCacheSource(player.weapon.image2d.url)}
+                        paint={player.paint}
+                        kill={player.result?.kill}
+                        assist={player.result?.assist}
+                        death={player.result?.death}
+                        special={player.result?.special}
+                        ultraSignal={
+                          team.tricolorRole !== "DEFENSE" ? player.result?.noroshiTry : undefined
+                        }
+                        crown={player.crown}
+                        dragon={isVsPlayerDragon(player) ? getColor(team.color) : undefined}
+                        onPress={() => {
+                          setBattlePlayer(player);
+                          setDisplayBattlePlayer(true);
+                        }}
+                      />
+                    ))}
+                  </VStack>
+                ))}
+                <VStack style={ViewStyles.mb2}>
+                  <AccordionDisplay
+                    isFirst
+                    isLast
+                    title={t("details")}
+                    subChildren={
+                      <VStack>
+                        {result.battle.vsHistoryDetail!.bankaraMatch &&
+                          result.battle.vsHistoryDetail!.bankaraMatch.earnedUdemaePoint !==
+                            null && (
+                            <Display level={1} title={t("rank_points")}>
                               <Text numberOfLines={1}>
-                                {`${result.battle.vsHistoryDetail!.festMatch.myFestPower.toFixed(
-                                  1
-                                )}`}
+                                {`${
+                                  result.battle.vsHistoryDetail!.bankaraMatch.earnedUdemaePoint > 0
+                                    ? "+"
+                                    : ""
+                                }${result.battle.vsHistoryDetail!.bankaraMatch.earnedUdemaePoint}p`}
                               </Text>
                             </Display>
                           )}
-                        </VStack>
-                      )}
-                      {result.battle.vsHistoryDetail!.awards.map((award, i) => (
-                        <Display key={i} level={1} title={i === 0 ? t("medals_earned") : ""}>
-                          <HStack center>
-                            <Circle
-                              size={12}
-                              color={formatMedalColor(award)}
-                              style={ViewStyles.mr1}
-                            />
-                            <Text numberOfLines={1}>{award.name}</Text>
-                          </HStack>
-                        </Display>
-                      ))}
-                      <Display isLast level={1} title={t("played_time")}>
-                        <Text numberOfLines={1}>
-                          {formatPlayedTime(result.battle.vsHistoryDetail!.playedTime)}
-                          <Text numberOfLines={1} style={TextStyles.h6}>
-                            {`+${formatDuration(result.battle.vsHistoryDetail!.duration)}`}
-                          </Text>
-                        </Text>
-                      </Display>
-                    </VStack>
-                  }
-                />
-              </VStack>
-              <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onHidePlayerNamesPress}>
-                <Marquee style={theme.reverseTextStyle}>
-                  {hidePlayerNames ? t("show_player_names") : t("hide_player_names")}
-                </Marquee>
-              </Button>
-              <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onShowRawResultPress}>
-                <Marquee style={theme.reverseTextStyle}>{t("show_raw_data")}</Marquee>
-              </Button>
-              <Button style={ViewStyles.accent} onPress={onOpenInNintendoSwitchOnlinePress}>
-                <Marquee style={theme.reverseTextStyle}>
-                  {t("open_in_nintendo_switch_online")}
-                </Marquee>
-              </Button>
-            </VStack>
-            <Modal
-              isVisible={displayBattlePlayer}
-              onClose={onDisplayBattlePlayerClose}
-              style={ViewStyles.modal1d}
-            >
-              {battlePlayer && (
-                <VStack center>
-                  <Splashtag
-                    color={getColor(battlePlayer.nameplate!.background.textColor)}
-                    name={battlePlayer.name}
-                    nameId={battlePlayer.nameId}
-                    // TODO: need translation.
-                    title={battlePlayer.byname}
-                    banner={getImageCacheSource(battlePlayer.nameplate!.background.image.url)}
-                    badges={battlePlayer.nameplate!.badges.map(formatBadge)}
-                    style={ViewStyles.mb2}
-                  />
-                  <BattleWeaponBox
-                    image={getImageCacheSource(battlePlayer.weapon.image2d.url)}
-                    name={td(battlePlayer.weapon)}
-                    subWeapon={getImageCacheSource(battlePlayer.weapon.subWeapon.image.url)}
-                    specialWeapon={getImageCacheSource(battlePlayer.weapon.specialWeapon.image.url)}
-                    style={ViewStyles.mb2}
-                  />
-                  {[battlePlayer.headGear, battlePlayer.clothingGear, battlePlayer.shoesGear].map(
-                    (gear, i, gears) => (
-                      // TODO: show brands with its favorite.
-                      <GearBox
-                        key={i}
-                        isFirst={i === 0}
-                        isLast={i === gears.length - 1}
-                        image={getImageCacheSource(gear.originalImage.url)}
-                        brandImage={getImageCacheSource(gear.brand.image.url)}
-                        // TODO: need translation.
-                        name={gear.name}
-                        brand={t(gear.brand.id)}
-                        primaryAbility={getImageCacheSource(gear.primaryGearPower.image.url)}
-                        additionalAbility={gear.additionalGearPowers.map((gearPower) =>
-                          getImageCacheSource(gearPower.image.url)
-                        )}
-                        paddingTo={getGearPadding([
-                          battlePlayer.headGear,
-                          battlePlayer.clothingGear,
-                          battlePlayer.shoesGear,
-                        ])}
-                      />
-                    )
-                  )}
-                </VStack>
-              )}
-            </Modal>
-          </TitledList>
-        )}
-      </Modal>
-      <Modal
-        isVisible={displayCoop}
-        onClose={onDisplayCoopClose}
-        onModalHide={onModalHide}
-        style={[ViewStyles.modal3d, { paddingHorizontal: 0 }]}
-      >
-        {result?.coop && (
-          <TitledList
-            color={getCoopRuleColor(result.coop.coopHistoryDetail!.rule)}
-            title={t(result.coop.coopHistoryDetail!.rule)}
-            subtitle={result.coop.coopHistoryDetail!.resultWave === -1 ? t("penalty") : undefined}
-          >
-            <VStack style={ViewStyles.wf}>
-              <VStack style={ViewStyles.mb2}>
-                {result.coop.coopHistoryDetail!.waveResults.length > 0 && (
-                  <ScrollView
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    style={ViewStyles.mb2}
-                  >
-                    <HStack center style={ViewStyles.px4}>
-                      {result.coop.coopHistoryDetail!.waveResults.map(
-                        (waveResult, i, waveResults) => (
-                          <WaveBox
-                            key={i}
-                            color={
-                              IsCoopWaveClear(result.coop!, i)
-                                ? getCoopRuleColor(result.coop!.coopHistoryDetail!.rule)!
-                                : undefined
-                            }
-                            isKingSalmonid={!waveResult.deliverNorm}
-                            waterLevel={formatWaterLevel(waveResult)!}
-                            eventWave={
-                              waveResult.deliverNorm
-                                ? formatEventWave(waveResult)
-                                : td(result.coop!.coopHistoryDetail!.bossResult!.boss)
-                            }
-                            deliver={
-                              waveResult.teamDeliverCount ??
-                              (result.coop!.coopHistoryDetail!.bossResult!.hasDefeatBoss ? 1 : 0)
-                            }
-                            quota={waveResult.deliverNorm ?? 1}
-                            appearance={waveResult.goldenPopCount}
-                            specialWeapons={formatSpecialWeapon(
-                              result.coop!,
-                              i,
-                              waveResult.deliverNorm ? 0 : i
-                            )}
-                            specialWeaponSupplied={waveResult.deliverNorm ? 2 : 1}
-                            style={i !== waveResults.length - 1 ? ViewStyles.mr2 : undefined}
-                          />
-                        )
-                      )}
-                    </HStack>
-                  </ScrollView>
-                )}
-                {(result.coop.coopHistoryDetail!.enemyResults.length > 0 ||
-                  result.coop.coopHistoryDetail!.bossResult !== null) && (
-                  <ScrollView
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    style={ViewStyles.mb2}
-                  >
-                    <HStack center style={ViewStyles.px4}>
-                      {result.coop.coopHistoryDetail!.bossResult !== null && (
-                        <KingSalmonidBox
-                          color={
-                            result.coop.coopHistoryDetail!.bossResult.hasDefeatBoss
-                              ? getCoopRuleColor(result.coop.coopHistoryDetail!.rule)!
-                              : undefined
-                          }
-                          name={td(
-                            result.coop.coopHistoryDetail!.bossResult.boss as ScopeWithDefaultValue
+                        {result.battle.vsHistoryDetail!.xMatch &&
+                          result.battle.vsHistoryDetail!.xMatch.lastXPower !== null && (
+                            <Display level={1} title={t("x_power")}>
+                              <Text numberOfLines={1}>
+                                {`${result.battle.vsHistoryDetail!.xMatch.lastXPower.toFixed(1)}`}
+                              </Text>
+                            </Display>
                           )}
-                          bronzeScale={result.coop.coopHistoryDetail!.scale!.bronze}
-                          silverScale={result.coop.coopHistoryDetail!.scale!.silver}
-                          goldScale={result.coop.coopHistoryDetail!.scale!.gold}
-                          style={
-                            result.coop.coopHistoryDetail!.enemyResults.length > 0
-                              ? ViewStyles.mr2
-                              : undefined
-                          }
-                        />
-                      )}
-                      {result.coop.coopHistoryDetail!.enemyResults.map(
-                        (enemyResult, i, enemyResults) => (
-                          <BossSalmonidBox
-                            key={i}
-                            color={
-                              enemyResult.teamDefeatCount === enemyResult.popCount
-                                ? getCoopRuleColor(result.coop!.coopHistoryDetail!.rule)!
-                                : undefined
-                            }
-                            name={td(enemyResult.enemy)}
-                            defeat={enemyResult.defeatCount}
-                            teamDefeat={enemyResult.teamDefeatCount}
-                            appearance={enemyResult.popCount}
-                            style={i !== enemyResults.length - 1 ? ViewStyles.mr2 : undefined}
-                          />
-                        )
-                      )}
-                    </HStack>
-                  </ScrollView>
-                )}
-                <VStack style={ViewStyles.px4}>
-                  {[
-                    result.coop.coopHistoryDetail!.myResult,
-                    ...result.coop.coopHistoryDetail!.memberResults,
-                  ].map((memberResult, i, memberResults) => (
-                    <CoopPlayerButton
-                      key={i}
-                      isFirst={i === 0}
-                      isLast={i === memberResults.length - 1}
-                      name={formatName(
-                        memberResult.player.name,
-                        memberResult.player.species,
-                        i === 0
-                      )}
-                      subtitle={`${t("boss_salmonids")} x${memberResult.defeatEnemyCount}`}
-                      deliverGoldenEgg={memberResult.goldenDeliverCount}
-                      assistGoldenEgg={memberResult.goldenAssistCount}
-                      powerEgg={memberResult.deliverCount}
-                      rescue={memberResult.rescueCount}
-                      rescued={memberResult.rescuedCount}
-                      onPress={() => {
-                        setCoopPlayer(memberResult);
-                        setDisplayCoopPlayer(true);
-                      }}
-                    />
-                  ))}
+                        {result.battle.vsHistoryDetail!.festMatch && (
+                          <VStack>
+                            <Display level={1} title={t("clout")}>
+                              <Text numberOfLines={1}>
+                                {`${result.battle.vsHistoryDetail!.festMatch.contribution}`}
+                              </Text>
+                            </Display>
+                            <Display level={1} title={t("festival_shell")}>
+                              <Text numberOfLines={1}>
+                                {`${result.battle.vsHistoryDetail!.festMatch.jewel}`}
+                              </Text>
+                            </Display>
+                            {result.battle.vsHistoryDetail!.festMatch.myFestPower !== null && (
+                              <Display level={1} title={t("splatfest_power")}>
+                                <Text numberOfLines={1}>
+                                  {`${result.battle.vsHistoryDetail!.festMatch.myFestPower.toFixed(
+                                    1
+                                  )}`}
+                                </Text>
+                              </Display>
+                            )}
+                          </VStack>
+                        )}
+                        {result.battle.vsHistoryDetail!.awards.map((award, i) => (
+                          <Display key={i} level={1} title={i === 0 ? t("medals_earned") : ""}>
+                            <HStack center>
+                              <Circle
+                                size={12}
+                                color={formatMedalColor(award)}
+                                style={ViewStyles.mr1}
+                              />
+                              <Text numberOfLines={1}>{award.name}</Text>
+                            </HStack>
+                          </Display>
+                        ))}
+                        <Display isLast level={1} title={t("played_time")}>
+                          <Text numberOfLines={1}>
+                            {formatPlayedTime(result.battle.vsHistoryDetail!.playedTime)}
+                            <Text numberOfLines={1} style={TextStyles.h6}>
+                              {`+${formatDuration(result.battle.vsHistoryDetail!.duration)}`}
+                            </Text>
+                          </Text>
+                        </Display>
+                      </VStack>
+                    }
+                  />
                 </VStack>
-              </VStack>
-              <VStack style={[ViewStyles.mb2, ViewStyles.px4]}>
-                <AccordionDisplay
-                  isFirst
-                  isLast
-                  title={t("details")}
-                  subChildren={
-                    <VStack>
-                      {result.coop.coopHistoryDetail!.jobPoint !== null && (
-                        <VStack>
-                          <Display level={1} title={t("your_points")}>
-                            <Text numberOfLines={1}>{result.coop.coopHistoryDetail!.jobPoint}</Text>
-                          </Display>
-                          <Display level={1} title={t("job_score")}>
-                            <Text numberOfLines={1}>
-                              {result.coop.coopHistoryDetail!.jobScore ?? "-"}
-                            </Text>
-                          </Display>
-                          <Display level={1} title={t("pay_grade")}>
-                            <Text numberOfLines={1}>
-                              {result.coop.coopHistoryDetail!.jobRate?.toFixed(2) ?? "-"}
-                            </Text>
-                          </Display>
-                          <Display level={1} title={t("clear_bonus")}>
-                            <Text numberOfLines={1}>
-                              {result.coop.coopHistoryDetail!.jobBonus ?? "-"}
-                            </Text>
-                          </Display>
-                        </VStack>
-                      )}
-                      {result.coop.coopHistoryDetail!.smellMeter !== null && (
-                        <VStack>
-                          <Display level={1} title={t("smell")}>
-                            <Text numberOfLines={1}>
-                              {`${result.coop.coopHistoryDetail!.smellMeter}/5`}
-                            </Text>
-                          </Display>
-                        </VStack>
-                      )}
-                      {result.coop.coopHistoryDetail!.scenarioCode && (
-                        <VStack>
-                          <Display level={1} title={t("scenario_code")}>
-                            <Text numberOfLines={1}>
-                              {formatScenarioCode(result.coop.coopHistoryDetail!.scenarioCode)}
-                            </Text>
-                          </Display>
-                        </VStack>
-                      )}
-                      <Display isLast level={1} title={t("played_time")}>
-                        <Text numberOfLines={1}>
-                          {formatPlayedTime(result.coop.coopHistoryDetail!.playedTime)}
-                        </Text>
-                      </Display>
-                    </VStack>
-                  }
-                />
-              </VStack>
-              <VStack style={ViewStyles.px4}>
                 <Button
                   style={[ViewStyles.mb2, ViewStyles.accent]}
                   onPress={onHidePlayerNamesPress}
@@ -914,66 +710,363 @@ const ResultView = (props: ResultViewProps) => {
                 <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onShowRawResultPress}>
                   <Marquee style={theme.reverseTextStyle}>{t("show_raw_data")}</Marquee>
                 </Button>
-                <Button
-                  style={[
-                    result.coop.coopHistoryDetail!.rule !== "TEAM_CONTEST" && ViewStyles.mb2,
-                    ViewStyles.accent,
-                  ]}
-                  onPress={onOpenInNintendoSwitchOnlinePress}
-                >
+                <Button style={ViewStyles.accent} onPress={onOpenInNintendoSwitchOnlinePress}>
                   <Marquee style={theme.reverseTextStyle}>
                     {t("open_in_nintendo_switch_online")}
                   </Marquee>
                 </Button>
-                {result.coop.coopHistoryDetail!.rule !== "TEAM_CONTEST" && (
-                  <HStack style={ViewStyles.c}>
-                    <Icon
-                      name="info"
-                      size={14}
-                      color={Color.MiddleTerritory}
-                      style={ViewStyles.mr1}
-                    />
-                    <HStack style={ViewStyles.i}>
-                      <Marquee style={TextStyles.subtle}>{t("coop_notice")}</Marquee>
-                    </HStack>
-                  </HStack>
-                )}
               </VStack>
-            </VStack>
-            <Modal
-              isVisible={displayCoopPlayer}
-              onClose={onDisplayCoopPlayerClose}
-              style={ViewStyles.modal1d}
-            >
-              {coopPlayer && (
-                <VStack center>
-                  <Splashtag
-                    color={getColor(coopPlayer.player.nameplate!.background.textColor)}
-                    name={coopPlayer.player.name}
-                    nameId={coopPlayer.player.nameId}
-                    // TODO: need translation.
-                    title={coopPlayer.player.byname}
-                    banner={getImageCacheSource(coopPlayer.player.nameplate!.background.image.url)}
-                    badges={coopPlayer.player.nameplate!.badges.map(formatBadge)}
-                    style={ViewStyles.mb2}
-                  />
-                  {coopPlayer.specialWeapon && (
-                    <CoopWeaponBox
-                      mainWeapons={coopPlayer.weapons.map((weapon) =>
-                        getImageCacheSource(weapon.image.url)
-                      )}
-                      specialWeapon={getImageCacheSource(coopPlayer.specialWeapon.image.url)}
+              <Modal
+                isVisible={displayBattlePlayer}
+                onClose={onDisplayBattlePlayerClose}
+                style={ViewStyles.modal1d}
+              >
+                {battlePlayer && (
+                  <VStack center>
+                    <Splashtag
+                      color={getColor(battlePlayer.nameplate!.background.textColor)}
+                      name={battlePlayer.name}
+                      nameId={battlePlayer.nameId}
+                      // TODO: need translation.
+                      title={battlePlayer.byname}
+                      banner={getImageCacheSource(battlePlayer.nameplate!.background.image.url)}
+                      badges={battlePlayer.nameplate!.badges.map(formatBadge)}
                       style={ViewStyles.mb2}
                     />
+                    <BattleWeaponBox
+                      image={getImageCacheSource(battlePlayer.weapon.image2d.url)}
+                      name={td(battlePlayer.weapon)}
+                      subWeapon={getImageCacheSource(battlePlayer.weapon.subWeapon.image.url)}
+                      specialWeapon={getImageCacheSource(
+                        battlePlayer.weapon.specialWeapon.image.url
+                      )}
+                      style={ViewStyles.mb2}
+                    />
+                    {[battlePlayer.headGear, battlePlayer.clothingGear, battlePlayer.shoesGear].map(
+                      (gear, i, gears) => (
+                        // TODO: show brands with its favorite.
+                        <GearBox
+                          key={i}
+                          isFirst={i === 0}
+                          isLast={i === gears.length - 1}
+                          image={getImageCacheSource(gear.originalImage.url)}
+                          brandImage={getImageCacheSource(gear.brand.image.url)}
+                          // TODO: need translation.
+                          name={gear.name}
+                          brand={t(gear.brand.id)}
+                          primaryAbility={getImageCacheSource(gear.primaryGearPower.image.url)}
+                          additionalAbility={gear.additionalGearPowers.map((gearPower) =>
+                            getImageCacheSource(gearPower.image.url)
+                          )}
+                          paddingTo={getGearPadding([
+                            battlePlayer.headGear,
+                            battlePlayer.clothingGear,
+                            battlePlayer.shoesGear,
+                          ])}
+                        />
+                      )
+                    )}
+                  </VStack>
+                )}
+              </Modal>
+            </TitledList>
+            <PureIconButton
+              size={24}
+              icon="chevron-left"
+              style={{ position: "absolute", top: 14, marginLeft: -4 }}
+              onPress={onShowPreviousResultPress}
+            />
+            <PureIconButton
+              size={24}
+              icon="chevron-right"
+              style={{ position: "absolute", top: 14, right: 0, marginRight: -4 }}
+              onPress={onShowNextResultPress}
+            />
+          </>
+        )}
+      </Modal>
+      <Modal
+        isVisible={displayCoop}
+        onClose={onDisplayCoopClose}
+        onModalHide={onModalHide}
+        style={[ViewStyles.modal3d, { paddingHorizontal: 0 }]}
+      >
+        {result?.coop && (
+          <>
+            <TitledList
+              color={getCoopRuleColor(result.coop.coopHistoryDetail!.rule)}
+              title={t(result.coop.coopHistoryDetail!.rule)}
+              subtitle={result.coop.coopHistoryDetail!.resultWave === -1 ? t("penalty") : undefined}
+            >
+              <VStack style={ViewStyles.wf}>
+                <VStack style={ViewStyles.mb2}>
+                  {result.coop.coopHistoryDetail!.waveResults.length > 0 && (
+                    <ScrollView
+                      horizontal
+                      showsHorizontalScrollIndicator={false}
+                      style={ViewStyles.mb2}
+                    >
+                      <HStack center style={ViewStyles.px4}>
+                        {result.coop.coopHistoryDetail!.waveResults.map(
+                          (waveResult, i, waveResults) => (
+                            <WaveBox
+                              key={i}
+                              color={
+                                IsCoopWaveClear(result.coop!, i)
+                                  ? getCoopRuleColor(result.coop!.coopHistoryDetail!.rule)!
+                                  : undefined
+                              }
+                              isKingSalmonid={!waveResult.deliverNorm}
+                              waterLevel={formatWaterLevel(waveResult)!}
+                              eventWave={
+                                waveResult.deliverNorm
+                                  ? formatEventWave(waveResult)
+                                  : td(result.coop!.coopHistoryDetail!.bossResult!.boss)
+                              }
+                              deliver={
+                                waveResult.teamDeliverCount ??
+                                (result.coop!.coopHistoryDetail!.bossResult!.hasDefeatBoss ? 1 : 0)
+                              }
+                              quota={waveResult.deliverNorm ?? 1}
+                              appearance={waveResult.goldenPopCount}
+                              specialWeapons={formatSpecialWeapon(
+                                result.coop!,
+                                i,
+                                waveResult.deliverNorm ? 0 : i
+                              )}
+                              specialWeaponSupplied={waveResult.deliverNorm ? 2 : 1}
+                              style={i !== waveResults.length - 1 ? ViewStyles.mr2 : undefined}
+                            />
+                          )
+                        )}
+                      </HStack>
+                    </ScrollView>
                   )}
-                  <WorkSuitBox
-                    image={getImageCacheSource(coopPlayer.player.uniform.image.url)}
-                    name={td(coopPlayer.player.uniform)}
+                  {(result.coop.coopHistoryDetail!.enemyResults.length > 0 ||
+                    result.coop.coopHistoryDetail!.bossResult !== null) && (
+                    <ScrollView
+                      horizontal
+                      showsHorizontalScrollIndicator={false}
+                      style={ViewStyles.mb2}
+                    >
+                      <HStack center style={ViewStyles.px4}>
+                        {result.coop.coopHistoryDetail!.bossResult !== null && (
+                          <KingSalmonidBox
+                            color={
+                              result.coop.coopHistoryDetail!.bossResult.hasDefeatBoss
+                                ? getCoopRuleColor(result.coop.coopHistoryDetail!.rule)!
+                                : undefined
+                            }
+                            name={td(
+                              result.coop.coopHistoryDetail!.bossResult
+                                .boss as ScopeWithDefaultValue
+                            )}
+                            bronzeScale={result.coop.coopHistoryDetail!.scale!.bronze}
+                            silverScale={result.coop.coopHistoryDetail!.scale!.silver}
+                            goldScale={result.coop.coopHistoryDetail!.scale!.gold}
+                            style={
+                              result.coop.coopHistoryDetail!.enemyResults.length > 0
+                                ? ViewStyles.mr2
+                                : undefined
+                            }
+                          />
+                        )}
+                        {result.coop.coopHistoryDetail!.enemyResults.map(
+                          (enemyResult, i, enemyResults) => (
+                            <BossSalmonidBox
+                              key={i}
+                              color={
+                                enemyResult.teamDefeatCount === enemyResult.popCount
+                                  ? getCoopRuleColor(result.coop!.coopHistoryDetail!.rule)!
+                                  : undefined
+                              }
+                              name={td(enemyResult.enemy)}
+                              defeat={enemyResult.defeatCount}
+                              teamDefeat={enemyResult.teamDefeatCount}
+                              appearance={enemyResult.popCount}
+                              style={i !== enemyResults.length - 1 ? ViewStyles.mr2 : undefined}
+                            />
+                          )
+                        )}
+                      </HStack>
+                    </ScrollView>
+                  )}
+                  <VStack style={ViewStyles.px4}>
+                    {[
+                      result.coop.coopHistoryDetail!.myResult,
+                      ...result.coop.coopHistoryDetail!.memberResults,
+                    ].map((memberResult, i, memberResults) => (
+                      <CoopPlayerButton
+                        key={i}
+                        isFirst={i === 0}
+                        isLast={i === memberResults.length - 1}
+                        name={formatName(
+                          memberResult.player.name,
+                          memberResult.player.species,
+                          i === 0
+                        )}
+                        subtitle={`${t("boss_salmonids")} x${memberResult.defeatEnemyCount}`}
+                        deliverGoldenEgg={memberResult.goldenDeliverCount}
+                        assistGoldenEgg={memberResult.goldenAssistCount}
+                        powerEgg={memberResult.deliverCount}
+                        rescue={memberResult.rescueCount}
+                        rescued={memberResult.rescuedCount}
+                        onPress={() => {
+                          setCoopPlayer(memberResult);
+                          setDisplayCoopPlayer(true);
+                        }}
+                      />
+                    ))}
+                  </VStack>
+                </VStack>
+                <VStack style={[ViewStyles.mb2, ViewStyles.px4]}>
+                  <AccordionDisplay
+                    isFirst
+                    isLast
+                    title={t("details")}
+                    subChildren={
+                      <VStack>
+                        {result.coop.coopHistoryDetail!.jobPoint !== null && (
+                          <VStack>
+                            <Display level={1} title={t("your_points")}>
+                              <Text numberOfLines={1}>
+                                {result.coop.coopHistoryDetail!.jobPoint}
+                              </Text>
+                            </Display>
+                            <Display level={1} title={t("job_score")}>
+                              <Text numberOfLines={1}>
+                                {result.coop.coopHistoryDetail!.jobScore ?? "-"}
+                              </Text>
+                            </Display>
+                            <Display level={1} title={t("pay_grade")}>
+                              <Text numberOfLines={1}>
+                                {result.coop.coopHistoryDetail!.jobRate?.toFixed(2) ?? "-"}
+                              </Text>
+                            </Display>
+                            <Display level={1} title={t("clear_bonus")}>
+                              <Text numberOfLines={1}>
+                                {result.coop.coopHistoryDetail!.jobBonus ?? "-"}
+                              </Text>
+                            </Display>
+                          </VStack>
+                        )}
+                        {result.coop.coopHistoryDetail!.smellMeter !== null && (
+                          <VStack>
+                            <Display level={1} title={t("smell")}>
+                              <Text numberOfLines={1}>
+                                {`${result.coop.coopHistoryDetail!.smellMeter}/5`}
+                              </Text>
+                            </Display>
+                          </VStack>
+                        )}
+                        {result.coop.coopHistoryDetail!.scenarioCode && (
+                          <VStack>
+                            <Display level={1} title={t("scenario_code")}>
+                              <Text numberOfLines={1}>
+                                {formatScenarioCode(result.coop.coopHistoryDetail!.scenarioCode)}
+                              </Text>
+                            </Display>
+                          </VStack>
+                        )}
+                        <Display isLast level={1} title={t("played_time")}>
+                          <Text numberOfLines={1}>
+                            {formatPlayedTime(result.coop.coopHistoryDetail!.playedTime)}
+                          </Text>
+                        </Display>
+                      </VStack>
+                    }
                   />
                 </VStack>
-              )}
-            </Modal>
-          </TitledList>
+                <VStack style={ViewStyles.px4}>
+                  <Button
+                    style={[ViewStyles.mb2, ViewStyles.accent]}
+                    onPress={onHidePlayerNamesPress}
+                  >
+                    <Marquee style={theme.reverseTextStyle}>
+                      {hidePlayerNames ? t("show_player_names") : t("hide_player_names")}
+                    </Marquee>
+                  </Button>
+                  <Button
+                    style={[ViewStyles.mb2, ViewStyles.accent]}
+                    onPress={onShowRawResultPress}
+                  >
+                    <Marquee style={theme.reverseTextStyle}>{t("show_raw_data")}</Marquee>
+                  </Button>
+                  <Button
+                    style={[
+                      result.coop.coopHistoryDetail!.rule !== "TEAM_CONTEST" && ViewStyles.mb2,
+                      ViewStyles.accent,
+                    ]}
+                    onPress={onOpenInNintendoSwitchOnlinePress}
+                  >
+                    <Marquee style={theme.reverseTextStyle}>
+                      {t("open_in_nintendo_switch_online")}
+                    </Marquee>
+                  </Button>
+                  {result.coop.coopHistoryDetail!.rule !== "TEAM_CONTEST" && (
+                    <HStack style={ViewStyles.c}>
+                      <Icon
+                        name="info"
+                        size={14}
+                        color={Color.MiddleTerritory}
+                        style={ViewStyles.mr1}
+                      />
+                      <HStack style={ViewStyles.i}>
+                        <Marquee style={TextStyles.subtle}>{t("coop_notice")}</Marquee>
+                      </HStack>
+                    </HStack>
+                  )}
+                </VStack>
+              </VStack>
+              <Modal
+                isVisible={displayCoopPlayer}
+                onClose={onDisplayCoopPlayerClose}
+                style={ViewStyles.modal1d}
+              >
+                {coopPlayer && (
+                  <VStack center>
+                    <Splashtag
+                      color={getColor(coopPlayer.player.nameplate!.background.textColor)}
+                      name={coopPlayer.player.name}
+                      nameId={coopPlayer.player.nameId}
+                      // TODO: need translation.
+                      title={coopPlayer.player.byname}
+                      banner={getImageCacheSource(
+                        coopPlayer.player.nameplate!.background.image.url
+                      )}
+                      badges={coopPlayer.player.nameplate!.badges.map(formatBadge)}
+                      style={ViewStyles.mb2}
+                    />
+                    {coopPlayer.specialWeapon && (
+                      <CoopWeaponBox
+                        mainWeapons={coopPlayer.weapons.map((weapon) =>
+                          getImageCacheSource(weapon.image.url)
+                        )}
+                        specialWeapon={getImageCacheSource(coopPlayer.specialWeapon.image.url)}
+                        style={ViewStyles.mb2}
+                      />
+                    )}
+                    <WorkSuitBox
+                      image={getImageCacheSource(coopPlayer.player.uniform.image.url)}
+                      name={td(coopPlayer.player.uniform)}
+                    />
+                  </VStack>
+                )}
+              </Modal>
+            </TitledList>
+            <PureIconButton
+              size={24}
+              icon="chevron-left"
+              style={{ position: "absolute", top: 14, left: 16, marginLeft: -4 }}
+              onPress={onShowPreviousResultPress}
+            />
+            <PureIconButton
+              size={24}
+              icon="chevron-right"
+              style={{ position: "absolute", top: 14, right: 16, marginRight: -4 }}
+              onPress={onShowNextResultPress}
+            />
+          </>
         )}
       </Modal>
     </VStack>
