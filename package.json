@@ -34,7 +34,6 @@
     "expo-system-ui": "~2.2.1",
     "expo-web-browser": "~12.1.1",
     "i18n-js": "^4.2.0",
-    "pako": "^2.1.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-native": "0.71.7",
@@ -54,7 +53,6 @@
     "@mmomtchev/expo-android-localized-app-name": "^1.0.1",
     "@trivago/prettier-plugin-sort-imports": "^4.0.0",
     "@types/color-convert": "^2.0.0",
-    "@types/pako": "^2.0.0",
     "@types/react": "~18.0.27",
     "@typescript-eslint/eslint-plugin": "^5.47.0",
     "@typescript-eslint/parser": "^5.47.0",
@@ -65,6 +63,9 @@
     "patch-package": "^6.5.0",
     "prettier": "^2.8.1",
     "typescript": "^4.9.4"
+  },
+  "resolutions": {
+    "@expo/config-plugins": "~6.0.0"
   },
   "author": "Sketch",
   "private": true
