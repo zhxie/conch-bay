@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Dimensions, LayoutChangeEvent, ScrollView, StyleProp, ViewStyle } from "react-native";
 import {
   Center,
@@ -94,13 +94,22 @@ const TrendsView = (props: TrendViewProps) => {
     return result;
   };
 
-  const battles = props.results?.filter((result) => result.battle).map((result) => result.battle!);
-  const battleGroups = battles ? split(battles, point) : [];
-  const coops = props.results?.filter((result) => result.coop).map((result) => result.coop!);
-  const coopGroups = coops ? split(coops, point) : [];
+  const battles = useMemo(
+    () => props.results?.filter((result) => result.battle).map((result) => result.battle!),
+    [props.results]
+  );
+  const battleGroups = useMemo(() => (battles ? split(battles, point) : []), [battles]);
+  const coops = useMemo(
+    () => props.results?.filter((result) => result.coop).map((result) => result.coop!),
+    [props.results]
+  );
+  const coopGroups = useMemo(() => (coops ? split(coops, point) : []), [coops]);
 
-  const battleStats = battleGroups.map((group) => countBattles(group));
-  const coopStats = coopGroups.map((group) => countCoops(group));
+  const battleStats = useMemo(
+    () => battleGroups.map((group) => countBattles(group)),
+    [battleGroups]
+  );
+  const coopStats = useMemo(() => coopGroups.map((group) => countCoops(group)), [coopGroups]);
 
   const onLayout = (event: LayoutChangeEvent) => {
     setPoint(Math.max(Math.round(event.nativeEvent.layout.width / 20), 20));

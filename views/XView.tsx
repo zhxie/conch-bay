@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { StyleProp, View, ViewStyle } from "react-native";
 import { BadgeButton, Center, Color, HStack, Modal, ViewStyles, XBox } from "../components";
 import t from "../i18n";
@@ -14,7 +14,10 @@ interface XViewProps {
 const XView = (props: XViewProps) => {
   const [x, setX] = useState(false);
 
-  const maxPower = Math.max(props.splatZones, props.towerControl, props.rainmaker, props.clamBlitz);
+  const maxPower = useMemo(
+    () => Math.max(props.splatZones, props.towerControl, props.rainmaker, props.clamBlitz),
+    [props.splatZones, props.towerControl, props.rainmaker, props.clamBlitz]
+  );
 
   const onXPress = () => {
     setX(true);

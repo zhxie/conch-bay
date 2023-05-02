@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import "dayjs/plugin/advancedFormat";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { ScrollView, StyleProp, ViewStyle } from "react-native";
 import {
   Color,
@@ -67,19 +67,25 @@ const ScheduleView = (props: ScheduleViewProps) => {
     return schedule["festMatchSetting"] as FestMatchSetting | null;
   };
 
-  const splatfestSchedules = props.schedules?.festSchedules.nodes.filter((node) =>
-    getMatchSetting(node)
+  const splatfestSchedules = useMemo(
+    () => props.schedules?.festSchedules.nodes.filter((node) => getMatchSetting(node)),
+    [props.schedules]
   );
   const currentSplatfest = props.schedules?.currentFest?.tricolorStage
     ? props.schedules.currentFest
     : undefined;
-  const regularSchedules = props.schedules?.regularSchedules.nodes.filter((node) =>
-    getMatchSetting(node)
+  const regularSchedules = useMemo(
+    () => props.schedules?.regularSchedules.nodes.filter((node) => getMatchSetting(node)),
+    [props.schedules]
   );
-  const anarchySchedules = props.schedules?.bankaraSchedules.nodes.filter((node) =>
-    getMatchSetting(node)
+  const anarchySchedules = useMemo(
+    () => props.schedules?.bankaraSchedules.nodes.filter((node) => getMatchSetting(node)),
+    [props.schedules]
   );
-  const xSchedules = props.schedules?.xSchedules.nodes.filter((node) => getMatchSetting(node));
+  const xSchedules = useMemo(
+    () => props.schedules?.xSchedules.nodes.filter((node) => getMatchSetting(node)),
+    [props.schedules]
+  );
   const bigRunShifts = props.schedules?.coopGroupingSchedule.bigRunSchedules.nodes;
   const eggstraWorkShifts = props.schedules?.coopGroupingSchedule.teamContestSchedules.nodes;
   const regularShifts = props.schedules?.coopGroupingSchedule.regularSchedules.nodes;

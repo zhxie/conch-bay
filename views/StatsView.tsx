@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { StyleProp, ViewStyle } from "react-native";
 import {
   AccordionDisplay,
@@ -24,13 +24,21 @@ interface StatsViewProps {
 const StatsView = (props: StatsViewProps) => {
   const [stats, setStats] = useState(false);
 
-  const battleStats = countBattles(
-    (props.results?.map((result) => result.battle).filter((battle) => battle) ??
-      []) as VsHistoryDetailResult[]
+  const battleStats = useMemo(
+    () =>
+      countBattles(
+        (props.results?.map((result) => result.battle).filter((battle) => battle) ??
+          []) as VsHistoryDetailResult[]
+      ),
+    [props.results]
   );
-  const coopStats = countCoops(
-    (props.results?.map((result) => result.coop).filter((coop) => coop) ??
-      []) as CoopHistoryDetailResult[]
+  const coopStats = useMemo(
+    () =>
+      countCoops(
+        (props.results?.map((result) => result.coop).filter((coop) => coop) ??
+          []) as CoopHistoryDetailResult[]
+      ),
+    [props.results]
   );
 
   const onStatsPress = () => {

@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { StyleProp, ViewStyle } from "react-native";
 import {
   Area,
@@ -25,7 +26,7 @@ interface LineProps {
 const AreaLine = (props: LineProps) => {
   const theme = useTheme();
 
-  const data = props.data.map((datum, i) => ({ x: i, y: datum }));
+  const data = useMemo(() => props.data.map((datum, i) => ({ x: i, y: datum })), [props.data]);
 
   return (
     <>
@@ -77,7 +78,7 @@ const AreaLine = (props: LineProps) => {
 const ScatterLine = (props: LineProps) => {
   const theme = useTheme();
 
-  const data = props.data.map((datum, i) => ({ x: i, y: datum }));
+  const data = useMemo(() => props.data.map((datum, i) => ({ x: i, y: datum })), [props.data]);
 
   return (
     <>
@@ -122,18 +123,21 @@ interface ChartProps {
 }
 
 const Chart = (props: ChartProps) => {
-  const max =
-    Math.max(
-      ...props.dataGroup
-        .filter((data) => !data.relative)
-        .map((data) => {
-          if (data.max !== undefined) {
-            return data.max;
-          }
-          return Math.max(...data.data);
-        }),
-      0
-    ) || 100;
+  const max = useMemo(
+    () =>
+      Math.max(
+        ...props.dataGroup
+          .filter((data) => !data.relative)
+          .map((data) => {
+            if (data.max !== undefined) {
+              return data.max;
+            }
+            return Math.max(...data.data);
+          }),
+        0
+      ) || 100,
+    [props.dataGroup]
+  );
 
   const normalize = (data: ChartData) => {
     if (!data.relative) {
