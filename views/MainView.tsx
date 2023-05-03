@@ -304,76 +304,78 @@ const MainView = () => {
   const refresh = async () => {
     setRefreshing(true);
     try {
-      // Fetch schedules and shop.
       await Promise.all([
+        // Fetch schedules and shop.
         fetchSchedules().then((schedules) => setSchedules(schedules)),
         fetchShop(t("lang")).then((shop) => setShop(shop)),
-      ]);
-      if (sessionToken) {
-        // Attempt to friends.
-        let newBulletToken = "";
-        let friendsAttempt: FriendListResult | undefined;
-        if (bulletToken.length > 0) {
-          try {
-            friendsAttempt = await fetchFriends(bulletToken);
-            newBulletToken = bulletToken;
-          } catch {
-            /* empty */
-          }
-        }
-        if (friendsAttempt) {
-          setFriends(friendsAttempt);
-        }
-
-        // Regenerate bullet token if necessary.
-        if (!newBulletToken) {
-          // Also update versions.
-          const [newBulletTokenInner, nsoUpdated, splatnetUpdated] = await Promise.all([
-            generateBulletToken(),
-            apiUpdated ? true : ok(updateNsoVersion()),
-            apiUpdated ? true : ok(updateSplatnetVersion()),
-          ]);
-          newBulletToken = newBulletTokenInner;
-          if (nsoUpdated && splatnetUpdated) {
-            setApiUpdated(true);
-          } else {
-            showBanner(BannerLevel.Warn, t("failed_to_check_api_update"));
-          }
-        }
-
-        // Fetch friends, voting, summary, catalog and results.
-        await Promise.all([
-          friendsAttempt ||
-            fetchFriends(newBulletToken).then((friends) => {
-              setFriends(friends);
-            }),
-          fetchSplatfests().then(async (splatfests) => {
-            if (splatfests.festRecords.nodes[0]?.isVotable) {
-              const voting = await fetchDetailVotingStatus(
-                splatfests.festRecords.nodes[0].id,
-                newBulletToken,
-                language
-              );
-              setVoting(voting);
+        (async () => {
+          if (sessionToken) {
+            // Attempt to friends.
+            let newBulletToken = "";
+            let friendsAttempt: FriendListResult | undefined;
+            if (bulletToken.length > 0) {
+              try {
+                friendsAttempt = await fetchFriends(bulletToken);
+                newBulletToken = bulletToken;
+              } catch {
+                /* empty */
+              }
             }
-          }),
-          fetchSummary(newBulletToken).then(async (summary) => {
-            const icon = summary.currentPlayer.userIcon.url;
-            const level = String(summary.playHistory.rank);
-            const rank = summary.playHistory.udemae;
-            await setIcon(icon);
-            await setRank(rank);
-            await setLevel(level);
-          }),
-          fetchCatalog(newBulletToken).then(async (catalog) => {
-            const catalogLevel = String(catalog.catalog.progress?.level ?? 0);
-            await setCatalogLevel(catalogLevel);
-          }),
-          refreshResults(newBulletToken),
-        ]);
+            if (friendsAttempt) {
+              setFriends(friendsAttempt);
+            }
 
-        await loadResults(20, true);
-      }
+            // Regenerate bullet token if necessary.
+            if (!newBulletToken) {
+              // Also update versions.
+              const [newBulletTokenInner, nsoUpdated, splatnetUpdated] = await Promise.all([
+                generateBulletToken(),
+                apiUpdated ? true : ok(updateNsoVersion()),
+                apiUpdated ? true : ok(updateSplatnetVersion()),
+              ]);
+              newBulletToken = newBulletTokenInner;
+              if (nsoUpdated && splatnetUpdated) {
+                setApiUpdated(true);
+              } else {
+                showBanner(BannerLevel.Warn, t("failed_to_check_api_update"));
+              }
+            }
+
+            // Fetch friends, voting, summary, catalog and results.
+            await Promise.all([
+              friendsAttempt ||
+                fetchFriends(newBulletToken).then((friends) => {
+                  setFriends(friends);
+                }),
+              fetchSplatfests().then(async (splatfests) => {
+                if (splatfests.festRecords.nodes[0]?.isVotable) {
+                  const voting = await fetchDetailVotingStatus(
+                    splatfests.festRecords.nodes[0].id,
+                    newBulletToken,
+                    language
+                  );
+                  setVoting(voting);
+                }
+              }),
+              fetchSummary(newBulletToken).then(async (summary) => {
+                const icon = summary.currentPlayer.userIcon.url;
+                const level = String(summary.playHistory.rank);
+                const rank = summary.playHistory.udemae;
+                await setIcon(icon);
+                await setRank(rank);
+                await setLevel(level);
+              }),
+              fetchCatalog(newBulletToken).then(async (catalog) => {
+                const catalogLevel = String(catalog.catalog.progress?.level ?? 0);
+                await setCatalogLevel(catalogLevel);
+              }),
+              refreshResults(newBulletToken).then(async () => {
+                await loadResults(20, true);
+              }),
+            ]);
+          }
+        })(),
+      ]);
     } catch (e) {
       showBanner(BannerLevel.Error, e);
     }
