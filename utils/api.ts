@@ -6,6 +6,9 @@ import {
   CoopHistoryDetailResult,
   CoopHistoryDetailVariables,
   CoopHistoryResult,
+  DetailVotingStatusResult,
+  DetailVotingStatusVariables,
+  FestivalsQuery,
   FriendListResult,
   GraphQLSuccessResponse,
   HistoryRecordResult,
@@ -59,6 +62,11 @@ export const fetchShop = async (language: string) => {
     }
   });
   return shop;
+};
+export const fetchSplatfests = async () => {
+  const res = await fetch("https://splatoon3.ink/data/festivals.json");
+  const json = await res.json();
+  return (json as FestivalsQuery).US.data;
 };
 
 export const updateNsoVersion = async () => {
@@ -304,6 +312,27 @@ export const fetchEquipments = async (bulletToken: string, language?: string) =>
     throw new Error(gears.errors[0].message);
   }
   return gears.data;
+};
+
+export const fetchDetailVotingStatus = async (
+  id: string,
+  bulletToken: string,
+  language?: string
+) => {
+  const res = await fetchGraphQl<DetailVotingStatusVariables>(
+    bulletToken,
+    RequestId.DetailVotingStatusQuery,
+    language,
+    {
+      festId: id,
+    }
+  );
+  const json = await res.json();
+  const detail = json as GraphQLSuccessResponse<DetailVotingStatusResult>;
+  if (detail.errors) {
+    throw new Error(detail.errors[0].message);
+  }
+  return detail.data;
 };
 
 export const fetchBattleHistories = async (bulletToken: string, language?: string) => {

@@ -52,6 +52,10 @@ export const getColor = (color: { a: number; b: number; g: number; r: number }) 
     color.b * 255
   )}, ${Math.round(color.a * 255)})`;
 };
+export const getSolidColor = (color: { a: number; b: number; g: number; r: number }) => {
+  const hex = Convert.rgb.hex(color.r * 255, color.g * 255, color.b * 255);
+  return `#${hex}`;
+};
 export const burnColor = (color: string) => {
   const hsl = Convert.hex.hsl(color.replace("#", ""));
   const hex = Convert.hsl.hex([hsl[0], hsl[1], hsl[2] * 0.7]);

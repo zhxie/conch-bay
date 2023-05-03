@@ -20,6 +20,8 @@ export {
   CoopHistoryDetailVariables,
   CoopHistoryResult,
   CoopRule,
+  DetailVotingStatusResult,
+  DetailVotingStatusVariables,
   DragonMatchType,
   FestDragonCert,
   FriendListResult,
@@ -36,7 +38,11 @@ export {
   WeaponRecordResult,
   XBattleHistoriesResult,
 } from "splatnet3-types/dist/splatnet3";
-export { Gear as ShopQuery, Schedules as SchedulesQuery } from "splatnet3-types/dist/splatoon3ink";
+export {
+  Festivals as FestivalsQuery,
+  Gear as ShopQuery,
+  Schedules as SchedulesQuery,
+} from "splatnet3-types/dist/splatoon3ink";
 
 export type NotNullable<T> = T extends null | undefined ? never : T;
 export type Enum<T extends Record<string, any>> = T | keyof T;
@@ -54,15 +60,14 @@ export type FestMatchSetting = NotNullable<
 export type RegularMatchSetting = NotNullable<
   SchedulesQuery["data"]["regularSchedules"]["nodes"][0]["regularMatchSetting"]
 >;
+export type SaleGear =
+  | ShopQuery["data"]["gesotown"]["pickupBrand"]["brandGears"][0]
+  | ShopQuery["data"]["gesotown"]["limitedGears"][0];
 export type Schedules = SchedulesQuery["data"];
 export type Shop = ShopQuery["data"];
 export type XMatchSetting = NotNullable<
   SchedulesQuery["data"]["xSchedules"]["nodes"][0]["xMatchSetting"]
 >;
-
-export type SaleGear =
-  | ShopQuery["data"]["gesotown"]["pickupBrand"]["brandGears"][0]
-  | ShopQuery["data"]["gesotown"]["limitedGears"][0];
 
 export type Award = NotNullable<VsHistoryDetailResult["vsHistoryDetail"]>["awards"][0];
 export type Badge =

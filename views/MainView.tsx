@@ -46,6 +46,7 @@ import {
 import t from "../i18n";
 import {
   CoopHistoryDetailResult,
+  DetailVotingStatusResult,
   FriendListResult,
   MyOutfitCommonDataEquipmentsResult,
   Schedules,
@@ -72,6 +73,8 @@ import {
   updateNsoVersion,
   updateSplatnetVersion,
   fetchLatestVersion,
+  fetchSplatfests,
+  fetchDetailVotingStatus,
 } from "../utils/api";
 import * as Database from "../utils/database";
 import { useAsyncStorage } from "../utils/hooks";
@@ -166,6 +169,7 @@ const MainView = () => {
   const [schedules, setSchedules] = useState<Schedules>();
   const [shop, setShop] = useState<Shop>();
   const [friends, setFriends] = useState<FriendListResult>();
+  const [voting, setVoting] = useState<DetailVotingStatusResult>();
   const [results, setResults] =
     useState<{ battle?: VsHistoryDetailResult; coop?: CoopHistoryDetailResult }[]>();
   const [count, setCount] = useState(0);
@@ -337,12 +341,22 @@ const MainView = () => {
           }
         }
 
-        // Fetch friends, summary, catalog and results.
+        // Fetch friends, voting, summary, catalog and results.
         await Promise.all([
           friendsAttempt ||
             fetchFriends(newBulletToken).then((friends) => {
               setFriends(friends);
             }),
+          fetchSplatfests().then(async (splatfests) => {
+            if (splatfests.festRecords.nodes[0]?.isVotable) {
+              const voting = await fetchDetailVotingStatus(
+                splatfests.festRecords.nodes[0].id,
+                newBulletToken,
+                language
+              );
+              setVoting(voting);
+            }
+          }),
           fetchSummary(newBulletToken).then(async (summary) => {
             const icon = summary.currentPlayer.userIcon.url;
             const level = String(summary.playHistory.rank);
@@ -547,6 +561,7 @@ const MainView = () => {
       setCount(0);
       setResults(undefined);
       setFriends(undefined);
+      setVoting(undefined);
       await Promise.all([
         clearSessionToken(),
         clearBulletToken(),
@@ -1112,7 +1127,7 @@ const MainView = () => {
               </ScheduleView>
               {sessionToken.length > 0 &&
                 (friends === undefined || friends.friends.nodes.length > 0) && (
-                  <FriendView friends={friends} style={ViewStyles.mb4} />
+                  <FriendView friends={friends} voting={voting} style={ViewStyles.mb4} />
                 )}
               {sessionToken.length > 0 && (
                 <FilterView

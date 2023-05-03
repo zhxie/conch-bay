@@ -16,11 +16,22 @@ import {
   useTheme,
 } from "../components";
 import t from "../i18n";
-import { Friend, FriendListResult, FriendOnlineState } from "../models/types";
-import { getCoopRuleColor, getUserIconCacheSource, getVsModeColor } from "../utils/ui";
+import {
+  DetailVotingStatusResult,
+  Friend,
+  FriendListResult,
+  FriendOnlineState,
+} from "../models/types";
+import {
+  getCoopRuleColor,
+  getSolidColor,
+  getUserIconCacheSource,
+  getVsModeColor,
+} from "../utils/ui";
 
 interface FriendViewProps {
   friends?: FriendListResult;
+  voting?: DetailVotingStatusResult;
   style?: StyleProp<ViewStyle>;
 }
 
@@ -94,6 +105,25 @@ const FriendView = (props: FriendViewProps) => {
         return "offline";
     }
   };
+  const findVoting = (friend: Friend) => {
+    if (!props.voting) {
+      return;
+    }
+    for (const team of props.voting.fest!.teams) {
+      if (team.votes?.nodes.find((node) => node.userIcon.url === friend.userIcon.url)) {
+        return {
+          name: team.teamName,
+          color: team.color,
+        };
+      }
+      if (team.preVotes?.nodes.find((node) => node.userIcon.url === friend.userIcon.url)) {
+        return {
+          name: team.teamName,
+          color: team.color,
+        };
+      }
+    }
+  };
 
   const onDisplayFriendClose = () => {
     setDisplayFriend(false);
@@ -165,21 +195,48 @@ const FriendView = (props: FriendViewProps) => {
                   : ""}
               </Text>
             </Marquee>
-            <HStack center>
+            {/* HACK: withdraw 4px margin in the last badge. */}
+            <HStack center style={{ marginRight: -4 }}>
               <Badge
                 color={getFriendOnlineStatusColor(friend)!}
                 title={t(formatFriendOnlineStatus(friend)!)}
-                style={friend.vsMode || friend.coopRule ? ViewStyles.mr1 : undefined}
+                style={ViewStyles.mr1}
               />
               {friend.vsMode && (
-                <Badge color={getVsModeColor(friend.vsMode)!} title={t(friend.vsMode.id)} />
+                <Badge
+                  color={getVsModeColor(friend.vsMode)!}
+                  title={t(friend.vsMode.id)}
+                  style={ViewStyles.mr1}
+                />
               )}
               {friend.coopRule && (
-                <Badge color={getCoopRuleColor(friend.coopRule)!} title={t(friend.coopRule)} />
+                <Badge
+                  color={getCoopRuleColor(friend.coopRule)!}
+                  title={t(friend.coopRule)}
+                  style={ViewStyles.mr1}
+                />
               )}
               {friend.onlineState === FriendOnlineState.MINI_GAME_PLAYING && (
-                <Badge color={Color.TableturfBattle} title={t("tableturf_battle")} />
+                <Badge
+                  color={Color.TableturfBattle}
+                  title={t("tableturf_battle")}
+                  style={ViewStyles.mr1}
+                />
               )}
+              {(() => {
+                const voting = findVoting(friend);
+                if (!voting) {
+                  return <></>;
+                }
+
+                return (
+                  <Badge
+                    color={getSolidColor(voting.color)}
+                    title={voting.name}
+                    style={ViewStyles.mr1}
+                  />
+                );
+              })()}
             </HStack>
           </VStack>
         )}
