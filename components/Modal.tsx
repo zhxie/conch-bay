@@ -37,6 +37,8 @@ const Modal = (props: ModalProps) => {
       onBackdropPress={props.onClose}
       onModalHide={props.onModalHide}
       useNativeDriverForBackdrop
+      useNativeDriver
+      hideModalContentWhileAnimating
       style={ViewStyles.c}
     >
       <ScrollView

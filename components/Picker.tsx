@@ -67,8 +67,8 @@ const Picker = (props: PickerProps) => {
                 },
               ]}
               onPress={() => {
-                props.onSelected(item.key);
                 onClose();
+                props.onSelected(item.key);
               }}
             >
               <Marquee style={theme.reverseTextStyle}>{item.value}</Marquee>
