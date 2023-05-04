@@ -129,11 +129,12 @@ const FilterView = (props: FilterViewProps) => {
 
   return (
     <VStack style={[ViewStyles.wf, props.style]}>
-      <HStack>
+      <HStack center>
         <Center style={[ViewStyles.pl4, ViewStyles.pr2, ViewStyles.sepr]}>
           <IconButton
             isDisabled={props.isDisabled}
-            size={32}
+            // HACK: the default height of filter button is iOS is 33px.
+            size={33}
             color={
               props.filter && !isFilterEqual(props.filter, EmptyFilterProps)
                 ? Color.AccentColor

@@ -1,4 +1,4 @@
-import { StyleProp, ViewStyle } from "react-native";
+import { StyleProp, StyleSheet, ViewStyle } from "react-native";
 import Pressable from "./Pressable";
 import { Circle } from "./Shape";
 import { HStack } from "./Stack";
@@ -18,7 +18,7 @@ const FilterButton = (props: FilterButtonProps) => {
   return (
     <Pressable
       isDisabled={props.isDisabled}
-      style={[ViewStyles.p2, { height: 32, borderRadius: 16 }, props.style]}
+      style={[styles.button, props.style]}
       onPress={props.onPress}
       onLongPress={props.onLongPress}
     >
@@ -44,7 +44,7 @@ const ColorFilterButton = (props: ColorFilterButtonProps) => {
   return (
     <Pressable
       isDisabled={props.isDisabled}
-      style={[ViewStyles.p2, { height: 32, borderRadius: 16 }, props.style]}
+      style={[styles.button, props.style]}
       onPress={props.onPress}
       onLongPress={props.onLongPress}
     >
@@ -59,5 +59,13 @@ const ColorFilterButton = (props: ColorFilterButtonProps) => {
     </Pressable>
   );
 };
+
+const styles = StyleSheet.create({
+  button: {
+    ...ViewStyles.p2,
+    // HACK: make rounded corner at best effort.
+    borderRadius: 32,
+  },
+});
 
 export { FilterButton, ColorFilterButton };

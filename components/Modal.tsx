@@ -5,6 +5,7 @@ import {
   NativeSyntheticEvent,
   ScrollView,
   StyleProp,
+  StyleSheet,
   View,
   ViewStyle,
 } from "react-native";
@@ -46,11 +47,11 @@ const Modal = (props: ModalProps) => {
         showsHorizontalScrollIndicator={false}
         onScrollEndDrag={onScrollEndDrag}
         onLayout={props.onLayout}
-        style={[ViewStyles.r2, ViewStyles.px4, theme.backgroundStyle, props.style]}
+        style={[styles.panel, theme.backgroundStyle, props.style]}
       >
-        <View style={{ height: 16 }} />
+        <View style={styles.padding} />
         {props.children}
-        <View style={{ height: 16 }} />
+        <View style={styles.padding} />
       </ScrollView>
     </ReactNativeModal>
   );
@@ -89,7 +90,7 @@ const FlashModal = <T,>(props: FlashModalProps<T>) => {
       statusBarTranslucent
       style={ViewStyles.c}
     >
-      <VStack style={[ViewStyles.r2, ViewStyles.px4, theme.backgroundStyle, props.style]}>
+      <VStack style={[styles.panel, theme.backgroundStyle, props.style]}>
         <FlashList
           showsHorizontalScrollIndicator={false}
           data={props.data}
@@ -98,16 +99,26 @@ const FlashModal = <T,>(props: FlashModalProps<T>) => {
           estimatedItemSize={props.estimatedItemSize}
           ListHeaderComponent={
             <VStack>
-              <View style={{ height: 16 }} />
+              <View style={styles.padding} />
               {props.ListHeaderComponent}
             </VStack>
           }
-          ListFooterComponent={<View style={{ height: 16 }} />}
+          ListFooterComponent={<View style={styles.padding} />}
           onScrollEndDrag={onScrollEndDrag}
         />
       </VStack>
     </ReactNativeModal>
   );
 };
+
+const styles = StyleSheet.create({
+  panel: {
+    ...ViewStyles.r2,
+    ...ViewStyles.px4,
+  },
+  padding: {
+    height: 16,
+  },
+});
 
 export { Modal, FlashModal };

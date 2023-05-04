@@ -20,10 +20,11 @@ const ToolButton = (props: ToolButtonProps) => {
   return (
     <Pressable
       isDisabled={props.isDisabled || props.isLoading}
-      style={[ViewStyles.p3, { height: 44, borderRadius: 22 }, props.style]}
+      // HACK: make rounded corner at best effort.
+      style={[ViewStyles.p3, { borderRadius: 44 }, props.style]}
       onPress={props.onPress}
     >
-      <HStack flex center>
+      <HStack center>
         {(() => {
           if (props.isLoading) {
             return <ActivityIndicator style={ViewStyles.mr1} />;
