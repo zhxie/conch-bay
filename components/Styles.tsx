@@ -23,9 +23,8 @@ export enum Color {
   BigRun = "#9333ea",
   EggstraWork = "#facc15",
   TableturfBattle = "#6d28d9",
+  Online = "#22d3ee",
   // Splatoon.
-  Playing = "#f02d7d",
-  Online = "#6af6cd",
   PowerEgg = "#ff6200",
   GoldenEgg = "#ffce00",
   GoldScale = "#e4b23e",
