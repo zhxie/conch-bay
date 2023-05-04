@@ -39,6 +39,7 @@ const Modal = (props: ModalProps) => {
       useNativeDriverForBackdrop
       useNativeDriver
       hideModalContentWhileAnimating
+      statusBarTranslucent
       style={ViewStyles.c}
     >
       <ScrollView
@@ -83,6 +84,9 @@ const FlashModal = <T,>(props: FlashModalProps<T>) => {
       onBackdropPress={props.onClose}
       onModalHide={props.onModalHide}
       useNativeDriverForBackdrop
+      useNativeDriver
+      hideModalContentWhileAnimating
+      statusBarTranslucent
       style={ViewStyles.c}
     >
       <VStack style={[ViewStyles.r2, ViewStyles.px4, theme.backgroundStyle, props.style]}>
