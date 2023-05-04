@@ -23,6 +23,7 @@ import {
   FriendOnlineState,
 } from "../models/types";
 import {
+  dodgeColor,
   getCoopRuleColor,
   getSolidColor,
   getUserIconCacheSource,
@@ -113,13 +114,13 @@ const FriendView = (props: FriendViewProps) => {
       if (team.votes?.nodes.find((node) => node.userIcon.url === friend.userIcon.url)) {
         return {
           name: team.teamName,
-          color: team.color,
+          color: getSolidColor(team.color),
         };
       }
       if (team.preVotes?.nodes.find((node) => node.userIcon.url === friend.userIcon.url)) {
         return {
           name: team.teamName,
-          color: team.color,
+          color: dodgeColor(getSolidColor(team.color)),
         };
       }
     }
@@ -229,13 +230,7 @@ const FriendView = (props: FriendViewProps) => {
                   return <></>;
                 }
 
-                return (
-                  <Badge
-                    color={getSolidColor(voting.color)}
-                    title={voting.name}
-                    style={ViewStyles.mr1}
-                  />
-                );
+                return <Badge color={voting.color} title={voting.name} style={ViewStyles.mr1} />;
               })()}
             </HStack>
           </VStack>
