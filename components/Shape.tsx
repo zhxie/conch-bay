@@ -25,4 +25,22 @@ const Circle = (props: CircleProps) => {
   );
 };
 
-export { Circle };
+interface RectangleProps {
+  width: number;
+  height: number;
+  color?: string;
+  style?: StyleProp<ViewStyle>;
+}
+
+const Rectangle = (props: RectangleProps) => {
+  return (
+    <View
+      style={[
+        { width: props.width, height: props.height, backgroundColor: props.color },
+        props.style,
+      ]}
+    />
+  );
+};
+
+export { Circle, Rectangle };

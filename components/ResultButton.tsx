@@ -1,9 +1,10 @@
-import { StyleProp, ViewStyle } from "react-native";
+import { StyleProp, StyleSheet, ViewStyle } from "react-native";
 import { Badge } from "./Badge";
 import Icon from "./Icon";
 import Image, { ImageSource } from "./Image";
 import Marquee from "./Marquee";
 import Pressable from "./Pressable";
+import { Rectangle } from "./Shape";
 import { Center, HStack, VStack } from "./Stack";
 import { Color, TextStyles, ViewStyles } from "./Styles";
 
@@ -12,6 +13,7 @@ interface ResultButtonProps {
   isLoading?: boolean;
   isFirst?: boolean;
   isLast?: boolean;
+  self?: string;
   image?: ImageSource;
   result?: number;
   icon?: string;
@@ -37,6 +39,18 @@ const ResultButton = (props: ResultButtonProps) => {
       ]}
       onPress={props.onPress}
     >
+      {props.self && (
+        <Rectangle
+          width={4}
+          height={64}
+          color={props.self}
+          style={[
+            props.isFirst && { borderTopLeftRadius: 8 },
+            props.isLast && { borderBottomLeftRadius: 8 },
+            { position: "absolute" },
+          ]}
+        />
+      )}
       <HStack
         flex
         center
@@ -47,7 +61,7 @@ const ResultButton = (props: ResultButtonProps) => {
         ]}
       >
         {props.result !== undefined && (
-          <Center style={[ViewStyles.mr3, { width: 32, height: 32 }]}>
+          <Center style={[ViewStyles.mr3, styles.image]}>
             {(() => {
               switch (props.result) {
                 case 1:
@@ -64,9 +78,7 @@ const ResultButton = (props: ResultButtonProps) => {
             })()}
           </Center>
         )}
-        {!!props.image && (
-          <Image source={props.image} style={[ViewStyles.mr3, { width: 32, height: 32 }]} />
-        )}
+        {!!props.image && <Image source={props.image} style={[ViewStyles.mr3, styles.image]} />}
         <VStack flex>
           <HStack flex center justify>
             <HStack flex center style={ViewStyles.mr1}>
@@ -105,5 +117,12 @@ const ResultButton = (props: ResultButtonProps) => {
     </Pressable>
   );
 };
+
+const styles = StyleSheet.create({
+  image: {
+    width: 32,
+    height: 32,
+  },
+});
 
 export default ResultButton;

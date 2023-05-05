@@ -604,6 +604,7 @@ const ResultView = (props: ResultViewProps) => {
                         key={i}
                         isFirst={i === 0}
                         isLast={i === players.length - 1}
+                        self={player.isMyself ? getColor(team.color) : undefined}
                         name={formatName(player.name, player.species, player.isMyself)}
                         weapon={getImageCacheSource(player.weapon.image2d.url)}
                         paint={player.paint}
