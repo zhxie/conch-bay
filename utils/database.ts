@@ -1,6 +1,6 @@
 import * as SQLite from "expo-sqlite";
-import { WeaponImage } from "../models/enum";
 import { CoopHistoryDetailResult, VsHistoryDetailResult } from "../models/types";
+import weapons from "../models/weapons.json";
 import { decode64Index } from "./codec";
 import { getImageHash, getVsSelfPlayer } from "./ui";
 
@@ -137,14 +137,10 @@ const convertFilter = (filter?: FilterProps, from?: number) => {
       filters.push(`(${filter.rules.map((rule) => `rule = '${rule}'`).join(" OR ")})`);
     }
     if (filter.weapons.length > 0) {
-      const map = new Map<string, string>();
-      for (const key of Object.keys(WeaponImage)) {
-        map.set(WeaponImage[key], key);
-      }
       filters.push(
         `(${filter.weapons
           .map((weapon) => {
-            const image = map.get(weapon);
+            const image = weapons[weapon];
             if (image) {
               return `(weapon = '${weapon}') OR (instr(weapon, '${image}') > 0)`;
             }
@@ -208,6 +204,7 @@ export const queryAll = async (order: boolean) => {
     stage: row["stage"],
   }));
 };
+const WEAPON_IMAGE_MAP = new Map<string, string>();
 export const queryFilterOptions = async () => {
   const modeSql = "SELECT DISTINCT mode FROM result";
   const ruleSql = "SELECT DISTINCT rule FROM result";
@@ -223,13 +220,14 @@ export const queryFilterOptions = async () => {
   const weaponSet = new Set<string>();
   for (const row of weaponRecord.rows) {
     const weapon = row["weapon"];
+    if (WEAPON_IMAGE_MAP.size === 0) {
+      for (const weapon in weapons) {
+        WEAPON_IMAGE_MAP.set(weapons[weapon], weapon);
+      }
+    }
     for (const w of weapon.split(",")) {
       if (w.length > 0) {
-        if (WeaponImage[w]) {
-          weaponSet.add(WeaponImage[w]);
-        } else {
-          weaponSet.add(w);
-        }
+        weaponSet.add(WEAPON_IMAGE_MAP.get(w) ?? w);
       }
     }
   }

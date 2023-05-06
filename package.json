@@ -11,7 +11,7 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "eject": "expo eject",
-    "postinstall": "patch-package && cp -f node_modules/lucide-static/font/lucide.ttf assets/fonts/Lucide.ttf && node tools/gen-lucide-glyphmap.mjs",
+    "postinstall": "patch-package && cp -f node_modules/lucide-static/font/lucide.ttf assets/fonts/Lucide.ttf && node tools/gen-lucide-glyphmap.mjs && node tools/gen-weapons-map.mjs",
     "compile": "tsc --noEmit",
     "lint": "eslint . --ext .tsx --ext .ts",
     "format": "prettier --check .",

@@ -12,3 +12,4 @@ web-build/
 .DS_Store
 
 assets/fonts/Lucide.*
+models/*.json
