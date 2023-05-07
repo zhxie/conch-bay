@@ -294,31 +294,7 @@ export const queryFilterOptions = async () => {
         }
         return decode64Index(a) - decode64Index(b);
       }),
-    weapons: Array.from(weaponSet.values()).sort((a, b) => {
-      // Move grizzco weapons behind regular weapons.
-      if (a.startsWith("V") && b.startsWith("V")) {
-        return decode64Index(a) - decode64Index(b);
-      } else if (a.startsWith("V")) {
-        return -1;
-      } else if (b.startsWith("V")) {
-        return 1;
-      }
-      // Sort grizzco weapons in the order.
-      const grizzcoMap = {
-        grizzco_blaster: 1,
-        grizzco_brella: 2,
-        grizzco_charger: 3,
-        grizzco_slosher: 4,
-        grizzco_stringer: 5,
-        grizzco_splatana: 6,
-      };
-      const aSeq = grizzcoMap[a];
-      const bSeq = grizzcoMap[b];
-      if (aSeq && bSeq) {
-        return aSeq - bSeq;
-      }
-      return a.localeCompare(b);
-    }),
+    weapons: Array.from(weaponSet.values()).sort((a, b) => decode64Index(a) - decode64Index(b)),
   };
 };
 export const count = async (filter?: FilterProps, from?: number) => {
