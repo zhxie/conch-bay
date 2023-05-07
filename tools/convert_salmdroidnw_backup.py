@@ -11,26 +11,28 @@ RANDOM_IMAGE = [
 ]
 
 
-def format_image_obj(obj, path):
-    obj["image"][
-        "url"
-    ] = f"https://api.lp1.av5ja.srv.nintendo.net/resources/prod/v1/{path}/{obj['image']['url']}"
+def decorate_image_obj(obj, path, is_splatoon3_ink=False):
+    if is_splatoon3_ink:
+        obj["image"][
+            "url"
+        ] = f"https://splatoon3.ink/assets/splatnet/v1/{path}/{obj['image']['url']}"
+    else:
+        obj["image"][
+            "url"
+        ] = f"https://api.lp1.av5ja.srv.nintendo.net/resources/prod/v1/{path}/{obj['image']['url']}"
 
 
 def format_member_result(member_result):
     for badge in member_result["player"]["nameplate"]["badges"]:
         if badge != None:
-            format_image_obj(badge, "badge_img")
-    format_image_obj(member_result["player"]["nameplate"]["background"], "npl_img")
-    format_image_obj(member_result["player"]["uniform"], "coop_skin_img")
+            decorate_image_obj(badge, "badge_img")
+    decorate_image_obj(member_result["player"]["nameplate"]["background"], "npl_img")
+    decorate_image_obj(member_result["player"]["uniform"], "coop_skin_img")
     for weapon in member_result["weapons"]:
-        if weapon["image"]["url"] in GRIZZCO_WEAPON_IMAGE:
-            format_image_obj(weapon, "weapon_illust")
-        else:
-            weapon["image"][
-                "url"
-            ] = f"https://splatoon3.ink/assets/splatnet/v1/weapon_illust/{weapon['image']['url']}"
-    format_image_obj(member_result["specialWeapon"], "special_img/blue")
+        decorate_image_obj(
+            weapon, "weapon_illust", weapon["image"]["url"] not in GRIZZCO_WEAPON_IMAGE
+        )
+    decorate_image_obj(member_result["specialWeapon"], "special_img/blue")
 
 
 def main():
@@ -51,24 +53,18 @@ def main():
             for member_result in obj["memberResults"]:
                 format_member_result(member_result)
             if obj["bossResult"] != None:
-                format_image_obj(obj["bossResult"]["boss"], "coop_enemy_img")
+                decorate_image_obj(obj["bossResult"]["boss"], "coop_enemy_img")
             for enemy_result in obj["enemyResults"]:
-                format_image_obj(enemy_result["enemy"], "coop_enemy_img")
+                decorate_image_obj(enemy_result["enemy"], "coop_enemy_img")
             for wave_result in obj["waveResults"]:
                 for special_weapon in wave_result["specialWeapons"]:
-                    format_image_obj(special_weapon, "special_img/blue")
-            obj["coopStage"]["image"][
-                "url"
-            ] = f"https://splatoon3.ink/assets/splatnet/v1/stage_img/icon/high_resolution/{obj['coopStage']['image']['url'].replace('_3', '_0')}"
+                    decorate_image_obj(special_weapon, "special_img/blue")
+            decorate_image_obj(obj["coopStage"], "stage_img/icon/high_resolution", True)
             for weapon in obj["weapons"]:
                 if weapon["image"]["url"] in RANDOM_IMAGE:
-                    weapon["image"][
-                        "url"
-                    ] = f"https://splatoon3.ink/assets/splatnet/v1/ui_img/{weapon['image']['url']}"
+                    decorate_image_obj(weapon, "ui_img", True)
                 else:
-                    weapon["image"][
-                        "url"
-                    ] = f"https://splatoon3.ink/assets/splatnet/v1/weapon_illust/{weapon['image']['url']}"
+                    decorate_image_obj(weapon, "weapon_illust", True)
 
             coops.append({"coopHistoryDetail": obj})
 

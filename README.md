@@ -34,6 +34,14 @@ Run the following command to extract data from a salmdroidNW backup into `conch-
 python3 tools/convert_salmdroidnw_backup.py <PATH_TO_EXTRACTED_SALMDROIDNW_BACKUP>
 ```
 
+### Import data from Salmonia3+
+
+Run the following command to extract data from a Salmonia3+ backup into `conch-bay-import.json`. You can then import it in Conch Bay.
+
+```sh
+python3 tools/convert_salmonia3+_backup.py <PATH_TO_SALMONIA3+_PLAIN_JSON_BACKUP>
+```
+
 ### Rescue data from a Conch Bay database
 
 Run the following command to extract data from a Conch Bay database into `conch-bay-import.json`. You can then import it in Conch Bay.
