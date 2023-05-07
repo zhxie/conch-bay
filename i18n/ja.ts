@@ -39,6 +39,10 @@ const ja = {
   all_results: "すべてのリザルト",
   load_more_notice: "もっと読み込むを長押しして、指定期間のリザルトを読み込みます。",
   import: "インポート",
+  import_notice:
+    "ホラガイベイはホラガイベイによってエクスポートされたリザルトのインポートをサポートしています。FAQを参照して、s3s、ikawidget3、salmdroidNW、およびSalmonia3+によってエクスポートされたリザルトをホラガイベイでサポートされている形式に変換することもできます。",
+  faq: "FAQ",
+  importing: "インポート中",
   export: "エクスポート",
   exporting: "エクスポート中",
   disclaimer:

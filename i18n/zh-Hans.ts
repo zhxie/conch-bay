@@ -36,6 +36,10 @@ const zhHans = {
   all_results: "所有记录",
   load_more_notice: "长按加载更多以加载指定时间段内的记录。",
   import: "导入",
+  import_notice:
+    "法螺湾支持导入由法螺湾导出的记录。您也可以参阅常见问题集将s3s、ikawidget3、salmdroidNW与Salmonia3+导出的记录转换至法螺湾支持的格式。",
+  faq: "常见问题集",
+  importing: "导入中",
   export: "导出",
   exporting: "导出中",
   disclaimer: "本应用是使用鱿鱼圈3的信息的非官方应用，与任天堂有限公司无关。",

@@ -1,7 +1,7 @@
 import { ActivityIndicator, StyleProp, ViewStyle } from "react-native";
 import Icon from "./Icon";
 import Pressable from "./Pressable";
-import { HStack } from "./Stack";
+import { Center, HStack } from "./Stack";
 import { Color, TextStyles, ViewStyles } from "./Styles";
 import Text from "./Text";
 
@@ -27,7 +27,11 @@ const ToolButton = (props: ToolButtonProps) => {
       <HStack center>
         {(() => {
           if (props.isLoading) {
-            return <ActivityIndicator style={ViewStyles.mr1} />;
+            return (
+              <Center style={{ height: 16 }}>
+                <ActivityIndicator style={ViewStyles.mr1} />
+              </Center>
+            );
           } else {
             return (
               <Icon

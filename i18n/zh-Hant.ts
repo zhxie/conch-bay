@@ -36,6 +36,10 @@ const zhHant = {
   all_results: "所有記錄",
   load_more_notice: "長按載入更多以載入指定時間段內的記錄。",
   import: "匯入",
+  import_notice:
+    "法螺灣支援匯入由法螺灣匯出的記錄。您也可以參閱常見問題集將s3s、ikawidget3、salmdroidNW與Salmonia3+匯出的記錄轉換至法螺灣支援的格式。",
+  faq: "常見問題集",
+  importing: "匯入中",
   export: "匯出",
   exporting: "匯出中",
   disclaimer: "本應用是使用魷魚圈3的資訊的非官方應用，與任天堂有限公司無關。",

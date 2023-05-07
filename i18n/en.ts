@@ -38,6 +38,10 @@ const en = {
   all_results: "All Results",
   load_more_notice: "Long press on Load more to load results for a specified time period.",
   import: "Import",
+  import_notice:
+    "Conch Bay supports importing results exported by Conch Bay. You can also see the FAQ to convert results exported by s3s, ikawidget3, salmdroidNW and Salmonia3+ to formats supported by Conch Bay.",
+  faq: "FAQ",
+  importing: "Importing",
   export: "Export",
   exporting: "Exporting",
   disclaimer:

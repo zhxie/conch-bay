@@ -126,6 +126,8 @@ const MainView = () => {
   const [progress, setProgress] = useState(0);
   const [progressTotal, setProgressTotal] = useState(0);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [import_, setImport] = useState(false);
+  const [importing, setImporting] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [support, setSupport] = useState(false);
   const [clearingCache, setClearingCache] = useState(false);
@@ -660,11 +662,23 @@ const MainView = () => {
     }
     await loadResults(num, true);
   };
-  const onImportPress = async () => {
+  const onImportPress = () => {
+    setImport(true);
+  };
+  const onImportClose = () => {
+    setImport(false);
+  };
+  const onFaqPress = async () => {
+    await WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay#faqs");
+  };
+  const onImportContinuePress = async () => {
+    setImporting(true);
     let uri = "";
+    let success = false;
     try {
       const doc = await DocumentPicker.getDocumentAsync({ copyToCacheDirectory: true });
       if (doc.type !== "success") {
+        setImporting(false);
         return;
       }
       uri = doc.uri;
@@ -716,6 +730,7 @@ const MainView = () => {
       if (n - fail - skip > 0) {
         await loadResults(20, true);
       }
+      success = true;
     } catch (e) {
       showBanner(BannerLevel.Error, e);
     }
@@ -727,6 +742,10 @@ const MainView = () => {
       showBanner(BannerLevel.Error, e);
     }
     setRefreshing(false);
+    setImporting(false);
+    if (success) {
+      setImport(false);
+    }
   };
   const onExportPress = async () => {
     setExporting(true);
@@ -1207,9 +1226,6 @@ const MainView = () => {
                     <StatsView results={results} style={ViewStyles.mr2} />
                     <TrendsView results={results} style={ViewStyles.mr2} />
                     <ToolButton
-                      isLoading={false}
-                      isLoadingText=""
-                      isDisabled={refreshing}
                       icon="download"
                       title={t("import")}
                       style={ViewStyles.mr2}
@@ -1336,6 +1352,34 @@ const MainView = () => {
               onPress={onLogOutContinuePress}
             >
               <Marquee style={theme.reverseTextStyle}>{t("log_out_continue")}</Marquee>
+            </Button>
+          </VStack>
+        </VStack>
+      </Modal>
+      <Modal isVisible={import_} onClose={onImportClose} style={ViewStyles.modal1d}>
+        <VStack center>
+          <Icon name="download" size={48} color={Color.MiddleTerritory} style={ViewStyles.mb4} />
+          <Text style={ViewStyles.mb4}>{t("import_notice")}</Text>
+          <VStack style={ViewStyles.wf}>
+            <Button
+              style={[
+                ViewStyles.mb2,
+                { borderColor: Color.AccentColor, borderWidth: 1.5 },
+                theme.backgroundStyle,
+              ]}
+              onPress={onFaqPress}
+            >
+              <Marquee>{t("faq")}</Marquee>
+            </Button>
+            <Button
+              isDisabled={refreshing && !importing}
+              isLoading={importing}
+              isLoadingText={t("importing")}
+              style={ViewStyles.accent}
+              textStyle={theme.reverseTextStyle}
+              onPress={onImportContinuePress}
+            >
+              <Marquee style={theme.reverseTextStyle}>{t("import")}</Marquee>
             </Button>
           </VStack>
         </VStack>
