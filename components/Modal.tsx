@@ -36,12 +36,12 @@ const Modal = (props: ModalProps) => {
       isVisible={props.isVisible}
       backdropOpacity={0.5}
       onBackdropPress={props.onClose}
-      onModalHide={props.onModalHide}
       useNativeDriverForBackdrop
       useNativeDriver
       hideModalContentWhileAnimating
       statusBarTranslucent
       style={ViewStyles.c}
+      onModalHide={props.onModalHide}
     >
       <ScrollView
         showsHorizontalScrollIndicator={false}
@@ -83,12 +83,12 @@ const FlashModal = <T,>(props: FlashModalProps<T>) => {
       isVisible={props.isVisible}
       backdropOpacity={0.5}
       onBackdropPress={props.onClose}
-      onModalHide={props.onModalHide}
       useNativeDriverForBackdrop
       useNativeDriver
       hideModalContentWhileAnimating
       statusBarTranslucent
       style={ViewStyles.c}
+      onModalHide={props.onModalHide}
     >
       <VStack style={[styles.panel, theme.backgroundStyle, props.style]}>
         <FlashList
