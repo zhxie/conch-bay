@@ -145,17 +145,12 @@ export const countBattles = (battles: VsHistoryDetailResult[]) => {
     result.special += getVsSelfPlayer(battle).result?.special ?? 0;
     for (const player of battle.vsHistoryDetail!.myTeam.players) {
       result.member += 1;
-      result.killTeam = player.result?.kill ?? 0;
-      result.assistTeam = player.result?.assist ?? 0;
-      result.deathTeam = player.result?.death ?? 0;
-      result.specialTeam = player.result?.special ?? 0;
+      result.killTeam += player.result?.kill ?? 0;
+      result.assistTeam += player.result?.assist ?? 0;
+      result.deathTeam += player.result?.death ?? 0;
+      result.specialTeam += player.result?.special ?? 0;
     }
   }
-  result.member += result.count;
-  result.killTeam += result.kill;
-  result.assistTeam += result.assist;
-  result.deathTeam += result.death;
-  result.specialTeam += result.special;
   return result;
 };
 export const countCoops = (coops: CoopHistoryDetailResult[]) => {
