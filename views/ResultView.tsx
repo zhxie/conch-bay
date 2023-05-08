@@ -404,12 +404,19 @@ const ResultView = (props: ResultViewProps) => {
 
   const renderItem = (result: ListRenderItemInfo<ResultProps>) => {
     if (result.item.battle) {
+      const color = getVsModeColor(result.item.battle.vsHistoryDetail!.vsMode)!;
       return (
         <VStack flex style={ViewStyles.px4}>
           <BattleButton
             isFirst={result.index === 0}
             isLast={false}
-            color={getVsModeColor(result.item.battle.vsHistoryDetail!.vsMode)!}
+            self={
+              result.extraData?.battle?.vsHistoryDetail?.id ===
+              result.item.battle.vsHistoryDetail!.id
+                ? color
+                : undefined
+            }
+            color={color}
             result={formatJudgement(result.item.battle)}
             rule={td(result.item.battle.vsHistoryDetail!.vsRule)}
             dragon={formatDragon(result.item.battle)}
@@ -432,6 +439,7 @@ const ResultView = (props: ResultViewProps) => {
         </VStack>
       );
     }
+    const color = getCoopRuleColor(result.item.coop!.coopHistoryDetail!.rule)!;
     const powerEgg =
       // HACK: cast out union uncertainty.
       (result.item.coop!.coopHistoryDetail!.memberResults as CoopMemberResult[]).reduce(
@@ -447,7 +455,13 @@ const ResultView = (props: ResultViewProps) => {
         <CoopButton
           isFirst={result.index === 0}
           isLast={false}
-          color={getCoopRuleColor(result.item.coop!.coopHistoryDetail!.rule)!}
+          self={
+            result.extraData?.coop?.coopHistoryDetail?.id ===
+            result.item.coop!.coopHistoryDetail!.id
+              ? color
+              : undefined
+          }
+          color={color}
           result={result.item.coop!.coopHistoryDetail!.resultWave === 0 ? 1 : -1}
           rule={t(result.item.coop!.coopHistoryDetail!.rule)}
           stage={td(result.item.coop!.coopHistoryDetail!.coopStage)}
@@ -495,6 +509,7 @@ const ResultView = (props: ResultViewProps) => {
           return result.coop!.coopHistoryDetail!.id;
         }}
         renderItem={renderItem}
+        extraData={result}
         estimatedItemSize={64}
         ListEmptyComponent={
           <VStack flex style={ViewStyles.px4}>
