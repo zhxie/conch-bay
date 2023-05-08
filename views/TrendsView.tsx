@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Dimensions, LayoutChangeEvent, ScrollView, StyleProp, ViewStyle } from "react-native";
+import { LayoutChangeEvent, ScrollView, StyleProp, ViewStyle } from "react-native";
 import {
   Center,
   Chart,

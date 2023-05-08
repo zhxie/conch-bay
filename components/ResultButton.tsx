@@ -40,16 +40,17 @@ const ResultButton = (props: ResultButtonProps) => {
       onPress={props.onPress}
     >
       {props.self && (
-        <Rectangle
-          width={4}
-          height={64}
-          color={props.self}
-          style={[
-            props.isFirst && { borderTopLeftRadius: 8 },
-            props.isLast && { borderBottomLeftRadius: 8 },
-            { position: "absolute" },
-          ]}
-        />
+        <HStack style={[{ position: "absolute", width: 4, overflow: "hidden" }]}>
+          <HStack
+            style={[
+              { width: 16, overflow: "hidden" },
+              props.isFirst && ViewStyles.rt2,
+              props.isLast && ViewStyles.rb2,
+            ]}
+          >
+            <Rectangle width={4} height={64} color={props.self} />
+          </HStack>
+        </HStack>
       )}
       <HStack
         flex

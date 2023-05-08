@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { StyleProp, View, ViewStyle } from "react-native";
+import { StyleProp, ViewStyle } from "react-native";
 import { BadgeButton, Center, Color, HStack, Modal, ViewStyles, XBox } from "../components";
 import t from "../i18n";
 
