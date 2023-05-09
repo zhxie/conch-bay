@@ -2,7 +2,7 @@ import { FlashList, ListRenderItemInfo } from "@shopify/flash-list";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import * as Clipboard from "expo-clipboard";
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import {
   Linking,
   NativeScrollEvent,
@@ -402,12 +402,22 @@ const ResultView = (props: ResultViewProps) => {
     setHidePlayerNames(!hidePlayerNames);
   };
 
+  const onBattlePress = useCallback((battle: VsHistoryDetailResult) => {
+    setResult({ battle });
+    setDisplayBattle(true);
+  }, []);
+  const onCoopPress = useCallback((coop: CoopHistoryDetailResult) => {
+    setResult({ coop });
+    setDisplayCoop(true);
+  }, []);
+
   const renderItem = (result: ListRenderItemInfo<ResultProps>) => {
     if (result.item.battle) {
       const color = getVsModeColor(result.item.battle.vsHistoryDetail!.vsMode)!;
       return (
         <VStack flex style={ViewStyles.px4}>
           <BattleButton
+            battle={(result.item as ResultProps).battle}
             isFirst={result.index === 0}
             isLast={false}
             self={
@@ -431,10 +441,7 @@ const ResultView = (props: ResultViewProps) => {
                 ? getVsSelfPlayer(result.item.battle).result?.noroshiTry
                 : undefined
             }
-            onPress={() => {
-              setResult({ battle: (result.item as ResultProps).battle });
-              setDisplayBattle(true);
-            }}
+            onPress={onBattlePress}
           />
         </VStack>
       );
@@ -453,6 +460,7 @@ const ResultView = (props: ResultViewProps) => {
     return (
       <VStack flex style={ViewStyles.px4}>
         <CoopButton
+          coop={onCoopPress}
           isFirst={result.index === 0}
           isLast={false}
           self={
@@ -488,10 +496,7 @@ const ResultView = (props: ResultViewProps) => {
           }
           powerEgg={powerEgg}
           goldenEgg={goldenEgg}
-          onPress={() => {
-            setResult({ coop: (result.item as ResultProps).coop });
-            setDisplayCoop(true);
-          }}
+          onPress={onCoopPress}
         />
       </VStack>
     );

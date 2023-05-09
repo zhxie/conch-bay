@@ -1,4 +1,4 @@
-import { createContext, useContext } from "react";
+import { createContext, memo, useContext } from "react";
 import { StyleProp, ViewStyle } from "react-native";
 import Icon from "./Icon";
 import ResultButton from "./ResultButton";
@@ -10,6 +10,7 @@ import Text from "./Text";
 const CoopButtonContext = createContext({ grade: false, changeGrade: () => {} });
 
 interface CoopButtonProps {
+  coop?: any;
   color: string;
   isLoading?: boolean;
   isFirst?: boolean;
@@ -28,7 +29,7 @@ interface CoopButtonProps {
   goldenEgg: number;
   powerEgg: number;
   style?: StyleProp<ViewStyle>;
-  onPress?: () => void;
+  onPress?: (coop: any) => void;
 }
 
 const CoopButton = (props: CoopButtonProps) => {
@@ -38,6 +39,12 @@ const CoopButton = (props: CoopButtonProps) => {
 
   const clearStyle = [TextStyles.b, { color: props.color }];
   const waveStyle = props.isClear ? clearStyle : undefined;
+
+  const onPress = () => {
+    if (props.coop && props.onPress) {
+      props.onPress(props.coop);
+    }
+  };
 
   return (
     <ResultButton
@@ -84,7 +91,7 @@ const CoopButton = (props: CoopButtonProps) => {
         </Text>
       }
       style={props.style}
-      onPress={props.onPress}
+      onPress={onPress}
     >
       {props.result !== undefined && (
         <HStack center>
@@ -101,4 +108,4 @@ const CoopButton = (props: CoopButtonProps) => {
 };
 
 export { CoopButtonContext };
-export default CoopButton;
+export default memo(CoopButton);

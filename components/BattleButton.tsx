@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { StyleProp, ViewStyle } from "react-native";
 import ResultButton from "./ResultButton";
 import { Circle } from "./Shape";
@@ -6,6 +7,7 @@ import { Color, ViewStyles } from "./Styles";
 import Text from "./Text";
 
 interface BattleButtonProps {
+  battle?: any;
   color: string;
   isLoading?: boolean;
   isFirst?: boolean;
@@ -22,7 +24,7 @@ interface BattleButtonProps {
   special?: number;
   ultraSignal?: number | null;
   style?: StyleProp<ViewStyle>;
-  onPress?: () => void;
+  onPress?: (battle: any) => void;
 }
 
 const BattleButton = (props: BattleButtonProps) => {
@@ -32,6 +34,12 @@ const BattleButton = (props: BattleButtonProps) => {
       : props.assist! > 0
       ? `${props.kill}(${props.assist})`
       : props.kill;
+
+  const onPress = () => {
+    if (props.battle && props.onPress) {
+      props.onPress(props.battle);
+    }
+  };
 
   return (
     <ResultButton
@@ -46,7 +54,7 @@ const BattleButton = (props: BattleButtonProps) => {
       subtitle={props.stage}
       subChildren={<Text numberOfLines={1}>{props.weapon}</Text>}
       style={props.style}
-      onPress={props.onPress}
+      onPress={onPress}
     >
       {props.result !== undefined && (
         <HStack center>
@@ -72,4 +80,4 @@ const BattleButton = (props: BattleButtonProps) => {
   );
 };
 
-export default BattleButton;
+export default memo(BattleButton);
