@@ -235,7 +235,7 @@ const MainView = () => {
   }, [sessionToken]);
   useEffect(() => {
     if (ready) {
-      loadResults(20, true);
+      loadResults(20, false);
     }
   }, [filter]);
   useEffect(() => {

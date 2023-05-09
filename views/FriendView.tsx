@@ -165,7 +165,7 @@ const FriendView = (props: FriendViewProps) => {
         estimatedItemSize={48}
         ListEmptyComponent={
           <HStack flex>
-            {new Array(props.friends === undefined ? placeholder : 0).fill(0).map((_, i) => (
+            {new Array(placeholder).fill(0).map((_, i) => (
               <Avatar
                 key={i}
                 size={48}
