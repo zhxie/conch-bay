@@ -49,6 +49,15 @@ const zhHans = {
     "如果您的游戏语言与显示语言不一致，您可以在此修改。这将使法螺湾加载对应语言的记录。",
   change_game_language_language: "修改游戏语言 (%{language})",
   change_display_language_language: "修改显示语言 (%{language})",
+  connection_method_notice: "如果您因为网络状况不佳而无法访问鱿鱼圈3，您可以通过代理进行连接。",
+  change_connection_method_method: "修改连接方式 (%{method})",
+  connect_directly: "直接连接",
+  proxy_via_proxy: "通过%{proxy}代理",
+  proxy_via_turf_ink: "通过turf.ink代理",
+  proxy_via_self_built_splatnet3_proxy_server: "通过自建SplatNet 3 Proxy服务器代理",
+  proxy_notice:
+    "法螺湾支持通过SplatNet 3 Proxy代理访问鱿鱼圈3。turf.ink是支持SplatNet 3 Proxy的公共代理服务器。您也可以复制地址并使用自建SplatNet 3 Proxy服务器，请参阅部署SplatNet 3 Proxy以获取更多信息。",
+  splatnet_3_proxy_deployment: "部署SplatNet 3 Proxy",
   alternative_log_in_notice:
     "如果您拥有会话令牌并希望跳过由法螺湾获取令牌，您可以复制会话令牌并完成登录。",
   log_in_with_session_token: "通过会话令牌登录",

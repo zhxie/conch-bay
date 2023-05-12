@@ -1,3 +1,11 @@
+export const getDomain = (url: string) => {
+  const regex = /^(?:https?:\/\/)?(?:[^@/\n]+@)?([^:/?\n]+)/g;
+  const match = regex.exec(url);
+  if (match) {
+    return match[1];
+  }
+  return "";
+};
 export const getAuthorityAndPath = (url: string) => {
   url.split("?")[0];
   return url.split("?")[0];

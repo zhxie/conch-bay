@@ -53,6 +53,18 @@ const ja = {
     "ゲームの言語が表示言語と一致しない場合は、ここで変更できます。これにより、ホラガイベイは対応する言語でリザルトを読み込むことができます。",
   change_game_language_language: "ゲームの言語を変更 (%{language})",
   change_display_language_language: "表示言語を変更 (%{language})",
+  connection_method_notice:
+    "ネットワーク状況が悪くてイカリング3にアクセスできない場合は、プロキシ経由で接続できます。",
+  change_connection_method_method: "接続方法を変更する (%{method})",
+  connect_directly: "直結",
+  proxy_via_proxy: "%{proxy}にプロキシ経由",
+  proxy_via_turf_ink: "turf.inkにプロキシ経由",
+  proxy_via_self_built_splatnet3_proxy_server: "独自のSplatNet 3 Proxyサーバーにプロキシ経由",
+  proxy_notice:
+    "ホラガイベイは、SplatNet 3 Proxyのプロキシ経由し、イカリング3へのアクセスをサポートしています。turf.inkは、SplatNet 3 Proxyをサポートするパブリックプロキシサーバーです。アドレスをコピーして、独自のSplatNet 3 Proxyサーバーを使用することもできます。詳しくは、SplatNet 3 Proxyを構築を参照してください。",
+  current_proxy_proxy: "現在、プロキシ%{proxy}経由でイカリング3にアクセスしています。",
+  splatnet_3_proxy_deployment: "SplatNet 3 Proxyを構築",
+
   alternative_log_in_notice:
     "セッショントークンを持っていて、ホラガイベイによるトークンの取得をスキップしたい場合は、代わりにセッショントークンをコピーしてログインを完了することができます。",
   log_in_with_session_token: "セッショントークンでログイン",

@@ -49,6 +49,16 @@ const zhHant = {
     "如果您的遊戲語言與顯示語言不一致，您可以在此修改。這將使法螺灣載入對應語言的記錄。",
   change_game_language_language: "修改遊戲語言 (%{language})",
   change_display_language_language: "修改顯示語言 (%{language})",
+  connection_method_notice: "如果您因為網路狀況不佳而無法訪問魷魚圈3，您可以透過代理進行連線。",
+  change_connection_method_method: "變更連線方式 (%{method})",
+  connect_directly: "直接連線",
+  proxy_via_proxy: "透過%{proxy}代理",
+  proxy_via_turf_ink: "透過turf.ink代理",
+  proxy_via_self_built_splatnet3_proxy_server: "透過自建SplatNet 3 Proxy伺服器代理",
+  proxy_notice:
+    "法螺灣支援透過SplatNet 3 Proxy代理訪問魷魚圈3。turf.ink是支援SplatNet 3 Proxy的公共代理伺服器。您也可以複製地址並使用自建SplatNet 3 Proxy伺服器，請參閱部署SplatNet 3 Proxy以獲取更多資訊。",
+  current_proxy_proxy: "您目前正透過%{proxy}代理訪問魷魚圈3。",
+  splatnet_3_proxy_deployment: "部署SplatNet 3 Proxy",
   alternative_log_in_notice:
     "如果您擁有會話令牌並希望跳過由法螺灣獲取令牌，您可以複製會話令牌並完成登錄。",
   log_in_with_session_token: "通過會話令牌登錄",

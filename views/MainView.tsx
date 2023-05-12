@@ -73,6 +73,7 @@ import {
   getBulletToken,
   getSessionToken,
   getWebServiceToken,
+  setProxy as setProxyApi,
   updateNsoVersion,
   updateSplatnetVersion,
 } from "../utils/api";
@@ -85,6 +86,7 @@ import {
   getUserIconCacheSource,
   isImageExpired,
 } from "../utils/ui";
+import { getDomain } from "../utils/url";
 import FilterView from "./FilterView";
 import FriendView from "./FriendView";
 import ResultView from "./ResultView";
@@ -105,6 +107,11 @@ enum TimeRange {
   ThisMonth = "this_month",
   ThisSeason = "this_season",
   AllResults = "all_results",
+}
+enum ConnectionMethod {
+  Direct = "connect_directly",
+  TurfInkProxy = "proxy_via_turf_ink",
+  SelfBuiltProxy = "proxy_via_self_built_splatnet3_proxy_server",
 }
 
 let autoRefreshTimeout: NodeJS.Timeout | undefined;
@@ -144,6 +151,7 @@ const MainView = () => {
     "language",
     t("lang")
   );
+  const [proxy, setProxy, clearProxy, proxyReady] = useAsyncStorage("proxy");
 
   const [icon, setIcon, clearIcon] = useAsyncStorage("icon");
   const [catalogLevel, setCatalogLevel, clearCatalogLevel] = useAsyncStorage("catalogLevel");
@@ -183,11 +191,12 @@ const MainView = () => {
   const loadedAll = (results?.length ?? 0) >= count;
 
   useEffect(() => {
-    if (sessionTokenReady && bulletTokenReady && languageReady) {
+    if (sessionTokenReady && bulletTokenReady && languageReady && proxyReady) {
       (async () => {
         try {
           await Database.open();
           await loadResults(20, false);
+          setProxyApi(proxy);
           setReady(true);
         } catch (e) {
           showBanner(BannerLevel.Error, e);
@@ -195,7 +204,7 @@ const MainView = () => {
         }
       })();
     }
-  }, [sessionTokenReady, bulletTokenReady, languageReady]);
+  }, [sessionTokenReady, bulletTokenReady, languageReady, proxyReady]);
   const fade = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     if (ready) {
@@ -799,6 +808,28 @@ const MainView = () => {
   };
   const onChangeDisplayLanguagePress = async () => {
     await Linking.openSettings();
+  };
+  const onConnectionMethodSelected = async (method: ConnectionMethod) => {
+    switch (method) {
+      case ConnectionMethod.Direct:
+        await clearProxy();
+        setProxyApi("");
+        break;
+      case ConnectionMethod.TurfInkProxy:
+        await setProxy("https://turf.ink/");
+        setProxyApi("https://turf.ink/");
+        break;
+      case ConnectionMethod.SelfBuiltProxy:
+        {
+          const url = await Clipboard.getStringAsync();
+          await setProxy(url);
+          setProxyApi(url);
+        }
+        break;
+    }
+  };
+  const onSplatnet3ProxyDeploymentPress = async () => {
+    await WebBrowser.openBrowserAsync("https://github.com/zhxie/splatnet3-proxy#deployment");
   };
   const onAlternativeLogInPress = async () => {
     try {
@@ -1421,6 +1452,49 @@ const MainView = () => {
                 {t("change_display_language_language", { language: t(t("lang")) })}
               </Marquee>
             </Button>
+          </VStack>
+          <VStack style={[ViewStyles.mb4, ViewStyles.wf]}>
+            <VStack center>
+              <Text style={ViewStyles.mb2}>{t("connection_method_notice")}</Text>
+            </VStack>
+            {/* TODO: picker usages should be audited and changed to modals. */}
+            <Picker
+              isDisabled={refreshing}
+              title={t("change_connection_method_method", {
+                method:
+                  proxy.length > 0
+                    ? t("proxy_via_proxy", { proxy: getDomain(proxy) })
+                    : t("connect_directly"),
+              })}
+              items={Object.values(ConnectionMethod).map((method) => ({
+                key: method,
+                value: t(method),
+              }))}
+              header={
+                <VStack center style={ViewStyles.mb2}>
+                  <Icon
+                    name="globe"
+                    size={48}
+                    color={Color.MiddleTerritory}
+                    style={ViewStyles.mb4}
+                  />
+                  <Text style={ViewStyles.mb2}>{t("proxy_notice")}</Text>
+                  <VStack style={ViewStyles.wf}>
+                    <Button
+                      style={[
+                        { borderColor: Color.AccentColor, borderWidth: 1.5 },
+                        theme.backgroundStyle,
+                      ]}
+                      onPress={onSplatnet3ProxyDeploymentPress}
+                    >
+                      <Marquee>{t("splatnet_3_proxy_deployment")}</Marquee>
+                    </Button>
+                  </VStack>
+                </VStack>
+              }
+              // HACK: forcly cast.
+              onSelected={onConnectionMethodSelected as (_: string) => void}
+            />
           </VStack>
           {sessionToken.length === 0 && (
             <VStack style={[ViewStyles.mb4, ViewStyles.wf]}>

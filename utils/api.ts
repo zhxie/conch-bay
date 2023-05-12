@@ -32,6 +32,31 @@ export const fetchLatestVersion = async () => {
   return json.find((release) => !release["prerelease"])["tag_name"];
 };
 
+let PROXY = "";
+
+export const setProxy = (proxy: string) => {
+  PROXY = proxy;
+};
+const proxy = (input: string, init?: RequestInit) => {
+  if (PROXY.length > 0) {
+    if (init?.headers) {
+      const headers: Record<string, string> = {};
+      Object.entries(init.headers as Record<string, string>).forEach((kv) => {
+        if (kv[0] === "Host") {
+          headers["X-Forwarded-Host"] = kv[1];
+        } else {
+          headers[kv[0]] = kv[1];
+        }
+      });
+      init.headers = headers;
+    }
+    if (!PROXY.endsWith("/")) {
+      return fetch(`${PROXY}/${input}`, init);
+    }
+  }
+  return fetch(`${PROXY}${input}`, init);
+};
+
 export const fetchSchedules = async () => {
   const res = await fetch("https://splatoon3.ink/data/schedules.json");
   const json = await res.json();
@@ -84,7 +109,7 @@ export const updateSplatnetVersion = async () => {
   SPLATNET_VERSION = json["web_app_ver"];
 };
 const callIminkFApi = async (idToken: string, step: number) => {
-  const res = await fetch("https://api.imink.app/f", {
+  const res = await proxy("https://api.imink.app/f", {
     method: "POST",
     headers: {
       "Content-Type": "application/json; charset=utf-8",
@@ -126,7 +151,7 @@ export const getSessionToken = async (url: string, cv: string) => {
   if (!sessionTokenCode) {
     return undefined;
   }
-  const res = await fetch("https://accounts.nintendo.com/connect/1.0.0/api/session_token", {
+  const res = await proxy("https://accounts.nintendo.com/connect/1.0.0/api/session_token", {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
@@ -143,7 +168,7 @@ export const getSessionToken = async (url: string, cv: string) => {
 };
 export const getWebServiceToken = async (sessionToken: string) => {
   // Get tokens.
-  const res = await fetch("https://accounts.nintendo.com/connect/1.0.0/api/token", {
+  const res = await proxy("https://accounts.nintendo.com/connect/1.0.0/api/token", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -159,7 +184,7 @@ export const getWebServiceToken = async (sessionToken: string) => {
   const { access_token: accessToken, id_token: idToken } = json;
 
   // Get user info.
-  const res2 = await fetch("https://api.accounts.nintendo.com/2.0.0/users/me", {
+  const res2 = await proxy("https://api.accounts.nintendo.com/2.0.0/users/me", {
     headers: {
       Authorization: `Bearer ${accessToken}`,
       "Content-Type": "application/json",
@@ -172,7 +197,7 @@ export const getWebServiceToken = async (sessionToken: string) => {
   // Get access token.
   const json3 = await callIminkFApi(idToken, 1);
   const { f, request_id: requestId, timestamp } = json3;
-  const res4 = await fetch("https://api-lp1.znc.srv.nintendo.net/v3/Account/Login", {
+  const res4 = await proxy("https://api-lp1.znc.srv.nintendo.net/v3/Account/Login", {
     method: "POST",
     headers: {
       "Content-Type": "application/json; charset=utf-8",
@@ -197,7 +222,7 @@ export const getWebServiceToken = async (sessionToken: string) => {
   // Get web service token.
   const json5 = await callIminkFApi(idToken2, 2);
   const { f: f2, request_id: requestId2, timestamp: timestamp2 } = json5;
-  const res6 = await fetch("https://api-lp1.znc.srv.nintendo.net/v2/Game/GetWebServiceToken", {
+  const res6 = await proxy("https://api-lp1.znc.srv.nintendo.net/v2/Game/GetWebServiceToken", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${idToken2}`,
@@ -224,7 +249,7 @@ export const getBulletToken = async (
   country: string,
   language?: string
 ) => {
-  const res = await fetch("https://api.lp1.av5ja.srv.nintendo.net/api/bullet_tokens", {
+  const res = await proxy("https://api.lp1.av5ja.srv.nintendo.net/api/bullet_tokens", {
     method: "POST",
     headers: {
       "Accept-Language": language ?? "*",
@@ -243,7 +268,7 @@ const fetchGraphQl = async <T>(
   language?: string,
   variables?: T
 ) => {
-  const res = await fetch("https://api.lp1.av5ja.srv.nintendo.net/api/graphql", {
+  const res = await proxy("https://api.lp1.av5ja.srv.nintendo.net/api/graphql", {
     method: "POST",
     headers: {
       "Accept-Language": language || "*",

@@ -52,6 +52,17 @@ const en = {
     "If your game language is inconsistent with the display one, you can change it here. This will allow Conch Bay to loading results with the corresponding language.",
   change_game_language_language: "Change Game Language (%{language})",
   change_display_language_language: "Change Display Language (%{language})",
+  connection_method_notice:
+    "If you cannot access SplatNet 3 due to poor network conditions, you can connect through a proxy.",
+  change_connection_method_method: "Change Connection Method (%{method})",
+  connect_directly: "Connect Directly",
+  proxy_via_proxy: "Proxy through %{proxy}",
+  proxy_via_turf_ink: "Proxy through turf.ink",
+  proxy_via_self_built_splatnet3_proxy_server: "Proxy through Self-Built SplatNet 3 Proxy Server",
+  proxy_notice:
+    "Conch Bay supports accessing SplatNet 3 through SplatNet 3 Proxy. turf.ink is a public proxy server that supports SplatNet 3 Proxy. You can also copy the address to use self-built SplatNet 3 Proxy server. Please refer to SplatNet 3 Proxy Deployment for more information.",
+  current_proxy_proxy: "You are accessing SplatNet 3 through %{proxy} currently.",
+  splatnet_3_proxy_deployment: "SplatNet 3 Proxy Deployment",
   alternative_log_in_notice:
     "If you have session token and want to skip acquiring tokens by Conch Bay, you can copy the session token and complete logging in alternatively.",
   log_in_with_session_token: "Log In with Session Token",
