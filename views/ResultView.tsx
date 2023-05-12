@@ -420,7 +420,7 @@ const ResultView = (props: ResultViewProps) => {
             battle={(result.item as ResultProps).battle}
             isFirst={result.index === 0}
             isLast={false}
-            self={
+            tag={
               result.extraData?.battle?.vsHistoryDetail?.id ===
               result.item.battle.vsHistoryDetail!.id
                 ? color
@@ -463,7 +463,7 @@ const ResultView = (props: ResultViewProps) => {
           coop={onCoopPress}
           isFirst={result.index === 0}
           isLast={false}
-          self={
+          tag={
             result.extraData?.coop?.coopHistoryDetail?.id ===
             result.item.coop!.coopHistoryDetail!.id
               ? color
@@ -624,7 +624,8 @@ const ResultView = (props: ResultViewProps) => {
                         key={i}
                         isFirst={i === 0}
                         isLast={i === players.length - 1}
-                        self={player.isMyself ? getColor(team.color) : undefined}
+                        team={getColor(team.color)}
+                        self={player.isMyself}
                         name={formatName(player.name, player.species, player.isMyself)}
                         weapon={getImageCacheSource(player.weapon.image2d.url)}
                         paint={player.paint}

@@ -49,13 +49,13 @@ const ja = {
     "当アプリは、イカリング3の情報を利用した非公式アプリであり、任天堂株式会社とは一切関係はございません。",
   update: "アップデート",
   support: "サポート",
-  alternative_log_in_notice:
-    "セッショントークンを持っていて、ホラガイベイによるトークンの取得をスキップしたい場合は、代わりにセッショントークンをコピーしてログインを完了することができます。",
-  log_in_with_session_token: "セッショントークンでログイン",
   language_notice:
     "ゲームの言語が表示言語と一致しない場合は、ここで変更できます。これにより、ホラガイベイは対応する言語でリザルトを読み込むことができます。",
   change_game_language_language: "ゲームの言語を変更 (%{language})",
   change_display_language_language: "表示言語を変更 (%{language})",
+  alternative_log_in_notice:
+    "セッショントークンを持っていて、ホラガイベイによるトークンの取得をスキップしたい場合は、代わりにセッショントークンをコピーしてログインを完了することができます。",
+  log_in_with_session_token: "セッショントークンでログイン",
   relog_in_notice: "ホラガイベイがトークンを取得できない場合は、再ログインできます。",
   relog_in: "再ログイン",
   resource_notice:

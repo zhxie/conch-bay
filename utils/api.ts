@@ -26,9 +26,6 @@ import {
 import { encode64Url } from "./codec";
 import { formUrlEncoded, getParam, parameterize } from "./url";
 
-let NSO_VERSION = "2.5.0";
-let SPLATNET_VERSION = "3.0.0-0742bda0";
-
 export const fetchLatestVersion = async () => {
   const res = await fetch("https://api.github.com/repos/zhxie/conch-bay/releases");
   const json = await res.json();
@@ -68,6 +65,9 @@ export const fetchSplatfests = async () => {
   const json = await res.json();
   return (json as FestivalsQuery).US.data;
 };
+
+let NSO_VERSION = "2.5.0";
+let SPLATNET_VERSION = "3.0.0-0742bda0";
 
 export const updateNsoVersion = async () => {
   const res = await fetch("https://itunes.apple.com/lookup?id=1234806557");

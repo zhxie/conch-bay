@@ -12,7 +12,7 @@ interface BattleButtonProps {
   isLoading?: boolean;
   isFirst?: boolean;
   isLast?: boolean;
-  self?: string;
+  tag?: string;
   result?: number;
   rule: string;
   dragon?: string;
@@ -47,7 +47,7 @@ const BattleButton = (props: BattleButtonProps) => {
       isLoading={props.isLoading}
       isFirst={props.isFirst}
       isLast={props.isLast}
-      self={props.self}
+      tag={props.tag}
       result={props.result}
       title={props.rule}
       badge={props.dragon}

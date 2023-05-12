@@ -13,7 +13,7 @@ interface ResultButtonProps {
   isLoading?: boolean;
   isFirst?: boolean;
   isLast?: boolean;
-  self?: string;
+  tag?: string;
   image?: ImageSource;
   result?: number;
   icon?: string;
@@ -39,7 +39,7 @@ const ResultButton = (props: ResultButtonProps) => {
       ]}
       onPress={props.onPress}
     >
-      {props.self && (
+      {props.tag && (
         <HStack style={[{ position: "absolute", width: 4, overflow: "hidden" }]}>
           <HStack
             style={[
@@ -48,7 +48,7 @@ const ResultButton = (props: ResultButtonProps) => {
               props.isLast && ViewStyles.rb2,
             ]}
           >
-            <Rectangle width={4} height={64} color={props.self} />
+            <Rectangle width={4} height={64} color={props.tag} />
           </HStack>
         </HStack>
       )}

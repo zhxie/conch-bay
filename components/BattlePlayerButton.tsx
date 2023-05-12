@@ -9,7 +9,8 @@ import Text from "./Text";
 interface BattlePlayerButtonProps {
   isFirst?: boolean;
   isLast?: boolean;
-  self?: string;
+  team: string;
+  self?: boolean;
   name: string;
   weapon: ImageSource;
   paint: number;
@@ -37,7 +38,7 @@ const BattlePlayerButton = (props: BattlePlayerButtonProps) => {
       color={props.crown ? Color.AnarchyBattle : props.dragon}
       isFirst={props.isFirst}
       isLast={props.isLast}
-      self={props.self}
+      tag={props.self ? props.team : undefined}
       image={props.weapon}
       icon={props.crown ? "crown" : props.dragon ? "party-popper" : undefined}
       title={props.name}

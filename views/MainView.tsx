@@ -59,10 +59,13 @@ import {
   fetchCatalog,
   fetchCoopHistoryDetail,
   fetchCoopResult,
+  fetchDetailVotingStatus,
   fetchEquipments,
   fetchFriends,
+  fetchLatestVersion,
   fetchShop,
   fetchSchedules,
+  fetchSplatfests,
   fetchSummary,
   fetchVsHistoryDetail,
   fetchWeaponRecords,
@@ -72,9 +75,6 @@ import {
   getWebServiceToken,
   updateNsoVersion,
   updateSplatnetVersion,
-  fetchLatestVersion,
-  fetchSplatfests,
-  fetchDetailVotingStatus,
 } from "../utils/api";
 import * as Database from "../utils/database";
 import { useAsyncStorage } from "../utils/hooks";
@@ -790,6 +790,16 @@ const MainView = () => {
       setSupport(false);
     }
   };
+  const onGameLanguageSelected = async (language: string) => {
+    if (language === t("lang")) {
+      await clearLanguage();
+    } else {
+      await setLanguage(language);
+    }
+  };
+  const onChangeDisplayLanguagePress = async () => {
+    await Linking.openSettings();
+  };
   const onAlternativeLogInPress = async () => {
     try {
       setLoggingIn(true);
@@ -801,16 +811,6 @@ const MainView = () => {
       showBanner(BannerLevel.Error, e);
       setLoggingIn(false);
     }
-  };
-  const onGameLanguageSelected = async (language: string) => {
-    if (language === t("lang")) {
-      await clearLanguage();
-    } else {
-      await setLanguage(language);
-    }
-  };
-  const onChangeDisplayLanguagePress = async () => {
-    await Linking.openSettings();
   };
   const onClearCachePress = async () => {
     setClearingCache(true);
@@ -1387,23 +1387,6 @@ const MainView = () => {
       <Modal isVisible={support} onClose={onSupportClose} style={ViewStyles.modal1d}>
         <VStack center>
           <Icon name="help-circle" size={48} color={Color.MiddleTerritory} style={ViewStyles.mb4} />
-          {sessionToken.length === 0 && (
-            <VStack style={[ViewStyles.mb4, ViewStyles.wf]}>
-              <VStack center>
-                <Text style={ViewStyles.mb2}>{t("alternative_log_in_notice")}</Text>
-              </VStack>
-              <Button
-                isDisabled={refreshing}
-                isLoading={loggingIn}
-                isLoadingText={t("logging_in")}
-                style={ViewStyles.accent}
-                textStyle={theme.reverseTextStyle}
-                onPress={onAlternativeLogInPress}
-              >
-                <Marquee style={theme.reverseTextStyle}>{t("log_in_with_session_token")}</Marquee>
-              </Button>
-            </VStack>
-          )}
           <VStack style={[ViewStyles.mb4, ViewStyles.wf]}>
             <VStack center>
               <Text style={ViewStyles.mb2}>{t("language_notice")}</Text>
@@ -1439,6 +1422,23 @@ const MainView = () => {
               </Marquee>
             </Button>
           </VStack>
+          {sessionToken.length === 0 && (
+            <VStack style={[ViewStyles.mb4, ViewStyles.wf]}>
+              <VStack center>
+                <Text style={ViewStyles.mb2}>{t("alternative_log_in_notice")}</Text>
+              </VStack>
+              <Button
+                isDisabled={refreshing}
+                isLoading={loggingIn}
+                isLoadingText={t("logging_in")}
+                style={ViewStyles.accent}
+                textStyle={theme.reverseTextStyle}
+                onPress={onAlternativeLogInPress}
+              >
+                <Marquee style={theme.reverseTextStyle}>{t("log_in_with_session_token")}</Marquee>
+              </Button>
+            </VStack>
+          )}
           {sessionToken.length > 0 && (
             <VStack style={[ViewStyles.mb4, ViewStyles.wf]}>
               <VStack center>
