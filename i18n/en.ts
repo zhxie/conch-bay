@@ -48,13 +48,13 @@ const en = {
     "This app is an unofficial app which uses the information of SplatNet 3, and is not related to Nintendo Co., Ltd.",
   update: "Update",
   support: "Support",
-  alternative_log_in_notice:
-    "If you have session token and want to skip acquiring tokens by Conch Bay, you can copy the session token and complete logging in alternatively.",
-  log_in_with_session_token: "Log In with Session Token",
   language_notice:
     "If your game language is inconsistent with the display one, you can change it here. This will allow Conch Bay to loading results with the corresponding language.",
   change_game_language_language: "Change Game Language (%{language})",
   change_display_language_language: "Change Display Language (%{language})",
+  alternative_log_in_notice:
+    "If you have session token and want to skip acquiring tokens by Conch Bay, you can copy the session token and complete logging in alternatively.",
+  log_in_with_session_token: "Log In with Session Token",
   relog_in_notice: "If Conch Bay cannot acquire tokens, you can relog in.",
   relog_in: "Relog In",
   resource_notice:

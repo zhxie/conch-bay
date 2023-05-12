@@ -45,13 +45,13 @@ const zhHans = {
   disclaimer: "本应用是使用鱿鱼圈3的信息的非官方应用，与任天堂有限公司无关。",
   update: "更新",
   support: "支持",
-  alternative_log_in_notice:
-    "如果您拥有会话令牌并希望跳过由法螺湾获取令牌，您可以复制会话令牌并完成登录。",
-  log_in_with_session_token: "通过会话令牌登录",
   language_notice:
     "如果您的游戏语言与显示语言不一致，您可以在此修改。这将使法螺湾加载对应语言的记录。",
   change_game_language_language: "修改游戏语言 (%{language})",
   change_display_language_language: "修改显示语言 (%{language})",
+  alternative_log_in_notice:
+    "如果您拥有会话令牌并希望跳过由法螺湾获取令牌，您可以复制会话令牌并完成登录。",
+  log_in_with_session_token: "通过会话令牌登录",
   relog_in_notice: "如果法螺湾无法获取令牌，您可以重新登录。",
   relog_in: "重新登录",
   resource_notice:

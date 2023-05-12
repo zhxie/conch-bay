@@ -45,13 +45,13 @@ const zhHant = {
   disclaimer: "本應用是使用魷魚圈3的資訊的非官方應用，與任天堂有限公司無關。",
   update: "更新",
   support: "支援",
-  alternative_log_in_notice:
-    "如果您擁有會話令牌並希望跳過由法螺灣獲取令牌，您可以復制會話令牌並完成登錄。",
-  log_in_with_session_token: "通過會話令牌登錄",
   language_notice:
     "如果您的遊戲語言與顯示語言不一致，您可以在此修改。這將使法螺灣載入對應語言的記錄。",
   change_game_language_language: "修改遊戲語言 (%{language})",
   change_display_language_language: "修改顯示語言 (%{language})",
+  alternative_log_in_notice:
+    "如果您擁有會話令牌並希望跳過由法螺灣獲取令牌，您可以複製會話令牌並完成登錄。",
+  log_in_with_session_token: "通過會話令牌登錄",
   relog_in_notice: "如果法螺灣無法獲取令牌，您可以重新登錄。",
   relog_in: "重新登錄",
   resource_notice:
