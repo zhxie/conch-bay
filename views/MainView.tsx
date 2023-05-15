@@ -227,6 +227,8 @@ const MainView = () => {
   }, [ready]);
   useEffect(() => {
     if (ready) {
+      // HACK: Reset results to avoid incorrect layout when log out with filter set and then log in.
+      setResults(undefined);
       // HACK: avoid animation racing.
       setTimeout(() => {
         refresh();
@@ -235,7 +237,7 @@ const MainView = () => {
   }, [sessionToken]);
   useEffect(() => {
     if (ready) {
-      loadResults(20, false);
+      loadResults(20, true);
     }
   }, [filter]);
   useEffect(() => {
