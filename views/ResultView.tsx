@@ -460,7 +460,7 @@ const ResultView = (props: ResultViewProps) => {
     return (
       <VStack flex style={ViewStyles.px4}>
         <CoopButton
-          coop={onCoopPress}
+          coop={(result.item as ResultProps).coop}
           isFirst={result.index === 0}
           isLast={false}
           tag={
