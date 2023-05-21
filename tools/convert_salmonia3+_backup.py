@@ -75,8 +75,13 @@ def construct_member_result(result, player):
         "g": player["text_color"][1],
         "r": player["text_color"][0],
     }
-    special_weapon = construct_weapon(SPECIAL_WEAPON_IMAGE[player["special_id"]])
-    special_weapon["weaponId"] = player["special_id"]
+    special_weapon = (
+        construct_weapon(SPECIAL_WEAPON_IMAGE[player["special_id"]])
+        if player["special_id"] != None
+        else None
+    )
+    if special_weapon != None:
+        special_weapon["weaponId"] = player["special_id"]
     return {
         "player": {
             "__isPlayer": "CoopPlayer",
