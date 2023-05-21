@@ -15,7 +15,7 @@ def main():
     coops = []
     if os.path.exists(f"{sys.argv[1]}/exports/results"):
         for file in os.listdir(f"{sys.argv[1]}/exports/results"):
-            with open(f"{sys.argv[1]}/exports/results/{file}") as f:
+            with open(f"{sys.argv[1]}/exports/results/{file}", encoding="utf-8") as f:
                 datum = json.loads(f.read())
                 battle = datum["data"]
                 id = battle["vsHistoryDetail"]["id"]
@@ -24,7 +24,9 @@ def main():
                     battles.append(battle)
     if os.path.exists(f"{sys.argv[1]}/exports/coop_results"):
         for file in os.listdir(f"{sys.argv[1]}/exports/coop_results"):
-            with open(f"{sys.argv[1]}/exports/coop_results/{file}") as f:
+            with open(
+                f"{sys.argv[1]}/exports/coop_results/{file}", encoding="utf-8"
+            ) as f:
                 datum = json.loads(f.read())
                 coop = datum["data"]
                 id = coop["coopHistoryDetail"]["id"]
@@ -33,7 +35,7 @@ def main():
                     coops.append(coop)
     for dir in os.listdir(sys.argv[1]):
         if dir.startswith("export-"):
-            with open(f"{sys.argv[1]}/{dir}/results.json") as f:
+            with open(f"{sys.argv[1]}/{dir}/results.json", encoding="utf-8") as f:
                 data = json.loads(f.read())
                 for datum in data:
                     battle = datum["data"]
@@ -41,7 +43,7 @@ def main():
                     if id not in ids:
                         ids.add(id)
                         battles.append(battle)
-            with open(f"{sys.argv[1]}/{dir}/coop_results.json") as f:
+            with open(f"{sys.argv[1]}/{dir}/coop_results.json", encoding="utf-8") as f:
                 data = json.loads(f.read())
                 for datum in data:
                     coop = datum["data"]
@@ -51,7 +53,7 @@ def main():
                         coops.append(coop)
 
     results = {"battles": battles, "coops": coops}
-    with open("conch-bay-import.json", "w") as f:
+    with open("conch-bay-import.json", "w", encoding="utf-8") as f:
         json.dump(results, f, ensure_ascii=False)
     print(f'Export {len(ids)} results to "conch-bay-import.json".')
 

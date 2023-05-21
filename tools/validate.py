@@ -12,7 +12,7 @@ def main():
     valid_battles = 0
     coops = 0
     valid_coops = 0
-    with open(sys.argv[1], "r") as f:
+    with open(sys.argv[1], encoding="utf-8") as f:
         data = json.loads(f.read())
         battles = len(data["battles"])
         coops = len(data["coops"])

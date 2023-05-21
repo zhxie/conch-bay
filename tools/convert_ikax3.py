@@ -39,7 +39,7 @@ def main():
         coops.append({"coopHistoryDetail": json.loads(line.decode("utf-8"))})
 
     results = {"battles": battles, "coops": coops}
-    with open("conch-bay-import.json", "w") as f:
+    with open("conch-bay-import.json", "w", encoding="utf-8") as f:
         json.dump(results, f, ensure_ascii=False)
     print(f'Export {count} results to "conch-bay-import.json".')
 

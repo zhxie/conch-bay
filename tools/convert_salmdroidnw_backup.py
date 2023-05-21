@@ -43,7 +43,7 @@ def main():
         return
 
     coops = []
-    with open(f"{sys.argv[1]}/1") as f:
+    with open(f"{sys.argv[1]}/1", encoding="utf-8") as f:
         data = json.loads(f.read())
         results = json.loads(data["results"])
         for result in results:
@@ -69,7 +69,7 @@ def main():
             coops.append({"coopHistoryDetail": obj})
 
     results = {"battles": [], "coops": coops}
-    with open("conch-bay-import.json", "w") as f:
+    with open("conch-bay-import.json", "w", encoding="utf-8") as f:
         json.dump(results, f, ensure_ascii=False)
     print(f'Export {len(coops)} coops to "conch-bay-import.json".')
 
