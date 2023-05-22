@@ -4,6 +4,7 @@ import duration from "dayjs/plugin/duration";
 import * as Clipboard from "expo-clipboard";
 import { useCallback, useRef, useState } from "react";
 import {
+  Dimensions,
   Linking,
   NativeScrollEvent,
   NativeSyntheticEvent,
@@ -88,6 +89,9 @@ interface ResultViewProps {
 }
 
 const ResultView = (props: ResultViewProps) => {
+  // HACK: expect there is 480px occupied by other components.
+  const placeholder = Math.ceil((Dimensions.get("window").height - 480) / 64);
+
   const theme = useTheme();
 
   const showBanner = useBanner();
@@ -518,7 +522,7 @@ const ResultView = (props: ResultViewProps) => {
         estimatedItemSize={64}
         ListEmptyComponent={
           <VStack flex style={ViewStyles.px4}>
-            {new Array(props.results === undefined ? 8 : 0).fill(0).map((_, i) => (
+            {new Array(placeholder).fill(0).map((_, i) => (
               <BattleButton
                 key={i}
                 isLoading={true}

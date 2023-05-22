@@ -187,7 +187,7 @@ const MainView = () => {
       (async () => {
         try {
           await Database.open();
-          await loadResults(20, false);
+          await loadResults(20);
           setReady(true);
         } catch (e) {
           showBanner(BannerLevel.Error, e);
@@ -227,8 +227,6 @@ const MainView = () => {
   }, [ready]);
   useEffect(() => {
     if (ready) {
-      // HACK: Reset results to avoid incorrect layout when log out with filter set and then log in.
-      setResults(undefined);
       // HACK: avoid animation racing.
       setTimeout(() => {
         refresh();
@@ -237,7 +235,7 @@ const MainView = () => {
   }, [sessionToken]);
   useEffect(() => {
     if (ready) {
-      loadResults(20, true);
+      loadResults(20);
     }
   }, [filter]);
   useEffect(() => {
@@ -258,7 +256,7 @@ const MainView = () => {
     }
   }, [refreshing, bulletToken, autoRefresh, language]);
 
-  const loadResults = async (length: number, forceUpdate: boolean) => {
+  const loadResults = async (length: number) => {
     setLoadingMore(true);
     let offset: number, limit: number;
     if (results !== undefined && results.length >= 20 && length > results.length) {
@@ -280,15 +278,13 @@ const MainView = () => {
     if (results !== undefined && results.length >= 20 && length > results.length) {
       setResults(results.concat(details));
     } else {
-      if (details.length > 0 || forceUpdate) {
-        setResults(details);
-        const [count, newTotal] = await Promise.all([Database.count(filter), Database.count()]);
-        setCount(count);
-        setTotal(newTotal);
-        if (newTotal !== total) {
-          const filterOptions = await Database.queryFilterOptions();
-          setFilterOptions(filterOptions);
-        }
+      setResults(details);
+      const [count, newTotal] = await Promise.all([Database.count(filter), Database.count()]);
+      setCount(count);
+      setTotal(newTotal);
+      if (newTotal !== total) {
+        const filterOptions = await Database.queryFilterOptions();
+        setFilterOptions(filterOptions);
       }
     }
     setLoadingMore(false);
@@ -374,7 +370,7 @@ const MainView = () => {
                 await setCatalogLevel(catalogLevel);
               }),
               refreshResults(newBulletToken).then(async () => {
-                await loadResults(20, true);
+                await loadResults(20);
               }),
             ]);
           }
@@ -495,7 +491,7 @@ const MainView = () => {
         showBanner(BannerLevel.Success, t("loaded_n_results", { n }));
       }
 
-      await loadResults(20, true);
+      await loadResults(20);
     }
   };
 
@@ -621,7 +617,7 @@ const MainView = () => {
     if (loadedAll) {
       return;
     }
-    await loadResults(results!.length + 20, true);
+    await loadResults(results!.length + 20);
   };
   const onLoadMoreSelected = async (key: TimeRange) => {
     let num = 20;
@@ -662,7 +658,7 @@ const MainView = () => {
         num = count;
         break;
     }
-    await loadResults(num, true);
+    await loadResults(num);
   };
   const onImportPress = () => {
     setImport(true);
@@ -730,7 +726,7 @@ const MainView = () => {
 
       // Query stored latest results if updated.
       if (n - fail - skip > 0) {
-        await loadResults(20, true);
+        await loadResults(20);
       }
       success = true;
     } catch (e) {
@@ -1064,7 +1060,7 @@ const MainView = () => {
       <Animated.View style={[ViewStyles.f, { opacity: fade }]}>
         {/* HACK: it is a little bit weird concentrating on result list. */}
         <ResultView
-          results={sessionToken.length > 0 ? results : []}
+          results={results}
           refreshControl={
             <RefreshControl
               progressViewOffset={insets.top}
@@ -1152,15 +1148,13 @@ const MainView = () => {
                 (friends === undefined || friends.friends.nodes.length > 0) && (
                   <FriendView friends={friends} voting={voting} style={ViewStyles.mb4} />
                 )}
-              {sessionToken.length > 0 && (
-                <FilterView
-                  isDisabled={refreshing || loadingMore}
-                  filter={filter}
-                  options={filterOptions}
-                  onChange={onChangeFilterPress}
-                  style={ViewStyles.mb2}
-                />
-              )}
+              <FilterView
+                isDisabled={refreshing || loadingMore}
+                filter={filter}
+                options={filterOptions}
+                onChange={onChangeFilterPress}
+                style={ViewStyles.mb2}
+              />
             </SafeAreaView>
           }
           footer={
@@ -1168,81 +1162,77 @@ const MainView = () => {
               edges={["bottom", "left", "right"]}
               style={[ViewStyles.mb2, { alignItems: "center" }]}
             >
-              {sessionToken.length > 0 && (
-                <VStack style={[ViewStyles.mb4, ViewStyles.wf, ViewStyles.px4]}>
-                  <Picker
-                    isLoading={refreshing || loadingMore}
-                    isLoadingText={t("loading_more")}
-                    title={loadedAll ? t("loaded_all") : t("load_more")}
-                    items={Object.values(TimeRange).map((range) => ({
-                      key: range,
-                      value: t(range),
-                    }))}
-                    header={
-                      <VStack center>
-                        <Marquee style={ViewStyles.mb2}>
-                          {count === total
-                            ? t("loaded_n_total_results", { n: results?.length ?? 0, total })
-                            : t("loaded_n_filtered_total_filtered_results", {
-                                n: results?.length ?? 0,
-                                filtered: count,
-                                total,
-                              })}
-                        </Marquee>
-                      </VStack>
-                    }
-                    style={[
-                      (results?.length ?? 0) <= 20 && !loadedAll && ViewStyles.mb2,
-                      results === undefined || results.length > 0 ? ViewStyles.rt0 : ViewStyles.rt2,
-                      ViewStyles.rb2,
-                      { height: 64 },
-                      theme.territoryStyle,
-                    ]}
-                    textStyle={[TextStyles.h3, theme.textStyle]}
-                    // HACK: forcly cast.
-                    onSelected={onLoadMoreSelected as (_: string) => void}
-                    onPress={onLoadMorePress}
-                  />
-                  {(results?.length ?? 0) <= 20 && !loadedAll && (
-                    <HStack style={ViewStyles.c}>
-                      <Icon
-                        name="info"
-                        size={14}
-                        color={Color.MiddleTerritory}
-                        style={ViewStyles.mr1}
-                      />
-                      <HStack style={ViewStyles.i}>
-                        <Marquee style={TextStyles.subtle}>{t("load_more_notice")}</Marquee>
-                      </HStack>
+              <VStack style={[ViewStyles.mb4, ViewStyles.wf, ViewStyles.px4]}>
+                <Picker
+                  isLoading={refreshing || loadingMore}
+                  isLoadingText={t("loading_more")}
+                  title={loadedAll ? t("loaded_all") : t("load_more")}
+                  items={Object.values(TimeRange).map((range) => ({
+                    key: range,
+                    value: t(range),
+                  }))}
+                  header={
+                    <VStack center>
+                      <Marquee style={ViewStyles.mb2}>
+                        {count === total
+                          ? t("loaded_n_total_results", { n: results?.length ?? 0, total })
+                          : t("loaded_n_filtered_total_filtered_results", {
+                              n: results?.length ?? 0,
+                              filtered: count,
+                              total,
+                            })}
+                      </Marquee>
+                    </VStack>
+                  }
+                  style={[
+                    (results?.length ?? 0) <= 20 && !loadedAll && ViewStyles.mb2,
+                    ViewStyles.rt0,
+                    ViewStyles.rb2,
+                    { height: 64 },
+                    theme.territoryStyle,
+                  ]}
+                  textStyle={[TextStyles.h3, theme.textStyle]}
+                  // HACK: forcly cast.
+                  onSelected={onLoadMoreSelected as (_: string) => void}
+                  onPress={onLoadMorePress}
+                />
+                {(results?.length ?? 0) <= 20 && !loadedAll && (
+                  <HStack style={ViewStyles.c}>
+                    <Icon
+                      name="info"
+                      size={14}
+                      color={Color.MiddleTerritory}
+                      style={ViewStyles.mr1}
+                    />
+                    <HStack style={ViewStyles.i}>
+                      <Marquee style={TextStyles.subtle}>{t("load_more_notice")}</Marquee>
                     </HStack>
-                  )}
-                </VStack>
-              )}
-              {sessionToken.length > 0 && (
-                <ScrollView
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  style={[ViewStyles.mb4, ViewStyles.wf]}
-                >
-                  <HStack flex center style={ViewStyles.px4}>
-                    <StatsView results={results} style={ViewStyles.mr2} />
-                    <TrendsView results={results} style={ViewStyles.mr2} />
-                    <ToolButton
-                      icon="download"
-                      title={t("import")}
-                      style={ViewStyles.mr2}
-                      onPress={onImportPress}
-                    />
-                    <ToolButton
-                      isLoading={exporting}
-                      isLoadingText={t("exporting")}
-                      icon="upload"
-                      title={t("export")}
-                      onPress={onExportPress}
-                    />
                   </HStack>
-                </ScrollView>
-              )}
+                )}
+              </VStack>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                style={[ViewStyles.mb4, ViewStyles.wf]}
+              >
+                <HStack flex center style={ViewStyles.px4}>
+                  <StatsView results={results} style={ViewStyles.mr2} />
+                  <TrendsView results={results} style={ViewStyles.mr2} />
+                  <ToolButton
+                    icon="download"
+                    title={t("import")}
+                    style={ViewStyles.mr2}
+                    onPress={onImportPress}
+                  />
+                  <ToolButton
+                    isLoading={exporting}
+                    isLoadingText={t("exporting")}
+                    icon="upload"
+                    title={t("export")}
+                    onPress={onExportPress}
+                  />
+                </HStack>
+              </ScrollView>
               <VStack center style={ViewStyles.px4}>
                 <Text center style={[TextStyles.subtle, ViewStyles.mb2]}>
                   {t("disclaimer")}

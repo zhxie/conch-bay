@@ -215,82 +215,98 @@ const FilterView = (props: FilterViewProps) => {
         style={[ViewStyles.modal2d, ViewStyles.pl4, ViewStyles.pr2]}
       >
         <VStack flex>
-          <Marquee style={[TextStyles.h2, ViewStyles.mb2]}>{t("modes")}</Marquee>
-          <HStack style={[ViewStyles.mb2, { flexWrap: "wrap" }]}>
-            {props.options?.modes.map((mode) => (
-              <FilterButton
-                key={mode}
-                isDisabled={props.isDisabled}
-                textColor={props.filter?.modes.includes(mode) ? Color.DarkText : undefined}
-                title={t(mode)}
-                style={[
-                  ViewStyles.mr2,
-                  ViewStyles.mb2,
-                  props.filter?.modes.includes(mode) && ViewStyles.accent,
-                ]}
-                onPress={() => {
-                  onOptionPress("modes", mode);
-                }}
-              />
-            ))}
-          </HStack>
-          <Marquee style={[TextStyles.h2, ViewStyles.mb2]}>{t("rules")}</Marquee>
-          <HStack style={[ViewStyles.mb2, { flexWrap: "wrap" }]}>
-            {props.options?.rules.map((rule) => (
-              <FilterButton
-                key={rule}
-                isDisabled={props.isDisabled}
-                textColor={props.filter?.rules.includes(rule) ? Color.DarkText : undefined}
-                title={t(rule)}
-                style={[
-                  ViewStyles.mr2,
-                  ViewStyles.mb2,
-                  props.filter?.rules.includes(rule) && ViewStyles.accent,
-                ]}
-                onPress={() => {
-                  onOptionPress("rules", rule);
-                }}
-              />
-            ))}
-          </HStack>
-          <Marquee style={[TextStyles.h2, ViewStyles.mb2]}>{t("stages")}</Marquee>
-          <HStack style={[ViewStyles.mb2, { flexWrap: "wrap" }]}>
-            {props.options?.stages.map((stage) => (
-              <FilterButton
-                key={stage}
-                isDisabled={props.isDisabled}
-                textColor={props.filter?.stages.includes(stage) ? Color.DarkText : undefined}
-                title={t(stage)}
-                style={[
-                  ViewStyles.mr2,
-                  ViewStyles.mb2,
-                  props.filter?.stages.includes(stage) && ViewStyles.accent,
-                ]}
-                onPress={() => {
-                  onOptionPress("stages", stage);
-                }}
-              />
-            ))}
-          </HStack>
-          <Marquee style={[TextStyles.h2, ViewStyles.mb2]}>{t("weapons")}</Marquee>
-          <HStack style={[ViewStyles.mb2, { flexWrap: "wrap" }]}>
-            {props.options?.weapons.map((weapon) => (
-              <FilterButton
-                key={weapon}
-                isDisabled={props.isDisabled}
-                textColor={props.filter?.weapons.includes(weapon) ? Color.DarkText : undefined}
-                title={t(weapon)}
-                style={[
-                  ViewStyles.mr2,
-                  ViewStyles.mb2,
-                  props.filter?.weapons.includes(weapon) && ViewStyles.accent,
-                ]}
-                onPress={() => {
-                  onOptionPress("weapons", weapon);
-                }}
-              />
-            ))}
-          </HStack>
+          {(props.options?.modes.length ?? 0) > 0 && (
+            <VStack flex>
+              <Marquee style={[TextStyles.h2, ViewStyles.mb2]}>{t("modes")}</Marquee>
+              <HStack style={[ViewStyles.mb2, { flexWrap: "wrap" }]}>
+                {props.options?.modes.map((mode) => (
+                  <FilterButton
+                    key={mode}
+                    isDisabled={props.isDisabled}
+                    textColor={props.filter?.modes.includes(mode) ? Color.DarkText : undefined}
+                    title={t(mode)}
+                    style={[
+                      ViewStyles.mr2,
+                      ViewStyles.mb2,
+                      props.filter?.modes.includes(mode) && ViewStyles.accent,
+                    ]}
+                    onPress={() => {
+                      onOptionPress("modes", mode);
+                    }}
+                  />
+                ))}
+              </HStack>
+            </VStack>
+          )}
+          {(props.options?.rules.length ?? 0) > 0 && (
+            <VStack flex>
+              <Marquee style={[TextStyles.h2, ViewStyles.mb2]}>{t("rules")}</Marquee>
+              <HStack style={[ViewStyles.mb2, { flexWrap: "wrap" }]}>
+                {props.options?.rules.map((rule) => (
+                  <FilterButton
+                    key={rule}
+                    isDisabled={props.isDisabled}
+                    textColor={props.filter?.rules.includes(rule) ? Color.DarkText : undefined}
+                    title={t(rule)}
+                    style={[
+                      ViewStyles.mr2,
+                      ViewStyles.mb2,
+                      props.filter?.rules.includes(rule) && ViewStyles.accent,
+                    ]}
+                    onPress={() => {
+                      onOptionPress("rules", rule);
+                    }}
+                  />
+                ))}
+              </HStack>
+            </VStack>
+          )}
+          {(props.options?.stages.length ?? 0) > 0 && (
+            <VStack flex>
+              <Marquee style={[TextStyles.h2, ViewStyles.mb2]}>{t("stages")}</Marquee>
+              <HStack style={[ViewStyles.mb2, { flexWrap: "wrap" }]}>
+                {props.options?.stages.map((stage) => (
+                  <FilterButton
+                    key={stage}
+                    isDisabled={props.isDisabled}
+                    textColor={props.filter?.stages.includes(stage) ? Color.DarkText : undefined}
+                    title={t(stage)}
+                    style={[
+                      ViewStyles.mr2,
+                      ViewStyles.mb2,
+                      props.filter?.stages.includes(stage) && ViewStyles.accent,
+                    ]}
+                    onPress={() => {
+                      onOptionPress("stages", stage);
+                    }}
+                  />
+                ))}
+              </HStack>
+            </VStack>
+          )}
+          {(props.options?.weapons.length ?? 0) > 0 && (
+            <VStack flex>
+              <Marquee style={[TextStyles.h2, ViewStyles.mb2]}>{t("weapons")}</Marquee>
+              <HStack style={[ViewStyles.mb2, { flexWrap: "wrap" }]}>
+                {props.options?.weapons.map((weapon) => (
+                  <FilterButton
+                    key={weapon}
+                    isDisabled={props.isDisabled}
+                    textColor={props.filter?.weapons.includes(weapon) ? Color.DarkText : undefined}
+                    title={t(weapon)}
+                    style={[
+                      ViewStyles.mr2,
+                      ViewStyles.mb2,
+                      props.filter?.weapons.includes(weapon) && ViewStyles.accent,
+                    ]}
+                    onPress={() => {
+                      onOptionPress("weapons", weapon);
+                    }}
+                  />
+                ))}
+              </HStack>
+            </VStack>
+          )}
           <VStack style={[ViewStyles.wf, ViewStyles.pr2]}>
             <Button
               isDisabled={props.isDisabled}

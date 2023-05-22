@@ -1,7 +1,4 @@
-# Prefetch with certain cache keys after the hashtag of each URLs.
-diff --git a/node_modules/expo-image/.DS_Store b/node_modules/expo-image/.DS_Store
-new file mode 100644
-index 0000000..e69de29
+# Prefetch with certain cache keys after the hashtag of each URLs, and revert expo/expo#22491.
 diff --git a/node_modules/expo-image/android/src/main/java/expo/modules/image/ExpoImageModule.kt b/node_modules/expo-image/android/src/main/java/expo/modules/image/ExpoImageModule.kt
 index a3fae8a..dea8e6b 100644
 --- a/node_modules/expo-image/android/src/main/java/expo/modules/image/ExpoImageModule.kt
@@ -37,6 +34,19 @@ index a3fae8a..dea8e6b 100644
        }
      }
  
+diff --git a/node_modules/expo-image/ios/ExpoImage.podspec b/node_modules/expo-image/ios/ExpoImage.podspec
+index 89fd0ad..7ad818a 100644
+--- a/node_modules/expo-image/ios/ExpoImage.podspec
++++ b/node_modules/expo-image/ios/ExpoImage.podspec
+@@ -18,7 +18,7 @@ Pod::Spec.new do |s|
+   s.dependency 'ExpoModulesCore'
+   s.dependency 'SDWebImage', '~> 5.15.0'
+   s.dependency 'SDWebImageWebPCoder', '~> 0.9.1'
+-  s.dependency 'SDWebImageAVIFCoder', '~> 0.10.0'
++  s.dependency 'SDWebImageAVIFCoder', '~> 0.9.4'
+   s.dependency 'SDWebImageSVGCoder', '~> 1.6.1'
+ 
+   # Swift/Objective-C compatibility
 diff --git a/node_modules/expo-image/ios/ImageModule.swift b/node_modules/expo-image/ios/ImageModule.swift
 index 04f2dae..e4bc063 100644
 --- a/node_modules/expo-image/ios/ImageModule.swift
