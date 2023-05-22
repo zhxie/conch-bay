@@ -1,3 +1,4 @@
+import axios from "axios";
 import { fromByteArray as encode64 } from "base64-js";
 import * as Crypto from "expo-crypto";
 import {
@@ -24,12 +25,15 @@ import {
   XBattleHistoriesResult,
 } from "../models/types";
 import { encode64Url } from "./codec";
-import { formUrlEncoded, getParam, parameterize } from "./url";
+import { getParam, parameterize } from "./url";
+
+const AXIOS_TIMEOUT = 10000;
 
 export const fetchLatestVersion = async () => {
-  const res = await fetch("https://api.github.com/repos/zhxie/conch-bay/releases");
-  const json = await res.json();
-  return json.find((release) => !release["prerelease"])["tag_name"];
+  const res = await axios.get("https://api.github.com/repos/zhxie/conch-bay/releases", {
+    timeout: AXIOS_TIMEOUT,
+  });
+  return res.data.find((release) => !release["prerelease"])["tag_name"];
 };
 
 export const fetchSchedules = async () => {
@@ -70,32 +74,30 @@ let NSO_VERSION = "2.5.1";
 let SPLATNET_VERSION = "3.0.0-0742bda0";
 
 export const updateNsoVersion = async () => {
-  const res = await fetch("https://itunes.apple.com/lookup?id=1234806557");
-  const json = await res.json();
+  const res = await axios.get("https://itunes.apple.com/lookup?id=1234806557", {
+    timeout: AXIOS_TIMEOUT,
+  });
 
-  NSO_VERSION = json["results"][0]["version"];
+  NSO_VERSION = res.data["results"][0]["version"];
 };
 export const updateSplatnetVersion = async () => {
-  const res = await fetch(
-    "https://cdn.jsdelivr.net/gh/nintendoapis/nintendo-app-versions/data/splatnet3-app.json"
+  const res = await axios.get(
+    "https://cdn.jsdelivr.net/gh/nintendoapis/nintendo-app-versions/data/splatnet3-app.json",
+    { timeout: AXIOS_TIMEOUT }
   );
-  const json = await res.json();
 
-  SPLATNET_VERSION = json["web_app_ver"];
+  SPLATNET_VERSION = res.data["web_app_ver"];
 };
 const callIminkFApi = async (idToken: string, step: number) => {
-  const res = await fetch("https://api.imink.app/f", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json; charset=utf-8",
-    },
-    body: JSON.stringify({
+  const res = await axios.post(
+    "https://api.imink.app/f",
+    {
       token: idToken,
       hashMethod: step,
-    }),
-  });
-  const json = await res.json();
-  return json as { f: string; request_id: string; timestamp: string };
+    },
+    { headers: { "Content-Type": "application/json; charset=utf-8" }, timeout: AXIOS_TIMEOUT }
+  );
+  return res.data as { f: string; request_id: string; timestamp: string };
 };
 export const generateLogIn = async () => {
   const state = encode64Url(encode64(Crypto.getRandomBytes(36)));
@@ -126,60 +128,59 @@ export const getSessionToken = async (url: string, cv: string) => {
   if (!sessionTokenCode) {
     return undefined;
   }
-  const res = await fetch("https://accounts.nintendo.com/connect/1.0.0/api/session_token", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-      Host: "accounts.nintendo.com",
-    },
-    body: formUrlEncoded({
+  const res = await axios.post(
+    "https://accounts.nintendo.com/connect/1.0.0/api/session_token",
+    {
       client_id: "71b963c1b7b6d119",
       session_token_code: sessionTokenCode,
       session_token_code_verifier: cv,
-    }),
-  });
-  const json = await res.json();
-  return json["session_token"] as string;
+    },
+    {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Host: "accounts.nintendo.com",
+      },
+      timeout: AXIOS_TIMEOUT,
+    }
+  );
+  return res.data["session_token"] as string;
 };
 export const getWebServiceToken = async (sessionToken: string) => {
   // Get tokens.
-  const res = await fetch("https://accounts.nintendo.com/connect/1.0.0/api/token", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Host: "accounts.nintendo.com",
-    },
-    body: JSON.stringify({
+  const res = await axios.post(
+    "https://accounts.nintendo.com/connect/1.0.0/api/token",
+    {
       client_id: "71b963c1b7b6d119",
       session_token: sessionToken,
       grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer-session-token",
-    }),
-  });
-  const json = await res.json();
-  const { access_token: accessToken, id_token: idToken } = json;
+    },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Host: "accounts.nintendo.com",
+      },
+      timeout: AXIOS_TIMEOUT,
+    }
+  );
+  const { access_token: accessToken, id_token: idToken } = res.data;
 
   // Get user info.
-  const res2 = await fetch("https://api.accounts.nintendo.com/2.0.0/users/me", {
+  const res2 = await axios.get("https://api.accounts.nintendo.com/2.0.0/users/me", {
     headers: {
       Authorization: `Bearer ${accessToken}`,
       "Content-Type": "application/json",
       Host: "api.accounts.nintendo.com",
     },
+    timeout: AXIOS_TIMEOUT,
   });
-  const json2 = await res2.json();
-  const { birthday, language, country } = json2;
+  const { birthday, language, country } = res2.data;
 
   // Get access token.
   const json3 = await callIminkFApi(idToken, 1);
   const { f, request_id: requestId, timestamp } = json3;
-  const res4 = await fetch("https://api-lp1.znc.srv.nintendo.net/v3/Account/Login", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json; charset=utf-8",
-      "X-Platform": "Android",
-      "X-ProductVersion": NSO_VERSION,
-    },
-    body: JSON.stringify({
+  const res4 = await axios.post(
+    "https://api-lp1.znc.srv.nintendo.net/v3/Account/Login",
+    {
       parameter: {
         f: f,
         language: language,
@@ -189,23 +190,24 @@ export const getWebServiceToken = async (sessionToken: string) => {
         requestId: requestId,
         timestamp: timestamp,
       },
-    }),
-  });
-  const json4 = await res4.json();
-  const idToken2 = json4["result"]["webApiServerCredential"]["accessToken"];
+    },
+    {
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+        "X-Platform": "Android",
+        "X-ProductVersion": NSO_VERSION,
+      },
+      timeout: AXIOS_TIMEOUT,
+    }
+  );
+  const idToken2 = res4.data["result"]["webApiServerCredential"]["accessToken"];
 
   // Get web service token.
   const json5 = await callIminkFApi(idToken2, 2);
   const { f: f2, request_id: requestId2, timestamp: timestamp2 } = json5;
-  const res6 = await fetch("https://api-lp1.znc.srv.nintendo.net/v2/Game/GetWebServiceToken", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${idToken2}`,
-      "Content-Type": "application/json; charset=utf-8",
-      "X-Platform": "Android",
-      "X-ProductVersion": NSO_VERSION,
-    },
-    body: JSON.stringify({
+  const res6 = await axios.post(
+    "https://api-lp1.znc.srv.nintendo.net/v2/Game/GetWebServiceToken",
+    {
       parameter: {
         f: f2,
         id: 4834290508791808,
@@ -213,10 +215,18 @@ export const getWebServiceToken = async (sessionToken: string) => {
         requestId: requestId2,
         timestamp: timestamp2,
       },
-    }),
-  });
-  const json6 = await res6.json();
-  const webServiceToken = json6["result"]["accessToken"];
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${idToken2}`,
+        "Content-Type": "application/json; charset=utf-8",
+        "X-Platform": "Android",
+        "X-ProductVersion": NSO_VERSION,
+      },
+      timeout: AXIOS_TIMEOUT,
+    }
+  );
+  const webServiceToken = res6.data["result"]["accessToken"];
   return { webServiceToken, country, language };
 };
 export const getBulletToken = async (
@@ -224,17 +234,20 @@ export const getBulletToken = async (
   country: string,
   language?: string
 ) => {
-  const res = await fetch("https://api.lp1.av5ja.srv.nintendo.net/api/bullet_tokens", {
-    method: "POST",
-    headers: {
-      "Accept-Language": language ?? "*",
-      Cookie: `_gtoken=${webServiceToken}`,
-      "X-NACOUNTRY": country,
-      "X-Web-View-Ver": SPLATNET_VERSION,
-    },
-  });
-  const json = await res.json();
-  return json["bulletToken"] as string;
+  const res = await axios.post(
+    "https://api.lp1.av5ja.srv.nintendo.net/api/bullet_tokens",
+    undefined,
+    {
+      headers: {
+        "Accept-Language": language ?? "*",
+        Cookie: `_gtoken=${webServiceToken}`,
+        "X-NACOUNTRY": country,
+        "X-Web-View-Ver": SPLATNET_VERSION,
+      },
+      timeout: AXIOS_TIMEOUT,
+    }
+  );
+  return res.data["bulletToken"] as string;
 };
 
 const fetchGraphQl = async <T>(
