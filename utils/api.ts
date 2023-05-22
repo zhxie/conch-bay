@@ -66,7 +66,7 @@ export const fetchSplatfests = async () => {
   return (json as FestivalsQuery).US.data;
 };
 
-let NSO_VERSION = "2.5.0";
+let NSO_VERSION = "2.5.1";
 let SPLATNET_VERSION = "3.0.0-0742bda0";
 
 export const updateNsoVersion = async () => {
