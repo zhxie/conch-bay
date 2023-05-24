@@ -218,8 +218,8 @@ const MainView = () => {
                   setUpdate(true);
                 }
               })
-              .catch((_) => {
-                showBanner(BannerLevel.Warn, t("failed_to_check_update"));
+              .catch((e) => {
+                showBanner(BannerLevel.Warn, t("failed_to_check_conch_bay_update", { error: e }));
               });
         }, 100);
       });
@@ -306,8 +306,16 @@ const MainView = () => {
     try {
       await Promise.all([
         // Fetch schedules and shop.
-        fetchSchedules().then((schedules) => setSchedules(schedules)),
-        fetchShop(t("lang")).then((shop) => setShop(shop)),
+        fetchSchedules()
+          .then((schedules) => setSchedules(schedules))
+          .catch((e) => {
+            showBanner(BannerLevel.Warn, t("failed_to_update_schedules", { error: e }));
+          }),
+        fetchShop(t("lang"))
+          .then((shop) => setShop(shop))
+          .catch((e) => {
+            showBanner(BannerLevel.Warn, t("failed_to_update_splatnet_shop", { error: e }));
+          }),
         (async () => {
           if (sessionToken) {
             // Attempt to friends.
@@ -316,59 +324,81 @@ const MainView = () => {
             if (bulletToken.length > 0) {
               try {
                 friendsAttempt = await fetchFriends(bulletToken);
+                setFriends(friendsAttempt);
                 newBulletToken = bulletToken;
               } catch {
                 /* empty */
               }
             }
-            if (friendsAttempt) {
-              setFriends(friendsAttempt);
-            }
 
             // Regenerate bullet token if necessary.
             if (!newBulletToken) {
               // Also update versions.
-              const [newBulletTokenInner, nsoUpdated, splatnetUpdated] = await Promise.all([
+              const [newBulletTokenInner, _] = await Promise.all([
                 generateBulletToken(),
-                apiUpdated ? true : ok(updateNsoVersion()),
-                apiUpdated ? true : ok(updateSplatnetVersion()),
+                Promise.all([updateNsoVersion(), updateSplatnetVersion()])
+                  .then(() => {
+                    setApiUpdated(true);
+                  })
+                  .catch((e) => {
+                    showBanner(BannerLevel.Warn, t("failed_to_check_api_update", { error: e }));
+                  }),
               ]);
               newBulletToken = newBulletTokenInner;
-              if (nsoUpdated && splatnetUpdated) {
-                setApiUpdated(true);
-              } else {
-                showBanner(BannerLevel.Warn, t("failed_to_check_api_update"));
-              }
             }
 
             // Fetch friends, voting, summary, catalog and results.
             await Promise.all([
               friendsAttempt ||
-                fetchFriends(newBulletToken).then((friends) => {
-                  setFriends(friends);
+                fetchFriends(newBulletToken)
+                  .then((friends) => {
+                    setFriends(friends);
+                  })
+                  .catch((e) => {
+                    showBanner(BannerLevel.Warn, t("failed_to_load_friends", { error: e }));
+                  }),
+              fetchSplatfests()
+                .then(async (splatfests) => {
+                  if (splatfests.festRecords.nodes[0]?.isVotable) {
+                    await fetchDetailVotingStatus(
+                      splatfests.festRecords.nodes[0].id,
+                      newBulletToken,
+                      language
+                    )
+                      .then((voting) => {
+                        setVoting(voting);
+                      })
+                      .catch((e) => {
+                        showBanner(
+                          BannerLevel.Warn,
+                          t("failed_to_load_friends_splatfest_voting", { error: e })
+                        );
+                      });
+                  }
+                })
+                .catch((e) => {
+                  showBanner(BannerLevel.Warn, t("failed_to_check_splatfest", { error: e }));
                 }),
-              fetchSplatfests().then(async (splatfests) => {
-                if (splatfests.festRecords.nodes[0]?.isVotable) {
-                  const voting = await fetchDetailVotingStatus(
-                    splatfests.festRecords.nodes[0].id,
-                    newBulletToken,
-                    language
-                  );
-                  setVoting(voting);
-                }
-              }),
-              fetchSummary(newBulletToken).then(async (summary) => {
-                const icon = summary.currentPlayer.userIcon.url;
-                const level = String(summary.playHistory.rank);
-                const rank = summary.playHistory.udemae;
-                await setIcon(icon);
-                await setRank(rank);
-                await setLevel(level);
-              }),
-              fetchCatalog(newBulletToken).then(async (catalog) => {
-                const catalogLevel = String(catalog.catalog.progress?.level ?? 0);
-                await setCatalogLevel(catalogLevel);
-              }),
+              fetchSummary(newBulletToken)
+                .then(async (summary) => {
+                  const icon = summary.currentPlayer.userIcon.url;
+                  const level = String(summary.playHistory.rank);
+                  const rank = summary.playHistory.udemae;
+                  await setIcon(icon);
+                  await setRank(rank);
+                  await setLevel(level);
+                })
+                .catch((e) => {
+                  showBanner(BannerLevel.Warn, t("failed_to_load_summary", { error: e }));
+                }),
+              fetchCatalog(newBulletToken)
+                .then(async (catalog) => {
+                  const catalogLevel = String(catalog.catalog.progress?.level ?? 0);
+                  await setCatalogLevel(catalogLevel);
+                })
+                .catch((e) => {
+                  showBanner(BannerLevel.Warn, t("failed_to_load_catalog", { error: e }));
+                }),
               refreshResults(newBulletToken).then(async () => {
                 await loadResults(20);
               }),
@@ -388,99 +418,118 @@ const MainView = () => {
     setProgressTotal(0);
     let n = -1;
     const [battleFail, coopFail] = await Promise.all([
-      fetchBattleHistories(bulletToken).then(async (battleHistories) => {
-        setSplatZonesXPower(
-          battleHistories.x.xBattleHistories.summary.xPowerAr?.lastXPower.toFixed(1) ?? "0"
-        );
-        setTowerControlXPower(
-          battleHistories.x.xBattleHistories.summary.xPowerLf?.lastXPower.toFixed(1) ?? "0"
-        );
-        setRainmakerXPower(
-          battleHistories.x.xBattleHistories.summary.xPowerGl?.lastXPower.toFixed(1) ?? "0"
-        );
-        setClamBlitzXPower(
-          battleHistories.x.xBattleHistories.summary.xPowerCl?.lastXPower.toFixed(1) ?? "0"
-        );
+      fetchBattleHistories(bulletToken)
+        .then(async (battleHistories) => {
+          setSplatZonesXPower(
+            battleHistories.x.xBattleHistories.summary.xPowerAr?.lastXPower.toFixed(1) ?? "0"
+          );
+          setTowerControlXPower(
+            battleHistories.x.xBattleHistories.summary.xPowerLf?.lastXPower.toFixed(1) ?? "0"
+          );
+          setRainmakerXPower(
+            battleHistories.x.xBattleHistories.summary.xPowerGl?.lastXPower.toFixed(1) ?? "0"
+          );
+          setClamBlitzXPower(
+            battleHistories.x.xBattleHistories.summary.xPowerCl?.lastXPower.toFixed(1) ?? "0"
+          );
 
-        // Fetch details.
-        const ids: string[] = [];
-        battleHistories.regular.regularBattleHistories.historyGroups.nodes.forEach((historyGroup) =>
-          historyGroup.historyDetails.nodes.forEach((historyDetail) => ids.push(historyDetail.id))
-        );
-        battleHistories.anarchy.bankaraBattleHistories.historyGroups.nodes.forEach((historyGroup) =>
-          historyGroup.historyDetails.nodes.forEach((historyDetail) => ids.push(historyDetail.id))
-        );
-        battleHistories.x.xBattleHistories.historyGroups.nodes.forEach((historyGroup) =>
-          historyGroup.historyDetails.nodes.forEach((historyDetail) => ids.push(historyDetail.id))
-        );
-        battleHistories.private.privateBattleHistories.historyGroups.nodes.forEach((historyGroup) =>
-          historyGroup.historyDetails.nodes.forEach((historyDetail) => ids.push(historyDetail.id))
-        );
+          // Fetch details.
+          const ids: string[] = [];
+          battleHistories.regular.regularBattleHistories.historyGroups.nodes.forEach(
+            (historyGroup) =>
+              historyGroup.historyDetails.nodes.forEach((historyDetail) =>
+                ids.push(historyDetail.id)
+              )
+          );
+          battleHistories.anarchy.bankaraBattleHistories.historyGroups.nodes.forEach(
+            (historyGroup) =>
+              historyGroup.historyDetails.nodes.forEach((historyDetail) =>
+                ids.push(historyDetail.id)
+              )
+          );
+          battleHistories.x.xBattleHistories.historyGroups.nodes.forEach((historyGroup) =>
+            historyGroup.historyDetails.nodes.forEach((historyDetail) => ids.push(historyDetail.id))
+          );
+          battleHistories.private.privateBattleHistories.historyGroups.nodes.forEach(
+            (historyGroup) =>
+              historyGroup.historyDetails.nodes.forEach((historyDetail) =>
+                ids.push(historyDetail.id)
+              )
+          );
 
-        const existed = await Promise.all(ids.map((id) => Database.isExist(id)));
-        const newIds = ids.filter((_, i) => !existed[i]);
-        if (n === -1) {
-          n = newIds.length;
-          if (n !== 0) {
-            setProgressTotal(250);
+          const existed = await Promise.all(ids.map((id) => Database.isExist(id)));
+          const newIds = ids.filter((_, i) => !existed[i]);
+          if (n === -1) {
+            n = newIds.length;
+            if (n !== 0) {
+              setProgressTotal(250);
+            }
+          } else {
+            n += newIds.length;
+            setProgressTotal(n);
+            if (n > 0) {
+              showBanner(BannerLevel.Info, t("loading_n_results", { n }));
+            }
           }
-        } else {
-          n += newIds.length;
-          setProgressTotal(n);
-          if (n > 0) {
-            showBanner(BannerLevel.Info, t("loading_n_results", { n }));
-          }
-        }
-        const results = await Promise.all(
-          newIds.map((id) =>
-            ok(
-              fetchVsHistoryDetail(id, bulletToken, language).then(async (detail) => {
-                setProgress((progress) => progress + 1);
-                return await Database.addBattle(detail);
-              })
+          const results = await Promise.all(
+            newIds.map((id) =>
+              ok(
+                fetchVsHistoryDetail(id, bulletToken, language).then(async (detail) => {
+                  setProgress((progress) => progress + 1);
+                  return await Database.addBattle(detail);
+                })
+              )
             )
-          )
-        );
-        return results.filter((result) => !result).length;
-      }),
-      fetchCoopResult(bulletToken).then(async (coopResult) => {
-        await setGrade(coopResult.coopResult.regularGrade.id);
+          );
+          return results.filter((result) => !result).length;
+        })
+        .catch((e) => {
+          showBanner(BannerLevel.Warn, t("failed_to_load_battle_results", { error: e }));
+          return 0;
+        }),
+      fetchCoopResult(bulletToken)
+        .then(async (coopResult) => {
+          await setGrade(coopResult.coopResult.regularGrade.id);
 
-        // Fetch details.
-        const ids: string[] = [];
-        coopResult.coopResult.historyGroups.nodes.forEach((historyGroup) => {
-          historyGroup.historyDetails.nodes.forEach((historyDetail) => {
-            ids.push(historyDetail.id);
+          // Fetch details.
+          const ids: string[] = [];
+          coopResult.coopResult.historyGroups.nodes.forEach((historyGroup) => {
+            historyGroup.historyDetails.nodes.forEach((historyDetail) => {
+              ids.push(historyDetail.id);
+            });
           });
-        });
 
-        const existed = await Promise.all(ids.map((id) => Database.isExist(id)));
-        const newIds = ids.filter((_, i) => !existed[i]);
-        setProgressTotal((progressTotal) => progressTotal + newIds.length);
-        if (n === -1) {
-          n = newIds.length;
-          if (n !== 0) {
-            setProgressTotal(250);
+          const existed = await Promise.all(ids.map((id) => Database.isExist(id)));
+          const newIds = ids.filter((_, i) => !existed[i]);
+          setProgressTotal((progressTotal) => progressTotal + newIds.length);
+          if (n === -1) {
+            n = newIds.length;
+            if (n !== 0) {
+              setProgressTotal(250);
+            }
+          } else {
+            n += newIds.length;
+            setProgressTotal(n);
+            if (n > 0) {
+              showBanner(BannerLevel.Info, t("loading_n_results", { n }));
+            }
           }
-        } else {
-          n += newIds.length;
-          setProgressTotal(n);
-          if (n > 0) {
-            showBanner(BannerLevel.Info, t("loading_n_results", { n }));
-          }
-        }
-        const results = await Promise.all(
-          newIds.map((id) =>
-            ok(
-              fetchCoopHistoryDetail(id, bulletToken, language).then(async (detail) => {
-                setProgress((progress) => progress + 1);
-                return await Database.addCoop(detail);
-              })
+          const results = await Promise.all(
+            newIds.map((id) =>
+              ok(
+                fetchCoopHistoryDetail(id, bulletToken, language).then(async (detail) => {
+                  setProgress((progress) => progress + 1);
+                  return await Database.addCoop(detail);
+                })
+              )
             )
-          )
-        );
-        return results.filter((result) => !result).length;
-      }),
+          );
+          return results.filter((result) => !result).length;
+        })
+        .catch((e) => {
+          showBanner(BannerLevel.Warn, t("failed_to_load_salmon_run_results", { error: e }));
+          return 0;
+        }),
     ]);
 
     if (n > 0) {
@@ -604,7 +653,16 @@ const MainView = () => {
         setBulletToken(newBulletToken);
       }
 
-      const equipments = equipmentsAttempt || (await fetchEquipments(newBulletToken, language));
+      const equipments =
+        equipmentsAttempt ||
+        (await fetchEquipments(newBulletToken, language)
+          .then((equipments) => {
+            return equipments;
+          })
+          .catch((e) => {
+            showBanner(BannerLevel.Warn, t("failed_to_load_owned_gears", { error: e }));
+            return undefined;
+          }));
       return equipments;
     } catch (e) {
       showBanner(BannerLevel.Error, e);
@@ -939,55 +997,86 @@ const MainView = () => {
       });
 
       // Attempt to preload weapon images from API.
-      let newBulletToken = "";
-      let weaponRecordsAttempt: WeaponRecordResult | undefined;
-      if (bulletToken.length > 0) {
-        try {
-          weaponRecordsAttempt = await fetchWeaponRecords(bulletToken);
-          newBulletToken = bulletToken;
-        } catch {
-          /* empty */
+      // TODO: need better error message.
+      try {
+        if (sessionToken.length > 0) {
+          let newBulletToken = "";
+          let weaponRecordsAttempt: WeaponRecordResult | undefined;
+          if (bulletToken.length > 0) {
+            try {
+              weaponRecordsAttempt = await fetchWeaponRecords(bulletToken);
+              weaponRecordsAttempt.weaponRecords.nodes.forEach((record) => {
+                resources.set(getImageCacheKey(record.image2d.url), record.image2d.url);
+                resources.set(
+                  getImageCacheKey(record.subWeapon.image.url),
+                  record.subWeapon.image.url
+                );
+                resources.set(
+                  getImageCacheKey(record.specialWeapon.image.url),
+                  record.specialWeapon.image.url
+                );
+              });
+              newBulletToken = bulletToken;
+            } catch {
+              /* empty */
+            }
+          }
+
+          // Regenerate bullet token if necessary.
+          if (!newBulletToken) {
+            newBulletToken = await generateBulletToken();
+            setBulletToken(newBulletToken);
+          }
+
+          // Preload weapon, equipments, badge images from API.
+          await Promise.all([
+            weaponRecordsAttempt ||
+              ok(
+                fetchWeaponRecords(newBulletToken).then((weaponRecords) => {
+                  weaponRecords.weaponRecords.nodes.forEach((record) => {
+                    resources.set(getImageCacheKey(record.image2d.url), record.image2d.url);
+                    resources.set(
+                      getImageCacheKey(record.subWeapon.image.url),
+                      record.subWeapon.image.url
+                    );
+                    resources.set(
+                      getImageCacheKey(record.specialWeapon.image.url),
+                      record.specialWeapon.image.url
+                    );
+                  });
+                })
+              ),
+            ok(
+              fetchEquipments(newBulletToken).then((equipments) => {
+                [
+                  ...equipments.headGears.nodes,
+                  ...equipments.clothingGears.nodes,
+                  ...equipments.shoesGears.nodes,
+                ].forEach((gear) => {
+                  resources.set(getImageCacheKey(gear.image.url), gear.image.url);
+                  resources.set(getImageCacheKey(gear.brand.image.url), gear.brand.image.url);
+                  resources.set(
+                    getImageCacheKey(gear.primaryGearPower.image.url),
+                    gear.primaryGearPower.image.url
+                  );
+                  gear.additionalGearPowers.forEach((gearPower) => {
+                    resources.set(getImageCacheKey(gearPower.image.url), gearPower.image.url);
+                  });
+                });
+              })
+            ),
+            ok(
+              fetchSummary(newBulletToken).then((summary) => {
+                summary.playHistory.allBadges.forEach((badge) => {
+                  resources.set(getImageCacheKey(badge.image.url), badge.image.url);
+                });
+              })
+            ),
+          ]);
         }
+      } catch {
+        /* empty */
       }
-
-      // Regenerate bullet token if necessary.
-      if (!newBulletToken) {
-        newBulletToken = await generateBulletToken();
-        setBulletToken(newBulletToken);
-      }
-
-      // Preload weapon, equipments, badge images from API.
-      const [weaponRecords, equipments, summary] = await Promise.all([
-        weaponRecordsAttempt || fetchWeaponRecords(newBulletToken),
-        fetchEquipments(newBulletToken),
-        fetchSummary(newBulletToken),
-      ]);
-      weaponRecords.weaponRecords.nodes.forEach((record) => {
-        resources.set(getImageCacheKey(record.image2d.url), record.image2d.url);
-        resources.set(getImageCacheKey(record.subWeapon.image.url), record.subWeapon.image.url);
-        resources.set(
-          getImageCacheKey(record.specialWeapon.image.url),
-          record.specialWeapon.image.url
-        );
-      });
-      [
-        ...equipments.headGears.nodes,
-        ...equipments.clothingGears.nodes,
-        ...equipments.shoesGears.nodes,
-      ].forEach((gear) => {
-        resources.set(getImageCacheKey(gear.image.url), gear.image.url);
-        resources.set(getImageCacheKey(gear.brand.image.url), gear.brand.image.url);
-        resources.set(
-          getImageCacheKey(gear.primaryGearPower.image.url),
-          gear.primaryGearPower.image.url
-        );
-        gear.additionalGearPowers.forEach((gearPower) => {
-          resources.set(getImageCacheKey(gearPower.image.url), gearPower.image.url);
-        });
-      });
-      summary.playHistory.allBadges.forEach((badge) => {
-        resources.set(getImageCacheKey(badge.image.url), badge.image.url);
-      });
 
       // Preload images.
       // HACK: add a hashtag do not break the URL. Here the cache key will be appended after the hashtag.
@@ -1448,31 +1537,29 @@ const MainView = () => {
               </Button>
             </VStack>
           )}
-          {sessionToken.length > 0 && (
-            <VStack style={[ViewStyles.mb4, ViewStyles.wf]}>
-              <VStack center>
-                <Text style={ViewStyles.mb2}>{t("resource_notice")}</Text>
-              </VStack>
-              <Button
-                isLoading={clearingCache}
-                isLoadingText={t("clearing_cache")}
-                style={[ViewStyles.accent, ViewStyles.mb2]}
-                textStyle={theme.reverseTextStyle}
-                onPress={onClearCachePress}
-              >
-                <Marquee style={theme.reverseTextStyle}>{t("clear_cache")}</Marquee>
-              </Button>
-              <Button
-                isLoading={preloadingResources}
-                isLoadingText={t("preloading_resources")}
-                style={ViewStyles.accent}
-                textStyle={theme.reverseTextStyle}
-                onPress={onPreloadResourcesPress}
-              >
-                <Marquee style={theme.reverseTextStyle}>{t("preload_resources")}</Marquee>
-              </Button>
+          <VStack style={[ViewStyles.mb4, ViewStyles.wf]}>
+            <VStack center>
+              <Text style={ViewStyles.mb2}>{t("resource_notice")}</Text>
             </VStack>
-          )}
+            <Button
+              isLoading={clearingCache}
+              isLoadingText={t("clearing_cache")}
+              style={[ViewStyles.accent, ViewStyles.mb2]}
+              textStyle={theme.reverseTextStyle}
+              onPress={onClearCachePress}
+            >
+              <Marquee style={theme.reverseTextStyle}>{t("clear_cache")}</Marquee>
+            </Button>
+            <Button
+              isLoading={preloadingResources}
+              isLoadingText={t("preloading_resources")}
+              style={ViewStyles.accent}
+              textStyle={theme.reverseTextStyle}
+              onPress={onPreloadResourcesPress}
+            >
+              <Marquee style={theme.reverseTextStyle}>{t("preload_resources")}</Marquee>
+            </Button>
+          </VStack>
           <VStack style={[sessionToken.length > 0 && ViewStyles.mb4, ViewStyles.wf]}>
             <VStack center>
               <Text style={ViewStyles.mb2}>{t("feedback_notice")}</Text>
