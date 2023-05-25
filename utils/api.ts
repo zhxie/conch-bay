@@ -88,15 +88,19 @@ export const updateSplatnetVersion = async () => {
 
   SPLATNET_VERSION = res.data["web_app_ver"];
 };
-const callIminkFApi = async (idToken: string, step: number) => {
-  const res = await axios.post(
-    "https://api.imink.app/f",
-    {
-      token: idToken,
-      hashMethod: step,
-    },
-    { headers: { "Content-Type": "application/json; charset=utf-8" }, timeout: AXIOS_TIMEOUT }
-  );
+const callIminkFApi = async (step: number, idToken: string, naId: string, coralUserId?: string) => {
+  const body = {
+    hash_method: step,
+    token: idToken,
+    na_id: naId,
+  };
+  if (coralUserId) {
+    body["coral_user_id"] = coralUserId;
+  }
+  const res = await axios.post("https://api.imink.app/f", body, {
+    headers: { "Content-Type": "application/json; charset=utf-8" },
+    timeout: AXIOS_TIMEOUT,
+  });
   return res.data as { f: string; request_id: string; timestamp: string };
 };
 export const generateLogIn = async () => {
@@ -173,10 +177,10 @@ export const getWebServiceToken = async (sessionToken: string) => {
     },
     timeout: AXIOS_TIMEOUT,
   });
-  const { birthday, language, country } = res2.data;
+  const { birthday, language, country, id } = res2.data;
 
   // Get access token.
-  const json3 = await callIminkFApi(idToken, 1);
+  const json3 = await callIminkFApi(1, idToken, id);
   const { f, request_id: requestId, timestamp } = json3;
   const res4 = await axios.post(
     "https://api-lp1.znc.srv.nintendo.net/v3/Account/Login",
@@ -201,9 +205,10 @@ export const getWebServiceToken = async (sessionToken: string) => {
     }
   );
   const idToken2 = res4.data["result"]["webApiServerCredential"]["accessToken"];
+  const coralUserId = res4.data["result"]["user"]["id"].toString();
 
   // Get web service token.
-  const json5 = await callIminkFApi(idToken2, 2);
+  const json5 = await callIminkFApi(2, idToken2, id, coralUserId);
   const { f: f2, request_id: requestId2, timestamp: timestamp2 } = json5;
   const res6 = await axios.post(
     "https://api-lp1.znc.srv.nintendo.net/v2/Game/GetWebServiceToken",
