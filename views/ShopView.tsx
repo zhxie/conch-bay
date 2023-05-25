@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Linking, StyleProp, ViewStyle } from "react-native";
 import {
   Button,
@@ -16,7 +16,13 @@ import {
   useTheme,
 } from "../components";
 import t from "../i18n";
-import { MyGear, MyOutfitCommonDataEquipmentsResult, Shop } from "../models/types";
+import {
+  MyGear,
+  MyOutfitCommonDataEquipmentsResult,
+  PickupBrand,
+  SaleGear,
+  Shop,
+} from "../models/types";
 import { getGearPadding, getImageCacheSource } from "../utils/ui";
 
 enum GearType {
@@ -39,6 +45,21 @@ const ShopView = (props: ShopViewProps) => {
   const [equipments, setEquipments] = useState<MyOutfitCommonDataEquipmentsResult>();
   const [displayEquipments, setDisplayEquipments] = useState(false);
   const [filter, setFilter] = useState<GearType>(GearType.HeadGears);
+
+  const isGearExpired = (gear: SaleGear | PickupBrand) => {
+    const now = new Date().getTime();
+    const date = new Date(gear.saleEndTime);
+    const timestamp = date.getTime();
+    return timestamp <= now;
+  };
+
+  const pickupBrand = isGearExpired(props.shop.gesotown.pickupBrand)
+    ? undefined
+    : props.shop.gesotown.pickupBrand;
+  const limitedGears = useMemo(
+    () => props.shop.gesotown.limitedGears.filter((gear) => !isGearExpired(gear)),
+    [props.shop]
+  );
 
   const formatGearTypeName = (type: GearType) => {
     switch (type) {
@@ -103,52 +124,54 @@ const ShopView = (props: ShopViewProps) => {
       <ScheduleButton
         color={theme.textColor}
         rule={t("gesotown")}
-        stages={[t(props.shop.gesotown.pickupBrand.brand.id)].concat(
-          props.shop.gesotown.limitedGears.length > 0
-            ? [props.shop.gesotown.limitedGears[0].gear.name]
-            : []
+        stages={(pickupBrand ? [t(pickupBrand.brand.id)] : []).concat(
+          limitedGears.length > 0 ? [limitedGears[0].gear.name] : []
         )}
         onPress={onShopPress}
         style={props.style}
       />
       <Modal isVisible={displayShop} onClose={onDisplayShopClose} style={ViewStyles.modal2d}>
         <TitledList color={theme.textColor} title={t("gesotown")}>
-          <VStack center style={ViewStyles.mb2}>
-            {props.shop.gesotown.pickupBrand.brandGears.map((gear, i, gears) => (
-              <GearBox
-                key={gear.id}
-                isFirst={i === 0}
-                isLast={i === gears.length - 1}
-                image={getImageCacheSource(gear.gear.image.url)}
-                brandImage={getImageCacheSource(gear.gear.brand.image.url)}
-                name={gear.gear.name}
-                brand={t(gear.gear.brand.id)}
-                primaryAbility={getImageCacheSource(gear.gear.primaryGearPower.image.url)}
-                additionalAbility={gear.gear.additionalGearPowers.map((gearPower) =>
-                  getImageCacheSource(gearPower.image.url)
-                )}
-                paddingTo={getGearPadding(gears.map((gear) => gear.gear))}
-              />
-            ))}
-          </VStack>
-          <VStack center style={ViewStyles.mb2}>
-            {props.shop.gesotown.limitedGears.map((gear, i, gears) => (
-              <GearBox
-                key={gear.id}
-                isFirst={i === 0}
-                isLast={i === gears.length - 1}
-                image={getImageCacheSource(gear.gear.image.url)}
-                brandImage={getImageCacheSource(gear.gear.brand.image.url)}
-                name={gear.gear.name}
-                brand={t(gear.gear.brand.id)}
-                primaryAbility={getImageCacheSource(gear.gear.primaryGearPower.image.url)}
-                additionalAbility={gear.gear.additionalGearPowers.map((gearPower) =>
-                  getImageCacheSource(gearPower.image.url)
-                )}
-                paddingTo={getGearPadding(gears.map((gear) => gear.gear))}
-              />
-            ))}
-          </VStack>
+          {pickupBrand && (
+            <VStack center style={ViewStyles.mb2}>
+              {pickupBrand.brandGears.map((gear, i, gears) => (
+                <GearBox
+                  key={gear.id}
+                  isFirst={i === 0}
+                  isLast={i === gears.length - 1}
+                  image={getImageCacheSource(gear.gear.image.url)}
+                  brandImage={getImageCacheSource(gear.gear.brand.image.url)}
+                  name={gear.gear.name}
+                  brand={t(gear.gear.brand.id)}
+                  primaryAbility={getImageCacheSource(gear.gear.primaryGearPower.image.url)}
+                  additionalAbility={gear.gear.additionalGearPowers.map((gearPower) =>
+                    getImageCacheSource(gearPower.image.url)
+                  )}
+                  paddingTo={getGearPadding(gears.map((gear) => gear.gear))}
+                />
+              ))}
+            </VStack>
+          )}
+          {limitedGears.length > 0 && (
+            <VStack center style={ViewStyles.mb2}>
+              {limitedGears.map((gear, i, gears) => (
+                <GearBox
+                  key={gear.id}
+                  isFirst={i === 0}
+                  isLast={i === gears.length - 1}
+                  image={getImageCacheSource(gear.gear.image.url)}
+                  brandImage={getImageCacheSource(gear.gear.brand.image.url)}
+                  name={gear.gear.name}
+                  brand={t(gear.gear.brand.id)}
+                  primaryAbility={getImageCacheSource(gear.gear.primaryGearPower.image.url)}
+                  additionalAbility={gear.gear.additionalGearPowers.map((gearPower) =>
+                    getImageCacheSource(gearPower.image.url)
+                  )}
+                  paddingTo={getGearPadding(gears.map((gear) => gear.gear))}
+                />
+              ))}
+            </VStack>
+          )}
           <VStack style={ViewStyles.wf}>
             <Button
               style={[props.isEquipmentsAvailable && ViewStyles.mb2, ViewStyles.accent]}

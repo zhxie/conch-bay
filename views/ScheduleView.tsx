@@ -66,16 +66,35 @@ const ScheduleView = (props: ScheduleViewProps) => {
     }
     return schedule["festMatchSetting"] as FestMatchSetting | null;
   };
+  const isScheduleExpired = (schedule: VsSchedule | CoopGroupingSchedule) => {
+    const now = new Date().getTime();
+    const date = new Date(schedule.endTime);
+    const timestamp = date.getTime();
+    return timestamp <= now;
+  };
+  const isSplatfestExpired = (splatfest: CurrentFest) => {
+    const now = new Date().getTime();
+    const date = new Date(splatfest.endTime);
+    const timestamp = date.getTime();
+    return timestamp <= now;
+  };
 
   const splatfestSchedules = useMemo(
-    () => props.schedules?.festSchedules.nodes.filter((node) => getMatchSetting(node)),
+    () =>
+      props.schedules?.festSchedules.nodes
+        .filter((node) => getMatchSetting(node))
+        .filter((node) => !isScheduleExpired(node)),
     [props.schedules]
   );
-  const currentSplatfest = props.schedules?.currentFest?.tricolorStage
-    ? props.schedules.currentFest
-    : undefined;
+  const currentSplatfest =
+    props.schedules?.currentFest?.tricolorStage && !isSplatfestExpired(props.schedules.currentFest)
+      ? props.schedules.currentFest
+      : undefined;
   const regularSchedules = useMemo(
-    () => props.schedules?.regularSchedules.nodes.filter((node) => getMatchSetting(node)),
+    () =>
+      props.schedules?.regularSchedules.nodes
+        .filter((node) => getMatchSetting(node))
+        .filter((node) => !isScheduleExpired(node)),
     [props.schedules]
   );
   const anarchySchedules = useMemo(
@@ -83,12 +102,33 @@ const ScheduleView = (props: ScheduleViewProps) => {
     [props.schedules]
   );
   const xSchedules = useMemo(
-    () => props.schedules?.xSchedules.nodes.filter((node) => getMatchSetting(node)),
+    () =>
+      props.schedules?.xSchedules.nodes
+        .filter((node) => getMatchSetting(node))
+        .filter((node) => !isScheduleExpired(node)),
     [props.schedules]
   );
-  const bigRunShifts = props.schedules?.coopGroupingSchedule.bigRunSchedules.nodes;
-  const eggstraWorkShifts = props.schedules?.coopGroupingSchedule.teamContestSchedules.nodes;
-  const regularShifts = props.schedules?.coopGroupingSchedule.regularSchedules.nodes;
+  const bigRunShifts = useMemo(
+    () =>
+      props.schedules?.coopGroupingSchedule.bigRunSchedules.nodes.filter(
+        (node) => !isScheduleExpired(node)
+      ),
+    [props.schedules]
+  );
+  const eggstraWorkShifts = useMemo(
+    () =>
+      props.schedules?.coopGroupingSchedule.teamContestSchedules.nodes.filter(
+        (node) => !isScheduleExpired(node)
+      ),
+    [props.schedules]
+  );
+  const regularShifts = useMemo(
+    () =>
+      props.schedules?.coopGroupingSchedule.regularSchedules.nodes.filter(
+        (node) => !isScheduleExpired(node)
+      ),
+    [props.schedules]
+  );
 
   const isScheduleStarted = (schedule: VsSchedule | CoopGroupingSchedule) => {
     const now = new Date().getTime();

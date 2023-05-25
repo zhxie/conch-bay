@@ -57,11 +57,12 @@ export type CurrentFest = NotNullable<SchedulesQuery["data"]["currentFest"]>;
 export type FestMatchSetting = NotNullable<
   SchedulesQuery["data"]["festSchedules"]["nodes"][0]["festMatchSetting"]
 >;
+export type PickupBrand = ShopQuery["data"]["gesotown"]["pickupBrand"];
 export type RegularMatchSetting = NotNullable<
   SchedulesQuery["data"]["regularSchedules"]["nodes"][0]["regularMatchSetting"]
 >;
 export type SaleGear =
-  | ShopQuery["data"]["gesotown"]["pickupBrand"]["brandGears"][0]
+  | PickupBrand["brandGears"][0]
   | ShopQuery["data"]["gesotown"]["limitedGears"][0];
 export type Schedules = SchedulesQuery["data"];
 export type Shop = ShopQuery["data"];
