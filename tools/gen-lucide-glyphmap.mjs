@@ -1,6 +1,9 @@
-import { createReadStream, createWriteStream } from "fs";
+import { createReadStream, createWriteStream, existsSync, mkdirSync } from "fs";
 import { createInterface } from "readline";
 
+if (!existsSync("assets/fonts")) {
+  mkdirSync("assets/fonts");
+}
 const css = createReadStream("node_modules/lucide-static/font/lucide.css");
 const glyphMap = createWriteStream("assets/fonts/Lucide.json", "utf-8");
 

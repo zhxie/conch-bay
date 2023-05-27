@@ -34,19 +34,6 @@ index a3fae8a..dea8e6b 100644
        }
      }
  
-diff --git a/node_modules/expo-image/ios/ExpoImage.podspec b/node_modules/expo-image/ios/ExpoImage.podspec
-index 89fd0ad..7ad818a 100644
---- a/node_modules/expo-image/ios/ExpoImage.podspec
-+++ b/node_modules/expo-image/ios/ExpoImage.podspec
-@@ -18,7 +18,7 @@ Pod::Spec.new do |s|
-   s.dependency 'ExpoModulesCore'
-   s.dependency 'SDWebImage', '~> 5.15.0'
-   s.dependency 'SDWebImageWebPCoder', '~> 0.9.1'
--  s.dependency 'SDWebImageAVIFCoder', '~> 0.10.0'
-+  s.dependency 'SDWebImageAVIFCoder', '~> 0.9.4'
-   s.dependency 'SDWebImageSVGCoder', '~> 1.6.1'
- 
-   # Swift/Objective-C compatibility
 diff --git a/node_modules/expo-image/ios/ImageModule.swift b/node_modules/expo-image/ios/ImageModule.swift
 index 04f2dae..e4bc063 100644
 --- a/node_modules/expo-image/ios/ImageModule.swift
