@@ -11,14 +11,13 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "eject": "expo eject",
-    "postinstall": "patch-package && cp -f node_modules/lucide-static/font/lucide.ttf assets/fonts/Lucide.ttf && node tools/gen-lucide-glyphmap.mjs && node tools/gen-weapons-map.mjs",
+    "postinstall": "patch-package && mkdir -p assets/fonts && cp -f node_modules/lucide-static/font/lucide.ttf assets/fonts/Lucide.ttf && cp -f node_modules/@expo-google-fonts/m-plus-rounded-1c/MPLUSRounded1c_800ExtraBold.ttf assets/fonts/MPLUSRounded1c-ExtraBold.ttf && node tools/gen-lucide-glyphmap.mjs && node tools/gen-weapons-map.mjs",
     "compile": "tsc --noEmit",
     "lint": "eslint . --ext .tsx --ext .ts",
     "format": "prettier --check .",
     "license": "node tools/gen-oss-licenses-md.mjs"
   },
   "dependencies": {
-    "@expo-google-fonts/m-plus-rounded-1c": "^0.2.3",
     "@react-native-async-storage/async-storage": "1.17.11",
     "@shopify/flash-list": "1.4.0",
     "axios": "^1.4.0",
@@ -52,6 +51,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.19.3",
+    "@expo-google-fonts/m-plus-rounded-1c": "^0.2.3",
     "@mmomtchev/expo-android-localized-app-name": "^1.0.1",
     "@trivago/prettier-plugin-sort-imports": "^4.0.0",
     "@types/color-convert": "^2.0.0",

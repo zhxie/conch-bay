@@ -11,5 +11,5 @@ web-build/
 .vscode
 .DS_Store
 
-assets/fonts/Lucide.*
+assets/fonts/
 models/*.json

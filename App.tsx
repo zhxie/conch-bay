@@ -1,4 +1,3 @@
-import { MPLUSRounded1c_800ExtraBold } from "@expo-google-fonts/m-plus-rounded-1c";
 import * as Font from "expo-font";
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
@@ -23,7 +22,7 @@ const App = () => {
     ok(
       Font.loadAsync({
         Lucide: require("./assets/fonts/Lucide.ttf"),
-        MPLUSRounded1cExtraBold: MPLUSRounded1c_800ExtraBold,
+        MPLUSRounded1cExtraBold: require("./assets/fonts/MPLUSRounded1c-ExtraBold.ttf"),
       })
     ).then(() => {
       setReady(true);
