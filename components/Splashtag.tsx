@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { createContext, useContext, useState } from "react";
 import {
   Dimensions,
   LayoutChangeEvent,
@@ -13,6 +13,8 @@ import { Center, HStack } from "./Stack";
 import { TextStyles, ViewStyles } from "./Styles";
 import Text from "./Text";
 
+const SplashtagContext = createContext({ splatfont: false });
+
 interface SplashtagProps {
   color: string;
   name: string;
@@ -24,6 +26,8 @@ interface SplashtagProps {
 }
 
 const Splashtag = (props: SplashtagProps) => {
+  const context = useContext(SplashtagContext);
+
   const [width, setWidth] = useState(Dimensions.get("window").width);
 
   const onLayout = (event: LayoutChangeEvent) => {
@@ -116,7 +120,7 @@ const Splashtag = (props: SplashtagProps) => {
           {
             position: "absolute",
             color: props.color,
-            fontFamily: "Splatfont",
+            fontFamily: context.splatfont ? "Splatfont" : "MPLUSRounded1cExtraBold",
             fontSize: (26 / 284) * width,
           },
           Platform.OS === "android" && { height: "100%", textAlignVertical: "center" },
@@ -132,4 +136,5 @@ const styles = StyleSheet.create({
   badge: { height: "100%", aspectRatio: 1 },
 });
 
+export { SplashtagContext };
 export default Splashtag;
