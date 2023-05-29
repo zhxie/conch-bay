@@ -270,7 +270,7 @@ const ResultView = (props: ResultViewProps) => {
   };
   const formatEventWave = (waveResult: CoopWaveResult) => {
     if (!waveResult.eventWave) {
-      return "-";
+      return "";
     }
     return td(waveResult.eventWave);
   };
