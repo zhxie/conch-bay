@@ -9,11 +9,15 @@ interface StageProps {
   title: string;
   image: ImageSource;
 }
+interface WeaponProps {
+  image: ImageSource;
+  tintColor?: string;
+}
 interface ScheduleBoxProps {
   rule: string;
   time: string;
   stage: StageProps;
-  weapons: ImageSource[];
+  weapons: WeaponProps[];
   style?: StyleProp<ViewStyle>;
 }
 
@@ -42,11 +46,12 @@ const ShiftBox = (props: ScheduleBoxProps) => {
               {props.weapons.map((weapon, i, weapons) => (
                 <Image
                   key={i}
-                  source={weapon}
+                  source={weapon.image}
                   style={[
                     i !== weapons.length - 1 ? ViewStyles.mr1 : undefined,
                     ViewStyles.f,
                     styles.weapon,
+                    { tintColor: weapon.tintColor },
                   ]}
                 />
               ))}

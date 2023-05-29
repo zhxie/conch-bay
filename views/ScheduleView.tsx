@@ -11,6 +11,7 @@ import {
   ShiftBox,
   TitledList,
   ViewStyles,
+  useTheme,
 } from "../components";
 import t, { td } from "../i18n";
 import {
@@ -26,7 +27,7 @@ import {
   VsStage,
   XMatchSetting,
 } from "../models/types";
-import { getImageCacheSource } from "../utils/ui";
+import { getImageCacheSource, getImageHash } from "../utils/ui";
 
 interface ScheduleViewProps {
   schedules?: Schedules;
@@ -43,6 +44,8 @@ interface DisplayProps {
 }
 
 const ScheduleView = (props: ScheduleViewProps) => {
+  const theme = useTheme();
+
   const [display, setDisplay] = useState<DisplayProps>();
   const [displaySplatfest, setDisplaySplatfest] = useState(false);
   const [displaySchedules, setDisplaySchedules] = useState(false);
@@ -190,7 +193,15 @@ const ScheduleView = (props: ScheduleViewProps) => {
     };
   };
   const formatWeapon = (weapon: CoopSupplyWeapon) => {
-    return getImageCacheSource(weapon.image.url);
+    return {
+      image: getImageCacheSource(weapon.image.url),
+      tintColor:
+        theme.colorScheme === "light" &&
+        getImageHash(weapon.image.url) ===
+          "a23d035e2f37c502e85b6065ba777d93f42d6ca7017ed029baac6db512e3e17f"
+          ? "#0a0a0a"
+          : undefined,
+    };
   };
 
   const onSplatfestSchedulePress = () => {
