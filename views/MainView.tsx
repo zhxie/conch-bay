@@ -2,6 +2,7 @@ import dayjs from "dayjs";
 import quarterOfYear from "dayjs/plugin/quarterOfYear";
 import utc from "dayjs/plugin/utc";
 import * as Application from "expo-application";
+import { BlurView } from "expo-blur";
 import * as Clipboard from "expo-clipboard";
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
@@ -178,6 +179,7 @@ const MainView = () => {
   const [total, setTotal] = useState(0);
   const [filter, setFilter] = useState<Database.FilterProps>();
   const [filterOptions, setFilterOptions] = useState<Database.FilterProps>();
+  const [blurOnTop, setBlurOnTop] = useState(false);
   const [autoRefresh, setAutoRefresh] = useState(false);
 
   const loadedAll = (results?.length ?? 0) >= count;
@@ -545,6 +547,10 @@ const MainView = () => {
     }
   };
 
+  const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    // HACK: there is an extra 8 padding on the top.
+    setBlurOnTop(event.nativeEvent.contentOffset.y > 8);
+  };
   const onScrollEndDrag = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     if (refreshing) {
       return;
@@ -1362,8 +1368,16 @@ const MainView = () => {
               </VStack>
             </SafeAreaView>
           }
+          onScroll={onScroll}
           onScrollEndDrag={onScrollEndDrag}
         />
+        {blurOnTop && (
+          <BlurView
+            intensity={100}
+            tint={theme.colorScheme ?? "default"}
+            style={{ position: "absolute", height: insets.top, width: "100%" }}
+          />
+        )}
         {sessionToken.length > 0 && (
           <FloatingActionButton
             size={50}

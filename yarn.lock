@@ -3611,6 +3611,11 @@ expo-asset@~8.9.1:
     path-browserify "^1.0.0"
     url-parse "^1.5.9"
 
+expo-blur@~12.2.2:
+  version "12.2.2"
+  resolved "https://registry.yarnpkg.com/expo-blur/-/expo-blur-12.2.2.tgz#b7f94499255afbd3468302d02f3c4e39a0e562d5"
+  integrity sha512-SvGbEZbB0VFNGqCW7FcqzWOEb3lrRgBnQKGrsKo49KwhMyHTYjYVYWnmrk9l8Tr7lIaNnd55QD6dPAzcXjZYMg==
+
 expo-clipboard@~4.1.2:
   version "4.1.2"
   resolved "https://registry.npmjs.org/expo-clipboard/-/expo-clipboard-4.1.2.tgz"

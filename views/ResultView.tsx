@@ -84,6 +84,7 @@ interface ResultViewProps {
   refreshControl: React.ReactElement<RefreshControlProps>;
   header: React.ReactElement;
   footer: React.ReactElement;
+  onScroll: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
   onScrollEndDrag: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
   style?: StyleProp<ViewStyle>;
 }
@@ -537,7 +538,9 @@ const ResultView = (props: ResultViewProps) => {
         }
         ListHeaderComponent={props.header}
         ListFooterComponent={props.footer}
+        onScroll={props.onScroll}
         onScrollEndDrag={props.onScrollEndDrag}
+        scrollEventThrottle={16}
       />
       <Modal
         isVisible={displayResult}

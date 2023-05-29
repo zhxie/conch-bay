@@ -24,6 +24,7 @@
     "base64-js": "^1.5.1",
     "dayjs": "^1.11.6",
     "expo": "^48.0.9",
+    "expo-blur": "~12.2.2",
     "expo-clipboard": "~4.1.2",
     "expo-crypto": "~12.2.1",
     "expo-document-picker": "~11.2.2",
