@@ -1,4 +1,4 @@
-import { createIconSet } from "@expo/vector-icons";
+import createIconSet from "@expo/vector-icons/createIconSet";
 import glyphMap from "../assets/fonts/Lucide.json";
 
 const Icon = createIconSet(glyphMap, "Lucide", "../assets/fonts/Lucide.ttf");
