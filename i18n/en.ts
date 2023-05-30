@@ -10,6 +10,9 @@ const en = {
     "Conch Bay requires acquiring tokens to access SplatNet 3. The process involves making a secure request to non-Nintendo imink with minimal, non-identifying information. This information will not be logged or stored, please see the privacy policy for more information.",
   imink_privacy_policy: "imink Privacy Policy",
   log_in_continue: "I have read and understand",
+  alternative_log_in_notice:
+    "If you have session token and want to skip acquiring tokens by Conch Bay, you can also copy the session token and complete logging in alternatively.",
+  log_in_with_session_token: "Log In with Session Token",
   logging_in: "Acquiring tokens",
   log_out_notice:
     "Logging out will remove all stored data from Conch Bay! Please complete backup before proceeding.",
@@ -61,11 +64,9 @@ const en = {
     "If your game language is inconsistent with the display one, you can change it here. This will allow Conch Bay to loading results with the corresponding language.",
   change_game_language_language: "Change Game Language (%{language})",
   change_display_language_language: "Change Display Language (%{language})",
-  alternative_log_in_notice:
-    "If you have session token and want to skip acquiring tokens by Conch Bay, you can copy the session token and complete logging in alternatively.",
-  log_in_with_session_token: "Log In with Session Token",
   relog_in_notice: "If Conch Bay cannot acquire tokens, you can relog in.",
   relog_in: "Relog In",
+  relog_in_with_session_token: "Relog In with Session Token",
   resource_notice:
     "If Conch Bay cannot load images, you can clear cache or preload resources. Please note, due to SplatNet 3 restrictions, Conch Bay can only preload some images.",
   clear_cache: "Clear Cache",

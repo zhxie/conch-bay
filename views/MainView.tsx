@@ -599,6 +599,18 @@ const MainView = () => {
       setLoggingIn(false);
     }
   };
+  const onAlternativeLogInPress = async () => {
+    try {
+      setLoggingIn(true);
+      await setSessionToken(await Clipboard.getStringAsync());
+      setLoggingIn(false);
+      setLogIn(false);
+      setLogOut(false);
+    } catch (e) {
+      showBanner(BannerLevel.Error, e);
+      setLoggingIn(false);
+    }
+  };
   const onLogOutPress = () => {
     setLogOut(true);
   };
@@ -862,18 +874,6 @@ const MainView = () => {
   };
   const onChangeDisplayLanguagePress = async () => {
     await Linking.openSettings();
-  };
-  const onAlternativeLogInPress = async () => {
-    try {
-      setLoggingIn(true);
-      await setSessionToken(await Clipboard.getStringAsync());
-      setLoggingIn(false);
-      setLogIn(false);
-      setLogOut(false);
-    } catch (e) {
-      showBanner(BannerLevel.Error, e);
-      setLoggingIn(false);
-    }
   };
   const onClearCachePress = async () => {
     setClearingCache(true);
@@ -1395,8 +1395,8 @@ const MainView = () => {
             color={Color.MiddleTerritory}
             style={ViewStyles.mb4}
           />
-          <Text style={ViewStyles.mb4}>{t("log_in_notice")}</Text>
-          <VStack style={ViewStyles.wf}>
+          <Text style={ViewStyles.mb2}>{t("log_in_notice")}</Text>
+          <VStack style={[ViewStyles.mb4, ViewStyles.wf]}>
             <Button
               style={[
                 ViewStyles.mb2,
@@ -1408,6 +1408,7 @@ const MainView = () => {
               <Marquee>{t("privacy_policy")}</Marquee>
             </Button>
             <Button
+              isDisabled={refreshing}
               isLoading={loggingIn}
               isLoadingText={t("logging_in")}
               style={ViewStyles.accent}
@@ -1415,6 +1416,19 @@ const MainView = () => {
               onPress={onLogInContinuePress}
             >
               <Marquee style={theme.reverseTextStyle}>{t("log_in_continue")}</Marquee>
+            </Button>
+          </VStack>
+          <Text style={ViewStyles.mb2}>{t("alternative_log_in_notice")}</Text>
+          <VStack style={ViewStyles.wf}>
+            <Button
+              isDisabled={refreshing}
+              isLoading={loggingIn}
+              isLoadingText={t("logging_in")}
+              style={ViewStyles.accent}
+              textStyle={theme.reverseTextStyle}
+              onPress={onAlternativeLogInPress}
+            >
+              <Marquee style={theme.reverseTextStyle}>{t("log_in_with_session_token")}</Marquee>
             </Button>
           </VStack>
         </VStack>
@@ -1429,16 +1443,6 @@ const MainView = () => {
           />
           <Text style={ViewStyles.mb4}>{t("log_out_notice")}</Text>
           <VStack style={ViewStyles.wf}>
-            <Button
-              isDisabled={refreshing}
-              isLoading={loggingIn}
-              isLoadingText={t("logging_in")}
-              style={[ViewStyles.mb2, ViewStyles.accent]}
-              textStyle={theme.reverseTextStyle}
-              onPress={onLogInContinuePress}
-            >
-              <Marquee style={theme.reverseTextStyle}>{t("relog_in")}</Marquee>
-            </Button>
             <Button
               isDisabled={loggingIn || refreshing || loadingMore || exporting}
               isLoading={loggingOut}
@@ -1518,23 +1522,6 @@ const MainView = () => {
               </Marquee>
             </Button>
           </VStack>
-          {sessionToken.length === 0 && (
-            <VStack style={[ViewStyles.mb4, ViewStyles.wf]}>
-              <VStack center>
-                <Text style={ViewStyles.mb2}>{t("alternative_log_in_notice")}</Text>
-              </VStack>
-              <Button
-                isDisabled={refreshing}
-                isLoading={loggingIn}
-                isLoadingText={t("logging_in")}
-                style={ViewStyles.accent}
-                textStyle={theme.reverseTextStyle}
-                onPress={onAlternativeLogInPress}
-              >
-                <Marquee style={theme.reverseTextStyle}>{t("log_in_with_session_token")}</Marquee>
-              </Button>
-            </VStack>
-          )}
           {sessionToken.length > 0 && (
             <VStack style={[ViewStyles.mb4, ViewStyles.wf]}>
               <VStack center>
@@ -1544,11 +1531,21 @@ const MainView = () => {
                 isDisabled={refreshing}
                 isLoading={loggingIn}
                 isLoadingText={t("logging_in")}
-                style={ViewStyles.accent}
+                style={[ViewStyles.mb2, ViewStyles.accent]}
                 textStyle={theme.reverseTextStyle}
                 onPress={onLogInContinuePress}
               >
                 <Marquee style={theme.reverseTextStyle}>{t("relog_in")}</Marquee>
+              </Button>
+              <Button
+                isDisabled={refreshing}
+                isLoading={loggingIn}
+                isLoadingText={t("logging_in")}
+                style={ViewStyles.accent}
+                textStyle={theme.reverseTextStyle}
+                onPress={onAlternativeLogInPress}
+              >
+                <Marquee style={theme.reverseTextStyle}>{t("relog_in_with_session_token")}</Marquee>
               </Button>
             </VStack>
           )}

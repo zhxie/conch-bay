@@ -10,6 +10,9 @@ const zhHans = {
     "法螺湾需要获取令牌以访问鱿鱼圈3。该过程涉及向非任天堂的imink发送含有最少的非身份信息的安全请求。这些信息不会被记录或存储，请参阅隐私政策以获取更多信息。",
   imink_privacy_policy: "imink隐私政策",
   log_in_continue: "我已阅读并理解",
+  alternative_log_in_notice:
+    "如果您拥有会话令牌并希望跳过由法螺湾获取令牌，您也可以复制会话令牌并完成登录。",
+  log_in_with_session_token: "通过会话令牌登录",
   logging_in: "获取令牌中",
   log_out_notice: "登出将清除法螺湾所有存储的数据！请在继续之前完成备份。",
   log_out_continue: "清除数据并登出",
@@ -58,11 +61,9 @@ const zhHans = {
     "如果您的游戏语言与显示语言不一致，您可以在此修改。这将使法螺湾加载对应语言的记录。",
   change_game_language_language: "修改游戏语言 (%{language})",
   change_display_language_language: "修改显示语言 (%{language})",
-  alternative_log_in_notice:
-    "如果您拥有会话令牌并希望跳过由法螺湾获取令牌，您可以复制会话令牌并完成登录。",
-  log_in_with_session_token: "通过会话令牌登录",
   relog_in_notice: "如果法螺湾无法获取令牌，您可以重新登录。",
   relog_in: "重新登录",
+  relog_in_with_session_token: "通过会话令牌重新登录",
   resource_notice:
     "如果法螺湾无法加载图片，您可以清除缓存或预加载资源。请注意，由于鱿鱼圈3的限制，法螺湾仅能预加载部分图片。",
   clear_cache: "清除缓存",
