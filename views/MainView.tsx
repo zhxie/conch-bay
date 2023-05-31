@@ -336,18 +336,14 @@ const MainView = () => {
             // Regenerate bullet token if necessary.
             if (!newBulletToken) {
               // Also update versions.
-              const [newBulletTokenInner, _] = await Promise.all([
-                generateBulletToken(),
-                !apiUpdated ||
-                  Promise.all([updateNsoVersion(), updateSplatnetVersion()])
-                    .then(() => {
-                      setApiUpdated(true);
-                    })
-                    .catch((e) => {
-                      showBanner(BannerLevel.Warn, t("failed_to_check_api_update", { error: e }));
-                    }),
-              ]);
-              newBulletToken = newBulletTokenInner;
+              await Promise.all([updateNsoVersion(), updateSplatnetVersion()])
+                .then(() => {
+                  setApiUpdated(true);
+                })
+                .catch((e) => {
+                  showBanner(BannerLevel.Warn, t("failed_to_check_api_update", { error: e }));
+                });
+              newBulletToken = await generateBulletToken();
             }
 
             // Fetch friends, voting, summary, catalog and results.
