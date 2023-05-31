@@ -71,7 +71,7 @@ export const fetchSplatfests = async () => {
 };
 
 let NSO_VERSION = "2.5.1";
-let SPLATNET_VERSION = "3.0.0-0742bda0";
+let SPLATNET_VERSION = "4.0.0-e2ee936d";
 
 export const updateNsoVersion = async () => {
   const res = await axios.get("https://itunes.apple.com/lookup?id=1234806557", {
@@ -387,7 +387,7 @@ export const fetchBattleHistories = async (bulletToken: string, language?: strin
 export const fetchVsHistoryDetail = async (id: string, bulletToken: string, language?: string) => {
   const res = await fetchGraphQl<VsHistoryDetailVariables>(
     bulletToken,
-    RequestId.VsHistoryDetailQuery,
+    "9ee0099fbe3d8db2a838a75cf42856dd",
     language,
     {
       vsResultId: id,
