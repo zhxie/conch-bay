@@ -3,7 +3,7 @@ import json
 import requests
 import sys
 
-VERSION = "310"
+VERSION = "400"
 GRIZZCO_WEAPON_IMAGE = []
 RANDOM_IMAGE = [
     "473fffb2442075078d8bb7125744905abdeae651b6a5b7453ae295582e45f7d1_0.png",
