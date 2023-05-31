@@ -1,13 +1,14 @@
-import { memo } from "react";
+import React from "react";
 import { StyleProp, ViewStyle } from "react-native";
+import { genericMemo } from "../utils/memo";
 import ResultButton from "./ResultButton";
 import { Circle } from "./Shape";
 import { HStack } from "./Stack";
 import { Color, ViewStyles } from "./Styles";
 import Text from "./Text";
 
-interface BattleButtonProps {
-  battle?: any;
+interface BattleButtonProps<T> {
+  battle?: T;
   color: string;
   isLoading?: boolean;
   isFirst?: boolean;
@@ -24,10 +25,10 @@ interface BattleButtonProps {
   special?: number;
   ultraSignal?: number | null;
   style?: StyleProp<ViewStyle>;
-  onPress?: (battle: any) => void;
+  onPress?: (battle: T) => void;
 }
 
-const BattleButton = (props: BattleButtonProps) => {
+const BattleButton = <T extends any>(props: BattleButtonProps<T>) => {
   const killAndAssist =
     props.kill == undefined
       ? "-"
@@ -80,4 +81,4 @@ const BattleButton = (props: BattleButtonProps) => {
   );
 };
 
-export default memo(BattleButton);
+export default genericMemo(BattleButton);

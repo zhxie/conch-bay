@@ -1,5 +1,6 @@
-import { createContext, memo, useContext } from "react";
+import { createContext, useContext } from "react";
 import { StyleProp, ViewStyle } from "react-native";
+import { genericMemo } from "../utils/memo";
 import Icon from "./Icon";
 import ResultButton from "./ResultButton";
 import { Circle } from "./Shape";
@@ -9,8 +10,8 @@ import Text from "./Text";
 
 const CoopButtonContext = createContext({ grade: false, changeGrade: () => {} });
 
-interface CoopButtonProps {
-  coop?: any;
+interface CoopButtonProps<T> {
+  coop?: T;
   color: string;
   isLoading?: boolean;
   isFirst?: boolean;
@@ -29,10 +30,10 @@ interface CoopButtonProps {
   goldenEgg: number;
   powerEgg: number;
   style?: StyleProp<ViewStyle>;
-  onPress?: (coop: any) => void;
+  onPress?: (coop: T) => void;
 }
 
-const CoopButton = (props: CoopButtonProps) => {
+const CoopButton = <T extends any>(props: CoopButtonProps<T>) => {
   const context = useContext(CoopButtonContext);
 
   const theme = useTheme();
@@ -108,4 +109,4 @@ const CoopButton = (props: CoopButtonProps) => {
 };
 
 export { CoopButtonContext };
-export default memo(CoopButton);
+export default genericMemo(CoopButton);
