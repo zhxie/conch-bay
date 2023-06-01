@@ -121,6 +121,7 @@ const en = {
     "Because one or more players were not able to continue, the match will not count as a loss.",
   details: "Details",
   rank_points: "Rank Points",
+  anarchy_power: "Anarchy Power",
   x_power: "X Power",
   clout: "Clout",
   festival_shell: "Festival Shell",

@@ -5,6 +5,7 @@ import {
   CoopHistoryDetailQuery_f3799a0,
   VsHistoryDetailQuery_291295a,
   VsHistoryDetailQuery_2b08598,
+  VsHistoryDetailQuery_9ee0099,
   VsHistoryDetailQuery_cd82f2a,
 } from "splatnet3-types/dist/generated/types";
 import {
@@ -106,6 +107,7 @@ export type MyGear =
 export type VsHistoryDetailResult =
   | VsHistoryDetailQuery_291295a
   | VsHistoryDetailQuery_2b08598
+  | VsHistoryDetailQuery_9ee0099
   | VsHistoryDetailQuery_cd82f2a;
 export type VsMode = NotNullable<VsHistoryDetailResult["vsHistoryDetail"]>["vsMode"];
 export type VsPlayer = VsTeam["players"][0];

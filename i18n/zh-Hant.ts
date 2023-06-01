@@ -115,6 +115,7 @@ const zhHant = {
   exemption: "因有玩家中斷連線，比賽結果不會以落敗計算。",
   details: "詳細數據",
   rank_points: "技術點數",
+  anarchy_power: "蠻頹戰力",
   x_power: "X戰力",
   clout: "貢獻度",
   festival_shell: "祭典貝",

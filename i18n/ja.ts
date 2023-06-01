@@ -121,6 +121,7 @@ const ja = {
   exemption: "通信を切断したプレイヤーがいたため、負けとしてカウントされませんでした。",
   details: "詳細データ",
   rank_points: "ウデマエポイント",
+  anarchy_power: "バンカラパワー",
   x_power: "Xパワー",
   clout: "こうけん度",
   festival_shell: "オマツリガイ",

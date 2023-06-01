@@ -115,6 +115,7 @@ const zhHans = {
   exemption: "由于有玩家中断连接，本场对战不会以落败计算。",
   details: "详细数据",
   rank_points: "技术点数",
+  anarchy_power: "蛮颓战力",
   x_power: "X战力",
   clout: "贡献度",
   festival_shell: "祭典贝",

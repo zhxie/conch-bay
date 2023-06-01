@@ -387,7 +387,7 @@ export const fetchBattleHistories = async (bulletToken: string, language?: strin
 export const fetchVsHistoryDetail = async (id: string, bulletToken: string, language?: string) => {
   const res = await fetchGraphQl<VsHistoryDetailVariables>(
     bulletToken,
-    "9ee0099fbe3d8db2a838a75cf42856dd",
+    RequestId.VsHistoryDetailQuery,
     language,
     {
       vsResultId: id,

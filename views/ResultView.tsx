@@ -673,6 +673,17 @@ const ResultView = (props: ResultViewProps) => {
                               </Text>
                             </Display>
                           )}
+                        {result.battle.vsHistoryDetail!.bankaraMatch &&
+                          result.battle.vsHistoryDetail!.bankaraMatch["bankaraPower"] &&
+                          result.battle.vsHistoryDetail!.bankaraMatch["bankaraPower"]["power"] && (
+                            <Display level={1} title={t("anarychy_power")}>
+                              <Text numberOfLines={1}>
+                                {result.battle.vsHistoryDetail!.bankaraMatch["bankaraPower"][
+                                  "power"
+                                ].toFixed(1)}
+                              </Text>
+                            </Display>
+                          )}
                         {result.battle.vsHistoryDetail!.xMatch &&
                           result.battle.vsHistoryDetail!.xMatch.lastXPower !== null && (
                             <Display level={1} title={t("x_power")}>
