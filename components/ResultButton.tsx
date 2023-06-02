@@ -62,7 +62,8 @@ const ResultButton = (props: ResultButtonProps) => {
         ]}
       >
         {props.result !== undefined && (
-          <Center style={[ViewStyles.mr3, styles.image]}>
+          // HACK: the right margin looks wider than the left one due to optical illusion.
+          <Center style={[ViewStyles.mr2, styles.image]}>
             {(() => {
               switch (props.result) {
                 case 1:

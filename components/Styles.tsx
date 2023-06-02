@@ -237,6 +237,9 @@ export const ViewStyles = StyleSheet.create({
   mr1: {
     marginRight: 4,
   },
+  mr1_5: {
+    marginRight: 6,
+  },
   mr2: {
     marginRight: 8,
   },
@@ -251,6 +254,9 @@ export const ViewStyles = StyleSheet.create({
   },
   mb1: {
     marginBottom: 4,
+  },
+  mb1_5: {
+    marginBottom: 6,
   },
   mb2: {
     marginBottom: 8,

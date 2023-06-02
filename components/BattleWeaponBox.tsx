@@ -29,7 +29,8 @@ const BattleWeaponBox = (props: BattleWeaponBoxProps) => {
     >
       <HStack flex center justify>
         <HStack flex center style={ViewStyles.mr1}>
-          <Image source={props.image} style={[ViewStyles.mr3, { width: 48, height: 48 }]} />
+          {/* HACK: the right margin looks wider than the left one due to optical illusion. */}
+          <Image source={props.image} style={[ViewStyles.mr2, { width: 48, height: 48 }]} />
           <HStack flex>
             <Marquee>{props.name}</Marquee>
           </HStack>

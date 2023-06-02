@@ -18,7 +18,8 @@ const WorkSuitBox = (props: WorkSuitBoxProps) => {
       style={[ViewStyles.px3, { height: 64 }, ViewStyles.r2, theme.territoryStyle, props.style]}
     >
       <HStack flex center style={[ViewStyles.py2]}>
-        <Image source={props.image} style={[ViewStyles.mr3, { width: 48, height: 48 }]} />
+        {/* HACK: the right margin looks wider than the left one due to optical illusion. */}
+        <Image source={props.image} style={[ViewStyles.mr2, { width: 48, height: 48 }]} />
         <HStack flex>
           <Marquee>{props.name}</Marquee>
         </HStack>

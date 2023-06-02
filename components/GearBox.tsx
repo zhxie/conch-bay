@@ -45,7 +45,8 @@ const GearBox = (props: GearBoxProps) => {
         ]}
       >
         <HStack flex center style={ViewStyles.mr1}>
-          <Center style={ViewStyles.mr3}>
+          {/* HACK: the right margin looks wider than the left one due to optical illusion. */}
+          <Center style={ViewStyles.mr2}>
             <Image
               source={props.image}
               recyclingKey={props.recyclingKey}

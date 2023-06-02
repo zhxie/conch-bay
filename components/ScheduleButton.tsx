@@ -23,7 +23,12 @@ const ScheduleButton = (props: ScheduleButtonProps) => {
       <VStack flex justify>
         <HStack center style={ViewStyles.mb1}>
           {props.rule.length > 0 && (
-            <Circle size={12} color={props.color ?? Color.MiddleTerritory} style={ViewStyles.mr2} />
+            // HACK: the right margin looks wider than the left one due to optical illusion.
+            <Circle
+              size={12}
+              color={props.color ?? Color.MiddleTerritory}
+              style={ViewStyles.mr1_5}
+            />
           )}
           <HStack flex>
             <Marquee
