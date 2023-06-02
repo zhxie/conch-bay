@@ -675,7 +675,10 @@ const ResultView = (props: ResultViewProps) => {
                           )}
                         {result.battle.vsHistoryDetail!.bankaraMatch &&
                           result.battle.vsHistoryDetail!.bankaraMatch["bankaraPower"] &&
-                          result.battle.vsHistoryDetail!.bankaraMatch["bankaraPower"]["power"] && (
+                          result.battle.vsHistoryDetail!.bankaraMatch["bankaraPower"]["power"] !==
+                            undefined &&
+                          result.battle.vsHistoryDetail!.bankaraMatch["bankaraPower"]["power"] !==
+                            null && (
                             <Display level={1} title={t("anarychy_power")}>
                               <Text numberOfLines={1}>
                                 {result.battle.vsHistoryDetail!.bankaraMatch["bankaraPower"][
@@ -692,6 +695,27 @@ const ResultView = (props: ResultViewProps) => {
                               </Text>
                             </Display>
                           )}
+                        {result.battle.vsHistoryDetail!.leagueMatch && (
+                          <VStack>
+                            <Display level={1} title={t("challenge_e")}>
+                              <Text numberOfLines={1}>
+                                {`${result.battle.vsHistoryDetail!.leagueMatch.leagueMatchEvent}`}
+                              </Text>
+                            </Display>
+                            {result.battle.vsHistoryDetail!.leagueMatch["myLeaguePower"] !==
+                              undefined &&
+                              result.battle.vsHistoryDetail!.leagueMatch["myLeaguePower"] !=
+                                null && (
+                                <Display level={1} title={t("challenge_power")}>
+                                  <Text numberOfLines={1}>
+                                    {`${result.battle.vsHistoryDetail!.leagueMatch[
+                                      "myLeaguePower"
+                                    ].toFixed(1)}`}
+                                  </Text>
+                                </Display>
+                              )}
+                          </VStack>
+                        )}
                         {result.battle.vsHistoryDetail!.festMatch && (
                           <VStack>
                             <Display level={1} title={t("clout")}>

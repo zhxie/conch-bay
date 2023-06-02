@@ -449,6 +449,12 @@ const MainView = () => {
           battleHistories.x.xBattleHistories.historyGroups.nodes.forEach((historyGroup) =>
             historyGroup.historyDetails.nodes.forEach((historyDetail) => ids.push(historyDetail.id))
           );
+          battleHistories.challenge.eventBattleHistories.historyGroups.nodes.forEach(
+            (historyGroup) =>
+              historyGroup.historyDetails.nodes.forEach((historyDetail) =>
+                ids.push(historyDetail.id)
+              )
+          );
           battleHistories.private.privateBattleHistories.historyGroups.nodes.forEach(
             (historyGroup) =>
               historyGroup.historyDetails.nodes.forEach((historyDetail) =>

@@ -284,7 +284,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
   };
   const onChallengePress = () => {
     setDisplay({
-      title: t("challenge"),
+      title: t("challenge_b"),
       color: Color.Challenge,
       challenges: challenges,
     });

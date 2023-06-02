@@ -50,6 +50,12 @@ const XBattleFilterProps = {
   stages: [],
   weapons: [],
 };
+const ChallengeFilterProps = {
+  modes: ["VnNNb2RlLTQ="],
+  rules: [],
+  stages: [],
+  weapons: [],
+};
 const PrivateBattleFilterProps = {
   modes: ["VnNNb2RlLTU="],
   rules: [],
@@ -181,6 +187,17 @@ const FilterView = (props: FilterViewProps) => {
               style={ViewStyles.mr2}
               onPress={() => {
                 onQuickFilterPress(XBattleFilterProps);
+              }}
+            />
+            <ColorFilterButton
+              isDisabled={props.isDisabled}
+              color={
+                isFilterEqual(props.filter, ChallengeFilterProps) ? Color.Challenge : undefined
+              }
+              title={t("challenge_b")}
+              style={ViewStyles.mr2}
+              onPress={() => {
+                onQuickFilterPress(ChallengeFilterProps);
               }}
             />
             <ColorFilterButton

@@ -83,6 +83,8 @@ export const getVsModeColor = (mode: VsMode) => {
       return Color.AnarchyBattle;
     case "VnNNb2RlLTM=":
       return Color.XBattle;
+    case "VnNNb2RlLTQ=":
+      return Color.Challenge;
     case "VnNNb2RlLTU=":
       return Color.PrivateBattle;
     case "VnNNb2RlLTY=":

@@ -9,6 +9,7 @@ import {
   CoopHistoryResult,
   DetailVotingStatusResult,
   DetailVotingStatusVariables,
+  EventBattleHistoriesResult,
   FestivalsQuery,
   FriendListResult,
   GraphQLSuccessResponse,
@@ -354,22 +355,25 @@ export const fetchDetailVotingStatus = async (
 };
 
 export const fetchBattleHistories = async (bulletToken: string, language?: string) => {
-  const [regularRes, anarchyRes, xRes, privateRes] = await Promise.all([
+  const [regularRes, anarchyRes, xRes, challengeRes, privateRes] = await Promise.all([
     fetchGraphQl(bulletToken, RequestId.RegularBattleHistoriesQuery, language),
     fetchGraphQl(bulletToken, RequestId.BankaraBattleHistoriesQuery, language),
     fetchGraphQl(bulletToken, RequestId.XBattleHistoriesQuery, language),
+    fetchGraphQl(bulletToken, RequestId.EventBattleHistoriesQuery, language),
     fetchGraphQl(bulletToken, RequestId.PrivateBattleHistoriesQuery, language),
   ]);
-  const [regularJson, anarchyJson, xJson, privateJson] = await Promise.all([
+  const [regularJson, anarchyJson, xJson, challengeJson, privateJson] = await Promise.all([
     regularRes.json(),
     anarchyRes.json(),
     xRes.json(),
+    challengeRes.json(),
     privateRes.json(),
   ]);
   const histories = {
     regular: regularJson as GraphQLSuccessResponse<RegularBattleHistoriesResult>,
     anarchy: anarchyJson as GraphQLSuccessResponse<BankaraBattleHistoriesResult>,
     x: xJson as GraphQLSuccessResponse<XBattleHistoriesResult>,
+    challenge: challengeJson as GraphQLSuccessResponse<EventBattleHistoriesResult>,
     private: privateJson as GraphQLSuccessResponse<PrivateBattleHistoriesResult>,
   };
   Object.values(histories).forEach((history) => {
@@ -381,6 +385,7 @@ export const fetchBattleHistories = async (bulletToken: string, language?: strin
     regular: histories.regular.data,
     anarchy: histories.anarchy.data,
     x: histories.x.data,
+    challenge: histories.challenge.data,
     private: histories.private.data,
   };
 };

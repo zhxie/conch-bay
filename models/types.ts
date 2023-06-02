@@ -24,6 +24,7 @@ export {
   DetailVotingStatusResult,
   DetailVotingStatusVariables,
   DragonMatchType,
+  EventBattleHistoriesResult,
   FestDragonCert,
   FriendListResult,
   FriendOnlineState,
