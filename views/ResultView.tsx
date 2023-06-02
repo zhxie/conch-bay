@@ -71,6 +71,7 @@ import {
   getVsModeColor,
   getVsSelfPlayer,
   getGearPadding,
+  getVsPower,
 } from "../utils/ui";
 
 dayjs.extend(duration);
@@ -437,6 +438,7 @@ const ResultView = (props: ResultViewProps) => {
             dragon={formatDragon(result.item.battle)}
             stage={td(result.item.battle.vsHistoryDetail!.vsStage)}
             weapon={td(getVsSelfPlayer(result.item.battle).weapon)}
+            power={getVsPower(result.item.battle)}
             kill={getVsSelfPlayer(result.item.battle).result?.kill}
             assist={getVsSelfPlayer(result.item.battle).result?.assist}
             death={getVsSelfPlayer(result.item.battle).result?.death}

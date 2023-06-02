@@ -108,6 +108,28 @@ export const getGearPadding = (gears: Gear[]) => {
   return Math.max(...gears.map((gear) => gear.additionalGearPowers.length));
 };
 
+export const getVsPower = (battle: VsHistoryDetailResult) => {
+  if (
+    battle.vsHistoryDetail?.bankaraMatch &&
+    battle.vsHistoryDetail.bankaraMatch["bankaraPower"] &&
+    battle.vsHistoryDetail.bankaraMatch["bankaraPower"]["power"] !== undefined
+  ) {
+    return battle.vsHistoryDetail.bankaraMatch["bankaraPower"]["power"];
+  }
+  if (battle.vsHistoryDetail?.xMatch) {
+    return battle.vsHistoryDetail!.xMatch!.lastXPower;
+  }
+  if (
+    battle.vsHistoryDetail?.leagueMatch &&
+    battle.vsHistoryDetail.leagueMatch["myLeaguePower"] !== undefined
+  ) {
+    return battle.vsHistoryDetail.leagueMatch["myLeaguePower"];
+  }
+  if (battle.vsHistoryDetail?.festMatch) {
+    return battle.vsHistoryDetail.festMatch.myFestPower;
+  }
+  return undefined;
+};
 export const getVsSelfPlayer = (battle: VsHistoryDetailResult) => {
   return battle.vsHistoryDetail!.myTeam.players.find((player) => player.isMyself)!;
 };
@@ -144,43 +166,11 @@ export const countBattles = (battles: VsHistoryDetailResult[]) => {
       case Judgement.DRAW:
         break;
     }
-    if (
-      battle.vsHistoryDetail?.bankaraMatch &&
-      battle.vsHistoryDetail.bankaraMatch["bankaraPower"] &&
-      battle.vsHistoryDetail.bankaraMatch["bankaraPower"]["power"] !== undefined &&
-      battle.vsHistoryDetail.bankaraMatch["bankaraPower"]["power"] !== null
-    ) {
-      result.power += battle.vsHistoryDetail.bankaraMatch["bankaraPower"]["power"];
+    const power = getVsPower(battle);
+    if (power !== undefined && power !== null) {
+      result.power += power;
       result.powerCount += 1;
-      result.powerMax = Math.max(
-        result.powerMax,
-        battle.vsHistoryDetail.bankaraMatch["bankaraPower"]["power"]
-      );
-    }
-    if (battle.vsHistoryDetail?.xMatch && battle.vsHistoryDetail.xMatch.lastXPower !== null) {
-      result.power += battle.vsHistoryDetail!.xMatch!.lastXPower;
-      result.powerCount += 1;
-      result.powerMax = Math.max(result.powerMax, battle.vsHistoryDetail!.xMatch!.lastXPower);
-    }
-    if (
-      battle.vsHistoryDetail?.leagueMatch &&
-      battle.vsHistoryDetail.leagueMatch["myLeaguePower"] !== undefined &&
-      battle.vsHistoryDetail.leagueMatch["myLeaguePower"] != null
-    ) {
-      result.power += battle.vsHistoryDetail.leagueMatch["myLeaguePower"];
-      result.powerCount += 1;
-      result.powerMax = Math.max(
-        result.powerMax,
-        battle.vsHistoryDetail.leagueMatch["myLeaguePower"]
-      );
-    }
-    if (
-      battle.vsHistoryDetail?.festMatch &&
-      battle.vsHistoryDetail.festMatch.myFestPower !== null
-    ) {
-      result.power += battle.vsHistoryDetail.festMatch.myFestPower;
-      result.powerCount += 1;
-      result.powerMax = Math.max(result.powerMax, battle.vsHistoryDetail.festMatch.myFestPower);
+      result.powerMax = Math.max(result.powerMax, power);
     }
     result.kill += getVsSelfPlayer(battle).result?.kill ?? 0;
     result.assist += getVsSelfPlayer(battle).result?.assist ?? 0;
