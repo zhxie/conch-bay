@@ -117,6 +117,9 @@ export const countBattles = (battles: VsHistoryDetailResult[]) => {
     count: 0,
     win: 0,
     lose: 0,
+    power: 0,
+    powerCount: 0,
+    powerMax: 0,
     member: 0,
     kill: 0,
     killTeam: 0,
@@ -140,6 +143,44 @@ export const countBattles = (battles: VsHistoryDetailResult[]) => {
         break;
       case Judgement.DRAW:
         break;
+    }
+    if (
+      battle.vsHistoryDetail?.bankaraMatch &&
+      battle.vsHistoryDetail.bankaraMatch["bankaraPower"] &&
+      battle.vsHistoryDetail.bankaraMatch["bankaraPower"]["power"] !== undefined &&
+      battle.vsHistoryDetail.bankaraMatch["bankaraPower"]["power"] !== null
+    ) {
+      result.power += battle.vsHistoryDetail.bankaraMatch["bankaraPower"]["power"];
+      result.powerCount += 1;
+      result.powerMax = Math.max(
+        result.powerMax,
+        battle.vsHistoryDetail.bankaraMatch["bankaraPower"]["power"]
+      );
+    }
+    if (battle.vsHistoryDetail?.xMatch && battle.vsHistoryDetail.xMatch.lastXPower !== null) {
+      result.power += battle.vsHistoryDetail!.xMatch!.lastXPower;
+      result.powerCount += 1;
+      result.powerMax = Math.max(result.powerMax, battle.vsHistoryDetail!.xMatch!.lastXPower);
+    }
+    if (
+      battle.vsHistoryDetail?.leagueMatch &&
+      battle.vsHistoryDetail.leagueMatch["myLeaguePower"] !== undefined &&
+      battle.vsHistoryDetail.leagueMatch["myLeaguePower"] != null
+    ) {
+      result.power += battle.vsHistoryDetail.leagueMatch["myLeaguePower"];
+      result.powerCount += 1;
+      result.powerMax = Math.max(
+        result.powerMax,
+        battle.vsHistoryDetail.leagueMatch["myLeaguePower"]
+      );
+    }
+    if (
+      battle.vsHistoryDetail?.festMatch &&
+      battle.vsHistoryDetail.festMatch.myFestPower !== null
+    ) {
+      result.power += battle.vsHistoryDetail.festMatch.myFestPower;
+      result.powerCount += 1;
+      result.powerMax = Math.max(result.powerMax, battle.vsHistoryDetail.festMatch.myFestPower);
     }
     result.kill += getVsSelfPlayer(battle).result?.kill ?? 0;
     result.assist += getVsSelfPlayer(battle).result?.assist ?? 0;

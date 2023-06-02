@@ -145,6 +145,7 @@ const ja = {
   stats: "統計",
   victory: "WIN!",
   defeat: "LOSE...",
+  power: "パワー",
   splatted: "たおした",
   be_splatted: "たおされた",
   special_weapon_uses: "スペシャルウェポン発動",

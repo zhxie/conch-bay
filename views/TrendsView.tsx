@@ -28,6 +28,7 @@ interface TrendViewProps {
 
 type BattleDimension =
   | "VICTORY"
+  | "POWER"
   | "SPLATTED"
   | "SPLATTED_TEAM_AVERAGE"
   | "SPLATTED_INCLUDING_ASSISTED"
@@ -128,6 +129,11 @@ const TrendsView = (props: TrendViewProps) => {
           color: Color.AccentColor,
           max: 100,
           relative: true,
+        };
+      case "POWER":
+        return {
+          data: battleStats.map((stat) => stat.power / Math.max(stat.powerCount, 1)),
+          color: Color.AnarchyBattle,
         };
       case "SPLATTED":
         return {
@@ -305,6 +311,13 @@ const TrendsView = (props: TrendViewProps) => {
                     title={`${t("victory")} (%)`}
                     onPress={() => {
                       onBattleDimensionPress("VICTORY");
+                    }}
+                  />
+                  <ColorFilterButton
+                    color={battleDimensions.includes("POWER") ? Color.AnarchyBattle : undefined}
+                    title={`${t("power")}`}
+                    onPress={() => {
+                      onBattleDimensionPress("POWER");
                     }}
                   />
                   <ColorFilterButton

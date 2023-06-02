@@ -139,6 +139,7 @@ const zhHans = {
   stats: "统计",
   victory: "WIN!",
   defeat: "LOSE...",
+  power: "战力",
   splatted: "击倒",
   be_splatted: "阵亡",
   special_weapon_uses: "特殊武器发动",

@@ -101,6 +101,11 @@ const StatsView = (props: StatsViewProps) => {
               <Display title={t("defeat")}>
                 <Text numberOfLines={1}>{battleStats.lose}</Text>
               </Display>
+              <Display title={t("power")}>
+                <Text numberOfLines={1}>{`${battleStats.powerMax.toFixed(1)} (${(
+                  battleStats.power / Math.max(battleStats.powerCount, 1)
+                ).toFixed(1)})`}</Text>
+              </Display>
               <Display title={t("splatted")}>
                 <Text numberOfLines={1}>
                   {formatTotalAndAverageKillAndAssist(

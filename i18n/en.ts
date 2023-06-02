@@ -145,6 +145,7 @@ const en = {
   stats: "Stats",
   victory: "VICTORY",
   defeat: "DEFEAT",
+  power: "Power",
   splatted: "Splatted",
   be_splatted: "Be Splatted",
   special_weapon_uses: "Special Weapon Uses",
