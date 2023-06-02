@@ -164,6 +164,7 @@ const zhHans = {
   anarchy_battle_series: "蛮颓比赛 (挑战)",
   anarchy_battle_open: "蛮颓比赛 (开放)",
   x_battle: "X比赛",
+  challenge: "活动比赛",
   private_battle: "私人比赛",
   splatfest_battle: "祭典比赛",
   tricolor_battle: "三色夺宝比赛",

@@ -170,6 +170,7 @@ const en = {
   anarchy_battle_series: "Anarchy Battle (Series)",
   anarchy_battle_open: "Anarchy Battle (Open)",
   x_battle: "X Battle",
+  challenge: "Challenge",
   private_battle: "Private Battle",
   splatfest_battle: "Splatfest Battle",
   tricolor_battle: "Tricolor Battle",

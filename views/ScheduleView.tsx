@@ -5,11 +5,14 @@ import { ScrollView, StyleProp, ViewStyle } from "react-native";
 import {
   Color,
   HStack,
+  Marquee,
   Modal,
   ScheduleBox,
   ScheduleButton,
   ShiftBox,
+  TextStyles,
   TitledList,
+  VStack,
   ViewStyles,
   useTheme,
 } from "../components";
@@ -20,9 +23,12 @@ import {
   CoopStage,
   CoopSupplyWeapon,
   CurrentFest,
+  EventMatchSetting,
+  EventMatchTimePeriod,
   FestMatchSetting,
   RegularMatchSetting,
   Schedules,
+  VsEventSchedule,
   VsSchedule,
   VsStage,
   XMatchSetting,
@@ -39,6 +45,7 @@ interface DisplayProps {
   color: string;
   splatfest?: CurrentFest;
   schedules?: VsSchedule[];
+  challenges?: VsEventSchedule[];
   shifts?: CoopGroupingSchedule[];
   index?: number;
 }
@@ -69,7 +76,9 @@ const ScheduleView = (props: ScheduleViewProps) => {
     }
     return schedule["festMatchSetting"] as FestMatchSetting | null;
   };
-  const isScheduleExpired = (schedule: VsSchedule | CoopGroupingSchedule) => {
+  const isScheduleExpired = (
+    schedule: VsSchedule | EventMatchTimePeriod | CoopGroupingSchedule
+  ) => {
     const now = new Date().getTime();
     const date = new Date(schedule.endTime);
     const timestamp = date.getTime();
@@ -101,7 +110,10 @@ const ScheduleView = (props: ScheduleViewProps) => {
     [props.schedules]
   );
   const anarchySchedules = useMemo(
-    () => props.schedules?.bankaraSchedules.nodes.filter((node) => getMatchSetting(node)),
+    () =>
+      props.schedules?.bankaraSchedules.nodes
+        .filter((node) => getMatchSetting(node))
+        .filter((node) => !isScheduleExpired(node)),
     [props.schedules]
   );
   const xSchedules = useMemo(
@@ -109,6 +121,13 @@ const ScheduleView = (props: ScheduleViewProps) => {
       props.schedules?.xSchedules.nodes
         .filter((node) => getMatchSetting(node))
         .filter((node) => !isScheduleExpired(node)),
+    [props.schedules]
+  );
+  const challenges = useMemo(
+    () =>
+      props.schedules?.eventSchedules.nodes.filter(
+        (node) => !isScheduleExpired(node.timePeriods[node.timePeriods.length - 1])
+      ),
     [props.schedules]
   );
   const bigRunShifts = useMemo(
@@ -133,11 +152,20 @@ const ScheduleView = (props: ScheduleViewProps) => {
     [props.schedules]
   );
 
-  const isScheduleStarted = (schedule: VsSchedule | CoopGroupingSchedule) => {
+  const isScheduleStarted = (
+    schedule: VsSchedule | EventMatchTimePeriod | CoopGroupingSchedule
+  ) => {
     const now = new Date().getTime();
     const date = new Date(schedule.startTime);
     const timestamp = date.getTime();
     return timestamp <= now;
+  };
+  const isChallengeStarted = (schedule: VsEventSchedule) => {
+    const i = schedule.timePeriods.findIndex((timePeriod) => !isScheduleExpired(timePeriod));
+    if (i < 0) {
+      return true;
+    }
+    return isScheduleStarted(schedule.timePeriods[i]);
   };
   const isSplatfestStarted = (splatfest: CurrentFest) => {
     const now = new Date().getTime();
@@ -172,7 +200,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
     return dateTime;
   };
   const formatScheduleTimeRange = (
-    schedule: VsSchedule | CoopGroupingSchedule,
+    schedule: VsSchedule | EventMatchTimePeriod | CoopGroupingSchedule,
     withDate: boolean
   ) => {
     const startTime = formatTime(schedule.startTime, false, withDate);
@@ -254,6 +282,14 @@ const ScheduleView = (props: ScheduleViewProps) => {
     });
     setDisplaySchedules(true);
   };
+  const onChallengePress = () => {
+    setDisplay({
+      title: t("challenge"),
+      color: Color.Challenge,
+      challenges: challenges,
+    });
+    setDisplaySchedules(true);
+  };
   const onBigRunShiftPress = () => {
     setDisplay({
       title: t("big_run"),
@@ -296,14 +332,14 @@ const ScheduleView = (props: ScheduleViewProps) => {
     >
       <HStack style={ViewStyles.px4}>
         {!props.schedules &&
-          new Array(9)
+          new Array(10)
             .fill(0)
             .map((_, i) => (
               <ScheduleButton
                 key={i}
                 rule=""
                 stages={[]}
-                style={props.children || i !== 8 ? ViewStyles.mr2 : undefined}
+                style={props.children || i !== 9 ? ViewStyles.mr2 : undefined}
               />
             ))}
         {splatfestSchedules?.[0] && (
@@ -360,6 +396,15 @@ const ScheduleView = (props: ScheduleViewProps) => {
             style={ViewStyles.mr2}
           />
         )}
+        {challenges?.[0] && (
+          <ScheduleButton
+            color={isChallengeStarted(challenges[0]) ? Color.Challenge : undefined}
+            rule={td(challenges[0].leagueMatchSetting.vsRule)}
+            stages={challenges[0].leagueMatchSetting.vsStages.map((stage) => td(stage))}
+            onPress={onChallengePress}
+            style={ViewStyles.mr2}
+          />
+        )}
         {bigRunShifts?.[0] && (
           <ScheduleButton
             color={isScheduleStarted(bigRunShifts[0]) ? Color.BigRun : undefined}
@@ -407,6 +452,26 @@ const ScheduleView = (props: ScheduleViewProps) => {
                   style={i !== schedules.length - 1 ? ViewStyles.mb2 : undefined}
                 />
               ))}
+          {display?.challenges &&
+            display.challenges.map((challenge, i, challenges) => (
+              <VStack
+                key={i}
+                style={[ViewStyles.wf, i !== challenges.length - 1 ? ViewStyles.mb2 : undefined]}
+              >
+                <Marquee style={[TextStyles.h2, ViewStyles.mb1]}>
+                  {td(challenge.leagueMatchSetting.leagueMatchEvent)}
+                </Marquee>
+                {challenge.timePeriods.map((timePeriod, j, timePeriods) => (
+                  <ScheduleBox
+                    key={j}
+                    rule={td(challenge.leagueMatchSetting.vsRule)}
+                    time={formatScheduleTimeRange(timePeriod, true)}
+                    stages={challenge.leagueMatchSetting.vsStages.map(formatStage)}
+                    style={j !== timePeriods.length - 1 ? ViewStyles.mb2 : undefined}
+                  />
+                ))}
+              </VStack>
+            ))}
         </TitledList>
       </Modal>
       <Modal

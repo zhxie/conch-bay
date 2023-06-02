@@ -18,6 +18,7 @@ export enum Color {
   RegularBattle = "#22c55e",
   AnarchyBattle = "#ea580c",
   XBattle = "#34d399",
+  Challenge = "#db2777",
   PrivateBattle = "#c026d3",
   SalmonRun = "#f97316",
   BigRun = "#9333ea",

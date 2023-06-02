@@ -50,6 +50,8 @@ export type Enum<T extends Record<string, any>> = T | keyof T;
 
 export type BankaraMatchSetting =
   SchedulesQuery["data"]["bankaraSchedules"]["nodes"][0]["bankaraMatchSettings"][0];
+export type EventMatchSetting = VsEventSchedule["leagueMatchSetting"];
+export type EventMatchTimePeriod = VsEventSchedule["timePeriods"][0];
 export type CoopGroupingSchedule =
   | SchedulesQuery["data"]["coopGroupingSchedule"]["regularSchedules"]["nodes"][0]
   | SchedulesQuery["data"]["coopGroupingSchedule"]["bigRunSchedules"]["nodes"][0]
@@ -70,6 +72,12 @@ export type Shop = ShopQuery["data"];
 export type XMatchSetting = NotNullable<
   SchedulesQuery["data"]["xSchedules"]["nodes"][0]["xMatchSetting"]
 >;
+export type VsEventSchedule = SchedulesQuery["data"]["eventSchedules"]["nodes"][0];
+export type VsSchedule =
+  | SchedulesQuery["data"]["regularSchedules"]["nodes"][0]
+  | SchedulesQuery["data"]["bankaraSchedules"]["nodes"][0]
+  | SchedulesQuery["data"]["xSchedules"]["nodes"][0]
+  | SchedulesQuery["data"]["festSchedules"]["nodes"][0];
 
 export type Award = NotNullable<VsHistoryDetailResult["vsHistoryDetail"]>["awards"][0];
 export type Badge =
@@ -111,15 +119,11 @@ export type VsHistoryDetailResult =
   | VsHistoryDetailQuery_cd82f2a;
 export type VsMode = NotNullable<VsHistoryDetailResult["vsHistoryDetail"]>["vsMode"];
 export type VsPlayer = VsTeam["players"][0];
-export type VsSchedule =
-  | SchedulesQuery["data"]["regularSchedules"]["nodes"][0]
-  | SchedulesQuery["data"]["bankaraSchedules"]["nodes"][0]
-  | SchedulesQuery["data"]["xSchedules"]["nodes"][0]
-  | SchedulesQuery["data"]["festSchedules"]["nodes"][0];
 export type VsStage =
   | RegularMatchSetting["vsStages"][0]
   | BankaraMatchSetting["vsStages"][0]
   | XMatchSetting["vsStages"][0]
+  | EventMatchSetting["vsStages"][0]
   | FestMatchSetting["vsStages"][0]
   | CurrentFest["tricolorStage"]
   | NotNullable<VsHistoryDetailResult["vsHistoryDetail"]>["vsStage"];

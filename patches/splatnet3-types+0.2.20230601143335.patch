@@ -1,22 +1,26 @@
 # Update definitions.
 diff --git a/node_modules/splatnet3-types/dist/splatoon3ink.d.ts b/node_modules/splatnet3-types/dist/splatoon3ink.d.ts
-index ac30c0a..ee6ea8a 100644
+index ac30c0a..40557b6 100644
 --- a/node_modules/splatnet3-types/dist/splatoon3ink.d.ts
 +++ b/node_modules/splatnet3-types/dist/splatoon3ink.d.ts
 @@ -1,6 +1,6 @@
  import CoopHistoryQuery_2fd21f2 from './generated/2fd21f270d381ecf894eb975c5f6a716.js';
  import FestRecordQuery_44c7679 from './generated/44c76790b68ca0f3da87f2a3452de986.js';
 -import StageScheduleQuery_730cd98 from './generated/730cd98e84f1030d3e9ac86b6f1aae13.js';
-+import StageScheduleQuery_011e394 from './generated/011e394c0e384d77a0701474c8c11a20.js';
++import StageScheduleQuery_d1f062c from './generated/d1f062c14f74f758658b2703a5799002.js';
  import DetailFestRecordDetailQuery_96c3a7f from './generated/96c3a7fd484b8d3be08e0a3c99eb2a3d.js';
  import GesotownQuery_a43dd44 from './generated/a43dd44899a09013bcfd29b4b13314ff.js';
  import { CoopSchedule_schedule, CoopSetting_schedule } from './partial-types.js';
-@@ -18,14 +18,15 @@ export interface Schedules {
- declare type StageScheduleResult_splatoon3ink = Omit<StageScheduleQuery_730cd98, 'coopGroupingSchedule'> & {
+@@ -15,17 +15,18 @@ declare type ReplaceProperties<T, R extends {
+ export interface Schedules {
+     data: StageScheduleResult_splatoon3ink;
+ }
+-declare type StageScheduleResult_splatoon3ink = Omit<StageScheduleQuery_730cd98, 'coopGroupingSchedule'> & {
++declare type StageScheduleResult_splatoon3ink = Omit<StageScheduleQuery_d1f062c, 'coopGroupingSchedule'> & {
      coopGroupingSchedule: CoopGroupingSchedule_splatoon3ink;
  };
 -declare type CoopGroupingSchedule_splatoon3ink = Omit<StageScheduleQuery_730cd98['coopGroupingSchedule'], 'regularSchedules' | 'bigRunSchedules'> & {
-+declare type CoopGroupingSchedule_splatoon3ink = Omit<StageScheduleQuery_730cd98['coopGroupingSchedule'], 'regularSchedules' | 'bigRunSchedules | teamContestSchedules'> & {
++declare type CoopGroupingSchedule_splatoon3ink = Omit<StageScheduleQuery_d1f062c['coopGroupingSchedule'], 'regularSchedules' | 'bigRunSchedules' | 'teamContestSchedules'> & {
      regularSchedules: Pick<Connection<CoopSchedule_splatoon3ink>, 'nodes'>;
      bigRunSchedules: Pick<Connection<CoopSchedule_splatoon3ink>, 'nodes'>;
 +    teamContestSchedules: Pick<Connection<CoopSchedule_splatoon3ink>, 'nodes'>;

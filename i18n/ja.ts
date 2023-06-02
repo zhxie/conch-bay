@@ -170,6 +170,7 @@ const ja = {
   anarchy_battle_series: "バンカラマッチ (チャレンジ)",
   anarchy_battle_open: "バンカラマッチ (オープン)",
   x_battle: "Xマッチ",
+  challenge: "イベントマッチ",
   private_battle: "プライベートマッチ",
   splatfest_battle: "フェスマッチ",
   tricolor_battle: "トリカラマッチ",

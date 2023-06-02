@@ -164,6 +164,7 @@ const zhHant = {
   anarchy_battle_series: "蠻頹比賽 (挑戰)",
   anarchy_battle_open: "蠻頹比賽 (開放)",
   x_battle: "X比賽",
+  challenge: "活動比賽",
   private_battle: "私人比賽",
   splatfest_battle: "祭典比賽",
   tricolor_battle: "三色奪寶比賽",
