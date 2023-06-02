@@ -102,9 +102,13 @@ const StatsView = (props: StatsViewProps) => {
                 <Text numberOfLines={1}>{battleStats.lose}</Text>
               </Display>
               <Display title={t("power")}>
-                <Text numberOfLines={1}>{`${battleStats.powerMax.toFixed(1)} (${(
-                  battleStats.power / Math.max(battleStats.powerCount, 1)
-                ).toFixed(1)})`}</Text>
+                <Text numberOfLines={1}>
+                  {battleStats.powerCount > 0
+                    ? `${battleStats.powerMax.toFixed(1)} (${(
+                        battleStats.power / battleStats.powerCount
+                      ).toFixed(1)})`
+                    : "-"}
+                </Text>
               </Display>
               <Display title={t("splatted")}>
                 <Text numberOfLines={1}>
