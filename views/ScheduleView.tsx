@@ -23,7 +23,6 @@ import {
   CoopStage,
   CoopSupplyWeapon,
   CurrentFest,
-  EventMatchSetting,
   EventMatchTimePeriod,
   FestMatchSetting,
   RegularMatchSetting,
@@ -465,7 +464,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
                   <ScheduleBox
                     key={j}
                     rule={td(challenge.leagueMatchSetting.vsRule)}
-                    time={formatScheduleTimeRange(timePeriod, true)}
+                    time={formatScheduleTimeRange(timePeriod, false)}
                     stages={challenge.leagueMatchSetting.vsStages.map(formatStage)}
                     style={j !== timePeriods.length - 1 ? ViewStyles.mb2 : undefined}
                   />
