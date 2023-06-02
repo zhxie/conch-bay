@@ -1,4 +1,4 @@
-# Fix definitions.
+# Fix definitions and fix xanderdeseyn/react-native-responsive-linechart#147.
 diff --git a/node_modules/react-native-responsive-linechart/lib/Chart.d.ts b/node_modules/react-native-responsive-linechart/lib/Chart.d.ts
 index abf6932..09998af 100644
 --- a/node_modules/react-native-responsive-linechart/lib/Chart.d.ts
@@ -23,3 +23,29 @@ index abf6932..09998af 100644
  };
  export declare type ChartHandle = {
      setViewportOrigin: (origin: XYValue) => void;
+diff --git a/node_modules/react-native-responsive-linechart/lib/Line.js b/node_modules/react-native-responsive-linechart/lib/Line.js
+index 60483ec..0f10a15 100644
+--- a/node_modules/react-native-responsive-linechart/lib/Line.js
++++ b/node_modules/react-native-responsive-linechart/lib/Line.js
+@@ -101,7 +101,7 @@ var Line = React.forwardRef(function Line(props, ref) {
+                 if (shape.width === 0 || shape.height === 0) {
+                     return null;
+                 }
+-                return (React.createElement(react_native_svg_1.Rect, { key: JSON.stringify(p), x: p.x - shape.width / 2 + shape.dx, y: p.y - shape.height / 2 - shape.dy, rx: shape.rx, fill: shape.color, opacity: shape.opacity, height: shape.height, width: shape.width }));
++                return (React.createElement(react_native_svg_1.Rect, { key: JSON.stringify(p), x: p.x - shape.width / 2 + shape.dx, y: p.y - shape.height / 2 - shape.dy, rx: shape.rx, fill: shape.color, opacity: shape.opacity, height: shape.height, width: shape.width, stroke: shape.border.color, strokeWidth: shape.border.width, strokeOpacity: shape.border.opacity, strokeDasharray: stroke.dashArray.length > 0 ? stroke.dashArray.join(",") : undefined }));
+             })),
+         tooltipIndex !== undefined &&
+             tooltipComponent &&
+@@ -124,6 +124,12 @@ var defaultProps = {
+                 dy: 0,
+                 rx: 0,
+                 color: 'black',
++                border: {
++                    color: 'black',
++                    width: 1,
++                    opacity: 0,
++                    dashArray: [],
++                },
+             },
+             selected: {},
+         },

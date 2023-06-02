@@ -48,25 +48,15 @@ const AreaLine = (props: LineProps) => {
           stroke: { color: props.color, width: 3, dashArray: props.dash ? [5] : [] },
           scatter: {
             default: {
-              width: 8,
-              height: 8,
-              rx: 8,
-              color: props.color,
-            },
-          },
-        }}
-      />
-      <Line
-        data={data}
-        smoothing="cubic-spline"
-        theme={{
-          stroke: { width: 0 },
-          scatter: {
-            default: {
-              width: 4,
-              height: 4,
-              rx: 4,
+              width: 6,
+              height: 6,
+              rx: 6,
               color: theme.territoryColor,
+              border: {
+                width: 2,
+                color: props.color,
+                opacity: 1,
+              },
             },
           },
         }}
@@ -89,25 +79,15 @@ const ScatterLine = (props: LineProps) => {
           stroke: { color: props.color, width: 3, dashArray: props.dash ? [5] : [] },
           scatter: {
             default: {
-              width: 8,
-              height: 8,
-              rx: 8,
-              color: props.color,
-            },
-          },
-        }}
-      />
-      <Line
-        data={data}
-        smoothing="cubic-spline"
-        theme={{
-          stroke: { width: 0 },
-          scatter: {
-            default: {
-              width: 4,
-              height: 4,
-              rx: 4,
+              width: 6,
+              height: 6,
+              rx: 6,
               color: theme.territoryColor,
+              border: {
+                width: 2,
+                color: props.color,
+                opacity: 1,
+              },
             },
           },
         }}
