@@ -681,7 +681,7 @@ const ResultView = (props: ResultViewProps) => {
                             undefined &&
                           result.battle.vsHistoryDetail!.bankaraMatch["bankaraPower"]["power"] !==
                             null && (
-                            <Display level={1} title={t("anarychy_power")}>
+                            <Display level={1} title={t("anarchy_power")}>
                               <Text numberOfLines={1}>
                                 {result.battle.vsHistoryDetail!.bankaraMatch["bankaraPower"][
                                   "power"
