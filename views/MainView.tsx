@@ -681,7 +681,6 @@ const MainView = () => {
       // Regenerate bullet token if necessary.
       if (!newBulletToken) {
         newBulletToken = await generateBulletToken();
-        setBulletToken(newBulletToken);
       }
 
       const equipments =
@@ -1044,7 +1043,6 @@ const MainView = () => {
           // Regenerate bullet token if necessary.
           if (!newBulletToken) {
             newBulletToken = await generateBulletToken();
-            setBulletToken(newBulletToken);
           }
 
           // Preload weapon, equipments, badge images from API.
