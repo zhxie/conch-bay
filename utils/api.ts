@@ -72,7 +72,7 @@ export const fetchSplatfests = async () => {
 };
 
 let NSO_VERSION = "2.5.1";
-let SPLATNET_VERSION = "4.0.0-e2ee936d";
+let SPLATNET_VERSION = "4.0.0-d5178440";
 
 export const updateNsoVersion = async () => {
   const res = await axios.get("https://itunes.apple.com/lookup?id=1234806557", {
