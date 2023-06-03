@@ -699,11 +699,13 @@ const ResultView = (props: ResultViewProps) => {
                           )}
                         {result.battle.vsHistoryDetail!.leagueMatch && (
                           <VStack>
-                            <Display level={1} title={t("challenge_e")}>
-                              <Text numberOfLines={1}>
-                                {`${result.battle.vsHistoryDetail!.leagueMatch.leagueMatchEvent}`}
-                              </Text>
-                            </Display>
+                            {result.battle.vsHistoryDetail!.leagueMatch.leagueMatchEvent && (
+                              <Display level={1} title={t("challenge_e")}>
+                                <Text numberOfLines={1}>
+                                  {td(result.battle.vsHistoryDetail!.leagueMatch.leagueMatchEvent)}
+                                </Text>
+                              </Display>
+                            )}
                             {result.battle.vsHistoryDetail!.leagueMatch["myLeaguePower"] !==
                               undefined &&
                               result.battle.vsHistoryDetail!.leagueMatch["myLeaguePower"] !=
