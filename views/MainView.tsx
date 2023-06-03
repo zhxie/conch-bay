@@ -400,8 +400,10 @@ const MainView = () => {
                 .catch((e) => {
                   showBanner(BannerLevel.Warn, t("failed_to_load_catalog", { error: e }));
                 }),
-              refreshResults(newBulletToken).then(async () => {
-                await loadResults(20);
+              ok(refreshResults(newBulletToken)).then(async (result) => {
+                if (result) {
+                  await loadResults(20);
+                }
               }),
             ]);
           }
@@ -418,6 +420,7 @@ const MainView = () => {
     setProgress(0);
     setProgressTotal(0);
     let n = -1;
+    let throwable = 0;
     const [battleFail, coopFail] = await Promise.all([
       fetchBattleHistories(bulletToken)
         .then(async (battleHistories) => {
@@ -491,6 +494,7 @@ const MainView = () => {
           return results.filter((result) => !result).length;
         })
         .catch((e) => {
+          throwable += 1;
           showBanner(BannerLevel.Warn, t("failed_to_load_battle_results", { error: e }));
           return 0;
         }),
@@ -534,6 +538,7 @@ const MainView = () => {
           return results.filter((result) => !result).length;
         })
         .catch((e) => {
+          throwable += 1;
           showBanner(BannerLevel.Warn, t("failed_to_load_salmon_run_results", { error: e }));
           return 0;
         }),
@@ -548,6 +553,9 @@ const MainView = () => {
       }
 
       await loadResults(20);
+    }
+    if (throwable > 1) {
+      throw new Error();
     }
   };
 
