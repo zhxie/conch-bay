@@ -460,15 +460,20 @@ const ScheduleView = (props: ScheduleViewProps) => {
                 <Marquee style={[TextStyles.h2, ViewStyles.mb1]}>
                   {td(challenge.leagueMatchSetting.leagueMatchEvent)}
                 </Marquee>
-                {challenge.timePeriods.map((timePeriod, j, timePeriods) => (
-                  <ScheduleBox
-                    key={j}
-                    rule={td(challenge.leagueMatchSetting.vsRule)}
-                    time={formatScheduleTimeRange(timePeriod, false)}
-                    stages={challenge.leagueMatchSetting.vsStages.map(formatStage)}
-                    style={j !== timePeriods.length - 1 ? ViewStyles.mb2 : undefined}
-                  />
-                ))}
+                {challenge.timePeriods
+                  .slice(
+                    // A magic to keep at least 1 time period even if all of them are expired.
+                    challenge.timePeriods.findIndex((timePeriod) => !isScheduleExpired(timePeriod))
+                  )
+                  .map((timePeriod, j, timePeriods) => (
+                    <ScheduleBox
+                      key={j}
+                      rule={td(challenge.leagueMatchSetting.vsRule)}
+                      time={formatScheduleTimeRange(timePeriod, false)}
+                      stages={challenge.leagueMatchSetting.vsStages.map(formatStage)}
+                      style={j !== timePeriods.length - 1 ? ViewStyles.mb2 : undefined}
+                    />
+                  ))}
               </VStack>
             ))}
         </TitledList>
