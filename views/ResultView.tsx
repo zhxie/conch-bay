@@ -31,6 +31,7 @@ import {
   GearBox,
   HStack,
   Icon,
+  Image,
   KingSalmonidBox,
   Marquee,
   Modal,
@@ -662,6 +663,16 @@ const ResultView = (props: ResultViewProps) => {
                     title={t("details")}
                     subChildren={
                       <VStack>
+                        <Display level={1} title={t("rule")}>
+                          <Text numberOfLines={1}>
+                            {`${td(result.battle.vsHistoryDetail!.vsRule)}`}
+                          </Text>
+                        </Display>
+                        <Display level={1} title={t("stage")}>
+                          <Text numberOfLines={1}>
+                            {`${td(result.battle.vsHistoryDetail!.vsStage)}`}
+                          </Text>
+                        </Display>
                         {result.battle.vsHistoryDetail!.bankaraMatch &&
                           result.battle.vsHistoryDetail!.bankaraMatch.earnedUdemaePoint !==
                             null && (
@@ -994,29 +1005,65 @@ const ResultView = (props: ResultViewProps) => {
                     title={t("details")}
                     subChildren={
                       <VStack>
+                        <Display level={1} title={t("stage")}>
+                          <Text numberOfLines={1}>
+                            {`${td(result.coop.coopHistoryDetail!.coopStage)}`}
+                          </Text>
+                        </Display>
+                        <Display level={1} title={t("supplied_weapons")}>
+                          <HStack center>
+                            {result.coop.coopHistoryDetail!.weapons.map((weapon, i, weapons) => (
+                              <Image
+                                key={i}
+                                source={getImageCacheSource(weapon.image.url)}
+                                style={[
+                                  i === weapons.length - 1 ? undefined : ViewStyles.mr1,
+                                  { width: 24, height: 24 },
+                                ]}
+                              />
+                            ))}
+                          </HStack>
+                        </Display>
+                        {result.coop.coopHistoryDetail!.dangerRate > 0 && (
+                          <Display level={1} title={t("hazard_level")}>
+                            <Text numberOfLines={1}>{`${parseInt(
+                              String(result.coop.coopHistoryDetail!.dangerRate * 100)
+                            )}%`}</Text>
+                          </Display>
+                        )}
+                        {result.coop.coopHistoryDetail!.afterGrade && (
+                          <Display level={1} title={t("job_title")}>
+                            <Text numberOfLines={1}>{`${td(
+                              result.coop.coopHistoryDetail!.afterGrade
+                            )} ${result.coop.coopHistoryDetail!.afterGradePoint}`}</Text>
+                          </Display>
+                        )}
                         {result.coop.coopHistoryDetail!.jobPoint !== null && (
-                          <VStack>
-                            <Display level={1} title={t("your_points")}>
-                              <Text numberOfLines={1}>
-                                {result.coop.coopHistoryDetail!.jobPoint}
-                              </Text>
-                            </Display>
-                            <Display level={1} title={t("job_score")}>
-                              <Text numberOfLines={1}>
-                                {result.coop.coopHistoryDetail!.jobScore ?? "-"}
-                              </Text>
-                            </Display>
-                            <Display level={1} title={t("pay_grade")}>
-                              <Text numberOfLines={1}>
-                                {result.coop.coopHistoryDetail!.jobRate?.toFixed(2) ?? "-"}
-                              </Text>
-                            </Display>
-                            <Display level={1} title={t("clear_bonus")}>
-                              <Text numberOfLines={1}>
-                                {result.coop.coopHistoryDetail!.jobBonus ?? "-"}
-                              </Text>
-                            </Display>
-                          </VStack>
+                          <AccordionDisplay
+                            level={1}
+                            title={t("your_points")}
+                            subChildren={
+                              <VStack>
+                                <Display level={2} title={t("job_score")}>
+                                  <Text numberOfLines={1}>
+                                    {result.coop.coopHistoryDetail!.jobScore ?? "-"}
+                                  </Text>
+                                </Display>
+                                <Display level={2} title={t("pay_grade")}>
+                                  <Text numberOfLines={1}>
+                                    {result.coop.coopHistoryDetail!.jobRate?.toFixed(2) ?? "-"}
+                                  </Text>
+                                </Display>
+                                <Display level={2} title={t("clear_bonus")}>
+                                  <Text numberOfLines={1}>
+                                    {result.coop.coopHistoryDetail!.jobBonus ?? "-"}
+                                  </Text>
+                                </Display>
+                              </VStack>
+                            }
+                          >
+                            <Text numberOfLines={1}>{result.coop.coopHistoryDetail!.jobPoint}</Text>
+                          </AccordionDisplay>
                         )}
                         {result.coop.coopHistoryDetail!.smellMeter !== null && (
                           <VStack>

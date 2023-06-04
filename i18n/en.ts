@@ -120,6 +120,8 @@ const en = {
   exemption:
     "Because one or more players were not able to continue, the match will not count as a loss.",
   details: "Details",
+  rule: "Rule",
+  stage: "Stage",
   rank_points: "Rank Points",
   anarchy_power: "Anarchy Power",
   x_power: "X Power",
@@ -130,6 +132,9 @@ const en = {
   splatfest_power: "Splatfest Power",
   played_time: "Played Time",
   medals_earned: "Medals Earned",
+  hazard_level: "Hazard Level",
+  supplied_weapons: "Supplied Weapons",
+  job_title: "Job Title",
   your_points: "Your Points",
   job_score: "Job Score",
   pay_grade: "Pay Grade",
@@ -162,7 +167,6 @@ const en = {
   // Trends.
   trends: "Trends",
   splatted_including_assisted: "Splatted (Including Assisted)",
-  hazard_level: "Hazard Level",
   golden_eggs_collected_including_assisted: "Golden Eggs Collected (Including Assisted)",
   trends_notice: "Long press on buttons to show team's average.",
   // Modes.
