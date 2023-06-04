@@ -25,7 +25,7 @@ const BossSalmonidBox = (props: BossSalmonidBoxProps) => {
       style={[
         ViewStyles.r2,
         ViewStyles.p2,
-        { width: 110, height: 80 },
+        { width: 110, height: 70 },
         theme.territoryStyle,
         props.style,
       ]}

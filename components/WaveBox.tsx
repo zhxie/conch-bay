@@ -26,7 +26,7 @@ const WaveBox = (props: WaveBoxProps) => {
   const theme = useTheme();
 
   return (
-    <VStack flex center style={props.style}>
+    <VStack center style={props.style}>
       <VStack
         style={[
           ViewStyles.mb1,
