@@ -455,7 +455,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
             display.challenges.map((challenge, i, challenges) => (
               <VStack
                 key={i}
-                style={[ViewStyles.wf, i !== challenges.length - 1 ? ViewStyles.mb2 : undefined]}
+                style={[ViewStyles.wf, i !== challenges.length - 1 ? ViewStyles.mb4 : undefined]}
               >
                 <Marquee style={[TextStyles.h2, ViewStyles.mb1]}>
                   {td(challenge.leagueMatchSetting.leagueMatchEvent)}
