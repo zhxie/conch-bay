@@ -29,6 +29,8 @@ interface TrendViewProps {
 type BattleDimension =
   | "VICTORY"
   | "POWER"
+  | "TURF_INKED"
+  | "TURF_INKED_TEAM_AVERAGE"
   | "SPLATTED"
   | "SPLATTED_TEAM_AVERAGE"
   | "SPLATTED_INCLUDING_ASSISTED"
@@ -134,6 +136,17 @@ const TrendsView = (props: TrendViewProps) => {
         return {
           data: battleStats.map((stat) => stat.power / Math.max(stat.powerCount, 1)),
           color: Color.AnarchyBattle,
+        };
+      case "TURF_INKED":
+        return {
+          data: battleStats.map((stat) => stat.turf / stat.count),
+          color: Color.AccentColor,
+        };
+      case "TURF_INKED_TEAM_AVERAGE":
+        return {
+          data: battleStats.map((stat) => stat.turfTeam / stat.member),
+          color: burnColor(Color.AccentColor),
+          dash: true,
         };
       case "SPLATTED":
         return {
@@ -318,6 +331,21 @@ const TrendsView = (props: TrendViewProps) => {
                     title={`${t("power")}`}
                     onPress={() => {
                       onBattleDimensionPress("POWER");
+                    }}
+                  />
+                  <ColorFilterButton
+                    color={
+                      battleDimensions.includes("TURF_INKED") ||
+                      battleDimensions.includes("TURF_INKED_TEAM_AVERAGE")
+                        ? Color.AccentColor
+                        : undefined
+                    }
+                    title={t("turf_inked")}
+                    onPress={() => {
+                      onBattleDimensionPress("TURF_INKED");
+                    }}
+                    onLongPress={() => {
+                      onBattleDimensionPress("TURF_INKED_TEAM_AVERAGE");
                     }}
                   />
                   <ColorFilterButton

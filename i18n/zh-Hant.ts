@@ -145,6 +145,7 @@ const zhHant = {
   victory: "WIN!",
   defeat: "LOSE...",
   power: "戰力",
+  turf_inked: "塗墨面積",
   splatted: "擊倒",
   be_splatted: "陣亡",
   special_weapon_uses: "特殊武器發動",

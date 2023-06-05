@@ -151,6 +151,7 @@ const ja = {
   victory: "WIN!",
   defeat: "LOSE...",
   power: "パワー",
+  turf_inked: "塗った面積",
   splatted: "たおした",
   be_splatted: "たおされた",
   special_weapon_uses: "スペシャルウェポン発動",

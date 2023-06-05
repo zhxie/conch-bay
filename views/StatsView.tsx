@@ -110,6 +110,11 @@ const StatsView = (props: StatsViewProps) => {
                     : "-"}
                 </Text>
               </Display>
+              <Display title={t("turf_inked")}>
+                <Text numberOfLines={1}>
+                  {formatTotalAndAverage(battleStats.turf, battleStats.count)}
+                </Text>
+              </Display>
               <Display title={t("splatted")}>
                 <Text numberOfLines={1}>
                   {formatTotalAndAverageKillAndAssist(

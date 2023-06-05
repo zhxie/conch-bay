@@ -143,6 +143,8 @@ export const countBattles = (battles: VsHistoryDetailResult[]) => {
     powerCount: 0,
     powerMax: 0,
     member: 0,
+    turf: 0,
+    turfTeam: 0,
     kill: 0,
     killTeam: 0,
     assist: 0,
@@ -172,12 +174,15 @@ export const countBattles = (battles: VsHistoryDetailResult[]) => {
       result.powerCount += 1;
       result.powerMax = Math.max(result.powerMax, power);
     }
-    result.kill += getVsSelfPlayer(battle).result?.kill ?? 0;
-    result.assist += getVsSelfPlayer(battle).result?.assist ?? 0;
-    result.death += getVsSelfPlayer(battle).result?.death ?? 0;
-    result.special += getVsSelfPlayer(battle).result?.special ?? 0;
+    const selfPlayer = getVsSelfPlayer(battle);
+    result.turf += selfPlayer.paint;
+    result.kill += selfPlayer.result?.kill ?? 0;
+    result.assist += selfPlayer.result?.assist ?? 0;
+    result.death += selfPlayer.result?.death ?? 0;
+    result.special += selfPlayer.result?.special ?? 0;
     for (const player of battle.vsHistoryDetail!.myTeam.players) {
       result.member += 1;
+      result.turfTeam += player.paint;
       result.killTeam += player.result?.kill ?? 0;
       result.assistTeam += player.result?.assist ?? 0;
       result.deathTeam += player.result?.death ?? 0;
