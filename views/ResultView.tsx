@@ -2,9 +2,12 @@ import { FlashList, ListRenderItemInfo } from "@shopify/flash-list";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import * as Clipboard from "expo-clipboard";
-import { useCallback, useRef, useState } from "react";
+import * as Sharing from "expo-sharing";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
+  Animated,
   Dimensions,
+  InteractionManager,
   Linking,
   NativeScrollEvent,
   NativeSyntheticEvent,
@@ -14,8 +17,10 @@ import {
   ViewStyle,
 } from "react-native";
 import JSONTree from "react-native-json-tree";
+import ViewShot from "react-native-view-shot";
 import {
   AccordionDisplay,
+  AccordionDisplayHandle,
   BannerLevel,
   BattleButton,
   BattlePlayerButton,
@@ -109,6 +114,9 @@ const ResultView = (props: ResultViewProps) => {
   const [displayCoopPlayer, setDisplayCoopPlayer] = useState(false);
   const willDisplayNext = useRef<number>();
   const [hidePlayerNames, setHidePlayerNames] = useState(false);
+
+  const battleRef = useRef<ViewShot>(null);
+  const battleDetailsRef = useRef<AccordionDisplayHandle>(null);
 
   const isVsPlayerDragon = (player: VsPlayer) => {
     switch (player.festDragonCert as FestDragonCert) {
@@ -364,6 +372,18 @@ const ResultView = (props: ResultViewProps) => {
   const onHidePlayerNamesPress = () => {
     setHidePlayerNames(!hidePlayerNames);
   };
+  const onShareBattleImagePress = () => {
+    battleDetailsRef.current!.expand();
+    // HACK: give enough time for expanding.
+    setTimeout(async () => {
+      try {
+        const uri = await battleRef.current!.capture!();
+        await Sharing.shareAsync(`file://${uri}`, { UTI: "public.png" });
+      } catch {
+        /* empty */
+      }
+    }, 50);
+  };
   const onShowRawResultPress = () => {
     willDisplayNext.current = -1;
     setDisplayBattle(false);
@@ -584,245 +604,243 @@ const ResultView = (props: ResultViewProps) => {
         isVisible={displayBattle}
         onClose={onDisplayBattleClose}
         onModalHide={onModalHide}
-        style={ViewStyles.modal3d}
+        style={[ViewStyles.modal3d, { paddingHorizontal: 0 }]}
       >
         {result?.battle && (
           <>
-            <TitledList
-              color={getVsModeColor(result.battle.vsHistoryDetail!.vsMode)}
-              title={t(result.battle.vsHistoryDetail!.vsMode.id)}
-              subtitle={formatAnnotation(result.battle)}
+            <ViewShot
+              ref={battleRef}
+              // HACK: add padding around view shot, withdraw 16px margin in the top and 32px in the bottom, and add back 8px (mb2) in the bottom.
+              style={[theme.backgroundStyle, ViewStyles.p4, { top: -16, marginBottom: -24 }]}
             >
-              <VStack style={ViewStyles.wf}>
-                {formatTeams(result.battle).map((team, i) => (
-                  <VStack key={i} style={ViewStyles.mb2}>
-                    <HStack center justify style={ViewStyles.mb1}>
-                      <HStack flex center style={ViewStyles.mr1}>
-                        <Circle size={12} color={getColor(team.color)} style={ViewStyles.mr1} />
-                        <HStack flex>
-                          <Marquee style={[TextStyles.b, { color: getColor(team.color) }]}>
-                            {`${team.festTeamName ? `${team.festTeamName} ` : ""}${
-                              (team["festStreakWinCount"] ?? 0) > 1
-                                ? `${t("n_win_strike", { n: team["festStreakWinCount"] })} `
-                                : ""
-                            }${team["festUniformName"] ? `${team["festUniformName"]}` : ""}`}
-                          </Marquee>
+              <TitledList
+                color={getVsModeColor(result.battle.vsHistoryDetail!.vsMode)}
+                title={t(result.battle.vsHistoryDetail!.vsMode.id)}
+                subtitle={formatAnnotation(result.battle)}
+              >
+                <VStack style={ViewStyles.wf}>
+                  {formatTeams(result.battle).map((team, i) => (
+                    <VStack key={i} style={ViewStyles.mb2}>
+                      <HStack center justify style={ViewStyles.mb1}>
+                        <HStack flex center style={ViewStyles.mr1}>
+                          <Circle size={12} color={getColor(team.color)} style={ViewStyles.mr1} />
+                          <HStack flex>
+                            <Marquee style={[TextStyles.b, { color: getColor(team.color) }]}>
+                              {`${team.festTeamName ? `${team.festTeamName} ` : ""}${
+                                (team["festStreakWinCount"] ?? 0) > 1
+                                  ? `${t("n_win_strike", { n: team["festStreakWinCount"] })} `
+                                  : ""
+                              }${team["festUniformName"] ? `${team["festUniformName"]}` : ""}`}
+                            </Marquee>
+                          </HStack>
+                        </HStack>
+                        <HStack center>
+                          {!!team.result?.noroshi &&
+                            new Array(team.result.noroshi)
+                              .fill(0)
+                              .map((_, i) => (
+                                <Circle
+                                  key={i}
+                                  size={10}
+                                  color={getColor(team.color)}
+                                  style={ViewStyles.mr1}
+                                />
+                              ))}
+                          <Text
+                            numberOfLines={1}
+                            style={[TextStyles.b, { color: getColor(team.color) }]}
+                          >
+                            {formatTeamResult(team)}
+                          </Text>
                         </HStack>
                       </HStack>
-                      <HStack center>
-                        {!!team.result?.noroshi &&
-                          new Array(team.result.noroshi)
-                            .fill(0)
-                            .map((_, i) => (
-                              <Circle
-                                key={i}
-                                size={10}
-                                color={getColor(team.color)}
-                                style={ViewStyles.mr1}
-                              />
-                            ))}
-                        <Text
-                          numberOfLines={1}
-                          style={[TextStyles.b, { color: getColor(team.color) }]}
-                        >
-                          {formatTeamResult(team)}
-                        </Text>
-                      </HStack>
-                    </HStack>
-                    {team.players.map((player: VsPlayer, i: number, players: VsPlayer[]) => (
-                      <BattlePlayerButton
-                        key={i}
-                        isFirst={i === 0}
-                        isLast={i === players.length - 1}
-                        team={getColor(team.color)}
-                        self={player.isMyself}
-                        name={formatName(player.name, player.species, player.isMyself)}
-                        weapon={getImageCacheSource(player.weapon.image2d.url)}
-                        paint={player.paint}
-                        kill={player.result?.kill}
-                        assist={player.result?.assist}
-                        death={player.result?.death}
-                        special={player.result?.special}
-                        ultraSignal={
-                          team.tricolorRole !== "DEFENSE" ? player.result?.noroshiTry : undefined
-                        }
-                        crown={player.crown}
-                        dragon={isVsPlayerDragon(player) ? getColor(team.color) : undefined}
-                        onPress={() => {
-                          setBattlePlayer(player);
-                          setDisplayBattlePlayer(true);
-                        }}
-                      />
-                    ))}
-                  </VStack>
-                ))}
-                <VStack style={ViewStyles.mb2}>
-                  <AccordionDisplay
-                    isFirst
-                    isLast
-                    title={t("details")}
-                    subChildren={
-                      <VStack>
-                        <Display level={1} title={t("rule")}>
-                          <Text numberOfLines={1}>
-                            {`${td(result.battle.vsHistoryDetail!.vsRule)}`}
-                          </Text>
-                        </Display>
-                        <Display level={1} title={t("stage")}>
-                          <Text numberOfLines={1}>
-                            {`${td(result.battle.vsHistoryDetail!.vsStage)}`}
-                          </Text>
-                        </Display>
-                        {result.battle.vsHistoryDetail!.bankaraMatch &&
-                          result.battle.vsHistoryDetail!.bankaraMatch.earnedUdemaePoint !==
-                            null && (
-                            <Display level={1} title={t("rank_points")}>
-                              <Text numberOfLines={1}>
-                                {`${
-                                  result.battle.vsHistoryDetail!.bankaraMatch.earnedUdemaePoint > 0
-                                    ? "+"
-                                    : ""
-                                }${result.battle.vsHistoryDetail!.bankaraMatch.earnedUdemaePoint}p`}
-                              </Text>
-                            </Display>
-                          )}
-                        {result.battle.vsHistoryDetail!.bankaraMatch &&
-                          result.battle.vsHistoryDetail!.bankaraMatch["bankaraPower"] &&
-                          result.battle.vsHistoryDetail!.bankaraMatch["bankaraPower"]["power"] !==
-                            undefined &&
-                          result.battle.vsHistoryDetail!.bankaraMatch["bankaraPower"]["power"] !==
-                            null && (
-                            <Display level={1} title={t("anarchy_power")}>
-                              <Text numberOfLines={1}>
-                                {result.battle.vsHistoryDetail!.bankaraMatch["bankaraPower"][
-                                  "power"
-                                ].toFixed(1)}
-                              </Text>
-                            </Display>
-                          )}
-                        {result.battle.vsHistoryDetail!.xMatch &&
-                          result.battle.vsHistoryDetail!.xMatch.lastXPower !== null && (
-                            <Display level={1} title={t("x_power")}>
-                              <Text numberOfLines={1}>
-                                {`${result.battle.vsHistoryDetail!.xMatch.lastXPower.toFixed(1)}`}
-                              </Text>
-                            </Display>
-                          )}
-                        {result.battle.vsHistoryDetail!.leagueMatch && (
-                          <VStack>
-                            {result.battle.vsHistoryDetail!.leagueMatch.leagueMatchEvent && (
-                              <Display level={1} title={t("challenge_e")}>
+                      {team.players.map((player: VsPlayer, i: number, players: VsPlayer[]) => (
+                        <BattlePlayerButton
+                          key={i}
+                          isFirst={i === 0}
+                          isLast={i === players.length - 1}
+                          team={getColor(team.color)}
+                          self={player.isMyself}
+                          name={formatName(player.name, player.species, player.isMyself)}
+                          weapon={getImageCacheSource(player.weapon.image2d.url)}
+                          paint={player.paint}
+                          kill={player.result?.kill}
+                          assist={player.result?.assist}
+                          death={player.result?.death}
+                          special={player.result?.special}
+                          ultraSignal={
+                            team.tricolorRole !== "DEFENSE" ? player.result?.noroshiTry : undefined
+                          }
+                          crown={player.crown}
+                          dragon={isVsPlayerDragon(player) ? getColor(team.color) : undefined}
+                          onPress={() => {
+                            setBattlePlayer(player);
+                            setDisplayBattlePlayer(true);
+                          }}
+                        />
+                      ))}
+                    </VStack>
+                  ))}
+                  <VStack>
+                    <AccordionDisplay
+                      ref={battleDetailsRef}
+                      isFirst
+                      isLast
+                      title={t("details")}
+                      subChildren={
+                        <VStack>
+                          <Display level={1} title={t("rule")}>
+                            <Text numberOfLines={1}>
+                              {`${td(result.battle.vsHistoryDetail!.vsRule)}`}
+                            </Text>
+                          </Display>
+                          <Display level={1} title={t("stage")}>
+                            <Text numberOfLines={1}>
+                              {`${td(result.battle.vsHistoryDetail!.vsStage)}`}
+                            </Text>
+                          </Display>
+                          {result.battle.vsHistoryDetail!.bankaraMatch &&
+                            result.battle.vsHistoryDetail!.bankaraMatch.earnedUdemaePoint !==
+                              null && (
+                              <Display level={1} title={t("rank_points")}>
                                 <Text numberOfLines={1}>
-                                  {td(result.battle.vsHistoryDetail!.leagueMatch.leagueMatchEvent)}
+                                  {`${
+                                    result.battle.vsHistoryDetail!.bankaraMatch.earnedUdemaePoint >
+                                    0
+                                      ? "+"
+                                      : ""
+                                  }${
+                                    result.battle.vsHistoryDetail!.bankaraMatch.earnedUdemaePoint
+                                  }p`}
                                 </Text>
                               </Display>
                             )}
-                            {result.battle.vsHistoryDetail!.leagueMatch["myLeaguePower"] !==
+                          {result.battle.vsHistoryDetail!.bankaraMatch &&
+                            result.battle.vsHistoryDetail!.bankaraMatch["bankaraPower"] &&
+                            result.battle.vsHistoryDetail!.bankaraMatch["bankaraPower"]["power"] !==
                               undefined &&
-                              result.battle.vsHistoryDetail!.leagueMatch["myLeaguePower"] !=
-                                null && (
-                                <Display level={1} title={t("challenge_power")}>
+                            result.battle.vsHistoryDetail!.bankaraMatch["bankaraPower"]["power"] !==
+                              null && (
+                              <Display level={1} title={t("anarchy_power")}>
+                                <Text numberOfLines={1}>
+                                  {result.battle.vsHistoryDetail!.bankaraMatch["bankaraPower"][
+                                    "power"
+                                  ].toFixed(1)}
+                                </Text>
+                              </Display>
+                            )}
+                          {result.battle.vsHistoryDetail!.xMatch &&
+                            result.battle.vsHistoryDetail!.xMatch.lastXPower !== null && (
+                              <Display level={1} title={t("x_power")}>
+                                <Text numberOfLines={1}>
+                                  {`${result.battle.vsHistoryDetail!.xMatch.lastXPower.toFixed(1)}`}
+                                </Text>
+                              </Display>
+                            )}
+                          {result.battle.vsHistoryDetail!.leagueMatch && (
+                            <VStack>
+                              {result.battle.vsHistoryDetail!.leagueMatch.leagueMatchEvent && (
+                                <Display level={1} title={t("challenge_e")}>
                                   <Text numberOfLines={1}>
-                                    {`${result.battle.vsHistoryDetail!.leagueMatch[
-                                      "myLeaguePower"
-                                    ].toFixed(1)}`}
+                                    {td(
+                                      result.battle.vsHistoryDetail!.leagueMatch.leagueMatchEvent
+                                    )}
                                   </Text>
                                 </Display>
                               )}
-                          </VStack>
-                        )}
-                        {result.battle.vsHistoryDetail!.festMatch && (
-                          <VStack>
-                            <Display level={1} title={t("clout")}>
-                              <Text numberOfLines={1}>
-                                {`${result.battle.vsHistoryDetail!.festMatch.contribution}`}
-                              </Text>
-                            </Display>
-                            <Display level={1} title={t("festival_shell")}>
-                              <Text numberOfLines={1}>
-                                {`${result.battle.vsHistoryDetail!.festMatch.jewel}`}
-                              </Text>
-                            </Display>
-                            {result.battle.vsHistoryDetail!.festMatch.myFestPower !== null && (
-                              <Display level={1} title={t("splatfest_power")}>
+                              {result.battle.vsHistoryDetail!.leagueMatch["myLeaguePower"] !==
+                                undefined &&
+                                result.battle.vsHistoryDetail!.leagueMatch["myLeaguePower"] !=
+                                  null && (
+                                  <Display level={1} title={t("challenge_power")}>
+                                    <Text numberOfLines={1}>
+                                      {`${result.battle.vsHistoryDetail!.leagueMatch[
+                                        "myLeaguePower"
+                                      ].toFixed(1)}`}
+                                    </Text>
+                                  </Display>
+                                )}
+                            </VStack>
+                          )}
+                          {result.battle.vsHistoryDetail!.festMatch && (
+                            <VStack>
+                              <Display level={1} title={t("clout")}>
                                 <Text numberOfLines={1}>
-                                  {`${result.battle.vsHistoryDetail!.festMatch.myFestPower.toFixed(
-                                    1
-                                  )}`}
+                                  {`${result.battle.vsHistoryDetail!.festMatch.contribution}`}
                                 </Text>
                               </Display>
-                            )}
-                          </VStack>
-                        )}
-                        {result.battle.vsHistoryDetail!.awards.map((award, i) => (
-                          <Display key={i} level={1} title={i === 0 ? t("medals_earned") : ""}>
-                            <HStack center>
-                              <Circle
-                                size={12}
-                                color={formatMedalColor(award)}
-                                style={ViewStyles.mr1}
-                              />
-                              <Text numberOfLines={1}>{award.name}</Text>
-                            </HStack>
-                          </Display>
-                        ))}
-                        <Display isLast level={1} title={t("played_time")}>
-                          <Text numberOfLines={1}>
-                            {formatPlayedTime(result.battle.vsHistoryDetail!.playedTime)}
-                            <Text numberOfLines={1} style={TextStyles.h6}>
-                              {`+${formatDuration(result.battle.vsHistoryDetail!.duration)}`}
+                              <Display level={1} title={t("festival_shell")}>
+                                <Text numberOfLines={1}>
+                                  {`${result.battle.vsHistoryDetail!.festMatch.jewel}`}
+                                </Text>
+                              </Display>
+                              {result.battle.vsHistoryDetail!.festMatch.myFestPower !== null && (
+                                <Display level={1} title={t("splatfest_power")}>
+                                  <Text numberOfLines={1}>
+                                    {`${result.battle.vsHistoryDetail!.festMatch.myFestPower.toFixed(
+                                      1
+                                    )}`}
+                                  </Text>
+                                </Display>
+                              )}
+                            </VStack>
+                          )}
+                          {result.battle.vsHistoryDetail!.awards.map((award, i) => (
+                            <Display key={i} level={1} title={i === 0 ? t("medals_earned") : ""}>
+                              <HStack center>
+                                <Circle
+                                  size={12}
+                                  color={formatMedalColor(award)}
+                                  style={ViewStyles.mr1}
+                                />
+                                <Text numberOfLines={1}>{award.name}</Text>
+                              </HStack>
+                            </Display>
+                          ))}
+                          <Display isLast level={1} title={t("played_time")}>
+                            <Text numberOfLines={1}>
+                              {formatPlayedTime(result.battle.vsHistoryDetail!.playedTime)}
+                              <Text numberOfLines={1} style={TextStyles.h6}>
+                                {`+${formatDuration(result.battle.vsHistoryDetail!.duration)}`}
+                              </Text>
                             </Text>
-                          </Text>
-                        </Display>
-                      </VStack>
-                    }
-                  />
+                          </Display>
+                        </VStack>
+                      }
+                    />
+                  </VStack>
                 </VStack>
-                <Button
-                  style={[ViewStyles.mb2, ViewStyles.accent]}
-                  onPress={onHidePlayerNamesPress}
+                <Modal
+                  isVisible={displayBattlePlayer}
+                  onClose={onDisplayBattlePlayerClose}
+                  style={ViewStyles.modal1d}
                 >
-                  <Marquee style={theme.reverseTextStyle}>
-                    {hidePlayerNames ? t("show_player_names") : t("hide_player_names")}
-                  </Marquee>
-                </Button>
-                <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onShowRawResultPress}>
-                  <Marquee style={theme.reverseTextStyle}>{t("show_raw_data")}</Marquee>
-                </Button>
-                <Button style={ViewStyles.accent} onPress={onOpenInNintendoSwitchOnlinePress}>
-                  <Marquee style={theme.reverseTextStyle}>
-                    {t("open_in_nintendo_switch_online")}
-                  </Marquee>
-                </Button>
-              </VStack>
-              <Modal
-                isVisible={displayBattlePlayer}
-                onClose={onDisplayBattlePlayerClose}
-                style={ViewStyles.modal1d}
-              >
-                {battlePlayer && (
-                  <VStack center>
-                    <Splashtag
-                      color={getColor(battlePlayer.nameplate!.background.textColor)}
-                      name={battlePlayer.name}
-                      nameId={battlePlayer.nameId}
-                      // TODO: need translation.
-                      title={battlePlayer.byname}
-                      banner={getImageCacheSource(battlePlayer.nameplate!.background.image.url)}
-                      badges={battlePlayer.nameplate!.badges.map(formatBadge)}
-                      style={ViewStyles.mb2}
-                    />
-                    <BattleWeaponBox
-                      image={getImageCacheSource(battlePlayer.weapon.image2d.url)}
-                      name={td(battlePlayer.weapon)}
-                      subWeapon={getImageCacheSource(battlePlayer.weapon.subWeapon.image.url)}
-                      specialWeapon={getImageCacheSource(
-                        battlePlayer.weapon.specialWeapon.image.url
-                      )}
-                      style={ViewStyles.mb2}
-                    />
-                    {[battlePlayer.headGear, battlePlayer.clothingGear, battlePlayer.shoesGear].map(
-                      (gear, i, gears) => (
+                  {battlePlayer && (
+                    <VStack center>
+                      <Splashtag
+                        color={getColor(battlePlayer.nameplate!.background.textColor)}
+                        name={battlePlayer.name}
+                        nameId={battlePlayer.nameId}
+                        // TODO: need translation.
+                        title={battlePlayer.byname}
+                        banner={getImageCacheSource(battlePlayer.nameplate!.background.image.url)}
+                        badges={battlePlayer.nameplate!.badges.map(formatBadge)}
+                        style={ViewStyles.mb2}
+                      />
+                      <BattleWeaponBox
+                        image={getImageCacheSource(battlePlayer.weapon.image2d.url)}
+                        name={td(battlePlayer.weapon)}
+                        subWeapon={getImageCacheSource(battlePlayer.weapon.subWeapon.image.url)}
+                        specialWeapon={getImageCacheSource(
+                          battlePlayer.weapon.specialWeapon.image.url
+                        )}
+                        style={ViewStyles.mb2}
+                      />
+                      {[
+                        battlePlayer.headGear,
+                        battlePlayer.clothingGear,
+                        battlePlayer.shoesGear,
+                      ].map((gear, i, gears) => (
                         // TODO: show brands with its favorite.
                         <GearBox
                           key={i}
@@ -843,22 +861,40 @@ const ResultView = (props: ResultViewProps) => {
                             battlePlayer.shoesGear,
                           ])}
                         />
-                      )
-                    )}
-                  </VStack>
-                )}
-              </Modal>
-            </TitledList>
+                      ))}
+                    </VStack>
+                  )}
+                </Modal>
+              </TitledList>
+            </ViewShot>
+            <VStack style={ViewStyles.px4}>
+              <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onHidePlayerNamesPress}>
+                <Marquee style={theme.reverseTextStyle}>
+                  {hidePlayerNames ? t("show_player_names") : t("hide_player_names")}
+                </Marquee>
+              </Button>
+              <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onShareBattleImagePress}>
+                <Marquee style={theme.reverseTextStyle}>{t("share_image")}</Marquee>
+              </Button>
+              <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onShowRawResultPress}>
+                <Marquee style={theme.reverseTextStyle}>{t("show_raw_data")}</Marquee>
+              </Button>
+              <Button style={ViewStyles.accent} onPress={onOpenInNintendoSwitchOnlinePress}>
+                <Marquee style={theme.reverseTextStyle}>
+                  {t("open_in_nintendo_switch_online")}
+                </Marquee>
+              </Button>
+            </VStack>
             <PureIconButton
               size={24}
               icon="chevron-left"
-              style={{ position: "absolute", top: 14, marginLeft: -4 }}
+              style={{ position: "absolute", top: 14, left: 16, marginLeft: -4 }}
               onPress={onShowPreviousResultPress}
             />
             <PureIconButton
               size={24}
               icon="chevron-right"
-              style={{ position: "absolute", top: 14, right: 0, marginRight: -4 }}
+              style={{ position: "absolute", top: 14, right: 16, marginRight: -4 }}
               onPress={onShowNextResultPress}
             />
           </>

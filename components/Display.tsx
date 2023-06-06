@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { ForwardedRef, forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import { StyleProp, ViewStyle } from "react-native";
 import Icon from "./Icon";
 import Marquee from "./Marquee";
@@ -62,31 +62,53 @@ interface AccordionDisplayProps extends DisplayProps {
   subChildren?: React.ReactNode;
 }
 
-const AccordionDisplay = (props: AccordionDisplayProps) => {
-  const { subChildren, isLast, ...rest } = props;
+interface AccordionDisplayHandle {
+  expand: () => void;
+  collapse: () => void;
+}
 
-  const [expand, setExpand] = useState(props.expand ?? false);
+const AccordionDisplay = forwardRef(
+  (props: AccordionDisplayProps, ref: ForwardedRef<AccordionDisplayHandle>) => {
+    const { subChildren, isLast, ...rest } = props;
 
-  const onPress = () => {
-    setExpand(!expand);
-  };
+    useImperativeHandle(
+      ref,
+      () => {
+        return {
+          expand: () => {
+            setExpand(true);
+          },
+          collapse: () => {
+            setExpand(false);
+          },
+        };
+      },
+      []
+    );
 
-  if (props.subChildren === undefined || React.Children.count(props.subChildren) === 0) {
-    return <Display {...props} />;
+    const [expand, setExpand] = useState(props.expand ?? false);
+
+    const onPress = () => {
+      setExpand(!expand);
+    };
+
+    if (props.subChildren === undefined || React.Children.count(props.subChildren) === 0) {
+      return <Display {...props} />;
+    }
+
+    return (
+      <VStack>
+        <Pressable onPress={onPress} style={{ backgroundColor: "transparent" }}>
+          <Display
+            isLast={isLast && !expand}
+            icon={expand ? "chevron-down" : "chevron-right"}
+            {...rest}
+          />
+        </Pressable>
+        {expand && props.subChildren}
+      </VStack>
+    );
   }
+);
 
-  return (
-    <VStack>
-      <Pressable onPress={onPress} style={{ backgroundColor: "transparent" }}>
-        <Display
-          isLast={isLast && !expand}
-          icon={expand ? "chevron-down" : "chevron-right"}
-          {...rest}
-        />
-      </Pressable>
-      {expand && props.subChildren}
-    </VStack>
-  );
-};
-
-export { Display, AccordionDisplay };
+export { Display, AccordionDisplay, AccordionDisplayHandle };

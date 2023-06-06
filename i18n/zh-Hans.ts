@@ -137,6 +137,7 @@ const zhHans = {
   scenario_code: "剧本代码",
   hide_player_names: "隐藏玩家名称",
   show_player_names: "显示玩家名称",
+  share_image: "分享图片",
   show_raw_data: "显示原始数据",
   open_in_nintendo_switch_online: "在Nintendo Switch Online中查看",
   coop_notice: "在主屏幕点击WAVE或危险度以显示打工称号。",

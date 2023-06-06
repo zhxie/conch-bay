@@ -143,6 +143,7 @@ const en = {
   scenario_code: "Scenario Code",
   hide_player_names: "Hide Player Names",
   show_player_names: "Show Player Names",
+  share_image: "Share Image",
   show_raw_data: "Show Raw Data",
   open_in_nintendo_switch_online: "Open in Nintendo Switch Online",
   coop_notice: "Press on wave or hazard level in the main screen to show job title.",

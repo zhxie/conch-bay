@@ -48,6 +48,7 @@
     "react-native-svg": "13.4.0",
     "react-native-text-ticker": "^1.14.0",
     "react-native-toast-banner": "^1.1.0",
+    "react-native-view-shot": "3.5.0",
     "splatnet3-types": "0.2.20230601143335"
   },
   "devDependencies": {

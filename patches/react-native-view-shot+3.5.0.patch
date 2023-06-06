@@ -1,0 +1,22 @@
+diff --git a/node_modules/react-native-view-shot/src/index.d.ts b/node_modules/react-native-view-shot/src/index.d.ts
+index 07128e1..0127b02 100644
+--- a/node_modules/react-native-view-shot/src/index.d.ts
++++ b/node_modules/react-native-view-shot/src/index.d.ts
+@@ -10,7 +10,7 @@
+ 
+ declare module 'react-native-view-shot' {
+     import { Component, ReactInstance, RefObject, ReactNode } from 'react'
+-    import { ViewStyle } from 'react-native'
++    import { StyleProp, ViewStyle } from 'react-native'
+ 
+     export interface CaptureOptions {
+         /**
+@@ -89,7 +89,7 @@ declare module 'react-native-view-shot' {
+         /**
+          * style prop as ViewStyle
+          */
+-        style?: ViewStyle;
++        style?: StyleProp<ViewStyle>;
+     }
+ 
+     export default class ViewShot extends Component<React.PropsWithChildren<ViewShotProperties>> {

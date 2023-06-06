@@ -143,6 +143,7 @@ const ja = {
   scenario_code: "シナリオコード",
   hide_player_names: "プレイヤー名を隠す",
   show_player_names: "プレイヤー名を表示",
+  share_image: "写真をシェア",
   show_raw_data: "生データを表示",
   open_in_nintendo_switch_online: "Nintendo Switch Onlineでチェック",
   coop_notice: "メイン画面のWAVEまたは危険度をタップして、バイト称号が表示されます。",
