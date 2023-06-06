@@ -26,13 +26,14 @@ const WaveBox = (props: WaveBoxProps) => {
   const theme = useTheme();
 
   return (
-    <VStack center style={props.style}>
+    <VStack center style={[{ width: 125 }, props.style]}>
       <VStack
         style={[
+          ViewStyles.wf,
           ViewStyles.mb1,
           ViewStyles.r2,
           ViewStyles.p2,
-          { width: 125, height: 90 },
+          { height: 90 },
           theme.territoryStyle,
         ]}
       >

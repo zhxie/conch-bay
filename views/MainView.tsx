@@ -1111,14 +1111,22 @@ const MainView = () => {
   };
   const onCopySessionTokenPress = async () => {
     if (sessionToken.length > 0) {
-      await Clipboard.setStringAsync(sessionToken);
-      showBanner(BannerLevel.Info, t("copied_to_clipboard"));
+      try {
+        await Clipboard.setStringAsync(sessionToken);
+        showBanner(BannerLevel.Info, t("copied_to_clipboard"));
+      } catch {
+        /* empty */
+      }
     }
   };
   const onCopyBulletTokenPress = async () => {
     if (bulletToken.length > 0) {
-      await Clipboard.setStringAsync(bulletToken);
-      showBanner(BannerLevel.Info, t("copied_to_clipboard"));
+      try {
+        await Clipboard.setStringAsync(bulletToken);
+        showBanner(BannerLevel.Info, t("copied_to_clipboard"));
+      } catch {
+        /* empty */
+      }
     }
   };
   const onExportDatabasePress = async () => {

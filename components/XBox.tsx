@@ -15,7 +15,7 @@ const XBox = (props: XBoxProps) => {
   const theme = useTheme();
 
   return (
-    <VStack style={[ViewStyles.wf, props.style]}>
+    <VStack flex style={props.style}>
       <VStack style={[ViewStyles.r2, ViewStyles.p2, { height: 80 }, theme.territoryStyle]}>
         <VStack flex justify>
           <VStack style={ViewStyles.mb1}>

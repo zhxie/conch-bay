@@ -361,6 +361,9 @@ const ResultView = (props: ResultViewProps) => {
     setDisplayBattle(false);
     setDisplayCoop(false);
   };
+  const onHidePlayerNamesPress = () => {
+    setHidePlayerNames(!hidePlayerNames);
+  };
   const onShowRawResultPress = () => {
     willDisplayNext.current = -1;
     setDisplayBattle(false);
@@ -404,9 +407,6 @@ const ResultView = (props: ResultViewProps) => {
       }
       willDisplayNext.current = undefined;
     }
-  };
-  const onHidePlayerNamesPress = () => {
-    setHidePlayerNames(!hidePlayerNames);
   };
 
   const onBattlePress = useCallback((battle: VsHistoryDetailResult) => {

@@ -29,22 +29,18 @@ const XView = (props: XViewProps) => {
   return (
     <Center style={props.style}>
       <BadgeButton color={Color.XBattle} title={`${maxPower}`} onPress={onXPress} />
-      <Modal isVisible={x} onClose={onXClose} style={[ViewStyles.modal1d, ViewStyles.px3]}>
+      <Modal isVisible={x} onClose={onXClose} style={[ViewStyles.modal1d, ViewStyles.px4]}>
         <HStack center justify style={ViewStyles.mb2}>
-          <Center style={[ViewStyles.px1, { width: "50%" }]}>
-            <XBox name={t("splat_zones")} power={props.splatZones || undefined} />
-          </Center>
-          <Center style={[ViewStyles.px1, { width: "50%" }]}>
-            <XBox name={t("tower_control")} power={props.towerControl || undefined} />
-          </Center>
+          <XBox
+            name={t("splat_zones")}
+            power={props.splatZones || undefined}
+            style={ViewStyles.mr2}
+          />
+          <XBox name={t("tower_control")} power={props.towerControl || undefined} />
         </HStack>
         <HStack center justify>
-          <Center style={[ViewStyles.px1, { width: "50%" }]}>
-            <XBox name={t("rainmaker")} power={props.rainmaker || undefined} />
-          </Center>
-          <Center style={[ViewStyles.px1, { width: "50%" }]}>
-            <XBox name={t("clam_blitz")} power={props.clamBlitz || undefined} />
-          </Center>
+          <XBox name={t("rainmaker")} power={props.rainmaker || undefined} style={ViewStyles.mr2} />
+          <XBox name={t("clam_blitz")} power={props.clamBlitz || undefined} />
         </HStack>
       </Modal>
     </Center>
