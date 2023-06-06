@@ -1,3 +1,4 @@
+export { default as AccordionList, AccordionListHandle } from "./AccordionList";
 export { default as Avatar } from "./Avatar";
 export { default as AvatarButton } from "./AvatarButton";
 export { Badge, BadgeButton } from "./Badge";
