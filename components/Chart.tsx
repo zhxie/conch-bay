@@ -132,15 +132,15 @@ const Chart = (props: ChartProps) => {
       style={props.style}
       xDomain={{ min: 0, max: props.dataGroup[0].data.length - 1 }}
       yDomain={{
-        min: 0,
-        max: max,
+        min: 0 - max * 0.067,
+        max: max + max * 0.067,
       }}
       disableTouch
       disableGestures
-      padding={props.padding || { bottom: 10, top: 10 }}
+      padding={props.padding || { bottom: 0, top: 0 }}
     >
       <VerticalAxis
-        tickCount={3}
+        tickValues={[0, max / 2, max]}
         theme={{
           axis: { visible: false },
           grid: { stroke: { color: Color.MiddleTerritory, opacity: 0.5, dashArray: [5] } },
