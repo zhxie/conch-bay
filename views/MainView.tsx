@@ -1629,10 +1629,9 @@ const MainView = () => {
           <HStack center>
             <AvatarButton
               size={48}
-              image={{
-                uri: "https://cdn-image-e0d67c509fb203858ebcb2fe3f88c2aa.baas.nintendo.com/1/1afd1450a5a5ebec",
-                cacheKey: "1afd1450a5a5ebec",
-              }}
+              image={getUserIconCacheSource(
+                "https://cdn-image-e0d67c509fb203858ebcb2fe3f88c2aa.baas.nintendo.com/1/1afd1450a5a5ebec"
+              )}
               onPress={async () => {
                 await WebBrowser.openBrowserAsync("https://weibo.com/u/2269567390");
               }}
@@ -1640,10 +1639,9 @@ const MainView = () => {
             />
             <AvatarButton
               size={48}
-              image={{
-                uri: "https://cdn-image-e0d67c509fb203858ebcb2fe3f88c2aa.baas.nintendo.com/1/4b98d8291ae60b8c",
-                cacheKey: "4b98d8291ae60b8c",
-              }}
+              image={getUserIconCacheSource(
+                "https://cdn-image-e0d67c509fb203858ebcb2fe3f88c2aa.baas.nintendo.com/1/4b98d8291ae60b8c"
+              )}
               onPress={async () => {
                 await WebBrowser.openBrowserAsync("https://weibo.com/u/6622470330");
               }}

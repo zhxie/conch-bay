@@ -247,6 +247,19 @@ const ResultView = (props: ResultViewProps) => {
     });
     return teams;
   };
+  const formatTeamName = (team: VsTeam) => {
+    const parts: string[] = [];
+    if (team.festTeamName) {
+      parts.push(team.festTeamName);
+    }
+    if ((team["festStreakWinCount"] ?? 0) > 1) {
+      parts.push(t("n_win_strike", { n: team["festStreakWinCount"] }));
+    }
+    if (team["festUniformName"]) {
+      parts.push(team["festUniformName"]);
+    }
+    return parts.join(" ");
+  };
   const formatTeamResult = (team: VsTeam) => {
     if (team.result) {
       if (team.result.paintRatio) {
@@ -260,6 +273,12 @@ const ResultView = (props: ResultViewProps) => {
       }
     }
     return " ";
+  };
+  const formatRankPoints = (point: number) => {
+    if (point > 0) {
+      return `+${point}p`;
+    }
+    return `${point}p`;
   };
   const formatWaterLevel = (waveResult: CoopWaveResult) => {
     switch (waveResult.waterLevel) {
@@ -601,11 +620,7 @@ const ResultView = (props: ResultViewProps) => {
                         <Circle size={12} color={getColor(team.color)} style={ViewStyles.mr1} />
                         <HStack flex>
                           <Marquee style={[TextStyles.b, { color: getColor(team.color) }]}>
-                            {`${team.festTeamName ? `${team.festTeamName} ` : ""}${
-                              (team["festStreakWinCount"] ?? 0) > 1
-                                ? `${t("n_win_strike", { n: team["festStreakWinCount"] })} `
-                                : ""
-                            }${team["festUniformName"] ? `${team["festUniformName"]}` : ""}`}
+                            {formatTeamName(team)}
                           </Marquee>
                         </HStack>
                       </HStack>
@@ -678,11 +693,9 @@ const ResultView = (props: ResultViewProps) => {
                             null && (
                             <Display level={1} title={t("rank_points")}>
                               <Text numberOfLines={1}>
-                                {`${
-                                  result.battle.vsHistoryDetail!.bankaraMatch.earnedUdemaePoint > 0
-                                    ? "+"
-                                    : ""
-                                }${result.battle.vsHistoryDetail!.bankaraMatch.earnedUdemaePoint}p`}
+                                {formatRankPoints(
+                                  result.battle.vsHistoryDetail!.bankaraMatch.earnedUdemaePoint
+                                )}
                               </Text>
                             </Display>
                           )}

@@ -48,19 +48,13 @@ const StatsView = (props: StatsViewProps) => {
     setStats(false);
   };
 
+  const formatPower = (total: number, max: number, count: number) => {
+    return `${max.toFixed(1)} (${(total / count).toFixed(1)})`;
+  };
   const formatTotalAndAverage = (total: number, count: number) => {
-    if (count === 0) {
-      return total;
-    }
     return `${total} (${(total / count).toFixed(1)})`;
   };
   const formatTotalAndAverageKillAndAssist = (kill: number, assist: number, count: number) => {
-    if (count === 0) {
-      if (assist > 0) {
-        return `${kill}(${assist})`;
-      }
-      return kill;
-    }
     if (assist > 0) {
       return `${kill}(${assist}) (${(kill / count).toFixed(1)}(${(assist / count).toFixed(1)}))`;
     }
@@ -101,15 +95,13 @@ const StatsView = (props: StatsViewProps) => {
               <Display title={t("defeat")}>
                 <Text numberOfLines={1}>{battleStats.lose}</Text>
               </Display>
-              <Display title={t("power")}>
-                <Text numberOfLines={1}>
-                  {battleStats.powerCount > 0
-                    ? `${battleStats.powerMax.toFixed(1)} (${(
-                        battleStats.power / battleStats.powerCount
-                      ).toFixed(1)})`
-                    : "-"}
-                </Text>
-              </Display>
+              {battleStats.powerCount > 0 && (
+                <Display title={t("power")}>
+                  <Text numberOfLines={1}>
+                    {formatPower(battleStats.power, battleStats.powerMax, battleStats.powerCount)}
+                  </Text>
+                </Display>
+              )}
               <Display title={t("turf_inked")}>
                 <Text numberOfLines={1}>
                   {formatTotalAndAverage(battleStats.turf, battleStats.count)}
