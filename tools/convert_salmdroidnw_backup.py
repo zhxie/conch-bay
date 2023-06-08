@@ -33,7 +33,10 @@ def format_member_result(member_result):
             weapon, "weapon_illust", weapon["image"]["url"] not in GRIZZCO_WEAPON_IMAGE
         )
     if member_result["specialWeapon"] != None:
-        decorate_image_obj(member_result["specialWeapon"], "special_img/blue")
+        if member_result["specialWeapon"]["image"]["url"] in RANDOM_IMAGE:
+            decorate_image_obj(member_result["specialWeapon"], "ui_img", True)
+        else:
+            decorate_image_obj(member_result["specialWeapon"], "special_img/blue")
 
 
 def main():
