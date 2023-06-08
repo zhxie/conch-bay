@@ -194,6 +194,7 @@ export const countBattles = (battles: VsHistoryDetailResult[]) => {
 export const countCoops = (coops: CoopHistoryDetailResult[]) => {
   const result = {
     count: 0,
+    deemed: 0,
     clear: 0,
     member: 0,
     wave: 0,
@@ -216,10 +217,23 @@ export const countCoops = (coops: CoopHistoryDetailResult[]) => {
     bossMap = new Map();
   for (const coop of coops) {
     result.count += 1;
+    if (coop.coopHistoryDetail!.resultWave < 0) {
+      result.deemed += 1;
+      continue;
+    }
     if (coop.coopHistoryDetail!.resultWave >= 0) {
       if (coop.coopHistoryDetail!.resultWave === 0) {
         result.clear += 1;
+        // The maximum wave cleared is 3 in SplatNet, but we will fix it and have 5 in eggstra works.
         result.wave += coop.coopHistoryDetail!.waveResults.length;
+        switch (coop.coopHistoryDetail!.rule as CoopRule) {
+          case CoopRule.REGULAR:
+          case CoopRule.BIG_RUN:
+            result.wave -= 1;
+            break;
+          case CoopRule.TEAM_CONTEST:
+            break;
+        }
       } else {
         result.wave += coop.coopHistoryDetail!.resultWave - 1;
       }

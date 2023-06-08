@@ -52,9 +52,15 @@ const StatsView = (props: StatsViewProps) => {
     return `${max.toFixed(1)} (${(total / count).toFixed(1)})`;
   };
   const formatTotalAndAverage = (total: number, count: number) => {
+    if (count === 0) {
+      return "0";
+    }
     return `${total} (${(total / count).toFixed(1)})`;
   };
   const formatTotalAndAverageKillAndAssist = (kill: number, assist: number, count: number) => {
+    if (count === 0) {
+      return "0";
+    }
     if (assist > 0) {
       return `${kill}(${assist}) (${(kill / count).toFixed(1)}(${(assist / count).toFixed(1)}))`;
     }
@@ -141,55 +147,57 @@ const StatsView = (props: StatsViewProps) => {
               <Display title={t("failure")}>
                 <Text numberOfLines={1}>{coopStats.count - coopStats.clear}</Text>
               </Display>
-              <Display title={t("waves_cleared")}>
-                <Text numberOfLines={1}>
-                  {formatTotalAndAverage(coopStats.wave, coopStats.count)}
-                </Text>
-              </Display>
-              <AccordionDisplay
-                title={t("boss_salmonids_defeated")}
-                subChildren={coopStats.bosses.map((boss) => (
-                  <Display key={boss.id} level={1} title={t(boss.id)}>
-                    <Text numberOfLines={1}>{boss.defeat}</Text>
-                  </Display>
-                ))}
-              >
-                <Text numberOfLines={1}>
-                  {formatTotalAndAverage(coopStats.defeat, coopStats.count)}
-                </Text>
-              </AccordionDisplay>
-              <AccordionDisplay
-                title={t("king_salmonids_defeated")}
-                subChildren={coopStats.kings.map((king) => (
-                  <Display key={king.id} level={1} title={t(king.id)}>
-                    <Text numberOfLines={1}>{king.defeat}</Text>
-                  </Display>
-                ))}
-              >
-                <Text numberOfLines={1}>{coopStats.king}</Text>
-              </AccordionDisplay>
-              <Display title={t("golden_eggs_collected")}>
-                {formatTotalAndAverageGoldenEggs(
-                  coopStats.golden,
-                  coopStats.assist,
-                  coopStats.count
-                )}
-              </Display>
-              <Display title={t("power_eggs_collected")}>
-                <Text numberOfLines={1}>
-                  {formatTotalAndAverage(coopStats.power, coopStats.count)}
-                </Text>
-              </Display>
-              <Display title={t("rescued")}>
-                <Text numberOfLines={1}>
-                  {formatTotalAndAverage(coopStats.rescue, coopStats.count)}
-                </Text>
-              </Display>
-              <Display isLast title={t("be_rescued")}>
-                <Text numberOfLines={1}>
-                  {formatTotalAndAverage(coopStats.rescued, coopStats.count)}
-                </Text>
-              </Display>
+              <VStack>
+                <Display title={t("waves_cleared")}>
+                  <Text numberOfLines={1}>
+                    {formatTotalAndAverage(coopStats.wave, coopStats.count - coopStats.deemed)}
+                  </Text>
+                </Display>
+                <AccordionDisplay
+                  title={t("boss_salmonids_defeated")}
+                  subChildren={coopStats.bosses.map((boss) => (
+                    <Display key={boss.id} level={1} title={t(boss.id)}>
+                      <Text numberOfLines={1}>{boss.defeat}</Text>
+                    </Display>
+                  ))}
+                >
+                  <Text numberOfLines={1}>
+                    {formatTotalAndAverage(coopStats.defeat, coopStats.count - coopStats.deemed)}
+                  </Text>
+                </AccordionDisplay>
+                <AccordionDisplay
+                  title={t("king_salmonids_defeated")}
+                  subChildren={coopStats.kings.map((king) => (
+                    <Display key={king.id} level={1} title={t(king.id)}>
+                      <Text numberOfLines={1}>{king.defeat}</Text>
+                    </Display>
+                  ))}
+                >
+                  <Text numberOfLines={1}>{coopStats.king}</Text>
+                </AccordionDisplay>
+                <Display title={t("golden_eggs_collected")}>
+                  {formatTotalAndAverageGoldenEggs(
+                    coopStats.golden,
+                    coopStats.assist,
+                    coopStats.count - coopStats.deemed
+                  )}
+                </Display>
+                <Display title={t("power_eggs_collected")}>
+                  <Text numberOfLines={1}>
+                    {formatTotalAndAverage(coopStats.power, coopStats.count - coopStats.deemed)}
+                  </Text>
+                </Display>
+                <Display title={t("rescued")}>
+                  <Text numberOfLines={1}>
+                    {formatTotalAndAverage(coopStats.rescue, coopStats.count - coopStats.deemed)}
+                  </Text>
+                </Display>
+                <Display isLast title={t("be_rescued")}>
+                  <Text numberOfLines={1}>
+                    {formatTotalAndAverage(coopStats.rescued, coopStats.count - coopStats.deemed)}
+                  </Text>
+                </Display>
+              </VStack>
             </VStack>
           )}
         </VStack>
