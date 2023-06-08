@@ -164,7 +164,8 @@ const en = {
   power_eggs_collected: "Power Eggs Collected",
   rescued: "Rescued",
   be_rescued: "Be Rescued",
-  stats_notice: "Statistics from currently loaded results.",
+  stats_notice:
+    "Statistics from currently loaded results. Battle's average is over 1 minute average.",
   // Trends.
   trends: "Trends",
   splatted_including_assisted: "Splatted (Including Assisted)",

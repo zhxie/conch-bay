@@ -4,6 +4,7 @@ import {
   AccordionDisplay,
   Center,
   Display,
+  Marquee,
   Modal,
   Text,
   TextStyles,
@@ -110,7 +111,7 @@ const StatsView = (props: StatsViewProps) => {
               )}
               <Display title={t("turf_inked")}>
                 <Text numberOfLines={1}>
-                  {formatTotalAndAverage(battleStats.turf, battleStats.count)}
+                  {formatTotalAndAverage(battleStats.turf, battleStats.duration / 60)}
                 </Text>
               </Display>
               <Display title={t("splatted")}>
@@ -118,18 +119,18 @@ const StatsView = (props: StatsViewProps) => {
                   {formatTotalAndAverageKillAndAssist(
                     battleStats.kill,
                     battleStats.assist,
-                    battleStats.count
+                    battleStats.duration / 60
                   )}
                 </Text>
               </Display>
               <Display title={t("be_splatted")}>
                 <Text numberOfLines={1}>
-                  {formatTotalAndAverage(battleStats.death, battleStats.count)}
+                  {formatTotalAndAverage(battleStats.death, battleStats.duration / 60)}
                 </Text>
               </Display>
               <Display isLast title={t("special_weapon_uses")}>
                 <Text numberOfLines={1}>
-                  {formatTotalAndAverage(battleStats.special, battleStats.count)}
+                  {formatTotalAndAverage(battleStats.special, battleStats.duration / 60)}
                 </Text>
               </Display>
             </VStack>
@@ -201,7 +202,7 @@ const StatsView = (props: StatsViewProps) => {
             </VStack>
           )}
         </VStack>
-        <Text center>{t("stats_notice")}</Text>
+        <Marquee>{t("stats_notice")}</Marquee>
       </Modal>
     </Center>
   );

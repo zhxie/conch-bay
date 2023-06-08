@@ -164,12 +164,13 @@ const ja = {
   power_eggs_collected: "集めたイクラ",
   rescued: "たすけた",
   be_rescued: "たすけてもらった",
-  stats_notice: "現在ロードされているリザルトからの統計。",
+  stats_notice:
+    "現在ロードされているリザルトからの統計。バトルのアベレージは1分あたりのアベレージです。",
   // Trend.
   trends: "トレンド",
   splatted_including_assisted: "たおした (アシスト含む)",
   golden_eggs_collected_including_assisted: "集めた金イクラ (含助攻)",
-  trends_notice: "ボタンを長押しして、チームの平均値が表示されます。",
+  trends_notice: "ボタンを長押しして、チームのアベレージが表示されます。",
   // Modes.
   modes: "モード",
   battle: "バトル",

@@ -131,61 +131,73 @@ const TrendsView = (props: TrendViewProps) => {
         };
       case "POWER":
         return {
-          data: battleStats.map((stat) => stat.power / Math.max(stat.powerCount, 1)),
+          data: battleStats.map((stat) => rationalize(stat.power / stat.powerCount)),
           color: Color.AnarchyBattle,
         };
       case "TURF_INKED":
         return {
-          data: battleStats.map((stat) => stat.turf / stat.count),
+          data: battleStats.map((stat) => rationalize(stat.turf / (stat.duration / 60))),
           color: Color.AccentColor,
         };
       case "TURF_INKED_TEAM_AVERAGE":
         return {
-          data: battleStats.map((stat) => stat.turfTeam / stat.member),
+          data: battleStats.map((stat) =>
+            rationalize(stat.turfTeam / ((stat.member * stat.duration) / 60))
+          ),
           color: burnColor(Color.AccentColor),
           dash: true,
         };
       case "SPLATTED":
         return {
-          data: battleStats.map((stat) => stat.kill / stat.count),
+          data: battleStats.map((stat) => rationalize(stat.kill / (stat.duration / 60))),
           color: Color.KillAndRescue,
         };
       case "SPLATTED_TEAM_AVERAGE":
         return {
-          data: battleStats.map((stat) => stat.killTeam / stat.member),
+          data: battleStats.map((stat) =>
+            rationalize(stat.killTeam / ((stat.member * stat.duration) / 60))
+          ),
           color: burnColor(Color.KillAndRescue),
           dash: true,
         };
       case "SPLATTED_INCLUDING_ASSISTED":
         return {
-          data: battleStats.map((stat) => (stat.kill + stat.assist) / stat.count),
+          data: battleStats.map((stat) =>
+            rationalize((stat.kill + stat.assist) / (stat.duration / 60))
+          ),
           color: Color.KillAndRescue,
         };
       case "SPLATTED_INCLUDING_ASSISTED_TEAM_AVERAGE":
         return {
-          data: battleStats.map((stat) => (stat.killTeam + stat.assistTeam) / stat.member),
+          data: battleStats.map((stat) =>
+            rationalize((stat.killTeam + stat.assistTeam) / ((stat.member * stat.duration) / 60))
+          ),
           color: burnColor(Color.KillAndRescue),
           dash: true,
         };
       case "BE_SPLATTED":
         return {
-          data: battleStats.map((stat) => stat.death / stat.count),
+          data: battleStats.map((stat) => rationalize(stat.death / (stat.duration / 60))),
           color: Color.Death,
         };
       case "BE_SPLATTED_TEAM_AVERAGE":
         return {
-          data: battleStats.map((stat) => stat.deathTeam / stat.member),
+          data: battleStats.map((stat) =>
+            rationalize(stat.deathTeam / ((stat.member * stat.duration) / 60))
+          ),
           color: burnColor(Color.Death),
           dash: true,
         };
       case "SPECIAL_WEAPON_USES":
         return {
-          data: battleStats.map((stat) => stat.special / stat.count),
+          data: battleStats.map((stat) => rationalize(stat.special / (stat.duration / 60))),
           color: Color.Special,
         };
       case "SPECIAL_WEAPON_USES_TEAM_AVERAGE":
         return {
-          data: battleStats.map((stat) => stat.specialTeam / stat.member),
+          data: battleStats.map((stat) =>
+            rationalize(stat.specialTeam / ((stat.member * stat.duration) / 60))
+          ),
           color: burnColor(Color.Special),
           dash: true,
         };
@@ -564,9 +576,9 @@ const TrendsView = (props: TrendViewProps) => {
             </VStack>
           )}
         </VStack>
-        <Text center style={(battleGroups.length > 0 || coopGroups.length > 0) && ViewStyles.mb2}>
+        <Marquee style={(battleGroups.length > 0 || coopGroups.length > 0) && ViewStyles.mb2}>
           {t("stats_notice")}
-        </Text>
+        </Marquee>
         {(battleGroups.length > 0 || coopGroups.length > 0) && (
           <HStack style={ViewStyles.c}>
             <Icon name="info" size={14} color={Color.MiddleTerritory} style={ViewStyles.mr1} />

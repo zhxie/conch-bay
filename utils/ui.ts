@@ -142,6 +142,7 @@ export const countBattles = (battles: VsHistoryDetailResult[]) => {
     power: 0,
     powerCount: 0,
     powerMax: 0,
+    duration: 0,
     member: 0,
     turf: 0,
     turfTeam: 0,
@@ -174,6 +175,15 @@ export const countBattles = (battles: VsHistoryDetailResult[]) => {
       result.powerCount += 1;
       result.powerMax = Math.max(result.powerMax, power);
     }
+    // Disconnected and draw should be skipped.
+    if (
+      (battle.vsHistoryDetail!.judgement === Judgement.DEEMED_LOSE &&
+        battle.vsHistoryDetail!.duration === 0) ||
+      battle.vsHistoryDetail!.judgement === Judgement.DRAW
+    ) {
+      continue;
+    }
+    result.duration += battle.vsHistoryDetail!.duration;
     const selfPlayer = getVsSelfPlayer(battle);
     result.turf += selfPlayer.paint;
     result.kill += selfPlayer.result?.kill ?? 0;
@@ -217,6 +227,7 @@ export const countCoops = (coops: CoopHistoryDetailResult[]) => {
     bossMap = new Map();
   for (const coop of coops) {
     result.count += 1;
+    // Disconnected should be skipped.
     if (coop.coopHistoryDetail!.resultWave < 0) {
       result.deemed += 1;
       continue;

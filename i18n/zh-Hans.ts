@@ -158,7 +158,7 @@ const zhHans = {
   power_eggs_collected: "收集的鲑鱼卵",
   rescued: "救援",
   be_rescued: "被救助",
-  stats_notice: "由当前已加载的记录统计。",
+  stats_notice: "由当前已加载的记录统计。对战平均值为每分钟的平均值。",
   // Trend.
   trends: "趋势",
   splatted_including_assisted: "击倒 (含助攻)",

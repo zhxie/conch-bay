@@ -158,7 +158,7 @@ const zhHant = {
   power_eggs_collected: "收集的鮭魚卵",
   rescued: "救援",
   be_rescued: "被救助",
-  stats_notice: "由當前已載入的記錄統計。",
+  stats_notice: "由當前已載入的記錄統計。對戰平均值為每分鐘的平均值。",
   // Trend.
   trends: "趨勢",
   splatted_including_assisted: "擊倒 (含助攻)",
