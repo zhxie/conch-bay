@@ -165,12 +165,12 @@ const ja = {
   rescued: "たすけた",
   be_rescued: "たすけてもらった",
   stats_notice:
-    "現在ロードされているリザルトからの統計。バトルのアベレージは1分あたりのアベレージです。",
+    "現在ロードされているリザルトからの統計。カッコ内の数字はバトルでは1分あたり、サーモンランでは各バイトのアベレージです。",
   // Trend.
   trends: "トレンド",
   splatted_including_assisted: "たおした (アシスト含む)",
   golden_eggs_collected_including_assisted: "集めた金イクラ (含助攻)",
-  trends_notice: "ボタンを長押しして、チームのアベレージが表示されます。",
+  trends_notice: "タグを長押しして、チームのアベレージが表示されます。",
   // Modes.
   modes: "モード",
   battle: "バトル",

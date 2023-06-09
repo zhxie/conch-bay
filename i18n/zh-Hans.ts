@@ -158,12 +158,12 @@ const zhHans = {
   power_eggs_collected: "收集的鲑鱼卵",
   rescued: "救援",
   be_rescued: "被救助",
-  stats_notice: "由当前已加载的记录统计。对战平均值为每分钟的平均值。",
+  stats_notice: "由当前已加载的记录统计。括号内的数字对战为每分钟，鲑鱼跑为每场打工的平均值。",
   // Trend.
   trends: "趋势",
   splatted_including_assisted: "击倒 (含助攻)",
   golden_eggs_collected_including_assisted: "收集的金鲑鱼卵 (含助攻)",
-  trends_notice: "长按按键以显示团队平均值。",
+  trends_notice: "长按标签以显示团队平均值。",
   // Modes.
   modes: "模式",
   battle: "对战",

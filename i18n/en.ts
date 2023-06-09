@@ -165,12 +165,12 @@ const en = {
   rescued: "Rescued",
   be_rescued: "Be Rescued",
   stats_notice:
-    "Statistics from currently loaded results. Battle's average is over 1 minute average.",
+    "Statistics from currently loaded results. The number in parentheses is over 1 minute average in battles, and over each job average in Salmon Run.",
   // Trends.
   trends: "Trends",
   splatted_including_assisted: "Splatted (Including Assisted)",
   golden_eggs_collected_including_assisted: "Golden Eggs Collected (Including Assisted)",
-  trends_notice: "Long press on buttons to show team's average.",
+  trends_notice: "Long press on tags to show team's average.",
   // Modes.
   modes: "Modes",
   battle: "Battle",
