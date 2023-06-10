@@ -296,8 +296,12 @@ const MainView = () => {
       showBanner(BannerLevel.Info, t("reacquiring_tokens"));
     }
 
-    const res = await getWebServiceToken(sessionToken);
-    const newBulletToken = await getBulletToken(res.webServiceToken, res.country);
+    const res = await getWebServiceToken(sessionToken).catch((e) => {
+      throw new Error(t("failed_to_acquire_web_service_token", { error: e }));
+    });
+    const newBulletToken = await getBulletToken(res.webServiceToken, res.country).catch((e) => {
+      throw new Error(t("failed_to_acquire_bullet_token", { error: e }));
+    });
 
     await setBulletToken(newBulletToken);
 
@@ -596,7 +600,10 @@ const MainView = () => {
         setLoggingIn(false);
         return;
       }
-      const res3 = await getSessionToken(res2.url, res.cv);
+      const res3 = await getSessionToken(res2.url, res.cv).catch((e) => {
+        // Rethrow to error banner.
+        throw new Error(t("failed_to_acquire_session_token", { error: e }));
+      });
       if (!res3) {
         setLoggingIn(false);
         return;
