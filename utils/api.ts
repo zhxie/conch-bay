@@ -29,6 +29,7 @@ import { encode64Url } from "./codec";
 import { getParam, parameterize } from "./url";
 
 const AXIOS_TIMEOUT = 10000;
+const AXIOS_IMINK_TIMEOUT = 15000;
 
 export const fetchLatestVersion = async () => {
   const res = await axios.get("https://api.github.com/repos/zhxie/conch-bay/releases", {
@@ -100,7 +101,7 @@ const callIminkFApi = async (step: number, idToken: string, naId: string, coralU
   }
   const res = await axios.post("https://api.imink.app/f", body, {
     headers: { "Content-Type": "application/json; charset=utf-8" },
-    timeout: AXIOS_TIMEOUT,
+    timeout: AXIOS_IMINK_TIMEOUT,
   });
   return res.data as { f: string; request_id: string; timestamp: string };
 };
