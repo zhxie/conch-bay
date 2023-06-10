@@ -137,6 +137,7 @@ const ja = {
   medals_earned: "ゲットした表彰",
   hazard_level: "キケン度",
   supplied_weapons: "支給ブキ",
+  supplied_special_weapons: "支給スペシャルウェポン",
   job_title: "バイト称号",
   your_points: "獲得ポイント",
   job_score: "バイトスコア",

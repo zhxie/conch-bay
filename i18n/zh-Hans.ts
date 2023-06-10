@@ -131,6 +131,7 @@ const zhHans = {
   medals_earned: "获得的表彰",
   hazard_level: "危险度",
   supplied_weapons: "发放武器",
+  supplied_special_weapons: "发放特殊武器",
   job_title: "打工称号",
   your_points: "获得点数",
   job_score: "打工分数",

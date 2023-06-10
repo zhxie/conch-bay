@@ -22,6 +22,7 @@ import {
   BattleWeaponBox,
   BossSalmonidBox,
   Button,
+  Center,
   Circle,
   Color,
   CoopButton,
@@ -1034,6 +1035,38 @@ const ResultView = (props: ResultViewProps) => {
                             ))}
                           </HStack>
                         </Display>
+                        {result.coop.coopHistoryDetail!.myResult.specialWeapon && (
+                          <Display level={1} title={t("supplied_special_weapons")}>
+                            <HStack center>
+                              {[
+                                result.coop.coopHistoryDetail!.myResult,
+                                ...result.coop.coopHistoryDetail!.memberResults,
+                              ].map((memberResult, i, memberResults) => (
+                                <Center
+                                  key={i}
+                                  style={[
+                                    i === memberResults.length - 1 ? undefined : ViewStyles.mr1,
+                                  ]}
+                                >
+                                  <Circle
+                                    size={24}
+                                    color={Color.DarkBackground}
+                                    style={ViewStyles.r2}
+                                  />
+                                  <Image
+                                    source={getImageCacheSource(
+                                      memberResult.specialWeapon!.image.url
+                                    )}
+                                    style={[
+                                      ViewStyles.transparent,
+                                      { width: 18, height: 18, position: "absolute" },
+                                    ]}
+                                  />
+                                </Center>
+                              ))}
+                            </HStack>
+                          </Display>
+                        )}
                         {result.coop.coopHistoryDetail!.dangerRate > 0 && (
                           <Display level={1} title={t("hazard_level")}>
                             <Text numberOfLines={1}>{`${parseInt(
