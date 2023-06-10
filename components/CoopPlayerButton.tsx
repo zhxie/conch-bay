@@ -1,8 +1,9 @@
 import { StyleProp, ViewStyle } from "react-native";
+import Image, { ImageSource } from "./Image";
 import ResultButton from "./ResultButton";
 import { Circle } from "./Shape";
-import { HStack } from "./Stack";
-import { Color, TextStyles, ViewStyles } from "./Styles";
+import { Center, HStack } from "./Stack";
+import { Color, TextStyles, ViewStyles, useTheme } from "./Styles";
 import Text from "./Text";
 
 interface CoopPlayerButtonProps {
@@ -10,6 +11,8 @@ interface CoopPlayerButtonProps {
   isLast?: boolean;
   name: string;
   subtitle: string;
+  mainWeapons: ImageSource[];
+  specialWeapon?: ImageSource;
   deliverGoldenEgg: number;
   assistGoldenEgg: number;
   powerEgg: number;
@@ -20,6 +23,10 @@ interface CoopPlayerButtonProps {
 }
 
 const CoopPlayerButton = (props: CoopPlayerButtonProps) => {
+  const theme = useTheme();
+  const backgroundColor =
+    theme.colorScheme === "light" ? `${Color.MiddleTerritory}1f` : Color.DarkBackground;
+
   const assistGoldenEgg = props.assistGoldenEgg > 0 ? `+${props.assistGoldenEgg}` : "";
 
   return (
@@ -28,6 +35,42 @@ const CoopPlayerButton = (props: CoopPlayerButtonProps) => {
       isLast={props.isLast}
       title={props.name}
       subtitle={props.subtitle}
+      subChildren={
+        props.specialWeapon && (
+          <HStack center>
+            <HStack
+              center
+              style={[
+                ViewStyles.mr1,
+                ViewStyles.px1,
+                {
+                  height: 20,
+                  borderRadius: 10,
+                  backgroundColor,
+                },
+              ]}
+            >
+              {props.mainWeapons.map((weapon, i, weapons) => (
+                <Image
+                  key={i}
+                  source={weapon}
+                  style={[
+                    i !== weapons.length - 1 && ViewStyles.mr0_5,
+                    { width: 20, height: 20, backgroundColor: "transparent" },
+                  ]}
+                />
+              ))}
+            </HStack>
+            <Center>
+              <Circle size={20} color={backgroundColor} style={ViewStyles.r1} />
+              <Image
+                source={props.specialWeapon}
+                style={[ViewStyles.transparent, { width: 15, height: 15, position: "absolute" }]}
+              />
+            </Center>
+          </HStack>
+        )
+      }
       style={props.style}
       onPress={props.onPress}
     >

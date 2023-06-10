@@ -996,6 +996,14 @@ const ResultView = (props: ResultViewProps) => {
                           i === 0
                         )}
                         subtitle={`${t("boss_salmonids")} x${memberResult.defeatEnemyCount}`}
+                        mainWeapons={memberResult.weapons.map((weapon) =>
+                          getImageCacheSource(weapon.image.url)
+                        )}
+                        specialWeapon={
+                          memberResult.specialWeapon
+                            ? getImageCacheSource(memberResult.specialWeapon.image.url)
+                            : undefined
+                        }
                         deliverGoldenEgg={memberResult.goldenDeliverCount}
                         assistGoldenEgg={memberResult.goldenAssistCount}
                         powerEgg={memberResult.deliverCount}
