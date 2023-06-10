@@ -2,7 +2,7 @@ import { createContext, useContext } from "react";
 import { StyleProp, ViewStyle } from "react-native";
 import { genericMemo } from "../utils/memo";
 import Icon from "./Icon";
-import ResultButton from "./ResultButton";
+import ResultButton, { Result } from "./ResultButton";
 import { Circle } from "./Shape";
 import { HStack } from "./Stack";
 import { Color, TextStyles, ViewStyles, useTheme } from "./Styles";
@@ -17,7 +17,7 @@ interface CoopButtonProps<T> {
   isFirst?: boolean;
   isLast?: boolean;
   tag?: string;
-  result?: number;
+  result?: Result;
   rule: string;
   stage: string;
   kingSalmonid?: string;

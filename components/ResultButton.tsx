@@ -8,6 +8,13 @@ import { Rectangle } from "./Shape";
 import { Center, HStack, VStack } from "./Stack";
 import { Color, TextStyles, ViewStyles } from "./Styles";
 
+enum Result {
+  Win,
+  Draw,
+  Lose,
+  ExemptedLose,
+}
+
 interface ResultButtonProps {
   color?: string;
   isLoading?: boolean;
@@ -15,7 +22,7 @@ interface ResultButtonProps {
   isLast?: boolean;
   tag?: string;
   image?: ImageSource;
-  result?: number;
+  result?: Result;
   icon?: string;
   title: string;
   badge?: string;
@@ -66,21 +73,21 @@ const ResultButton = (props: ResultButtonProps) => {
           <Center style={[ViewStyles.mr2, styles.image]}>
             {(() => {
               switch (props.result) {
-                case 1:
+                case Result.Win:
                   return (
                     <Icon name="circle" size={28} color={props.color ?? Color.MiddleTerritory} />
                   );
-                case 0:
+                case Result.Draw:
                   return <Icon name="minus" size={32} color={Color.MiddleTerritory} />;
-                case -1:
+                case Result.Lose:
                   return <Icon name="x" size={32} color={Color.MiddleTerritory} />;
-                case -2:
+                case Result.ExemptedLose:
                   return <Icon name="x-circle" size={28} color={Color.MiddleTerritory} />;
               }
             })()}
           </Center>
         )}
-        {!!props.image && <Image source={props.image} style={[ViewStyles.mr3, styles.image]} />}
+        {!!props.image && <Image source={props.image} style={[ViewStyles.mr2, styles.image]} />}
         <VStack flex>
           <HStack flex center justify>
             <HStack flex center style={ViewStyles.mr1}>
@@ -127,4 +134,5 @@ const styles = StyleSheet.create({
   },
 });
 
+export { Result };
 export default ResultButton;

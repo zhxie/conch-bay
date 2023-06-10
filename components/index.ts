@@ -22,6 +22,7 @@ export { default as KingSalmonidBox } from "./KingSalmonidBox";
 export { default as Marquee } from "./Marquee";
 export { Modal, FlashModal } from "./Modal";
 export { default as Picker } from "./Picker";
+export { Result } from "./ResultButton";
 export { default as ScheduleButton } from "./ScheduleButton";
 export { default as ScheduleBox } from "./ScheduleBox";
 export * from "./Shape";

@@ -36,6 +36,7 @@ import {
   Marquee,
   Modal,
   PureIconButton,
+  Result,
   Splashtag,
   Text,
   TextStyles,
@@ -141,14 +142,14 @@ const ResultView = (props: ResultViewProps) => {
   const formatJudgement = (battle: VsHistoryDetailResult) => {
     switch (battle.vsHistoryDetail!.judgement as Judgement) {
       case Judgement.WIN:
-        return 1;
+        return Result.Win;
       case Judgement.DRAW:
-        return 0;
+        return Result.Draw;
       case Judgement.LOSE:
       case Judgement.DEEMED_LOSE:
-        return -1;
+        return Result.Lose;
       case Judgement.EXEMPTED_LOSE:
-        return -2;
+        return Result.ExemptedLose;
     }
   };
   const formatDragon = (battle: VsHistoryDetailResult) => {
@@ -493,7 +494,7 @@ const ResultView = (props: ResultViewProps) => {
               : undefined
           }
           color={color}
-          result={result.item.coop!.coopHistoryDetail!.resultWave === 0 ? 1 : -1}
+          result={result.item.coop!.coopHistoryDetail!.resultWave === 0 ? Result.Win : Result.Lose}
           rule={t(result.item.coop!.coopHistoryDetail!.rule)}
           stage={td(result.item.coop!.coopHistoryDetail!.coopStage)}
           kingSalmonid={
