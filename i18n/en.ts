@@ -137,7 +137,6 @@ const en = {
   medals_earned: "Medals Earned",
   hazard_level: "Hazard Level",
   supplied_weapons: "Supplied Weapons",
-  supplied_special_weapons: "Supplied Special Weapons",
   job_title: "Job Title",
   your_points: "Your Points",
   job_score: "Job Score",
