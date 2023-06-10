@@ -822,11 +822,7 @@ const MainView = () => {
     }
 
     // Clean up.
-    try {
-      await FileSystem.deleteAsync(uri, { idempotent: true });
-    } catch (e) {
-      showBanner(BannerLevel.Error, e);
-    }
+    await FileSystem.deleteAsync(uri, { idempotent: true });
     setRefreshing(false);
     setImporting(false);
     if (success) {
@@ -858,11 +854,7 @@ const MainView = () => {
     }
 
     // Clean up.
-    try {
-      await FileSystem.deleteAsync(uri, { idempotent: true });
-    } catch (e) {
-      showBanner(BannerLevel.Error, e);
-    }
+    await FileSystem.deleteAsync(uri, { idempotent: true });
     setExporting(false);
   };
   const onUpdatePress = async () => {
@@ -888,11 +880,7 @@ const MainView = () => {
   };
   const onClearCachePress = async () => {
     setClearingCache(true);
-    try {
-      await Image.clearDiskCache();
-    } catch (e) {
-      showBanner(BannerLevel.Error, e);
-    }
+    await Image.clearDiskCache();
     setClearingCache(false);
   };
   const onPreloadResourcesPress = async () => {
@@ -1111,22 +1099,14 @@ const MainView = () => {
   };
   const onCopySessionTokenPress = async () => {
     if (sessionToken.length > 0) {
-      try {
-        await Clipboard.setStringAsync(sessionToken);
-        showBanner(BannerLevel.Info, t("copied_to_clipboard"));
-      } catch {
-        /* empty */
-      }
+      await Clipboard.setStringAsync(sessionToken);
+      showBanner(BannerLevel.Info, t("copied_to_clipboard"));
     }
   };
   const onCopyBulletTokenPress = async () => {
     if (bulletToken.length > 0) {
-      try {
-        await Clipboard.setStringAsync(bulletToken);
-        showBanner(BannerLevel.Info, t("copied_to_clipboard"));
-      } catch {
-        /* empty */
-      }
+      await Clipboard.setStringAsync(bulletToken);
+      showBanner(BannerLevel.Info, t("copied_to_clipboard"));
     }
   };
   const onExportDatabasePress = async () => {

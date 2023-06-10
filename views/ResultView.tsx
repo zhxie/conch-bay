@@ -404,12 +404,8 @@ const ResultView = (props: ResultViewProps) => {
     }
   };
   const onCopyRawValue = async (value: any) => {
-    try {
-      await Clipboard.setStringAsync(value.toString());
-      showBanner(BannerLevel.Info, t("copied_to_clipboard"));
-    } catch {
-      /* empty */
-    }
+    await Clipboard.setStringAsync(value.toString());
+    showBanner(BannerLevel.Info, t("copied_to_clipboard"));
   };
   const onModalHide = () => {
     if (willDisplayNext.current !== undefined) {
