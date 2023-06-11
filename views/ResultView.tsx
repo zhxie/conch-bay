@@ -198,22 +198,9 @@ const ResultView = (props: ResultViewProps) => {
         return Color.SilverScale;
     }
   };
-  const formatWave = (coop: CoopHistoryDetailResult) => {
-    switch (coop.coopHistoryDetail!.resultWave) {
-      case -1:
-        return "";
-      case 0:
-        if (coop.coopHistoryDetail!.bossResult) {
-          return t("xtrawave");
-        }
-        return t("wave_n", { n: coop.coopHistoryDetail!.waveResults.length });
-      default:
-        return t("wave_n", { n: coop.coopHistoryDetail!.waveResults.length });
-    }
-  };
   const formatHazardLevel = (coop: CoopHistoryDetailResult) => {
     if (coop.coopHistoryDetail!.dangerRate > 0) {
-      return `(${parseInt(String(coop.coopHistoryDetail!.dangerRate * 100))}%)`;
+      return `${parseInt(String(coop.coopHistoryDetail!.dangerRate * 100))}%`;
     }
     return "";
   };
@@ -503,7 +490,6 @@ const ResultView = (props: ResultViewProps) => {
               ? td(result.item.coop!.coopHistoryDetail!.bossResult.boss)
               : undefined
           }
-          wave={formatWave(result.item.coop!)!}
           isClear={IsCoopClear(result.item.coop!)}
           hazardLevel={formatHazardLevel(result.item.coop!)}
           grade={
@@ -1045,9 +1031,7 @@ const ResultView = (props: ResultViewProps) => {
                         </Display>
                         {result.coop.coopHistoryDetail!.dangerRate > 0 && (
                           <Display level={1} title={t("hazard_level")}>
-                            <Text numberOfLines={1}>{`${parseInt(
-                              String(result.coop.coopHistoryDetail!.dangerRate * 100)
-                            )}%`}</Text>
+                            <Text numberOfLines={1}>{formatHazardLevel(result.coop)}</Text>
                           </Display>
                         )}
                         {result.coop.coopHistoryDetail!.afterGrade && (

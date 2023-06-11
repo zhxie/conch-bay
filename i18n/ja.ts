@@ -404,9 +404,6 @@ const ja = {
   "Q29vcEdyYWRlLTY=": "たつじん+2",
   "Q29vcEdyYWRlLTc=": "たつじん+3",
   "Q29vcEdyYWRlLTg=": "でんせつ",
-  // Waves.
-  wave_n: "WAVE %{n}",
-  xtrawave: "EX-WAVE",
   // Water levels.
   low_tide: "干潮",
   normal: "普通",

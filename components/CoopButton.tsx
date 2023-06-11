@@ -1,4 +1,3 @@
-import { createContext, useContext } from "react";
 import { StyleProp, ViewStyle } from "react-native";
 import { genericMemo } from "../utils/memo";
 import Icon from "./Icon";
@@ -7,8 +6,6 @@ import { Circle } from "./Shape";
 import { HStack } from "./Stack";
 import { Color, TextStyles, ViewStyles, useTheme } from "./Styles";
 import Text from "./Text";
-
-const CoopButtonContext = createContext({ grade: false, changeGrade: () => {} });
 
 interface CoopButtonProps<T> {
   coop?: T;
@@ -21,7 +18,6 @@ interface CoopButtonProps<T> {
   rule: string;
   stage: string;
   kingSalmonid?: string;
-  wave: string;
   isClear: boolean;
   hazardLevel: string;
   grade?: string;
@@ -34,8 +30,6 @@ interface CoopButtonProps<T> {
 }
 
 const CoopButton = <T extends any>(props: CoopButtonProps<T>) => {
-  const context = useContext(CoopButtonContext);
-
   const theme = useTheme();
 
   const clearStyle = [TextStyles.b, { color: props.color }];
@@ -66,35 +60,30 @@ const CoopButton = <T extends any>(props: CoopButtonProps<T>) => {
         )
       }
       subChildren={
-        <Text
-          numberOfLines={1}
-          onPress={props.grade && props.hazardLevel ? context.changeGrade : undefined}
-        >
-          {(context.grade && props.grade) || !props.hazardLevel ? (
-            props.grade ? (
-              <Text numberOfLines={1} style={props.gradeChange > 0 ? clearStyle : undefined}>
-                <Icon
-                  name={
-                    props.gradeChange > 0
-                      ? "arrow-up"
-                      : props.gradeChange === 0
-                      ? "arrow-right"
-                      : "arrow-down"
-                  }
-                  size={14}
-                  color={props.gradeChange > 0 ? props.color : theme.textColor}
-                />
-                {` ${props.grade} ${props.gradePoint}`}
-              </Text>
-            ) : (
-              ""
-            )
+        <Text numberOfLines={1}>
+          {props.grade ? (
+            <Text numberOfLines={1} style={props.gradeChange > 0 ? clearStyle : undefined}>
+              <Icon
+                name={
+                  props.gradeChange > 0
+                    ? "arrow-up"
+                    : props.gradeChange === 0
+                    ? "arrow-right"
+                    : "arrow-down"
+                }
+                size={14}
+                color={props.gradeChange > 0 ? props.color : theme.textColor}
+              />
+              {` ${props.grade} ${props.gradePoint}`}
+            </Text>
           ) : (
-            <Text numberOfLines={1} style={props.isClear ? clearStyle : undefined}>
-              {props.wave}
+            ""
+          )}
+          {props.hazardLevel.length > 0 && (
+            <Text numberOfLines={1}>
+              {props.grade ? ` (${props.hazardLevel})` : props.hazardLevel}
             </Text>
           )}
-          <Text numberOfLines={1}>{props.hazardLevel ? ` ${props.hazardLevel}` : ""}</Text>
         </Text>
       }
       style={props.style}
@@ -114,5 +103,4 @@ const CoopButton = <T extends any>(props: CoopButtonProps<T>) => {
   );
 };
 
-export { CoopButtonContext };
 export default genericMemo(CoopButton);
