@@ -39,7 +39,6 @@ const CoopButton = <T extends any>(props: CoopButtonProps<T>) => {
   const theme = useTheme();
 
   const clearStyle = [TextStyles.b, { color: props.color }];
-  const waveStyle = props.isClear ? clearStyle : undefined;
 
   const onPress = () => {
     if (props.coop && props.onPress) {
@@ -57,9 +56,14 @@ const CoopButton = <T extends any>(props: CoopButtonProps<T>) => {
       result={props.result}
       title={props.rule}
       subtitle={
-        props.kingSalmonid !== undefined
-          ? `${props.stage} / ${props.kingSalmonid}`
-          : `${props.stage}`
+        props.kingSalmonid !== undefined ? (
+          <Text>
+            {props.stage} /{" "}
+            <Text style={props.isClear ? clearStyle : undefined}>{props.kingSalmonid}</Text>
+          </Text>
+        ) : (
+          `${props.stage}`
+        )
       }
       subChildren={
         <Text
@@ -82,9 +86,11 @@ const CoopButton = <T extends any>(props: CoopButtonProps<T>) => {
                 />
                 {` ${props.grade} ${props.gradePoint}`}
               </Text>
-            ) : undefined
+            ) : (
+              ""
+            )
           ) : (
-            <Text numberOfLines={1} style={waveStyle}>
+            <Text numberOfLines={1} style={props.isClear ? clearStyle : undefined}>
               {props.wave}
             </Text>
           )}

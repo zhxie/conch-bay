@@ -1126,30 +1126,11 @@ const ResultView = (props: ResultViewProps) => {
                   >
                     <Marquee style={theme.reverseTextStyle}>{t("show_raw_data")}</Marquee>
                   </Button>
-                  <Button
-                    style={[
-                      result.coop.coopHistoryDetail!.rule !== "TEAM_CONTEST" && ViewStyles.mb2,
-                      ViewStyles.accent,
-                    ]}
-                    onPress={onOpenInNintendoSwitchOnlinePress}
-                  >
+                  <Button style={ViewStyles.accent} onPress={onOpenInNintendoSwitchOnlinePress}>
                     <Marquee style={theme.reverseTextStyle}>
                       {t("open_in_nintendo_switch_online")}
                     </Marquee>
                   </Button>
-                  {result.coop.coopHistoryDetail!.rule !== "TEAM_CONTEST" && (
-                    <HStack style={ViewStyles.c}>
-                      <Icon
-                        name="info"
-                        size={14}
-                        color={Color.MiddleTerritory}
-                        style={ViewStyles.mr1}
-                      />
-                      <HStack style={ViewStyles.i}>
-                        <Marquee style={TextStyles.subtle}>{t("coop_notice")}</Marquee>
-                      </HStack>
-                    </HStack>
-                  )}
                 </VStack>
               </VStack>
               <Modal

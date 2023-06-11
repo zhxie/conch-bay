@@ -26,7 +26,7 @@ interface ResultButtonProps {
   icon?: string;
   title: string;
   badge?: string;
-  subtitle: string;
+  subtitle: React.ReactNode;
   subChildren?: React.ReactNode;
   style?: StyleProp<ViewStyle>;
   onPress?: () => void;

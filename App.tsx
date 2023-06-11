@@ -15,7 +15,7 @@ const App = () => {
   const backgroundStyle = colorScheme === "light" ? ViewStyles.light : ViewStyles.dark;
 
   const [ready, setReady] = useState(false);
-  const [grade, setGrade] = useState(false);
+  const [grade, setGrade] = useState(true);
   const [splatfont, setSplatfont] = useState(false);
 
   useEffect(() => {
