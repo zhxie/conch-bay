@@ -404,6 +404,9 @@ const en = {
   "Q29vcEdyYWRlLTY=": "Profreshional +2",
   "Q29vcEdyYWRlLTc=": "Profreshional +3",
   "Q29vcEdyYWRlLTg=": "Eggsecutive VP",
+  // Waves.
+  wave_n: "Wave %{n}",
+  xtrawave: "XTRAWAVE",
   // Water levels.
   low_tide: "Low Tide",
   normal: "Normal",

@@ -397,6 +397,9 @@ const zhHans = {
   "Q29vcEdyYWRlLTY=": "达人+2",
   "Q29vcEdyYWRlLTc=": "达人+3",
   "Q29vcEdyYWRlLTg=": "传说",
+  // Waves.
+  wave_n: "WAVE %{n}",
+  xtrawave: "EX-WAVE",
   // Water levels.
   low_tide: "干潮",
   normal: "普通",

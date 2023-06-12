@@ -57,6 +57,7 @@ import {
   CoopHistoryDetailResult,
   CoopMemberResult,
   CoopPlayerResult,
+  CoopRule,
   CoopWaveResult,
   DragonMatchType,
   Enum,
@@ -203,6 +204,41 @@ const ResultView = (props: ResultViewProps) => {
       return `${parseInt(String(coop.coopHistoryDetail!.dangerRate * 100))}%`;
     }
     return "";
+  };
+  const formatCoopInfo = (coop: CoopHistoryDetailResult) => {
+    if (coop.coopHistoryDetail!.afterGrade) {
+      return `${td(coop.coopHistoryDetail!.afterGrade)} ${
+        coop.coopHistoryDetail!.afterGradePoint || 0
+      }`;
+    }
+    switch (coop.coopHistoryDetail!.resultWave) {
+      case -1:
+        return "";
+      case 0:
+        if (coop.coopHistoryDetail!.bossResult) {
+          return t("xtrawave");
+        }
+        return t("wave_n", { n: coop.coopHistoryDetail!.waveResults.length });
+      default:
+        return t("wave_n", { n: coop.coopHistoryDetail!.waveResults.length });
+    }
+  };
+  const formatGradeChange = (coop: CoopHistoryDetailResult) => {
+    switch (coop.coopHistoryDetail!.rule as CoopRule) {
+      case CoopRule.REGULAR:
+      case CoopRule.BIG_RUN:
+        switch (coop.coopHistoryDetail!.resultWave) {
+          case 0:
+            return Result.Win;
+          default:
+            if (coop.coopHistoryDetail!.resultWave < 3) {
+              return Result.Lose;
+            }
+            return Result.Draw;
+        }
+      case CoopRule.TEAM_CONTEST:
+        return undefined;
+    }
   };
   const formatAnnotation = (battle: VsHistoryDetailResult) => {
     switch (battle.vsHistoryDetail!.judgement as Judgement) {
@@ -492,19 +528,8 @@ const ResultView = (props: ResultViewProps) => {
           }
           isClear={IsCoopClear(result.item.coop!)}
           hazardLevel={formatHazardLevel(result.item.coop!)}
-          grade={
-            result.item.coop!.coopHistoryDetail!.afterGrade
-              ? td(result.item.coop!.coopHistoryDetail!.afterGrade)
-              : undefined
-          }
-          gradePoint={result.item.coop!.coopHistoryDetail!.afterGradePoint || 0}
-          gradeChange={
-            result.item.coop!.coopHistoryDetail!.resultWave === 0
-              ? 1
-              : result.item.coop!.coopHistoryDetail!.resultWave < 3
-              ? -1
-              : 0
-          }
+          info={formatCoopInfo(result.item.coop!)}
+          gradeChange={formatGradeChange(result.item.coop!)}
           powerEgg={powerEgg}
           goldenEgg={goldenEgg}
           onPress={onCoopPress}

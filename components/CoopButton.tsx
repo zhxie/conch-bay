@@ -20,9 +20,8 @@ interface CoopButtonProps<T> {
   kingSalmonid?: string;
   isClear: boolean;
   hazardLevel: string;
-  grade?: string;
-  gradePoint: number;
-  gradeChange: number;
+  info: string;
+  gradeChange?: Result;
   goldenEgg: number;
   powerEgg: number;
   style?: StyleProp<ViewStyle>;
@@ -60,31 +59,42 @@ const CoopButton = <T extends any>(props: CoopButtonProps<T>) => {
         )
       }
       subChildren={
-        <Text numberOfLines={1}>
-          {props.grade ? (
-            <Text numberOfLines={1} style={props.gradeChange > 0 ? clearStyle : undefined}>
-              <Icon
-                name={
-                  props.gradeChange > 0
-                    ? "arrow-up"
-                    : props.gradeChange === 0
-                    ? "arrow-right"
-                    : "arrow-down"
+        <HStack center>
+          {props.gradeChange !== undefined && (
+            <Icon
+              name={(() => {
+                switch (props.gradeChange) {
+                  case Result.Win:
+                    return "arrow-up";
+                  case Result.Draw:
+                    return "arrow-right";
+                  case Result.Lose:
+                    return "arrow-down";
+                  case Result.ExemptedLose:
+                    throw new Error(`unexpected grade change ${props.gradeChange}`);
                 }
-                size={14}
-                color={props.gradeChange > 0 ? props.color : theme.textColor}
-              />
-              {` ${props.grade} ${props.gradePoint}`}
-            </Text>
-          ) : (
-            ""
+              })()}
+              size={14}
+              color={props.gradeChange === Result.Win ? props.color : theme.textColor}
+              style={props.info.length > 0 ? ViewStyles.mr0_5 : undefined}
+            />
           )}
-          {props.hazardLevel.length > 0 && (
-            <Text numberOfLines={1}>
-              {props.grade ? ` (${props.hazardLevel})` : props.hazardLevel}
-            </Text>
-          )}
-        </Text>
+          <Text>
+            {props.info.length > 0 && (
+              <Text
+                numberOfLines={1}
+                style={(props.result ?? Result.Lose) === Result.Win ? clearStyle : undefined}
+              >
+                {props.info}
+              </Text>
+            )}
+            {props.hazardLevel.length > 0 && (
+              <Text numberOfLines={1}>
+                {props.info.length > 0 ? ` (${props.hazardLevel})` : props.hazardLevel}
+              </Text>
+            )}
+          </Text>
+        </HStack>
       }
       style={props.style}
       onPress={onPress}
