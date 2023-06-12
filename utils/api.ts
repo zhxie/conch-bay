@@ -29,7 +29,7 @@ import { encode64Url } from "./codec";
 import { getParam, parameterize } from "./url";
 
 const AXIOS_TIMEOUT = 10000;
-const AXIOS_IMINK_TIMEOUT = 15000;
+const AXIOS_TOKEN_TIMEOUT = 15000;
 
 export const fetchLatestVersion = async () => {
   const res = await axios.get("https://api.github.com/repos/zhxie/conch-bay/releases", {
@@ -101,7 +101,7 @@ const callIminkFApi = async (step: number, idToken: string, naId: string, coralU
   }
   const res = await axios.post("https://api.imink.app/f", body, {
     headers: { "Content-Type": "application/json; charset=utf-8" },
-    timeout: AXIOS_IMINK_TIMEOUT,
+    timeout: AXIOS_TOKEN_TIMEOUT,
   });
   return res.data as { f: string; request_id: string; timestamp: string };
 };
@@ -146,7 +146,7 @@ export const getSessionToken = async (url: string, cv: string) => {
         "Content-Type": "application/x-www-form-urlencoded",
         Host: "accounts.nintendo.com",
       },
-      timeout: AXIOS_TIMEOUT,
+      timeout: AXIOS_TOKEN_TIMEOUT,
     }
   );
   return res.data["session_token"] as string;
@@ -165,7 +165,7 @@ export const getWebServiceToken = async (sessionToken: string) => {
         "Content-Type": "application/json",
         Host: "accounts.nintendo.com",
       },
-      timeout: AXIOS_TIMEOUT,
+      timeout: AXIOS_TOKEN_TIMEOUT,
     }
   );
   const { access_token: accessToken, id_token: idToken } = res.data;
@@ -177,7 +177,7 @@ export const getWebServiceToken = async (sessionToken: string) => {
       "Content-Type": "application/json",
       Host: "api.accounts.nintendo.com",
     },
-    timeout: AXIOS_TIMEOUT,
+    timeout: AXIOS_TOKEN_TIMEOUT,
   });
   const { birthday, language, country, id } = res2.data;
 
@@ -203,7 +203,7 @@ export const getWebServiceToken = async (sessionToken: string) => {
         "X-Platform": "Android",
         "X-ProductVersion": NSO_VERSION,
       },
-      timeout: AXIOS_TIMEOUT,
+      timeout: AXIOS_TOKEN_TIMEOUT,
     }
   );
   const idToken2 = res4.data["result"]["webApiServerCredential"]["accessToken"];
@@ -230,7 +230,7 @@ export const getWebServiceToken = async (sessionToken: string) => {
         "X-Platform": "Android",
         "X-ProductVersion": NSO_VERSION,
       },
-      timeout: AXIOS_TIMEOUT,
+      timeout: AXIOS_TOKEN_TIMEOUT,
     }
   );
   const webServiceToken = res6.data["result"]["accessToken"];
@@ -251,7 +251,7 @@ export const getBulletToken = async (
         "X-NACOUNTRY": country,
         "X-Web-View-Ver": SPLATNET_VERSION,
       },
-      timeout: AXIOS_TIMEOUT,
+      timeout: AXIOS_TOKEN_TIMEOUT,
     }
   );
   return res.data["bulletToken"] as string;
