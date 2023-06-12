@@ -202,7 +202,9 @@ const StatsView = (props: StatsViewProps) => {
             </VStack>
           )}
         </VStack>
-        <Marquee>{t("stats_notice")}</Marquee>
+        <VStack center>
+          <Marquee>{t("stats_notice")}</Marquee>
+        </VStack>
       </Modal>
     </Center>
   );

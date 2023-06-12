@@ -576,9 +576,9 @@ const TrendsView = (props: TrendViewProps) => {
             </VStack>
           )}
         </VStack>
-        <Marquee style={(battleGroups.length > 0 || coopGroups.length > 0) && ViewStyles.mb2}>
-          {t("stats_notice")}
-        </Marquee>
+        <VStack center style={(battleGroups.length > 0 || coopGroups.length > 0) && ViewStyles.mb2}>
+          <Marquee>{t("stats_notice")}</Marquee>
+        </VStack>
         {(battleGroups.length > 0 || coopGroups.length > 0) && (
           <HStack style={ViewStyles.c}>
             <Icon name="info" size={14} color={Color.MiddleTerritory} style={ViewStyles.mr1} />
