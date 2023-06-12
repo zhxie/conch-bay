@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import "dayjs/plugin/advancedFormat";
 import { useMemo, useState } from "react";
-import { ScrollView, StyleProp, ViewStyle } from "react-native";
+import { Dimensions, ScrollView, StyleProp, ViewStyle } from "react-native";
 import {
   Color,
   HStack,
@@ -50,6 +50,8 @@ interface DisplayProps {
 }
 
 const ScheduleView = (props: ScheduleViewProps) => {
+  const placeholder = Math.ceil((Dimensions.get("window").width - 32) / 168);
+
   const theme = useTheme();
 
   const [display, setDisplay] = useState<DisplayProps>();
@@ -331,7 +333,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
     >
       <HStack style={ViewStyles.px4}>
         {!props.schedules &&
-          new Array(10)
+          new Array(placeholder)
             .fill(0)
             .map((_, i) => (
               <ScheduleButton
