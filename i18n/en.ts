@@ -167,7 +167,7 @@ const en = {
   rescued: "Rescued",
   be_rescued: "Be Rescued",
   stats_notice:
-    "Statistics from currently loaded results. The number in parentheses is over 1 minute average in battles, and over each job average in Salmon Run.",
+    "Statistics from currently loaded results. The number in parentheses is over 1 minute average in battles, and over each shift average in Salmon Run.",
   // Trends.
   trends: "Trends",
   splatted_including_assisted: "Splatted (Including Assisted)",
