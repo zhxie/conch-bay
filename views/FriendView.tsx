@@ -1,6 +1,6 @@
 import { FlashList, ListRenderItemInfo } from "@shopify/flash-list";
 import { useState } from "react";
-import { Dimensions, StyleProp, ViewStyle } from "react-native";
+import { StyleProp, ViewStyle, useWindowDimensions } from "react-native";
 import {
   Avatar,
   AvatarButton,
@@ -37,7 +37,8 @@ interface FriendViewProps {
 }
 
 const FriendView = (props: FriendViewProps) => {
-  const placeholder = Math.ceil((Dimensions.get("window").width - 32) / 56);
+  const { width } = useWindowDimensions();
+  const placeholder = Math.ceil((width - 32) / 56);
 
   const theme = useTheme();
 

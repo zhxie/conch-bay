@@ -13,13 +13,13 @@ import * as WebBrowser from "expo-web-browser";
 import React, { useEffect, useRef, useState } from "react";
 import {
   Animated,
-  Dimensions,
   Linking,
   NativeScrollEvent,
   NativeSyntheticEvent,
   Platform,
   RefreshControl,
   ScrollView,
+  useWindowDimensions,
 } from "react-native";
 import * as Progress from "react-native-progress";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
@@ -113,6 +113,7 @@ let autoRefreshTimeout: NodeJS.Timeout | undefined;
 const MainView = () => {
   const theme = useTheme();
 
+  const { height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
 
   const showBanner = useBanner();
@@ -574,7 +575,7 @@ const MainView = () => {
     if (loadedAll) {
       return;
     }
-    const overHeight = event.nativeEvent.contentSize.height - Dimensions.get("window").height;
+    const overHeight = event.nativeEvent.contentSize.height - height;
     if (overHeight >= 0 && event.nativeEvent.contentOffset.y - 80 > overHeight) {
       onLoadMorePress();
     }

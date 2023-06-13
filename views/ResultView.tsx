@@ -4,7 +4,6 @@ import duration from "dayjs/plugin/duration";
 import * as Clipboard from "expo-clipboard";
 import { useCallback, useRef, useState } from "react";
 import {
-  Dimensions,
   Linking,
   NativeScrollEvent,
   NativeSyntheticEvent,
@@ -12,6 +11,7 @@ import {
   ScrollView,
   StyleProp,
   ViewStyle,
+  useWindowDimensions,
 } from "react-native";
 import JSONTree from "react-native-json-tree";
 import {
@@ -95,8 +95,9 @@ interface ResultViewProps {
 }
 
 const ResultView = (props: ResultViewProps) => {
+  const { height } = useWindowDimensions();
   // HACK: expect there is 480px occupied by other components.
-  const placeholder = Math.ceil((Dimensions.get("window").height - 480) / 64);
+  const placeholder = Math.ceil((height - 480) / 64);
 
   const theme = useTheme();
 
