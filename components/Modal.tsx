@@ -8,6 +8,7 @@ import {
   StyleSheet,
   View,
   ViewStyle,
+  useWindowDimensions,
 } from "react-native";
 import ReactNativeModal from "react-native-modal";
 import { VStack } from "./Stack";
@@ -25,6 +26,8 @@ interface ModalProps {
 const Modal = (props: ModalProps) => {
   const theme = useTheme();
 
+  const { height, width } = useWindowDimensions();
+
   const onScrollEndDrag = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     if (!!props.onClose && event.nativeEvent.contentOffset.y < -80) {
       props.onClose();
@@ -36,6 +39,8 @@ const Modal = (props: ModalProps) => {
       isVisible={props.isVisible}
       backdropOpacity={0.5}
       onBackdropPress={props.onClose}
+      deviceWidth={width}
+      deviceHeight={height}
       useNativeDriverForBackdrop
       useNativeDriver
       hideModalContentWhileAnimating
@@ -72,6 +77,8 @@ interface FlashModalProps<T> {
 const FlashModal = <T,>(props: FlashModalProps<T>) => {
   const theme = useTheme();
 
+  const { height, width } = useWindowDimensions();
+
   const onScrollEndDrag = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     if (!!props.onClose && event.nativeEvent.contentOffset.y < -80) {
       props.onClose();
@@ -83,6 +90,8 @@ const FlashModal = <T,>(props: FlashModalProps<T>) => {
       isVisible={props.isVisible}
       backdropOpacity={0.5}
       onBackdropPress={props.onClose}
+      deviceWidth={width}
+      deviceHeight={height}
       useNativeDriverForBackdrop
       useNativeDriver
       hideModalContentWhileAnimating
