@@ -82,6 +82,7 @@ const en = {
   send_a_mail: "Send a mail",
   debug_notice: "The following information is for debug only. Please do NOT share with others.",
   copy_session_token: "Copy Session Token",
+  copy_web_service_token: "Copy Web Service Token",
   copy_bullet_token: "Copy Bullet Token",
   copied_to_clipboard: "Copied to clipboard",
   export_results: "Export Results",

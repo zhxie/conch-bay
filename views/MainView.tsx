@@ -145,6 +145,8 @@ const MainView = () => {
 
   const [sessionToken, setSessionToken, clearSessionToken, sessionTokenReady] =
     useAsyncStorage("sessionToken");
+  const [webServiceToken, setWebServiceToken, clearWebServiceToken, webServiceTokenReady] =
+    useAsyncStorage("webServiceToken");
   const [bulletToken, setBulletToken, clearBulletToken, bulletTokenReady] =
     useAsyncStorage("bulletToken");
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -192,7 +194,7 @@ const MainView = () => {
   const loadedAll = (results?.length ?? 0) >= count;
 
   useEffect(() => {
-    if (sessionTokenReady && bulletTokenReady && languageReady) {
+    if (sessionTokenReady && webServiceTokenReady && bulletTokenReady && languageReady) {
       (async () => {
         try {
           await Database.open();
@@ -204,7 +206,7 @@ const MainView = () => {
         }
       })();
     }
-  }, [sessionTokenReady, bulletTokenReady, languageReady]);
+  }, [sessionTokenReady, webServiceTokenReady, bulletTokenReady, languageReady]);
   const fade = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     if (ready) {
@@ -303,13 +305,35 @@ const MainView = () => {
       showBanner(BannerLevel.Info, t("reacquiring_tokens"));
     }
 
+    // Update versions.
+    if (!apiUpdated) {
+      await Promise.all([updateNsoVersion(), updateSplatnetVersion()])
+        .then(() => {
+          setApiUpdated(true);
+        })
+        .catch((e) => {
+          showBanner(BannerLevel.Warn, t("failed_to_check_api_update", { error: e }));
+        });
+    }
+
+    // Attempt to acquire bullet token from web service token.
+    let newBulletTokenAttempt: string | undefined;
+    if (webServiceToken.length > 0) {
+      newBulletTokenAttempt = await getBulletToken(webServiceToken).catch((_) => undefined);
+    }
+    if (newBulletTokenAttempt) {
+      await setBulletToken(newBulletTokenAttempt);
+      return newBulletTokenAttempt;
+    }
+
+    // Acquire both web service token and bullet token.
     const res = await getWebServiceToken(sessionToken).catch((e) => {
       throw new Error(t("failed_to_acquire_web_service_token", { error: e }));
     });
-    const newBulletToken = await getBulletToken(res.webServiceToken, res.country).catch((e) => {
+    await setWebServiceToken(res.webServiceToken);
+    const newBulletToken = await getBulletToken(res.webServiceToken).catch((e) => {
       throw new Error(t("failed_to_acquire_bullet_token", { error: e }));
     });
-
     await setBulletToken(newBulletToken);
 
     return newBulletToken;
@@ -346,16 +370,6 @@ const MainView = () => {
 
             // Regenerate bullet token if necessary.
             if (!newBulletToken) {
-              // Also update versions.
-              if (!apiUpdated) {
-                await Promise.all([updateNsoVersion(), updateSplatnetVersion()])
-                  .then(() => {
-                    setApiUpdated(true);
-                  })
-                  .catch((e) => {
-                    showBanner(BannerLevel.Warn, t("failed_to_check_api_update", { error: e }));
-                  });
-              }
               newBulletToken = await generateBulletToken();
             }
 
@@ -730,6 +744,7 @@ const MainView = () => {
       setVoting(undefined);
       await Promise.all([
         clearSessionToken(),
+        clearWebServiceToken(),
         clearBulletToken(),
         clearIcon(),
         clearCatalogLevel(),
@@ -1184,6 +1199,12 @@ const MainView = () => {
   const onCopySessionTokenPress = async () => {
     if (sessionToken.length > 0) {
       await Clipboard.setStringAsync(sessionToken);
+      showBanner(BannerLevel.Info, t("copied_to_clipboard"));
+    }
+  };
+  const onCopyWebServiceTokenPress = async () => {
+    if (webServiceToken.length > 0) {
+      await Clipboard.setStringAsync(webServiceToken);
       showBanner(BannerLevel.Info, t("copied_to_clipboard"));
     }
   };
@@ -1672,6 +1693,12 @@ const MainView = () => {
               </VStack>
               <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onCopySessionTokenPress}>
                 <Marquee style={theme.reverseTextStyle}>{t("copy_session_token")}</Marquee>
+              </Button>
+              <Button
+                style={[ViewStyles.mb2, ViewStyles.accent]}
+                onPress={onCopyWebServiceTokenPress}
+              >
+                <Marquee style={theme.reverseTextStyle}>{t("copy_web_service_token")}</Marquee>
               </Button>
               <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onCopyBulletTokenPress}>
                 <Marquee style={theme.reverseTextStyle}>{t("copy_bullet_token")}</Marquee>

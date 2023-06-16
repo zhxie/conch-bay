@@ -236,11 +236,7 @@ export const getWebServiceToken = async (sessionToken: string) => {
   const webServiceToken = res6.data["result"]["accessToken"];
   return { webServiceToken, country, language };
 };
-export const getBulletToken = async (
-  webServiceToken: string,
-  country: string,
-  language?: string
-) => {
+export const getBulletToken = async (webServiceToken: string, language?: string) => {
   const res = await axios.post(
     "https://api.lp1.av5ja.srv.nintendo.net/api/bullet_tokens",
     undefined,
@@ -248,7 +244,6 @@ export const getBulletToken = async (
       headers: {
         "Accept-Language": language ?? "*",
         Cookie: `_gtoken=${webServiceToken}`,
-        "X-NACOUNTRY": country,
         "X-Web-View-Ver": SPLATNET_VERSION,
       },
       timeout: AXIOS_TOKEN_TIMEOUT,
