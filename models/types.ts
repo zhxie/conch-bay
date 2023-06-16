@@ -31,6 +31,7 @@ export {
   GraphQLSuccessResponse,
   HistoryRecordResult,
   Judgement,
+  LatestBattleHistoriesResult,
   MyOutfitCommonDataEquipmentsResult,
   PrivateBattleHistoriesResult,
   RegularBattleHistoriesResult,

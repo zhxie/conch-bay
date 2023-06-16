@@ -71,7 +71,7 @@ const CoopButton = <T extends any>(props: CoopButtonProps<T>) => {
                   case Result.Lose:
                     return "arrow-down";
                   case Result.ExemptedLose:
-                    throw new Error(`unexpected grade change ${props.gradeChange}`);
+                    throw new Error(`unexpected gradeChange ${props.gradeChange}`);
                 }
               })()}
               size={14}

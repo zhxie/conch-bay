@@ -1,5 +1,4 @@
 import axios from "axios";
-import { fromByteArray as encode64 } from "base64-js";
 import * as Crypto from "expo-crypto";
 import {
   BankaraBattleHistoriesResult,
@@ -14,6 +13,7 @@ import {
   FriendListResult,
   GraphQLSuccessResponse,
   HistoryRecordResult,
+  LatestBattleHistoriesResult,
   MyOutfitCommonDataEquipmentsResult,
   PrivateBattleHistoriesResult,
   RegularBattleHistoriesResult,
@@ -25,7 +25,7 @@ import {
   WeaponRecordResult,
   XBattleHistoriesResult,
 } from "../models/types";
-import { encode64Url } from "./codec";
+import { encode64, encode64Url } from "./codec";
 import { getParam, parameterize } from "./url";
 
 const AXIOS_TIMEOUT = 10000;
@@ -355,7 +355,18 @@ export const fetchDetailVotingStatus = async (
   return detail.data;
 };
 
-export const fetchBattleHistories = async (bulletToken: string, language?: string) => {
+interface BattleHistories {
+  latest?: GraphQLSuccessResponse<LatestBattleHistoriesResult>["data"];
+  regular?: GraphQLSuccessResponse<RegularBattleHistoriesResult>["data"];
+  anarchy?: GraphQLSuccessResponse<BankaraBattleHistoriesResult>["data"];
+  x?: GraphQLSuccessResponse<XBattleHistoriesResult>["data"];
+  challenge?: GraphQLSuccessResponse<EventBattleHistoriesResult>["data"];
+  private?: GraphQLSuccessResponse<PrivateBattleHistoriesResult>["data"];
+}
+export const fetchBattleHistories = async (
+  bulletToken: string,
+  language?: string
+): Promise<BattleHistories> => {
   const [regularRes, anarchyRes, xRes, challengeRes, privateRes] = await Promise.all([
     fetchGraphQl(bulletToken, RequestId.RegularBattleHistoriesQuery, language),
     fetchGraphQl(bulletToken, RequestId.BankaraBattleHistoriesQuery, language),
@@ -389,6 +400,18 @@ export const fetchBattleHistories = async (bulletToken: string, language?: strin
     challenge: histories.challenge.data,
     private: histories.private.data,
   };
+};
+export const fetchLatestBattleHistories = async (
+  bulletToken: string,
+  language?: string
+): Promise<BattleHistories> => {
+  const res = await fetchGraphQl(bulletToken, RequestId.LatestBattleHistoriesQuery, language);
+  const json = await res.json();
+  const result = json as GraphQLSuccessResponse<LatestBattleHistoriesResult>;
+  if (result.errors) {
+    throw new Error(result.errors[0].message);
+  }
+  return { latest: result.data };
 };
 export const fetchVsHistoryDetail = async (id: string, bulletToken: string, language?: string) => {
   const res = await fetchGraphQl<VsHistoryDetailVariables>(

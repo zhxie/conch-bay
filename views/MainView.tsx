@@ -63,6 +63,7 @@ import {
   fetchDetailVotingStatus,
   fetchEquipments,
   fetchFriends,
+  fetchLatestBattleHistories,
   fetchLatestVersion,
   fetchShop,
   fetchSchedules,
@@ -77,6 +78,7 @@ import {
   updateNsoVersion,
   updateSplatnetVersion,
 } from "../utils/api";
+import { decode64String, encode64String } from "../utils/codec";
 import * as Database from "../utils/database";
 import { useAsyncStorage } from "../utils/hooks";
 import { ok } from "../utils/promise";
@@ -248,7 +250,7 @@ const MainView = () => {
         autoRefreshTimeout = setTimeout(async () => {
           setRefreshing(true);
           try {
-            await refreshResults(bulletToken);
+            await refreshResults(bulletToken, true);
           } catch (e) {
             await refresh();
           }
@@ -405,7 +407,7 @@ const MainView = () => {
                 .catch((e) => {
                   showBanner(BannerLevel.Warn, t("failed_to_load_catalog", { error: e }));
                 }),
-              ok(refreshResults(newBulletToken)).then(async (result) => {
+              ok(refreshResults(newBulletToken, false)).then(async (result) => {
                 if (result) {
                   await loadResults(20);
                 }
@@ -420,52 +422,84 @@ const MainView = () => {
     setProgressTotal(0);
     setRefreshing(false);
   };
-  const refreshResults = async (bulletToken: string) => {
+  const refreshResults = async (bulletToken: string, latestOnly: boolean) => {
     // Fetch results.
     setProgress(0);
     setProgressTotal(0);
     let n = -1;
     let throwable = 0;
     const [battleFail, coopFail] = await Promise.all([
-      fetchBattleHistories(bulletToken)
+      (latestOnly ? fetchLatestBattleHistories(bulletToken) : fetchBattleHistories(bulletToken))
         .then(async (battleHistories) => {
-          setSplatZonesXPower(
-            battleHistories.x.xBattleHistories.summary.xPowerAr?.lastXPower.toFixed(1) ?? "0"
-          );
-          setTowerControlXPower(
-            battleHistories.x.xBattleHistories.summary.xPowerLf?.lastXPower.toFixed(1) ?? "0"
-          );
-          setRainmakerXPower(
-            battleHistories.x.xBattleHistories.summary.xPowerGl?.lastXPower.toFixed(1) ?? "0"
-          );
-          setClamBlitzXPower(
-            battleHistories.x.xBattleHistories.summary.xPowerCl?.lastXPower.toFixed(1) ?? "0"
-          );
+          if (battleHistories.x) {
+            setSplatZonesXPower(
+              battleHistories.x.xBattleHistories.summary.xPowerAr?.lastXPower.toFixed(1) ?? "0"
+            );
+            setTowerControlXPower(
+              battleHistories.x.xBattleHistories.summary.xPowerLf?.lastXPower.toFixed(1) ?? "0"
+            );
+            setRainmakerXPower(
+              battleHistories.x.xBattleHistories.summary.xPowerGl?.lastXPower.toFixed(1) ?? "0"
+            );
+            setClamBlitzXPower(
+              battleHistories.x.xBattleHistories.summary.xPowerCl?.lastXPower.toFixed(1) ?? "0"
+            );
+          }
 
           // Fetch details.
           const ids: string[] = [];
-          battleHistories.regular.regularBattleHistories.historyGroups.nodes.forEach(
+          battleHistories.latest?.latestBattleHistories.historyGroups.nodes.forEach(
+            (historyGroup) =>
+              historyGroup.historyDetails.nodes.forEach((historyDetail) => {
+                let id = decode64String(historyDetail.id);
+                switch (historyDetail.vsMode.id) {
+                  case "VnNNb2RlLTE=":
+                  case "VnNNb2RlLTY=":
+                  case "VnNNb2RlLTc=":
+                  case "VnNNb2RlLTg=":
+                    id = id.replace("RECENT", "REGULAR");
+                    break;
+                  case "VnNNb2RlLTI=":
+                  case "VnNNb2RlLTUx":
+                    id = id.replace("RECENT", "BANKARA");
+                    break;
+                  case "VnNNb2RlLTM=":
+                    id = id.replace("RECENT", "XMATCH");
+                    break;
+                  case "VnNNb2RlLTQ=":
+                    id = id.replace("RECENT", "LEAGUE");
+                    break;
+                  case "VnNNb2RlLTU=":
+                    id = id.replace("RECENT", "PRIVATE");
+                    break;
+                  default:
+                    throw new Error(`unexpected vsMode ${historyDetail.vsMode.id}`);
+                }
+                ids.push(encode64String(id));
+              })
+          );
+          battleHistories.regular?.regularBattleHistories.historyGroups.nodes.forEach(
             (historyGroup) =>
               historyGroup.historyDetails.nodes.forEach((historyDetail) =>
                 ids.push(historyDetail.id)
               )
           );
-          battleHistories.anarchy.bankaraBattleHistories.historyGroups.nodes.forEach(
+          battleHistories.anarchy?.bankaraBattleHistories.historyGroups.nodes.forEach(
             (historyGroup) =>
               historyGroup.historyDetails.nodes.forEach((historyDetail) =>
                 ids.push(historyDetail.id)
               )
           );
-          battleHistories.x.xBattleHistories.historyGroups.nodes.forEach((historyGroup) =>
+          battleHistories.x?.xBattleHistories.historyGroups.nodes.forEach((historyGroup) =>
             historyGroup.historyDetails.nodes.forEach((historyDetail) => ids.push(historyDetail.id))
           );
-          battleHistories.challenge.eventBattleHistories.historyGroups.nodes.forEach(
+          battleHistories.challenge?.eventBattleHistories.historyGroups.nodes.forEach(
             (historyGroup) =>
               historyGroup.historyDetails.nodes.forEach((historyDetail) =>
                 ids.push(historyDetail.id)
               )
           );
-          battleHistories.private.privateBattleHistories.historyGroups.nodes.forEach(
+          battleHistories.private?.privateBattleHistories.historyGroups.nodes.forEach(
             (historyGroup) =>
               historyGroup.historyDetails.nodes.forEach((historyDetail) =>
                 ids.push(historyDetail.id)
