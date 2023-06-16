@@ -355,63 +355,59 @@ export const fetchDetailVotingStatus = async (
   return detail.data;
 };
 
-interface BattleHistories {
-  latest?: GraphQLSuccessResponse<LatestBattleHistoriesResult>["data"];
-  regular?: GraphQLSuccessResponse<RegularBattleHistoriesResult>["data"];
-  anarchy?: GraphQLSuccessResponse<BankaraBattleHistoriesResult>["data"];
-  x?: GraphQLSuccessResponse<XBattleHistoriesResult>["data"];
-  challenge?: GraphQLSuccessResponse<EventBattleHistoriesResult>["data"];
-  private?: GraphQLSuccessResponse<PrivateBattleHistoriesResult>["data"];
-}
-export const fetchBattleHistories = async (
-  bulletToken: string,
-  language?: string
-): Promise<BattleHistories> => {
-  const [regularRes, anarchyRes, xRes, challengeRes, privateRes] = await Promise.all([
-    fetchGraphQl(bulletToken, RequestId.RegularBattleHistoriesQuery, language),
-    fetchGraphQl(bulletToken, RequestId.BankaraBattleHistoriesQuery, language),
-    fetchGraphQl(bulletToken, RequestId.XBattleHistoriesQuery, language),
-    fetchGraphQl(bulletToken, RequestId.EventBattleHistoriesQuery, language),
-    fetchGraphQl(bulletToken, RequestId.PrivateBattleHistoriesQuery, language),
-  ]);
-  const [regularJson, anarchyJson, xJson, challengeJson, privateJson] = await Promise.all([
-    regularRes.json(),
-    anarchyRes.json(),
-    xRes.json(),
-    challengeRes.json(),
-    privateRes.json(),
-  ]);
-  const histories = {
-    regular: regularJson as GraphQLSuccessResponse<RegularBattleHistoriesResult>,
-    anarchy: anarchyJson as GraphQLSuccessResponse<BankaraBattleHistoriesResult>,
-    x: xJson as GraphQLSuccessResponse<XBattleHistoriesResult>,
-    challenge: challengeJson as GraphQLSuccessResponse<EventBattleHistoriesResult>,
-    private: privateJson as GraphQLSuccessResponse<PrivateBattleHistoriesResult>,
-  };
-  Object.values(histories).forEach((history) => {
-    if (history.errors) {
-      throw new Error(history.errors[0].message);
-    }
-  });
-  return {
-    regular: histories.regular.data,
-    anarchy: histories.anarchy.data,
-    x: histories.x.data,
-    challenge: histories.challenge.data,
-    private: histories.private.data,
-  };
-};
-export const fetchLatestBattleHistories = async (
-  bulletToken: string,
-  language?: string
-): Promise<BattleHistories> => {
+export const fetchLatestBattleHistories = async (bulletToken: string, language?: string) => {
   const res = await fetchGraphQl(bulletToken, RequestId.LatestBattleHistoriesQuery, language);
   const json = await res.json();
   const result = json as GraphQLSuccessResponse<LatestBattleHistoriesResult>;
   if (result.errors) {
     throw new Error(result.errors[0].message);
   }
-  return { latest: result.data };
+  return result.data;
+};
+export const fetchRegularBattleHistories = async (bulletToken: string, language?: string) => {
+  const res = await fetchGraphQl(bulletToken, RequestId.RegularBattleHistoriesQuery, language);
+  const json = await res.json();
+  const result = json as GraphQLSuccessResponse<RegularBattleHistoriesResult>;
+  if (result.errors) {
+    throw new Error(result.errors[0].message);
+  }
+  return result.data;
+};
+export const fetchAnarchyBattleHistories = async (bulletToken: string, language?: string) => {
+  const res = await fetchGraphQl(bulletToken, RequestId.BankaraBattleHistoriesQuery, language);
+  const json = await res.json();
+  const result = json as GraphQLSuccessResponse<BankaraBattleHistoriesResult>;
+  if (result.errors) {
+    throw new Error(result.errors[0].message);
+  }
+  return result.data;
+};
+export const fetchXBattleHistories = async (bulletToken: string, language?: string) => {
+  const res = await fetchGraphQl(bulletToken, RequestId.XBattleHistoriesQuery, language);
+  const json = await res.json();
+  const result = json as GraphQLSuccessResponse<XBattleHistoriesResult>;
+  if (result.errors) {
+    throw new Error(result.errors[0].message);
+  }
+  return result.data;
+};
+export const fetchChallengeHistories = async (bulletToken: string, language?: string) => {
+  const res = await fetchGraphQl(bulletToken, RequestId.EventBattleHistoriesQuery, language);
+  const json = await res.json();
+  const result = json as GraphQLSuccessResponse<EventBattleHistoriesResult>;
+  if (result.errors) {
+    throw new Error(result.errors[0].message);
+  }
+  return result.data;
+};
+export const fetchPrivateBattleHistories = async (bulletToken: string, language?: string) => {
+  const res = await fetchGraphQl(bulletToken, RequestId.PrivateBattleHistoriesQuery, language);
+  const json = await res.json();
+  const result = json as GraphQLSuccessResponse<PrivateBattleHistoriesResult>;
+  if (result.errors) {
+    throw new Error(result.errors[0].message);
+  }
+  return result.data;
 };
 export const fetchVsHistoryDetail = async (id: string, bulletToken: string, language?: string) => {
   const res = await fetchGraphQl<VsHistoryDetailVariables>(

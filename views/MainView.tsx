@@ -56,8 +56,9 @@ import {
   WeaponRecordResult,
 } from "../models/types";
 import {
-  fetchBattleHistories,
+  fetchAnarchyBattleHistories,
   fetchCatalog,
+  fetchChallengeHistories,
   fetchCoopHistoryDetail,
   fetchCoopResult,
   fetchDetailVotingStatus,
@@ -65,12 +66,15 @@ import {
   fetchFriends,
   fetchLatestBattleHistories,
   fetchLatestVersion,
+  fetchPrivateBattleHistories,
+  fetchRegularBattleHistories,
   fetchShop,
   fetchSchedules,
   fetchSplatfests,
   fetchSummary,
   fetchVsHistoryDetail,
   fetchWeaponRecords,
+  fetchXBattleHistories,
   generateLogIn,
   getBulletToken,
   getSessionToken,
@@ -429,85 +433,123 @@ const MainView = () => {
     let n = -1;
     let throwable = 0;
     const [battleFail, coopFail] = await Promise.all([
-      (latestOnly ? fetchLatestBattleHistories(bulletToken) : fetchBattleHistories(bulletToken))
-        .then(async (battleHistories) => {
-          if (battleHistories.x) {
+      Promise.all([
+        fetchLatestBattleHistories(bulletToken),
+        latestOnly ? undefined : fetchXBattleHistories(bulletToken),
+      ])
+        .then(async ([latestBattleHistories, xBattleHistoriesAttempt]) => {
+          if (xBattleHistoriesAttempt) {
             setSplatZonesXPower(
-              battleHistories.x.xBattleHistories.summary.xPowerAr?.lastXPower.toFixed(1) ?? "0"
+              xBattleHistoriesAttempt.xBattleHistories.summary.xPowerAr?.lastXPower.toFixed(1) ??
+                "0"
             );
             setTowerControlXPower(
-              battleHistories.x.xBattleHistories.summary.xPowerLf?.lastXPower.toFixed(1) ?? "0"
+              xBattleHistoriesAttempt.xBattleHistories.summary.xPowerLf?.lastXPower.toFixed(1) ??
+                "0"
             );
             setRainmakerXPower(
-              battleHistories.x.xBattleHistories.summary.xPowerGl?.lastXPower.toFixed(1) ?? "0"
+              xBattleHistoriesAttempt.xBattleHistories.summary.xPowerGl?.lastXPower.toFixed(1) ??
+                "0"
             );
             setClamBlitzXPower(
-              battleHistories.x.xBattleHistories.summary.xPowerCl?.lastXPower.toFixed(1) ?? "0"
+              xBattleHistoriesAttempt.xBattleHistories.summary.xPowerCl?.lastXPower.toFixed(1) ??
+                "0"
             );
           }
 
-          // Fetch details.
+          // Fetch more battle histories if needed.
           const ids: string[] = [];
-          battleHistories.latest?.latestBattleHistories.historyGroups.nodes.forEach(
-            (historyGroup) =>
-              historyGroup.historyDetails.nodes.forEach((historyDetail) => {
-                let id = decode64String(historyDetail.id);
-                switch (historyDetail.vsMode.id) {
-                  case "VnNNb2RlLTE=":
-                  case "VnNNb2RlLTY=":
-                  case "VnNNb2RlLTc=":
-                  case "VnNNb2RlLTg=":
-                    id = id.replace("RECENT", "REGULAR");
-                    break;
-                  case "VnNNb2RlLTI=":
-                  case "VnNNb2RlLTUx":
-                    id = id.replace("RECENT", "BANKARA");
-                    break;
-                  case "VnNNb2RlLTM=":
-                    id = id.replace("RECENT", "XMATCH");
-                    break;
-                  case "VnNNb2RlLTQ=":
-                    id = id.replace("RECENT", "LEAGUE");
-                    break;
-                  case "VnNNb2RlLTU=":
-                    id = id.replace("RECENT", "PRIVATE");
-                    break;
-                  default:
-                    throw new Error(`unexpected vsMode ${historyDetail.vsMode.id}`);
-                }
-                ids.push(encode64String(id));
-              })
-          );
-          battleHistories.regular?.regularBattleHistories.historyGroups.nodes.forEach(
+          let regularId: string | undefined,
+            anarchyId: string | undefined,
+            xId: string | undefined,
+            challengeId: string | undefined,
+            privateId: string | undefined;
+          for (const historyGroup of latestBattleHistories.latestBattleHistories.historyGroups
+            .nodes) {
+            for (const historyDetail of historyGroup.historyDetails.nodes) {
+              const id = decode64String(historyDetail.id);
+              let encodedId = "";
+              switch (historyDetail.vsMode.id) {
+                case "VnNNb2RlLTE=":
+                case "VnNNb2RlLTY=":
+                case "VnNNb2RlLTc=":
+                case "VnNNb2RlLTg=":
+                  encodedId = encode64String(id.replace("RECENT", "REGULAR"));
+                  regularId = encodedId;
+                  break;
+                case "VnNNb2RlLTI=":
+                case "VnNNb2RlLTUx":
+                  encodedId = encode64String(id.replace("RECENT", "BANKARA"));
+                  anarchyId = encodedId;
+                  break;
+                case "VnNNb2RlLTM=":
+                  encodedId = encode64String(id.replace("RECENT", "XMATCH"));
+                  xId = encodedId;
+                  break;
+                case "VnNNb2RlLTQ=":
+                  encodedId = encode64String(id.replace("RECENT", "LEAGUE"));
+                  challengeId = encodedId;
+                  break;
+                case "VnNNb2RlLTU=":
+                  encodedId = encode64String(id.replace("RECENT", "PRIVATE"));
+                  privateId = encodedId;
+                  break;
+                default:
+                  throw new Error(`unexpected vsMode ${historyDetail.vsMode.id}`);
+              }
+              ids.push(encodedId);
+            }
+          }
+          const [skipRegular, skipAnarchy, skipX, skipChallenge, skipPrivate] = await Promise.all([
+            regularId ? Database.isExist(regularId!) : false,
+            anarchyId ? Database.isExist(anarchyId!) : false,
+            xId ? Database.isExist(xId!) : false,
+            challengeId ? Database.isExist(challengeId!) : false,
+            privateId ? Database.isExist(privateId!) : false,
+          ]);
+          const [
+            regularBattleHistories,
+            anarchyBattleHistories,
+            xBattleHistories,
+            challengeHistories,
+            privateBattleHistories,
+          ] = await Promise.all([
+            skipRegular ? undefined : fetchRegularBattleHistories(bulletToken),
+            skipAnarchy ? undefined : fetchAnarchyBattleHistories(bulletToken),
+            skipX ? undefined : xBattleHistoriesAttempt || fetchXBattleHistories(bulletToken),
+            skipChallenge ? undefined : fetchChallengeHistories(bulletToken),
+            skipPrivate ? undefined : fetchPrivateBattleHistories(bulletToken),
+          ]);
+
+          // Fetch details.
+          regularBattleHistories?.regularBattleHistories.historyGroups.nodes.forEach(
             (historyGroup) =>
               historyGroup.historyDetails.nodes.forEach((historyDetail) =>
                 ids.push(historyDetail.id)
               )
           );
-          battleHistories.anarchy?.bankaraBattleHistories.historyGroups.nodes.forEach(
+          anarchyBattleHistories?.bankaraBattleHistories.historyGroups.nodes.forEach(
             (historyGroup) =>
               historyGroup.historyDetails.nodes.forEach((historyDetail) =>
                 ids.push(historyDetail.id)
               )
           );
-          battleHistories.x?.xBattleHistories.historyGroups.nodes.forEach((historyGroup) =>
+          xBattleHistories?.xBattleHistories.historyGroups.nodes.forEach((historyGroup) =>
             historyGroup.historyDetails.nodes.forEach((historyDetail) => ids.push(historyDetail.id))
           );
-          battleHistories.challenge?.eventBattleHistories.historyGroups.nodes.forEach(
-            (historyGroup) =>
-              historyGroup.historyDetails.nodes.forEach((historyDetail) =>
-                ids.push(historyDetail.id)
-              )
+          challengeHistories?.eventBattleHistories.historyGroups.nodes.forEach((historyGroup) =>
+            historyGroup.historyDetails.nodes.forEach((historyDetail) => ids.push(historyDetail.id))
           );
-          battleHistories.private?.privateBattleHistories.historyGroups.nodes.forEach(
+          privateBattleHistories?.privateBattleHistories.historyGroups.nodes.forEach(
             (historyGroup) =>
               historyGroup.historyDetails.nodes.forEach((historyDetail) =>
                 ids.push(historyDetail.id)
               )
           );
 
-          const existed = await Promise.all(ids.map((id) => Database.isExist(id)));
-          const newIds = ids.filter((_, i) => !existed[i]);
+          const uniqueIds = ids.filter((id, i, ids) => ids.indexOf(id) === i);
+          const existed = await Promise.all(uniqueIds.map((id) => Database.isExist(id)));
+          const newIds = uniqueIds.filter((_, i) => !existed[i]);
           if (n === -1) {
             n = newIds.length;
             if (n !== 0) {
