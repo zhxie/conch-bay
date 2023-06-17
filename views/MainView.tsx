@@ -567,7 +567,7 @@ const MainView = () => {
           if (n === -1) {
             n = newIds.length;
             if (n !== 0) {
-              setProgressTotal(250);
+              setProgressTotal(n + 50);
             }
           } else {
             n += newIds.length;
@@ -611,7 +611,7 @@ const MainView = () => {
           if (n === -1) {
             n = newIds.length;
             if (n !== 0) {
-              setProgressTotal(250);
+              setProgressTotal(n + 250);
             }
           } else {
             n += newIds.length;
