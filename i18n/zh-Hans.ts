@@ -57,6 +57,7 @@ const zhHans = {
   importing: "导入中",
   export: "导出",
   exporting: "导出中",
+  exported_n_results_file: "已导出%{n}项记录 (共%{file}个文件)",
   disclaimer: "本应用是使用鱿鱼圈3的信息的非官方应用，与任天堂有限公司无关。",
   update: "更新",
   support: "支持",

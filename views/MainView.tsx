@@ -930,30 +930,51 @@ const MainView = () => {
   };
   const onExportPress = async () => {
     setExporting(true);
-    const uri = FileSystem.cacheDirectory + "conch-bay-export.json";
-    try {
-      const battles: VsHistoryDetailResult[] = [];
-      const coops: CoopHistoryDetailResult[] = [];
-      const records = await Database.queryAll(false);
-      records.forEach((record) => {
-        if (record.mode === "salmon_run") {
-          coops.push(JSON.parse(record.detail) as CoopHistoryDetailResult);
-        } else {
-          battles.push(JSON.parse(record.detail) as VsHistoryDetailResult);
-        }
-      });
+    const BATCH_SIZE = 500;
+    let n = 0;
+    let batch = 0;
+    while (true) {
+      const uri = FileSystem.cacheDirectory + `conch-bay-export-${batch}.json`;
+      try {
+        const battles: string[] = [];
+        const coops: string[] = [];
+        const records = await Database.query(BATCH_SIZE * batch, BATCH_SIZE);
+        records.forEach((record) => {
+          if (record.mode === "salmon_run") {
+            coops.push(record.detail);
+          } else {
+            battles.push(record.detail);
+          }
+        });
 
-      const result = { battles, coops };
-      await FileSystem.writeAsStringAsync(uri, JSON.stringify(result), {
-        encoding: FileSystem.EncodingType.UTF8,
-      });
-      await Sharing.shareAsync(uri, { UTI: "public.json" });
-    } catch (e) {
-      showBanner(BannerLevel.Error, e);
+        const result = { battles, coops };
+        await FileSystem.writeAsStringAsync(uri, JSON.stringify(result), {
+          encoding: FileSystem.EncodingType.UTF8,
+        });
+
+        n += records.length;
+        if (records.length < BATCH_SIZE) {
+          if (records.length === 0) {
+            batch -= 1;
+          }
+          break;
+        }
+        batch += 1;
+      } catch (e) {
+        showBanner(BannerLevel.Error, e);
+        break;
+      }
     }
 
-    // Clean up.
-    await FileSystem.deleteAsync(uri, { idempotent: true });
+    if (batch >= 0) {
+      showBanner(BannerLevel.Info, t("exported_n_results_file", { n, file: batch + 1 }));
+    }
+    for (let i = 0; i <= batch; i++) {
+      const uri = FileSystem.cacheDirectory + `conch-bay-export-${i}.json`;
+      await Sharing.shareAsync(uri, { UTI: "public.json" });
+      // Clean up.
+      await FileSystem.deleteAsync(uri, { idempotent: true });
+    }
     setExporting(false);
   };
   const onUpdatePress = async () => {

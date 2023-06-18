@@ -57,6 +57,7 @@ const zhHant = {
   importing: "匯入中",
   export: "匯出",
   exporting: "匯出中",
+  exported_n_results_file: "已匯出%{n}項記錄 (共%{file}個文件)",
   disclaimer: "本應用是使用魷魚圈3的資訊的非官方應用，與任天堂有限公司無關。",
   update: "更新",
   support: "支援",

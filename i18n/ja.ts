@@ -60,6 +60,7 @@ const ja = {
   importing: "インポート中",
   export: "エクスポート",
   exporting: "エクスポート中",
+  exported_n_results_file: "%{n}件のリザルトをエクスポートされました (合計%{file}ファイル)",
   disclaimer:
     "当アプリは、イカリング3の情報を利用した非公式アプリであり、任天堂株式会社とは一切関係はございません。",
   update: "アップデート",
