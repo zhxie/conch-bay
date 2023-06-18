@@ -59,7 +59,6 @@ const en = {
   importing: "Importing",
   export: "Export",
   exporting: "Exporting",
-  exported_n_results_file: "Exported %{n} result(s) (%{file} file(s) in total)",
   disclaimer:
     "This app is an unofficial app which uses the information of SplatNet 3, and is not related to Nintendo Co., Ltd.",
   update: "Update",
