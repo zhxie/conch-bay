@@ -930,7 +930,6 @@ const MainView = () => {
   };
   const onExportPress = async () => {
     setExporting(true);
-    const BATCH_SIZE = 500;
     let n = 0;
     let batch = 0;
     while (true) {
@@ -938,7 +937,7 @@ const MainView = () => {
       try {
         const battles: string[] = [];
         const coops: string[] = [];
-        const records = await Database.query(BATCH_SIZE * batch, BATCH_SIZE);
+        const records = await Database.query(Database.BATCH_SIZE * batch, Database.BATCH_SIZE);
         records.forEach((record) => {
           if (record.mode === "salmon_run") {
             coops.push(record.detail);
@@ -953,7 +952,7 @@ const MainView = () => {
         });
 
         n += records.length;
-        if (records.length < BATCH_SIZE) {
+        if (records.length < Database.BATCH_SIZE) {
           if (records.length === 0) {
             batch -= 1;
           }
@@ -1008,7 +1007,7 @@ const MainView = () => {
     try {
       // Preload images from saved results.
       const resources = new Map<string, string>();
-      const records = await Database.queryAll(true);
+      const records = await Database.queryAll();
       records.forEach((record) => {
         if (record.mode === "salmon_run") {
           const coop = JSON.parse(record.detail) as CoopHistoryDetailResult;

@@ -1,17 +1,13 @@
+import * as Device from "expo-device";
 import * as SQLite from "expo-sqlite";
 import { CoopHistoryDetailResult, VsHistoryDetailResult } from "../models/types";
 import weapons from "../models/weapons.json";
 import { decode64Index } from "./codec";
 import { getImageHash, getVsSelfPlayer } from "./ui";
 
-export interface FilterProps {
-  modes: string[];
-  rules: string[];
-  stages: string[];
-  weapons: string[];
-}
-
 let db: SQLite.WebSQLDatabase | undefined = undefined;
+
+export const BATCH_SIZE = Math.floor((Device.totalMemory! / 1024 / 1024 / 1024) * 150);
 
 export const open = async () => {
   if (db) {
@@ -33,29 +29,36 @@ export const open = async () => {
     await beginTransaction();
     try {
       await exec('ALTER TABLE result ADD COLUMN stage TEXT NOT NULL DEFAULT ""', [], false);
-      const records = await queryAll(false);
-      await Promise.all(
-        records.map((record) => {
-          if (record.mode === "salmon_run") {
+      let batch = 0;
+      while (true) {
+        const records = await query(batch * BATCH_SIZE, BATCH_SIZE);
+        await Promise.all(
+          records.map((record) => {
+            if (record.mode === "salmon_run") {
+              return exec(
+                "UPDATE result SET stage = ? WHERE id = ?",
+                [
+                  (JSON.parse(record.detail) as CoopHistoryDetailResult).coopHistoryDetail!
+                    .coopStage.id,
+                ],
+                false
+              );
+            }
             return exec(
               "UPDATE result SET stage = ? WHERE id = ?",
               [
-                (JSON.parse(record.detail) as CoopHistoryDetailResult).coopHistoryDetail!.coopStage
-                  .id,
+                (JSON.parse(record.detail) as VsHistoryDetailResult).vsHistoryDetail!.vsStage.id,
+                record.id,
               ],
               false
             );
-          }
-          return exec(
-            "UPDATE result SET stage = ? WHERE id = ?",
-            [
-              (JSON.parse(record.detail) as VsHistoryDetailResult).vsHistoryDetail!.vsStage.id,
-              record.id,
-            ],
-            false
-          );
-        })
-      );
+          })
+        );
+        if (records.length < BATCH_SIZE) {
+          break;
+        }
+        batch += 1;
+      }
       await exec("PRAGMA user_version=1", [], false);
       await commit();
     } catch (e) {
@@ -67,26 +70,37 @@ export const open = async () => {
   if (version < 2) {
     await beginTransaction();
     try {
-      const records = await exec(
-        'SELECT * FROM result WHERE mode = "salmon_run" AND weapon = ""',
-        [],
-        true
-      );
-      await Promise.all(
-        records.rows.map((row) => {
-          const detail = JSON.parse(row["detail"]) as CoopHistoryDetailResult;
-          return exec(
-            "UPDATE result SET weapon = ? WHERE id = ?",
-            [
-              detail
-                .coopHistoryDetail!.myResult.weapons.map((weapon) => getImageHash(weapon.image.url))
-                .join(","),
-              detail.coopHistoryDetail!.id,
-            ],
-            false
-          );
-        })
-      );
+      let batch = 0;
+      while (true) {
+        const records = await exec(
+          `SELECT * FROM result WHERE mode = "salmon_run" AND weapon = "" LIMIT ${BATCH_SIZE} OFFSET ${
+            batch * BATCH_SIZE
+          }`,
+          [],
+          true
+        );
+        await Promise.all(
+          records.rows.map((row) => {
+            const detail = JSON.parse(row["detail"]) as CoopHistoryDetailResult;
+            return exec(
+              "UPDATE result SET weapon = ? WHERE id = ?",
+              [
+                detail
+                  .coopHistoryDetail!.myResult.weapons.map((weapon) =>
+                    getImageHash(weapon.image.url)
+                  )
+                  .join(","),
+                detail.coopHistoryDetail!.id,
+              ],
+              false
+            );
+          })
+        );
+        if (records.rows.length < BATCH_SIZE) {
+          break;
+        }
+        batch += 1;
+      }
       await exec("PRAGMA user_version=2", [], false);
       await commit();
     } catch (e) {
@@ -126,6 +140,13 @@ const commit = async () => {
 const rollback = async () => {
   return await exec("rollback", [], false);
 };
+
+export interface FilterProps {
+  modes: string[];
+  rules: string[];
+  stages: string[];
+  weapons: string[];
+}
 
 const convertFilter = (filter?: FilterProps, from?: number) => {
   const filters: string[] = [];
@@ -173,36 +194,50 @@ const convertFilter = (filter?: FilterProps, from?: number) => {
   return `WHERE ${condition}`;
 };
 
+interface Query {
+  id: string;
+  time: number;
+  mode: string;
+  rule: string;
+  weapon: string;
+  players: string[];
+  detail: string;
+  stage: string;
+}
+
 export const query = async (offset: number, limit: number, filter?: FilterProps) => {
   let condition: string = "";
   if (filter) {
     condition = convertFilter(filter);
   }
-  const sql = `SELECT * FROM result ${condition} ORDER BY time DESC LIMIT ${limit} OFFSET ${offset}`;
-  const record = await exec(sql, [], true);
-  return record.rows.map((row) => ({
-    id: row["id"],
-    time: row["time"],
-    mode: row["mode"],
-    rule: row["rule"],
-    weapon: row["weapon"],
-    players: row["players"].split(","),
-    detail: row["detail"],
-    stage: row["stage"],
-  }));
+  const result: Query[] = [];
+  let batch = 0;
+  while (batch * BATCH_SIZE < limit) {
+    const newOffset = offset + batch * BATCH_SIZE;
+    const newLimit = Math.min(limit - batch * BATCH_SIZE, BATCH_SIZE);
+    const sql = `SELECT * FROM result ${condition} ORDER BY time DESC LIMIT ${newLimit} OFFSET ${newOffset}`;
+    const record = await exec(sql, [], true);
+    if (record.rows.length === 0) {
+      break;
+    }
+    for (const row of record.rows) {
+      result.push({
+        id: row["id"],
+        time: row["time"],
+        mode: row["mode"],
+        rule: row["rule"],
+        weapon: row["weapon"],
+        players: row["players"].split(","),
+        detail: row["detail"],
+        stage: row["stage"],
+      });
+    }
+    batch += 1;
+  }
+  return result;
 };
-export const queryAll = async (order: boolean) => {
-  const record = await exec("SELECT * FROM result" + (order ? " ORDER BY time" : ""), [], true);
-  return record.rows.map((row) => ({
-    id: row["id"],
-    time: row["time"],
-    mode: row["mode"],
-    rule: row["rule"],
-    weapon: row["weapon"],
-    players: row["players"].split(","),
-    detail: row["detail"],
-    stage: row["stage"],
-  }));
+export const queryAll = async () => {
+  return await query(0, await count());
 };
 const WEAPON_IMAGE_MAP = new Map<string, string>();
 export const queryFilterOptions = async () => {
