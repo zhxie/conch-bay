@@ -69,14 +69,18 @@ const en = {
   change_game_language_language: "Change Game Language (%{language})",
   change_display_language_language: "Change Display Language (%{language})",
   relog_in_notice: "If Conch Bay cannot acquire tokens, you can relog in.",
-  relog_in: "Relog In",
-  relog_in_with_session_token: "Relog In with Session Token",
+  relog_in: "Relog in",
+  relog_in_with_session_token: "Relog in with Session Token",
   resource_notice:
     "If Conch Bay cannot load images, you can clear cache or preload resources. Please note, due to SplatNet 3 restrictions, Conch Bay can only preload some images.",
   clear_cache: "Clear Cache",
   clearing_cache: "Clearing Cache",
   preload_resources: "Preload Resources",
   preloading_resources: "Preloading Resources",
+  clean_up_notice:
+    "The memory and storage occupied by Conch Bay will increase as records loaded. You can clean up resources that are no longer used by Conch Bay from the raw data.",
+  clean_up_expired_images: "Clean up Expired Images",
+  cleaning_up_expired_images: "Cleaning up Expired Images",
   feedback_notice:
     "If you encountered any problems using Conch Bay or have any advice, feel free to share your feedback.",
   create_a_github_issue: "Create a GitHub Issue",

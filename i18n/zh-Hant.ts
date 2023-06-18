@@ -74,6 +74,10 @@ const zhHant = {
   clearing_cache: "清除緩存中",
   preload_resources: "預載入資源",
   preloading_resources: "預載入資源中",
+  clean_up_notice:
+    "法螺灣佔用的內存和儲存空間將隨著法螺灣載入記錄而增加。您可以從原始數據中清理法螺灣不再使用的資源。",
+  clean_up_expired_images: "清理已過期的圖片",
+  cleaning_up_expired_images: "清理已過期的圖片中",
   feedback_notice: "如果您在使用法螺灣時遇到任何問題或有任何建議，請隨時分享您的反饋。",
   create_a_github_issue: "創建GitHub Issue",
   send_a_mail: "發送郵件",
