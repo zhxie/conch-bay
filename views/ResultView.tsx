@@ -590,21 +590,6 @@ const ResultView = (props: ResultViewProps) => {
             invertTheme={false}
             data={result.battle?.vsHistoryDetail ?? result.coop!.coopHistoryDetail}
             hideRoot
-            skipKeys={[
-              "__typename",
-              "__isGear",
-              "__isPlayer",
-              "image",
-              "image2d",
-              "image2dThumbnail",
-              "image3d",
-              "image3dThumbnail",
-              "maskingImage",
-              "originalImage",
-              "thumbnailImage",
-              "nextHistoryDetail",
-              "previousHistoryDetail",
-            ]}
             onValuePress={onCopyRawValue}
           />
         )}
