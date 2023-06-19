@@ -409,6 +409,7 @@ export const drop = async () => {
 
 export const cleanUpExpiredImages = async () => {
   let batch = 0;
+  const now = new Date().valueOf();
   while (true) {
     const records = await query(batch * BATCH_SIZE, BATCH_SIZE);
     await Promise.all(
@@ -417,6 +418,10 @@ export const cleanUpExpiredImages = async () => {
         const regex: RegExp = /\?Expires=(\d*).+?"/g;
         const match = regex.exec(detail);
         if (!match) {
+          return;
+        }
+        const expires = match[1];
+        if (parseInt(expires) * 1000 >= now) {
           return;
         }
         detail = detail.replaceAll(regex, '"');
