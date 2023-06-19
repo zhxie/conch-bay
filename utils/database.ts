@@ -406,32 +406,3 @@ export const drop = async () => {
   await exec("PRAGMA user_version=0", [], false);
   await exec("DROP TABLE result", [], false);
 };
-
-export const cleanUpExpiredImages = async () => {
-  let batch = 0;
-  const now = new Date().valueOf();
-  while (true) {
-    const records = await query(batch * BATCH_SIZE, BATCH_SIZE);
-    await Promise.all(
-      records.map((record) => {
-        let detail = record.detail;
-        const regex: RegExp = /\?Expires=(\d*).+?"/g;
-        const match = regex.exec(detail);
-        if (!match) {
-          return;
-        }
-        const expires = match[1];
-        if (parseInt(expires) * 1000 >= now) {
-          return;
-        }
-        detail = detail.replaceAll(regex, '"');
-        return exec("UPDATE result SET detail = ? WHERE id = ?", [detail, record.id], false);
-      })
-    );
-    if (records.length < BATCH_SIZE) {
-      break;
-    }
-    batch += 1;
-  }
-  await exec("VACUUM result", [], false);
-};

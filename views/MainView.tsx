@@ -140,7 +140,6 @@ const MainView = () => {
   const [support, setSupport] = useState(false);
   const [clearingCache, setClearingCache] = useState(false);
   const [preloadingResources, setPreloadingResources] = useState(false);
-  const [cleaningUpExpiredImages, setCleaningUpExpiredImages] = useState(false);
   const [acknowledgments, setAcknowledgments] = useState(false);
   const [firstAid, setFirstAid] = useState(false);
 
@@ -1203,15 +1202,6 @@ const MainView = () => {
     }
     setPreloadingResources(false);
   };
-  const onCleanUpExpiredImagesPress = async () => {
-    setCleaningUpExpiredImages(true);
-    try {
-      await Database.cleanUpExpiredImages();
-    } catch (e) {
-      showBanner(BannerLevel.Error, e);
-    }
-    setCleaningUpExpiredImages(false);
-  };
   const onCreateAGithubIssuePress = async () => {
     await Linking.openURL("https://github.com/zhxie/conch-bay/issues/new");
   };
@@ -1695,21 +1685,6 @@ const MainView = () => {
               onPress={onPreloadResourcesPress}
             >
               <Marquee style={theme.reverseTextStyle}>{t("preload_resources")}</Marquee>
-            </Button>
-          </VStack>
-          <VStack style={[ViewStyles.mb4, ViewStyles.wf]}>
-            <VStack center>
-              <Text style={ViewStyles.mb2}>{t("clean_up_notice")}</Text>
-            </VStack>
-            <Button
-              isDisabled={refreshing}
-              isLoading={cleaningUpExpiredImages}
-              isLoadingText={t("cleaning_up_expired_images")}
-              style={ViewStyles.accent}
-              textStyle={theme.reverseTextStyle}
-              onPress={onCleanUpExpiredImagesPress}
-            >
-              <Marquee style={theme.reverseTextStyle}>{t("clean_up_expired_images")}</Marquee>
             </Button>
           </VStack>
           <VStack style={[sessionToken.length > 0 && ViewStyles.mb4, ViewStyles.wf]}>

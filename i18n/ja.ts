@@ -77,10 +77,6 @@ const ja = {
   clearing_cache: "キャッシュを消去中",
   preload_resources: "リソースを読み込む",
   preloading_resources: "リソースを読み込む中",
-  clean_up_notice:
-    "ホラガイベイが占有するメモリとストレージは、リザルトが読み込まれるにつれて増加します。ホラガイベイで使用されなくなったリソースを生データからクリーンアップできます。",
-  clean_up_expired_images: "失効したイメージをクリーンアップ",
-  cleaning_up_expired_images: "失効したイメージをクリーンアップ中",
   feedback_notice:
     "ホラガイベイの使用中に問題が発生した場合、またはアドバイスがある場合は、お気軽にフィードバックをお寄せください。",
   create_a_github_issue: "GitHub Issueを作成",

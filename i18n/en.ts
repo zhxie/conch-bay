@@ -76,10 +76,6 @@ const en = {
   clearing_cache: "Clearing Cache",
   preload_resources: "Preload Resources",
   preloading_resources: "Preloading Resources",
-  clean_up_notice:
-    "The memory and storage occupied by Conch Bay will increase as records loaded. You can clean up resources that are no longer used by Conch Bay from the raw data.",
-  clean_up_expired_images: "Clean up Expired Images",
-  cleaning_up_expired_images: "Cleaning up Expired Images",
   feedback_notice:
     "If you encountered any problems using Conch Bay or have any advice, feel free to share your feedback.",
   create_a_github_issue: "Create a GitHub Issue",

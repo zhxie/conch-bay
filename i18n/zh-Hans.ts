@@ -73,10 +73,6 @@ const zhHans = {
   clearing_cache: "清除缓存中",
   preload_resources: "预加载资源",
   preloading_resources: "预加载资源中",
-  clean_up_notice:
-    "法螺湾占用的内存和储存空间将随着法螺湾加载记录而增加。您可以从原始数据中清理法螺湾不再使用的资源。",
-  clean_up_expired_images: "清理已过期的图片",
-  cleaning_up_expired_images: "清理已过期的图片中",
   feedback_notice: "如果您在使用法螺湾时遇到任何问题或有任何建议，请随时分享您的反馈。",
   create_a_github_issue: "创建GitHub Issue",
   send_a_mail: "发送邮件",
