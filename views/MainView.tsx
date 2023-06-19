@@ -136,6 +136,7 @@ const MainView = () => {
   const [loadingMore, setLoadingMore] = useState(false);
   const [import_, setImport] = useState(false);
   const [importing, setImporting] = useState(false);
+  const [export_, setExport] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [support, setSupport] = useState(false);
   const [clearingCache, setClearingCache] = useState(false);
@@ -929,7 +930,14 @@ const MainView = () => {
     }
   };
   const onExportPress = async () => {
+    setExport(true);
+  };
+  const onExportClose = async () => {
+    setExport(false);
+  };
+  const onExportContinuePress = async () => {
     setExporting(true);
+    let success = false;
     const uri = FileSystem.cacheDirectory + `conch-bay-export.json`;
     try {
       let battles = "";
@@ -960,6 +968,7 @@ const MainView = () => {
         encoding: FileSystem.EncodingType.UTF8,
       });
       await Sharing.shareAsync(uri, { UTI: "public.json" });
+      success = true;
     } catch (e) {
       showBanner(BannerLevel.Error, e);
     }
@@ -967,6 +976,65 @@ const MainView = () => {
     // Clean up.
     await FileSystem.deleteAsync(uri, { idempotent: true });
     setExporting(false);
+    if (success) {
+      setExport(false);
+    }
+  };
+  const onSplitAndExportPress = async () => {
+    setExporting(true);
+    let success = true;
+    let n = 0;
+    let batch = 0;
+    while (true) {
+      const uri = FileSystem.cacheDirectory + `conch-bay-export-${batch}.json`;
+      try {
+        const battles: string[] = [];
+        const coops: string[] = [];
+        const records = await Database.query(Database.BATCH_SIZE * batch, Database.BATCH_SIZE);
+        records.forEach((record) => {
+          if (record.mode === "salmon_run") {
+            coops.push(record.detail);
+          } else {
+            battles.push(record.detail);
+          }
+        });
+
+        const result = { battles, coops };
+        await FileSystem.writeAsStringAsync(uri, JSON.stringify(result), {
+          encoding: FileSystem.EncodingType.UTF8,
+        });
+
+        n += records.length;
+        if (records.length < Database.BATCH_SIZE) {
+          if (records.length === 0) {
+            batch -= 1;
+          }
+          break;
+        }
+        batch += 1;
+      } catch (e) {
+        success = false;
+        showBanner(BannerLevel.Error, e);
+        break;
+      }
+    }
+
+    if (success) {
+      for (let i = 0; i <= batch; i++) {
+        const uri = FileSystem.cacheDirectory + `conch-bay-export-${i}.json`;
+        await Sharing.shareAsync(uri, { UTI: "public.json" });
+      }
+    }
+
+    // Clean up.
+    for (let i = 0; i <= batch; i++) {
+      const uri = FileSystem.cacheDirectory + `conch-bay-export-${i}.json`;
+      await FileSystem.deleteAsync(uri, { idempotent: true });
+    }
+    setExporting(false);
+    if (success) {
+      setExport(false);
+    }
   };
   const onUpdatePress = async () => {
     await WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay/releases");
@@ -1435,13 +1503,7 @@ const MainView = () => {
                     style={ViewStyles.mr2}
                     onPress={onImportPress}
                   />
-                  <ToolButton
-                    isLoading={exporting}
-                    isLoadingText={t("exporting")}
-                    icon="upload"
-                    title={t("export")}
-                    onPress={onExportPress}
-                  />
+                  <ToolButton icon="upload" title={t("export")} onPress={onExportPress} />
                 </HStack>
               </ScrollView>
               <VStack center style={ViewStyles.px4}>
@@ -1595,6 +1657,32 @@ const MainView = () => {
               onPress={onImportContinuePress}
             >
               <Marquee style={theme.reverseTextStyle}>{t("import")}</Marquee>
+            </Button>
+          </VStack>
+        </VStack>
+      </Modal>
+      <Modal isVisible={export_} onClose={onExportClose} style={ViewStyles.modal1d}>
+        <VStack center>
+          <Icon name="upload" size={48} color={Color.MiddleTerritory} style={ViewStyles.mb4} />
+          <Text style={ViewStyles.mb4}>{t("export_notice")}</Text>
+          <VStack style={ViewStyles.wf}>
+            <Button
+              isLoading={exporting}
+              isLoadingText={t("exporting")}
+              style={[ViewStyles.mb2, ViewStyles.accent]}
+              textStyle={theme.reverseTextStyle}
+              onPress={onExportContinuePress}
+            >
+              <Marquee style={theme.reverseTextStyle}>{t("export")}</Marquee>
+            </Button>
+            <Button
+              isLoading={exporting}
+              isLoadingText={t("exporting")}
+              style={ViewStyles.accent}
+              textStyle={theme.reverseTextStyle}
+              onPress={onSplitAndExportPress}
+            >
+              <Marquee style={theme.reverseTextStyle}>{t("split_and_export")}</Marquee>
             </Button>
           </VStack>
         </VStack>
@@ -1788,9 +1876,18 @@ const MainView = () => {
               isLoadingText={t("exporting")}
               style={[ViewStyles.mb2, ViewStyles.accent]}
               textStyle={theme.reverseTextStyle}
-              onPress={onExportPress}
+              onPress={onExportContinuePress}
             >
               <Marquee style={theme.reverseTextStyle}>{t("export_results")}</Marquee>
+            </Button>
+            <Button
+              isLoading={exporting}
+              isLoadingText={t("exporting")}
+              style={[ViewStyles.mb2, ViewStyles.accent]}
+              textStyle={theme.reverseTextStyle}
+              onPress={onSplitAndExportPress}
+            >
+              <Marquee style={theme.reverseTextStyle}>{t("split_and_export_results")}</Marquee>
             </Button>
             <Button style={ViewStyles.accent} onPress={onExportDatabasePress}>
               <Marquee style={theme.reverseTextStyle}>{t("export_database")}</Marquee>

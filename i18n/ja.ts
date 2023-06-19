@@ -54,12 +54,15 @@ const ja = {
   all_results: "すべてのリザルト",
   load_more_notice: "もっと読み込むを長押しして、指定期間のリザルトを読み込みます。",
   import: "インポート",
+  importing: "インポート中",
   import_notice:
     "ホラガイベイはホラガイベイによってエクスポートされたリザルトのインポートをサポートしています。FAQを参照して、s3s、ikawidget3、salmdroidNW、およびSalmonia3+によってエクスポートされたリザルトをホラガイベイでサポートされている形式に変換することもできます。",
   faq: "FAQ",
-  importing: "インポート中",
   export: "エクスポート",
   exporting: "エクスポート中",
+  export_notice:
+    "ホラガイベイはリザルトをエクスポートするために大量のメモリを必要とします。ホラガイベイがリザルトをエクスポートできない場合は、レコードを分割してエクスポートできます。",
+  split_and_export: "分割してエクスポート",
   disclaimer:
     "当アプリは、イカリング3の情報を利用した非公式アプリであり、任天堂株式会社とは一切関係はございません。",
   update: "アップデート",
@@ -87,6 +90,7 @@ const ja = {
   copy_bullet_token: "ブレットトークンをコピー",
   copied_to_clipboard: "クリップボードにコピーされました",
   export_results: "リザルトをエクスポート",
+  split_and_export_results: "リザルトを分割してエクスポート",
   export_database: "データーベースをエクスポート",
   privacy_policy: "プライバシーポリシー",
   acknowledgments: "謝辞",
