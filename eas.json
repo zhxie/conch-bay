@@ -14,7 +14,10 @@
         "simulator": true
       }
     },
-    "production": {}
+    "production": {},
+    "internal": {
+      "distribution": "internal"
+    }
   },
   "submit": {
     "production": {
