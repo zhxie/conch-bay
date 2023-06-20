@@ -929,10 +929,10 @@ const MainView = () => {
       setImport(false);
     }
   };
-  const onExportPress = async () => {
+  const onExportPress = () => {
     setExport(true);
   };
-  const onExportClose = async () => {
+  const onExportClose = () => {
     setExport(false);
   };
   const onExportContinuePress = async () => {
@@ -958,10 +958,10 @@ const MainView = () => {
         batch += 1;
       }
 
-      if (battles[battles.length - 1] === ",") {
+      if (battles.endsWith(",")) {
         battles = battles.substring(0, battles.length - 1);
       }
-      if (coops[coops.length - 1] === ",") {
+      if (coops.endsWith(",")) {
         coops = coops.substring(0, coops.length - 1);
       }
       await FileSystem.writeAsStringAsync(uri, `{"battles":[${battles}],"coop":[${coops}]}`, {
