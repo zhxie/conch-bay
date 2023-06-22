@@ -26,7 +26,10 @@ const notify = async (title: string, body: string) => {
   });
 };
 
-TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async () => {
+TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
+  if (error) {
+    return BackgroundFetch.BackgroundFetchResult.Failed;
+  }
   try {
     // Check previous token.
     let bulletToken = "";
@@ -43,10 +46,6 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async () => {
       }
       const res = await getWebServiceToken(sessionToken).catch((_) => undefined);
       if (!res) {
-        await notify(
-          t("failed_to_check_results"),
-          t("failed_to_acquire_web_service_token_in_the_background")
-        );
         throw new Error("failed to acquire web service token");
       }
       const newWebServiceToken = res.webServiceToken;
@@ -103,11 +102,13 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async () => {
     }
     if (battle + coop > 0) {
       await notify(t("new_results"), t("found_n_results_in_the_background", { n: battle + coop }));
+      return BackgroundFetch.BackgroundFetchResult.NewData;
     }
+    return BackgroundFetch.BackgroundFetchResult.NoData;
   } catch (_) {
     /* empty */
+    return BackgroundFetch.BackgroundFetchResult.Failed;
   }
-  return BackgroundFetch.BackgroundFetchResult.NewData;
 });
 
 export const registerBackgroundTask = async () => {
