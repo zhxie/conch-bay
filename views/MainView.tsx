@@ -8,6 +8,8 @@ import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
 import { Image } from "expo-image";
 import { activateKeepAwakeAsync, deactivateKeepAwake } from "expo-keep-awake";
+import * as ModulesCore from "expo-modules-core";
+import * as Notifications from "expo-notifications";
 import * as Sharing from "expo-sharing";
 import * as WebBrowser from "expo-web-browser";
 import React, { useEffect, useRef, useState } from "react";
@@ -82,6 +84,7 @@ import {
   updateNsoVersion,
   updateSplatnetVersion,
 } from "../utils/api";
+import { registerBackgroundTasks, unregisterBackgroundTasks } from "../utils/background";
 import { decode64String, encode64String } from "../utils/codec";
 import * as Database from "../utils/database";
 import { useAsyncStorage } from "../utils/hooks";
@@ -143,6 +146,7 @@ const MainView = () => {
   const [preloadingResources, setPreloadingResources] = useState(false);
   const [acknowledgments, setAcknowledgments] = useState(false);
   const [firstAid, setFirstAid] = useState(false);
+  const [backgroundRefresh, setBackgroundRefresh] = useState(false);
 
   const [sessionToken, setSessionToken, clearSessionToken, sessionTokenReady] =
     useAsyncStorage("sessionToken");
@@ -432,6 +436,18 @@ const MainView = () => {
                 }
               }),
             ]);
+
+            // Background refresh.
+            switch ((await Notifications.getPermissionsAsync()).status) {
+              case ModulesCore.PermissionStatus.GRANTED:
+                await onBackgroundRefreshContinue();
+                break;
+              case ModulesCore.PermissionStatus.UNDETERMINED:
+                setBackgroundRefresh(true);
+                break;
+              case ModulesCore.PermissionStatus.DENIED:
+                break;
+            }
           }
         })(),
       ]);
@@ -714,6 +730,7 @@ const MainView = () => {
     try {
       setLoggingIn(true);
       await setSessionToken(await Clipboard.getStringAsync());
+
       setLoggingIn(false);
       setLogIn(false);
       setLogOut(false);
@@ -757,6 +774,7 @@ const MainView = () => {
         clearClamBlitzXPower(),
         clearGrade(),
         Database.clear(),
+        ok(unregisterBackgroundTasks()),
       ]);
       setLoggingOut(false);
       setLogOut(false);
@@ -1333,6 +1351,17 @@ const MainView = () => {
     }
     setAutoRefresh(!autoRefresh);
   };
+  const onBackgroundRefreshClose = () => {
+    setBackgroundRefresh(false);
+  };
+  const onBackgroundRefreshContinue = async () => {
+    if ((await Notifications.requestPermissionsAsync()).granted) {
+      await registerBackgroundTasks().catch((e) => {
+        showBanner(BannerLevel.Warn, t("failed_to_enable_background_refresh", { error: e }));
+      });
+    }
+    setBackgroundRefresh(false);
+  };
 
   return (
     <VStack flex style={theme.backgroundStyle}>
@@ -1891,6 +1920,21 @@ const MainView = () => {
             </Button>
             <Button style={ViewStyles.accent} onPress={onExportDatabasePress}>
               <Marquee style={theme.reverseTextStyle}>{t("export_database")}</Marquee>
+            </Button>
+          </VStack>
+        </VStack>
+      </Modal>
+      <Modal
+        isVisible={backgroundRefresh}
+        onClose={onBackgroundRefreshClose}
+        style={ViewStyles.modal1d}
+      >
+        <VStack center>
+          <Icon name="bell-dot" size={48} color={Color.MiddleTerritory} style={ViewStyles.mb4} />
+          <Text style={ViewStyles.mb4}>{t("background_refresh_notice")}</Text>
+          <VStack style={ViewStyles.wf}>
+            <Button style={ViewStyles.accent} onPress={onBackgroundRefreshContinue}>
+              <Marquee style={theme.reverseTextStyle}>{t("ok")}</Marquee>
             </Button>
           </VStack>
         </VStack>

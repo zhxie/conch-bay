@@ -101,6 +101,14 @@ const en = {
     "The database is corrupted and cannot be loaded. Please export results and reinstall Conch Bay.",
   auto_refresh_enabled: "Auto refresh enabled",
   auto_refresh_disabled: "Auto refresh disabled",
+  background_refresh_notice:
+    "When Conch Bay is running in the background, Conch Bay will check results regularly. Please allow Conch Bay to send notifications to remind you to load results.",
+  ok: "OK",
+  failed_to_enable_background_refresh: "Failed to enable background refresh (%{error})",
+  new_results: "New Results",
+  found_n_results_in_the_background:
+    "Conch Bay found %{n} result(s) in the background, please open the app to complete loading.",
+  failed_to_check_results: "Failed to Check Results",
   // Shop.
   gesotown: "SplatNet Shop",
   order_in_nintendo_switch_online: "Order in Nintendo Switch Online",

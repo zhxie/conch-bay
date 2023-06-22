@@ -31,6 +31,7 @@ const config = {
     supportsTablet: true,
     infoPlist: {
       CFBundleAllowMixedLocalizations: true,
+      UIBackgroundModes: ["fetch"],
     },
     splash: {
       image: "./assets/splash.png",
