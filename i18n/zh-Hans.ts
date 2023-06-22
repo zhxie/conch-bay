@@ -97,11 +97,11 @@ const zhHans = {
   auto_refresh_enabled: "已启用自动刷新",
   auto_refresh_disabled: "已停用自动刷新",
   background_refresh_notice:
-    "当法螺湾运行于后台时，法螺湾将定期检查记录。请允许法螺湾发送通知以提醒您加载记录。",
+    "当法螺湾运行于后台时，法螺湾将定期加载记录。请允许法螺湾发送通知以提醒您加载状况。",
   ok: "OK",
   failed_to_enable_background_refresh: "未能启用后台刷新 (%{error})",
   new_results: "新记录",
-  found_n_results_in_the_background: "法螺湾在后台检查到%{n}项记录，请打开App以完成加载。",
+  loaded_n_results_in_the_background: "法螺湾已在后台加载%{n}项记录，请打开App以确认。",
   // Shop.
   gesotown: "鱿鱼须商城",
   order_in_nintendo_switch_online: "在Nintendo Switch Online中预订",

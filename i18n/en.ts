@@ -102,12 +102,12 @@ const en = {
   auto_refresh_enabled: "Auto refresh enabled",
   auto_refresh_disabled: "Auto refresh disabled",
   background_refresh_notice:
-    "When Conch Bay is running in the background, Conch Bay will check results regularly. Please allow Conch Bay to send notifications to remind you to load results.",
+    "When Conch Bay is running in the background, Conch Bay will load results regularly. Please allow Conch Bay to send notifications to remind you of the load status.",
   ok: "OK",
   failed_to_enable_background_refresh: "Failed to enable background refresh (%{error})",
   new_results: "New Results",
-  found_n_results_in_the_background:
-    "Conch Bay found %{n} result(s) in the background, please open the app to complete loading.",
+  loaded_n_results_in_the_background:
+    "Conch Bay has loaded %{n} result(s) in the background, please open the app to check.",
   // Shop.
   gesotown: "SplatNet Shop",
   order_in_nintendo_switch_online: "Order in Nintendo Switch Online",

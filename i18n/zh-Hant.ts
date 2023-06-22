@@ -97,11 +97,11 @@ const zhHant = {
   auto_refresh_enabled: "已啟用自動刷新",
   auto_refresh_disabled: "已停用自動刷新",
   background_refresh_notice:
-    "當法螺灣運行於背景時，法螺灣將定期檢查記錄。請允許法螺灣傳送通知以提醒您載入記錄。",
+    "當法螺灣運行於背景時，法螺灣將定期載入記錄。請允許法螺灣傳送通知以提醒您載入狀況。",
   ok: "OK",
   failed_to_enable_background_refresh: "未能啟用背景重新整理 (%{error})",
   new_results: "新記錄",
-  found_n_results_in_the_background: "法螺灣在背景檢查到%{n}項記錄，請打開App以完成載入。",
+  loaded_n_results_in_the_background: "法螺灣已在背景載入%{n}項記錄，請打開App以確認。",
   // Shop.
   gesotown: "魷魚鬚商城",
   order_in_nintendo_switch_online: "在Nintendo Switch Online中預訂",

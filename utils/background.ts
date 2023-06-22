@@ -4,13 +4,16 @@ import * as Notifications from "expo-notifications";
 import * as TaskManager from "expo-task-manager";
 import t from "../i18n";
 import {
+  fetchCoopHistoryDetail,
   fetchCoopResult,
   fetchLatestBattleHistories,
+  fetchVsHistoryDetail,
   getBulletToken,
   getWebServiceToken,
 } from "./api";
-import { decode64Time } from "./codec";
+import { decode64String, encode64String } from "./codec";
 import * as Database from "./database";
+import { ok } from "./promise";
 
 const BACKGROUND_REFRESH_RESULTS_TASK = "background-refresh-results";
 
@@ -57,37 +60,82 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
     }
 
     // Refresh results.
+    const language = (await AsyncStorage.getItem("language")) || t("lang");
     await Database.open();
-    const record = await Database.query(0, 1);
-    let lastTime = 0;
-    if (record.length > 0) {
-      lastTime = record[0].time;
-    }
     const [battle, coop] = await Promise.all([
       fetchLatestBattleHistories(bulletToken)
-        .then((battleHistories) => {
+        .then(async (battleHistories) => {
           // Fetch details.
-          const times: number[] = [];
+          const ids: string[] = [];
           for (const historyGroup of battleHistories.latestBattleHistories.historyGroups.nodes) {
             for (const historyDetail of historyGroup.historyDetails.nodes) {
-              times.push(decode64Time(historyDetail.id));
+              const id = decode64String(historyDetail.id);
+              let encodedId = "";
+              switch (historyDetail.vsMode.id) {
+                case "VnNNb2RlLTE=":
+                case "VnNNb2RlLTY=":
+                case "VnNNb2RlLTc=":
+                case "VnNNb2RlLTg=":
+                  encodedId = encode64String(id.replace("RECENT", "REGULAR"));
+                  break;
+                case "VnNNb2RlLTI=":
+                case "VnNNb2RlLTUx":
+                  encodedId = encode64String(id.replace("RECENT", "BANKARA"));
+                  break;
+                case "VnNNb2RlLTM=":
+                  encodedId = encode64String(id.replace("RECENT", "XMATCH"));
+                  break;
+                case "VnNNb2RlLTQ=":
+                  encodedId = encode64String(id.replace("RECENT", "LEAGUE"));
+                  break;
+                case "VnNNb2RlLTU=":
+                  encodedId = encode64String(id.replace("RECENT", "PRIVATE"));
+                  break;
+                default:
+                  throw new Error(`unexpected vsMode ${historyDetail.vsMode.id}`);
+              }
+              ids.push(encodedId);
             }
           }
-          return times.filter((time) => time > lastTime).length;
+
+          const existed = await Promise.all(ids.map((id) => Database.isExist(id)));
+          const newIds = ids.filter((_, i) => !existed[i]);
+          const results = await Promise.all(
+            newIds.map((id) =>
+              ok(
+                fetchVsHistoryDetail(id, bulletToken, language).then(async (detail) => {
+                  return await Database.addBattle(detail);
+                })
+              )
+            )
+          );
+          return results.filter((result) => !result).length;
         })
         .catch((e) => {
           return e as Error;
         }),
       fetchCoopResult(bulletToken)
-        .then((coopResult) => {
+        .then(async (coopResult) => {
           // Fetch details.
-          const times: number[] = [];
+          const ids: string[] = [];
           for (const historyGroup of coopResult.coopResult.historyGroups.nodes) {
             for (const historyDetail of historyGroup.historyDetails.nodes) {
-              times.push(decode64Time(historyDetail.id));
+              ids.push(historyDetail.id);
             }
           }
-          return times.filter((time) => time > lastTime).length;
+
+          const existed = await Promise.all(ids.map((id) => Database.isExist(id)));
+          const newIds = ids.filter((_, i) => !existed[i]);
+          const results = await Promise.all(
+            newIds.map((id) =>
+              ok(
+                fetchCoopHistoryDetail(id, bulletToken, language).then(async (detail) => {
+                  return await Database.addCoop(detail);
+                })
+              )
+            )
+          );
+          return results.filter((result) => !result).length;
         })
         .catch((e) => {
           return e as Error;
@@ -95,25 +143,24 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
     ]);
 
     if (battle instanceof Error) {
-      throw new Error(`failed to check battles ${battle.message}`);
+      throw new Error(`failed to load battles (${battle.message})`);
     }
     if (coop instanceof Error) {
-      throw new Error(`failed to check coops ${coop.message}`);
+      throw new Error(`failed to load coops (${coop.message})`);
     }
     if (battle + coop > 0) {
-      await notify(t("new_results"), t("found_n_results_in_the_background", { n: battle + coop }));
+      await notify(t("new_results"), t("load_n_results_in_the_background", { n: battle + coop }));
       return BackgroundFetch.BackgroundFetchResult.NewData;
     }
     return BackgroundFetch.BackgroundFetchResult.NoData;
   } catch (_) {
-    /* empty */
     return BackgroundFetch.BackgroundFetchResult.Failed;
   }
 });
 
 export const registerBackgroundTask = async () => {
   return await BackgroundFetch.registerTaskAsync(BACKGROUND_REFRESH_RESULTS_TASK, {
-    minimumInterval: 60 * 60,
+    minimumInterval: 30 * 60,
   });
 };
 export const unregisterBackgroundTask = async () => {

@@ -25,11 +25,3 @@ export const decode64Index = (base64: string) => {
   const s = Buffer.from(data).toString();
   return parseInt(s.split("-")[1]);
 };
-
-export const decode64Time = (base64: string) => {
-  const data = decode64(base64);
-  const s = Buffer.from(data).toString();
-  const splitted = s.split(":");
-  const timeString = splitted[splitted.length - 1].split("_")[0];
-  return dayjs(timeString, "YYYYMMDDTHHmmss").valueOf();
-};

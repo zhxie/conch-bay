@@ -103,12 +103,12 @@ const ja = {
   auto_refresh_enabled: "自動更新が有効になりました",
   auto_refresh_disabled: "自動更新が無効になりました",
   background_refresh_notice:
-    "ホラガイベイがバックグラウンドで実行されている場合、ホラガイベイは定期的にリザルトを確認します。ホラガイベイがリザルトをロードするよう通知する通知を送信できるようにしてください。",
+    "ホラガイベイがバックグラウンドで実行されている場合、ホラガイベイは定期的にリザルトを読み込みます。ホラガイベイが読み込みステータスを通知する通知を送信できるようにしてください。",
   ok: "OK",
   failed_to_enable_background_refresh: "バックグラウンド更新を有効できません (%{error})",
   new_results: "新しいリザルト",
-  found_n_results_in_the_background:
-    "ホラガイベイはバックグラウンドで%{n}件のリザルトを見つけました。アプリを開いて読み込みを完了してください。",
+  loaded_n_results_in_the_background:
+    "ホラガイベイはバックグラウンドで%{n}件のリザルトを読み込みました。アプリを開いてご確認ください。",
   // Shop.
   gesotown: "ゲソタウン",
   order_in_nintendo_switch_online: "Nintendo Switch Onlineで注文",
