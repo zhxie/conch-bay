@@ -84,6 +84,7 @@ import {
   updateNsoVersion,
   updateSplatnetVersion,
 } from "../utils/api";
+import { useAsyncStorage } from "../utils/async-storage";
 import {
   isBackgroundTaskRegistered,
   registerBackgroundTask,
@@ -91,7 +92,6 @@ import {
 } from "../utils/background";
 import { decode64String, encode64String } from "../utils/codec";
 import * as Database from "../utils/database";
-import { useAsyncStorage } from "../utils/hooks";
 import { ok } from "../utils/promise";
 import {
   convertStageImageUrl,
