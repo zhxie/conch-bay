@@ -110,11 +110,14 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async () => {
   return BackgroundFetch.BackgroundFetchResult.NewData;
 });
 
-export const registerBackgroundTasks = async () => {
+export const registerBackgroundTask = async () => {
   return await BackgroundFetch.registerTaskAsync(BACKGROUND_REFRESH_RESULTS_TASK, {
     minimumInterval: 60 * 60,
   });
 };
-export const unregisterBackgroundTasks = async () => {
+export const unregisterBackgroundTask = async () => {
   return await BackgroundFetch.unregisterTaskAsync(BACKGROUND_REFRESH_RESULTS_TASK);
+};
+export const isBackgroundTaskRegistered = async () => {
+  return await TaskManager.isTaskRegisteredAsync(BACKGROUND_REFRESH_RESULTS_TASK);
 };

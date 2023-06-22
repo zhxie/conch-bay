@@ -84,7 +84,11 @@ import {
   updateNsoVersion,
   updateSplatnetVersion,
 } from "../utils/api";
-import { registerBackgroundTasks, unregisterBackgroundTasks } from "../utils/background";
+import {
+  isBackgroundTaskRegistered,
+  registerBackgroundTask,
+  unregisterBackgroundTask,
+} from "../utils/background";
 import { decode64String, encode64String } from "../utils/codec";
 import * as Database from "../utils/database";
 import { useAsyncStorage } from "../utils/hooks";
@@ -774,7 +778,13 @@ const MainView = () => {
         clearClamBlitzXPower(),
         clearGrade(),
         Database.clear(),
-        ok(unregisterBackgroundTasks()),
+        ok(
+          isBackgroundTaskRegistered().then(async (res) => {
+            if (res) {
+              await unregisterBackgroundTask();
+            }
+          })
+        ),
       ]);
       setLoggingOut(false);
       setLogOut(false);
@@ -1355,8 +1365,11 @@ const MainView = () => {
     setBackgroundRefresh(false);
   };
   const onBackgroundRefreshContinue = async () => {
-    if ((await Notifications.requestPermissionsAsync()).granted) {
-      await registerBackgroundTasks().catch((e) => {
+    if (
+      (await Notifications.requestPermissionsAsync()).granted &&
+      !(await isBackgroundTaskRegistered())
+    ) {
+      await registerBackgroundTask().catch((e) => {
         showBanner(BannerLevel.Warn, t("failed_to_enable_background_refresh", { error: e }));
       });
     }
