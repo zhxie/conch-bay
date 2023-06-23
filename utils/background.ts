@@ -47,16 +47,17 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
       if (!sessionToken || sessionToken.length === 0) {
         throw new Error("no session token");
       }
-      const res = await getWebServiceToken(sessionToken).catch((_) => undefined);
-      if (!res) {
-        throw new Error("failed to acquire web service token");
+      const res = await getWebServiceToken(sessionToken).catch((e) => e as Error);
+      if (res instanceof Error) {
+        throw new Error(`failed to acquire web service token ${res.message}`);
       }
       const newWebServiceToken = res.webServiceToken;
       await AsyncStorage.setItem("webServiceToken", newWebServiceToken);
-      bulletToken = await getBulletToken(newWebServiceToken).catch((_) => "");
-      if (bulletToken.length === 0) {
-        throw new Error("failed to acquire bullet token");
+      const newBulletToken = await getBulletToken(newWebServiceToken).catch((e) => e as Error);
+      if (newBulletToken instanceof Error) {
+        throw new Error(`failed to acquire bullet token ${newBulletToken.message}`);
       }
+      bulletToken = newBulletToken;
     }
 
     // Refresh results.
@@ -149,7 +150,7 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
       throw new Error(`failed to load coops (${coop.message})`);
     }
     if (battle + coop > 0) {
-      await notify(t("new_results"), t("load_n_results_in_the_background", { n: battle + coop }));
+      notify(t("new_results"), t("load_n_results_in_the_background", { n: battle + coop }));
       return BackgroundFetch.BackgroundFetchResult.NewData;
     }
     return BackgroundFetch.BackgroundFetchResult.NoData;
