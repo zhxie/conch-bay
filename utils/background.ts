@@ -143,14 +143,24 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
         }),
     ]);
 
+    // Notify first and then return or throw.
+    let total = 0;
+    if (typeof battle === "number") {
+      total += battle;
+    }
+    if (typeof coop === "number") {
+      total += coop;
+    }
+    if (total > 0) {
+      notify(t("new_results"), t("load_n_results_in_the_background", { n: total }));
+    }
     if (battle instanceof Error) {
       throw new Error(`failed to load battles (${battle.message})`);
     }
     if (coop instanceof Error) {
       throw new Error(`failed to load coops (${coop.message})`);
     }
-    if (battle + coop > 0) {
-      notify(t("new_results"), t("load_n_results_in_the_background", { n: battle + coop }));
+    if (total > 0) {
       return BackgroundFetch.BackgroundFetchResult.NewData;
     }
     return BackgroundFetch.BackgroundFetchResult.NoData;
