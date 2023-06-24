@@ -26,6 +26,9 @@ const notify = async (title: string, body: string) => {
     trigger: null,
   });
 };
+const incrementBadge = async () => {
+  await Notifications.setBadgeCountAsync((await Notifications.getBadgeCountAsync()) + 1);
+};
 
 TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
   if (error) {
@@ -91,7 +94,7 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
                   encodedId = encode64String(id.replace("RECENT", "PRIVATE"));
                   break;
                 default:
-                  throw new Error(`unexpected vsMode ${historyDetail.vsMode.id}`);
+                  continue;
               }
               ids.push(encodedId);
             }
@@ -103,7 +106,8 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
             newIds.map((id) =>
               ok(
                 fetchVsHistoryDetail(id, bulletToken, language).then(async (detail) => {
-                  return await Database.addBattle(detail);
+                  await Database.addBattle(detail);
+                  await incrementBadge();
                 })
               )
             )
@@ -129,7 +133,8 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
             newIds.map((id) =>
               ok(
                 fetchCoopHistoryDetail(id, bulletToken, language).then(async (detail) => {
-                  return await Database.addCoop(detail);
+                  await Database.addCoop(detail);
+                  await incrementBadge();
                 })
               )
             )
@@ -162,7 +167,7 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
       return BackgroundFetch.BackgroundFetchResult.NewData;
     }
     return BackgroundFetch.BackgroundFetchResult.NoData;
-  } catch (_) {
+  } catch {
     return BackgroundFetch.BackgroundFetchResult.Failed;
   }
 });

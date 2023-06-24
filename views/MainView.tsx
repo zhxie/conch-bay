@@ -1,3 +1,4 @@
+import { useAppState } from "@react-native-community/hooks";
 import dayjs from "dayjs";
 import quarterOfYear from "dayjs/plugin/quarterOfYear";
 import utc from "dayjs/plugin/utc";
@@ -124,6 +125,8 @@ enum TimeRange {
 let autoRefreshTimeout: NodeJS.Timeout | undefined;
 
 const MainView = () => {
+  const appState = useAppState();
+
   const theme = useTheme();
 
   const { height } = useWindowDimensions();
@@ -275,6 +278,15 @@ const MainView = () => {
       }
     }
   }, [refreshing, bulletToken, autoRefresh, language]);
+  useEffect(() => {
+    (async () => {
+      if (appState === "active") {
+        if ((await Notifications.getPermissionsAsync()).granted) {
+          Notifications.setBadgeCountAsync(0);
+        }
+      }
+    })();
+  }, [appState]);
 
   const loadResults = async (length: number) => {
     setLoadingMore(true);
@@ -530,7 +542,7 @@ const MainView = () => {
                   privateId = encodedId;
                   break;
                 default:
-                  throw new Error(`unexpected vsMode ${historyDetail.vsMode.id}`);
+                  continue;
               }
               ids.push(encodedId);
             }
