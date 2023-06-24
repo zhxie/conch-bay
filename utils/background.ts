@@ -112,7 +112,7 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
               )
             )
           );
-          return results.filter((result) => !result).length;
+          return results.filter((result) => result).length;
         })
         .catch((e) => {
           return e as Error;
@@ -139,7 +139,7 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
               )
             )
           );
-          return results.filter((result) => !result).length;
+          return results.filter((result) => result).length;
         })
         .catch((e) => {
           return e as Error;
@@ -155,7 +155,7 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
       total += coop;
     }
     if (total > 0) {
-      notify(t("new_results"), t("load_n_results_in_the_background", { n: total }));
+      notify(t("new_results"), t("loaded_n_results_in_the_background", { n: total }));
     }
     if (battle instanceof Error) {
       throw new Error(`failed to load battles (${battle.message})`);
