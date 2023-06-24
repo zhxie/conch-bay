@@ -23,9 +23,7 @@ const notify = async (title: string, body: string) => {
       title,
       body,
     },
-    trigger: {
-      seconds: 1,
-    },
+    trigger: null,
   });
 };
 
