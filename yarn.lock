@@ -3710,6 +3710,11 @@ expo-device@~5.2.1:
   dependencies:
     ua-parser-js "^0.7.33"
 
+expo-doctor@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/expo-doctor/-/expo-doctor-1.1.1.tgz#acdc2e251264fa20d681a512b0a7eff8968e75cf"
+  integrity sha512-LFn+jTaBBVWvcx4Fu5aHQdnaj4ZQ62EHzFfqiDbzaGdOILVS4d4umrVMB/+Fk9mD9uHjBsW/nOJuBQw/fx4otg==
+
 expo-document-picker@~11.2.2:
   version "11.2.2"
   resolved "https://registry.npmjs.org/expo-document-picker/-/expo-document-picker-11.2.2.tgz"
