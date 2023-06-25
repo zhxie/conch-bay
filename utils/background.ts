@@ -141,14 +141,6 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
         }),
     ]);
 
-    // Always set badge as unread result count.
-    const playedTime = parseInt((await AsyncStorage.getItem("playedTime")) || "0");
-    const unread = (await Database.count(undefined, playedTime)) - 1;
-    if (unread > 0) {
-      Notifications.setBadgeCountAsync(unread);
-    }
-
-    // Notify unread if there is new result.
     let total = 0;
     if (typeof battle === "number") {
       total += battle;
@@ -156,10 +148,19 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
     if (typeof coop === "number") {
       total += coop;
     }
-    if (total > 0) {
-      notify(t("new_results"), t("loaded_n_results_in_the_background", { n: unread }));
-    }
+    if ((await Notifications.getPermissionsAsync()).granted) {
+      // Always set badge as unread result count.
+      const playedTime = parseInt((await AsyncStorage.getItem("playedTime")) || "0");
+      const unread = (await Database.count(undefined, playedTime)) - 1;
+      if (unread > 0) {
+        Notifications.setBadgeCountAsync(unread);
+      }
 
+      // Notify unread if there is new result.
+      if (total > 0) {
+        notify(t("new_results"), t("loaded_n_results_in_the_background", { n: unread }));
+      }
+    }
     if (battle instanceof Error) {
       throw new Error(`failed to load battles (${battle.message})`);
     }

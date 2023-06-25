@@ -463,12 +463,11 @@ const MainView = () => {
             if (Constants.appOwnership !== AppOwnership.Expo) {
               switch ((await Notifications.getPermissionsAsync()).status) {
                 case ModulesCore.PermissionStatus.GRANTED:
+                case ModulesCore.PermissionStatus.DENIED:
                   await onBackgroundRefreshContinue();
                   break;
                 case ModulesCore.PermissionStatus.UNDETERMINED:
                   setBackgroundRefresh(true);
-                  break;
-                case ModulesCore.PermissionStatus.DENIED:
                   break;
               }
             }
@@ -1391,10 +1390,8 @@ const MainView = () => {
     setBackgroundRefresh(false);
   };
   const onBackgroundRefreshContinue = async () => {
-    if (
-      (await Notifications.requestPermissionsAsync()).granted &&
-      !(await isBackgroundTaskRegistered())
-    ) {
+    await Notifications.requestPermissionsAsync();
+    if (!(await isBackgroundTaskRegistered())) {
       await registerBackgroundTask().catch((e) => {
         showBanner(BannerLevel.Warn, t("failed_to_enable_background_refresh", { error: e }));
       });
