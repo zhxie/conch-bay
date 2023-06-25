@@ -5,6 +5,7 @@ import utc from "dayjs/plugin/utc";
 import * as Application from "expo-application";
 import { BlurView } from "expo-blur";
 import * as Clipboard from "expo-clipboard";
+import Constants, { AppOwnership } from "expo-constants";
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
 import { Image } from "expo-image";
@@ -454,15 +455,18 @@ const MainView = () => {
             ]);
 
             // Background refresh.
-            switch ((await Notifications.getPermissionsAsync()).status) {
-              case ModulesCore.PermissionStatus.GRANTED:
-                await onBackgroundRefreshContinue();
-                break;
-              case ModulesCore.PermissionStatus.UNDETERMINED:
-                setBackgroundRefresh(true);
-                break;
-              case ModulesCore.PermissionStatus.DENIED:
-                break;
+            // TODO: not use notification and background refresh in Expo Go currently.
+            if (Constants.appOwnership !== AppOwnership.Expo) {
+              switch ((await Notifications.getPermissionsAsync()).status) {
+                case ModulesCore.PermissionStatus.GRANTED:
+                  await onBackgroundRefreshContinue();
+                  break;
+                case ModulesCore.PermissionStatus.UNDETERMINED:
+                  setBackgroundRefresh(true);
+                  break;
+                case ModulesCore.PermissionStatus.DENIED:
+                  break;
+              }
             }
           }
         })(),
