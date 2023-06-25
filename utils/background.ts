@@ -26,9 +26,6 @@ const notify = async (title: string, body: string) => {
     trigger: null,
   });
 };
-const incrementBadge = async () => {
-  await Notifications.setBadgeCountAsync((await Notifications.getBadgeCountAsync()) + 1);
-};
 
 TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
   if (error) {
@@ -107,7 +104,6 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
               ok(
                 fetchVsHistoryDetail(id, bulletToken, language).then(async (detail) => {
                   await Database.addBattle(detail);
-                  await incrementBadge();
                 })
               )
             )
@@ -134,7 +130,6 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
               ok(
                 fetchCoopHistoryDetail(id, bulletToken, language).then(async (detail) => {
                   await Database.addCoop(detail);
-                  await incrementBadge();
                 })
               )
             )
@@ -146,7 +141,14 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
         }),
     ]);
 
-    // Notify first and then return or throw.
+    // Always set badge as unread result count.
+    const playedTime = parseInt((await AsyncStorage.getItem("playedTime")) || "0");
+    const unread = (await Database.count(undefined, playedTime)) - 1;
+    if (unread > 0) {
+      Notifications.setBadgeCountAsync(unread);
+    }
+
+    // Notify unread if there is new result.
     let total = 0;
     if (typeof battle === "number") {
       total += battle;
@@ -155,8 +157,9 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
       total += coop;
     }
     if (total > 0) {
-      notify(t("new_results"), t("loaded_n_results_in_the_background", { n: total }));
+      notify(t("new_results"), t("loaded_n_results_in_the_background", { n: unread }));
     }
+
     if (battle instanceof Error) {
       throw new Error(`failed to load battles (${battle.message})`);
     }

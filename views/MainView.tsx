@@ -189,6 +189,7 @@ const MainView = () => {
     "0"
   );
   const [grade, setGrade, clearGrade] = useAsyncStorage("grade");
+  const [_, setPlayedTime, clearPlayedTime] = useAsyncStorage("playedTime");
 
   const [apiUpdated, setApiUpdated] = useState(false);
   const [schedules, setSchedules] = useState<Schedules>();
@@ -447,11 +448,14 @@ const MainView = () => {
                 .catch((e) => {
                   showBanner(BannerLevel.Warn, t("failed_to_load_catalog", { error: e }));
                 }),
-              ok(refreshResults(newBulletToken, false)).then(async (result) => {
-                if (result) {
-                  await loadResults(20);
-                }
-              }),
+              ok(
+                refreshResults(newBulletToken, false).then(async () => {
+                  const records = await Database.query(0, 1);
+                  if (records.length > 0) {
+                    await setPlayedTime(records[0].time.toString());
+                  }
+                })
+              ),
             ]);
 
             // Background refresh.
@@ -618,7 +622,7 @@ const MainView = () => {
               ok(
                 fetchVsHistoryDetail(id, bulletToken, language).then(async (detail) => {
                   setProgress((progress) => progress + 1);
-                  return await Database.addBattle(detail);
+                  await Database.addBattle(detail);
                 })
               )
             )
@@ -662,7 +666,7 @@ const MainView = () => {
               ok(
                 fetchCoopHistoryDetail(id, bulletToken, language).then(async (detail) => {
                   setProgress((progress) => progress + 1);
-                  return await Database.addCoop(detail);
+                  await Database.addCoop(detail);
                 })
               )
             )
@@ -793,6 +797,12 @@ const MainView = () => {
         clearRainmakerXPower(),
         clearClamBlitzXPower(),
         clearGrade(),
+        clearPlayedTime(),
+        Notifications.getPermissionsAsync().then(async (res) => {
+          if (res.granted) {
+            await Notifications.setBadgeCountAsync(0);
+          }
+        }),
         Database.clear(),
         ok(
           isBackgroundTaskRegistered().then(async (res) => {
