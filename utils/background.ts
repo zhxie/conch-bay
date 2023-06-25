@@ -24,6 +24,7 @@ const notify = async (title: string, body: string) => {
       body,
     },
     trigger: null,
+    identifier: BACKGROUND_REFRESH_RESULTS_TASK,
   });
 };
 
