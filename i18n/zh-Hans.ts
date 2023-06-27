@@ -53,8 +53,12 @@ const zhHans = {
   import: "导入",
   importing: "导入中",
   import_notice:
-    "法螺湾支持导入由法螺湾导出的记录。您也可以参阅常见问题集将s3s、ikawidget3、salmdroidNW与Salmonia3+导出的记录转换至法螺湾支持的格式。",
-  faq: "常见问题集",
+    "法螺湾支持导入由法螺湾导出的记录，您也可以将其它第三方App导出的记录转换至法螺湾支持的格式并导入。此外，法螺湾需要占用大量的内存以导入记录。如果法螺湾无法导入记录，您可以分割记录并导入。",
+  convert_s3s_outputs: "转换s3s导出的记录",
+  convert_ikawidget3_ikax3: "转换ikawidget3 IKAX3",
+  convert_salmdroidnw_backup: "转换salmdroidNW备份",
+  "convert_salmonia3+_backup": "转换Salmonia3+备份",
+  split_results: "分割记录",
   export: "导出",
   exporting: "导出中",
   export_notice:

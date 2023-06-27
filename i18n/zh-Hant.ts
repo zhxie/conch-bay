@@ -53,8 +53,12 @@ const zhHant = {
   import: "匯入",
   importing: "匯入中",
   import_notice:
-    "法螺灣支援匯入由法螺灣匯出的記錄。您也可以參閱常見問題集將s3s、ikawidget3、salmdroidNW與Salmonia3+匯出的記錄轉換至法螺灣支援的格式。",
-  faq: "常見問題集",
+    "法螺灣支持匯入由法螺灣匯出的記錄，您也可以將其它第三方App匯出的記錄轉換至法螺灣支援的格式並匯入。此外，法螺灣需要佔用大量的內存以匯入記錄。如果法螺灣無法匯入記錄，您可以分割記錄並匯入。",
+  convert_s3s_outputs: "轉換s3s匯出的記錄",
+  convert_ikawidget3_ikax3: "轉換ikawidget3 IKAX3",
+  convert_salmdroidnw_backup: "轉換salmdroidNW備份",
+  "convert_salmonia3+_backup": "轉換Salmonia3+備份",
+  split_results: "分割記錄",
   export: "匯出",
   exporting: "匯出中",
   export_notice:

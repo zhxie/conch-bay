@@ -17,17 +17,6 @@ import { ok } from "./promise";
 
 const BACKGROUND_REFRESH_RESULTS_TASK = "background-refresh-results";
 
-const notify = async (title: string, body: string) => {
-  await Notifications.scheduleNotificationAsync({
-    content: {
-      title,
-      body,
-    },
-    trigger: null,
-    identifier: BACKGROUND_REFRESH_RESULTS_TASK,
-  });
-};
-
 TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
   if (error) {
     return BackgroundFetch.BackgroundFetchResult.Failed;
@@ -159,7 +148,14 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
 
       // Notify unread if there is new result.
       if (total > 0) {
-        notify(t("new_results"), t("loaded_n_results_in_the_background", { n: unread }));
+        Notifications.scheduleNotificationAsync({
+          content: {
+            title: t("new_results"),
+            body: t("loaded_n_results_in_the_background", { n: unread }),
+          },
+          trigger: null,
+          identifier: BACKGROUND_REFRESH_RESULTS_TASK,
+        });
       }
     }
     if (battle instanceof Error) {

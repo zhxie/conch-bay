@@ -907,8 +907,26 @@ const MainView = () => {
   const onImportClose = () => {
     setImport(false);
   };
-  const onFaqPress = async () => {
-    await WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay#faqs");
+  const onConvertS3sOutputsPress = async () => {
+    await WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay#import-data-from-s3s");
+  };
+  const onConvertIkawidget3Ikax3Press = async () => {
+    await WebBrowser.openBrowserAsync(
+      "https://github.com/zhxie/conch-bay#import-data-from-ikawidget3"
+    );
+  };
+  const onConvertSalmroidnwBackupPress = async () => {
+    await WebBrowser.openBrowserAsync(
+      "https://github.com/zhxie/conch-bay#import-data-from-salmdroidnw"
+    );
+  };
+  const onConvertSalmonia3PlusBackupPress = async () => {
+    await WebBrowser.openBrowserAsync(
+      "https://github.com/zhxie/conch-bay#import-data-from-salmonia3"
+    );
+  };
+  const onSplitResultsPress = async () => {
+    await WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay#split-data");
   };
   const onImportContinuePress = async () => {
     setImporting(true);
@@ -1709,9 +1727,49 @@ const MainView = () => {
                 { borderColor: Color.AccentColor, borderWidth: 1.5 },
                 theme.backgroundStyle,
               ]}
-              onPress={onFaqPress}
+              onPress={onConvertS3sOutputsPress}
             >
-              <Marquee>{t("faq")}</Marquee>
+              <Marquee>{t("convert_s3s_outputs")}</Marquee>
+            </Button>
+            <Button
+              style={[
+                ViewStyles.mb2,
+                { borderColor: Color.AccentColor, borderWidth: 1.5 },
+                theme.backgroundStyle,
+              ]}
+              onPress={onConvertIkawidget3Ikax3Press}
+            >
+              <Marquee>{t("convert_ikawidget3_ikax3")}</Marquee>
+            </Button>
+            <Button
+              style={[
+                ViewStyles.mb2,
+                { borderColor: Color.AccentColor, borderWidth: 1.5 },
+                theme.backgroundStyle,
+              ]}
+              onPress={onConvertSalmroidnwBackupPress}
+            >
+              <Marquee>{t("convert_salmdroidnw_backup")}</Marquee>
+            </Button>
+            <Button
+              style={[
+                ViewStyles.mb2,
+                { borderColor: Color.AccentColor, borderWidth: 1.5 },
+                theme.backgroundStyle,
+              ]}
+              onPress={onConvertSalmonia3PlusBackupPress}
+            >
+              <Marquee>{t("convert_salmonia3+_backup")}</Marquee>
+            </Button>
+            <Button
+              style={[
+                ViewStyles.mb2,
+                { borderColor: Color.AccentColor, borderWidth: 1.5 },
+                theme.backgroundStyle,
+              ]}
+              onPress={onSplitResultsPress}
+            >
+              <Marquee>{t("split_results")}</Marquee>
             </Button>
             <Button
               isDisabled={refreshing && !importing}
