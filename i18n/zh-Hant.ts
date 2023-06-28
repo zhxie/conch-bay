@@ -109,7 +109,7 @@ const zhHant = {
   // Shop.
   gesotown: "魷魚鬚商城",
   order_in_nintendo_switch_online: "在Nintendo Switch Online中預訂",
-  display_owned_gears: "显示持有的裝備",
+  show_owned_gears: "显示持有的裝備",
   loading_owned_gears: "載入持有的裝備中",
   failed_to_load_owned_gears: "未能載入持有的裝備 (%{error})",
   headgear: "頭部裝備",

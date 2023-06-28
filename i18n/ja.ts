@@ -116,7 +116,7 @@ const ja = {
   // Shop.
   gesotown: "ゲソタウン",
   order_in_nintendo_switch_online: "Nintendo Switch Onlineで注文",
-  display_owned_gears: "持つギアを表示",
+  show_owned_gears: "持つギアを表示",
   loading_owned_gears: "持つギアを読み込む中",
   failed_to_load_owned_gears: "持つギアを読み込めません (%{error})",
   headgear: "アタマ",

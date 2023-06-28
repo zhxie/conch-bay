@@ -83,7 +83,7 @@ const ShopView = (props: ShopViewProps) => {
   const onOrderInNintendoSwitchOnlinePress = async () => {
     await Linking.openURL("com.nintendo.znca://znca/game/4834290508791808?p=/gesotown");
   };
-  const onDisplayMyGearsPress = async () => {
+  const onShowMyGearsPress = async () => {
     setDisplayEquipments(true);
     const equipments = await props.onRefresh();
     if (equipments) {
@@ -187,9 +187,9 @@ const ShopView = (props: ShopViewProps) => {
                 isLoadingText={t("loading_owned_gears")}
                 style={ViewStyles.accent}
                 textStyle={theme.reverseTextStyle}
-                onPress={onDisplayMyGearsPress}
+                onPress={onShowMyGearsPress}
               >
-                <Marquee style={theme.reverseTextStyle}>{t("display_owned_gears")}</Marquee>
+                <Marquee style={theme.reverseTextStyle}>{t("show_owned_gears")}</Marquee>
               </Button>
             )}
           </VStack>

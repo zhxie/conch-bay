@@ -11,7 +11,7 @@ const en = {
   imink_privacy_policy: "imink Privacy Policy",
   log_in_continue: "I have read and understand",
   alternative_log_in_notice:
-    "If you have session token and want to skip acquiring tokens by Conch Bay, you can also copy the session token and complete logging in alternatively.",
+    "If you have a session token and want to skip acquiring tokens by Conch Bay, you can also copy the session token and complete logging in alternatively.",
   log_in_with_session_token: "Log In with Session Token",
   logging_in: "Acquiring tokens",
   failed_to_acquire_session_token: "Failed to acquire session token (%{error})",
@@ -71,7 +71,7 @@ const en = {
   update: "Update",
   support: "Support",
   language_notice:
-    "If your game language is inconsistent with the display one, you can change it here. This will allow Conch Bay to loading results with the corresponding language.",
+    "If your game language is inconsistent with the display one, you can change it here. This will allow Conch Bay to load results with the corresponding language.",
   change_game_language_language: "Change Game Language (%{language})",
   change_display_language_language: "Change Display Language (%{language})",
   relog_in_notice: "If Conch Bay cannot acquire tokens, you can relog in.",
@@ -87,7 +87,7 @@ const en = {
     "If you encountered any problems using Conch Bay or have any advice, feel free to share your feedback.",
   create_a_github_issue: "Create a GitHub Issue",
   send_a_mail: "Send a mail",
-  debug_notice: "The following information is for debug only. Please do NOT share with others.",
+  debug_notice: "The following information is for debugging only. Please do NOT share with others.",
   copy_session_token: "Copy Session Token",
   copy_web_service_token: "Copy Web Service Token",
   copy_bullet_token: "Copy Bullet Token",
@@ -115,7 +115,7 @@ const en = {
   // Shop.
   gesotown: "SplatNet Shop",
   order_in_nintendo_switch_online: "Order in Nintendo Switch Online",
-  display_owned_gears: "Display Owned Gears",
+  show_owned_gears: "Display Owned Gears",
   loading_owned_gears: "Loading Owned Gears",
   failed_to_load_owned_gears: "Failed to load owned gears (%{error})",
   headgear: "Headgear",
@@ -183,7 +183,7 @@ const en = {
   rescued: "Rescued",
   be_rescued: "Be Rescued",
   stats_notice:
-    "Statistics from currently loaded results. The number in parentheses is over 1 minute average in battles, and over each shift average in Salmon Run.",
+    "Statistics from currently loaded results. The number in parentheses is over 1-minute average in battles and over each shift average in Salmon Run.",
   // Trends.
   trends: "Trends",
   splatted_including_assisted: "Splatted (Including Assisted)",
