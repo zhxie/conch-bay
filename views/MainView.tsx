@@ -86,7 +86,7 @@ import {
   updateNsoVersion,
   updateSplatnetVersion,
 } from "../utils/api";
-import { useAsyncStorage } from "../utils/async-storage";
+import { useAsyncStorage, useBooleanAsyncStorage } from "../utils/async-storage";
 import {
   isBackgroundTaskRegistered,
   registerBackgroundTask,
@@ -162,10 +162,13 @@ const MainView = () => {
     useAsyncStorage("webServiceToken");
   const [bulletToken, setBulletToken, clearBulletToken, bulletTokenReady] =
     useAsyncStorage("bulletToken");
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [language, setLanguage, clearLanguage, languageReady] = useAsyncStorage(
     "language",
     t("lang")
+  );
+  const [autoRefresh, setAutoRefresh, clearAutoRefresh] = useBooleanAsyncStorage(
+    "autoRefresh",
+    false
   );
 
   const [icon, setIcon, clearIcon] = useAsyncStorage("icon");
@@ -203,7 +206,6 @@ const MainView = () => {
   const [filter, setFilter] = useState<Database.FilterProps>();
   const [filterOptions, setFilterOptions] = useState<Database.FilterProps>();
   const [blurOnTop, setBlurOnTop] = useState(false);
-  const [autoRefresh, setAutoRefresh] = useState(false);
 
   const loadedAll = (results?.length ?? 0) >= count;
 
@@ -263,6 +265,13 @@ const MainView = () => {
       loadResults(20);
     }
   }, [filter]);
+  useEffect(() => {
+    if (autoRefresh) {
+      activateKeepAwakeAsync();
+    } else {
+      deactivateKeepAwake();
+    }
+  }, [autoRefresh]);
   useEffect(() => {
     if (ready) {
       clearTimeout(autoRefreshTimeout);
@@ -771,9 +780,6 @@ const MainView = () => {
   const onLogOutContinuePress = async () => {
     try {
       setLoggingOut(true);
-      if (autoRefresh) {
-        onAutoRefreshPress();
-      }
       setFilterOptions(undefined);
       setFilter(undefined);
       setTotal(0);
@@ -785,6 +791,7 @@ const MainView = () => {
         clearSessionToken(),
         clearWebServiceToken(),
         clearBulletToken(),
+        clearAutoRefresh(),
         clearIcon(),
         clearCatalogLevel(),
         clearLevel(),
@@ -1389,12 +1396,11 @@ const MainView = () => {
   const onAutoRefreshPress = () => {
     if (!autoRefresh) {
       showBanner(BannerLevel.Info, t("auto_refresh_enabled"));
-      activateKeepAwakeAsync();
+      setAutoRefresh(true);
     } else {
       showBanner(BannerLevel.Info, t("auto_refresh_disabled"));
-      deactivateKeepAwake();
+      setAutoRefresh(false);
     }
-    setAutoRefresh(!autoRefresh);
   };
   const onBackgroundRefreshClose = () => {
     setBackgroundRefresh(false);

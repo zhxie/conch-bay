@@ -1,11 +1,10 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
 
+type UseAsyncStorage<T> = [T, (value: T) => Promise<void>, () => Promise<void>, boolean];
+
 // https://stackoverflow.com/a/65137974.
-export const useAsyncStorage = (
-  key: string,
-  initialValue?: string
-): [string, (value: string) => Promise<void>, () => Promise<void>, boolean] => {
+export const useAsyncStorage = (key: string, initialValue?: string): UseAsyncStorage<string> => {
   const [data, setData] = useState(initialValue || "");
   const [ready, setReady] = useState(false);
 
@@ -40,4 +39,17 @@ export const useAsyncStorage = (
   };
 
   return [data, setNewData, clearData, ready];
+};
+
+export const useBooleanAsyncStorage = (
+  key: string,
+  initialValue?: boolean
+): UseAsyncStorage<boolean> => {
+  const [data, setNewData, clearData, ready] = useAsyncStorage(key, initialValue ? "1" : "");
+
+  const setNewBooleanData = async (value: boolean) => {
+    await setNewData(value ? "1" : "");
+  };
+
+  return [data === "1" ? true : false, setNewBooleanData, clearData, ready];
 };
