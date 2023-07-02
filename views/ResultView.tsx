@@ -139,6 +139,11 @@ const ResultView = (props: ResultViewProps) => {
     }
     return wave + 1 < coop.coopHistoryDetail!.resultWave;
   };
+  const getCoopSpecialWeaponPadding = (coop: CoopHistoryDetailResult) => {
+    return Math.max(
+      ...coop.coopHistoryDetail!.waveResults.map((waveResult) => waveResult.specialWeapons.length)
+    );
+  };
 
   const formatJudgement = (battle: VsHistoryDetailResult) => {
     switch (battle.vsHistoryDetail!.judgement as Judgement) {
@@ -320,26 +325,15 @@ const ResultView = (props: ResultViewProps) => {
     }
     return td(waveResult.eventWave);
   };
-  const formatSpecialWeapon = (coop: CoopHistoryDetailResult, i: number, begin: number) => {
-    const map = [
-      coop.coopHistoryDetail!.myResult.specialWeapon!.name,
-      ...coop.coopHistoryDetail!.memberResults.map(
-        (memberResult: CoopMemberResult) => memberResult.specialWeapon!.name
-      ),
-    ];
-
-    let last = new Array(coop.coopHistoryDetail!.memberResults.length + 1).fill(0);
-    const current = new Array(coop.coopHistoryDetail!.memberResults.length + 1).fill(0);
-    for (let j = begin; j <= i; j++) {
-      last = [...current];
-      coop.coopHistoryDetail!.waveResults[j].specialWeapons.forEach((specialWeapon) => {
-        const k = map.findIndex((item) => item === specialWeapon.name);
-        current[k] = current[k] + 1;
-      });
-    }
-
-    const result = current.map((_, i) => ({ use: current[i], used: last[i] }));
-    return result;
+  const formatWaveSpecialWeapons = (coop: CoopHistoryDetailResult, waveResult: CoopWaveResult) => {
+    const orderMap = new Map<string, number>();
+    [coop.coopHistoryDetail!.myResult, ...coop.coopHistoryDetail!.memberResults]
+      .map((memberResult) => memberResult.specialWeapon)
+      .filter((specialWeapon) => specialWeapon)
+      .forEach((specialWeapon, i) => orderMap.set(specialWeapon!.image.url, i));
+    const result = waveResult.specialWeapons.map((specialWeapon) => specialWeapon.image.url);
+    result.sort((a, b) => orderMap.get(a)! - orderMap.get(b)!);
+    return result.map((image) => getImageCacheSource(image));
   };
   const formatScenarioCode = (scenarioCode: string) => {
     const result: string[] = [];
@@ -914,12 +908,8 @@ const ResultView = (props: ResultViewProps) => {
                               }
                               quota={waveResult.deliverNorm ?? 1}
                               appearance={waveResult.goldenPopCount}
-                              specialWeapons={formatSpecialWeapon(
-                                result.coop!,
-                                i,
-                                waveResult.deliverNorm ? 0 : i
-                              )}
-                              specialWeaponSupplied={waveResult.deliverNorm ? 2 : 1}
+                              specialWeapons={formatWaveSpecialWeapons(result.coop!, waveResult)}
+                              paddingTo={getCoopSpecialWeaponPadding(result.coop!)}
                               style={i !== waveResults.length - 1 ? ViewStyles.mr2 : undefined}
                             />
                           )
