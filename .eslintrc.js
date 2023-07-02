@@ -6,6 +6,7 @@ module.exports = {
   },
   plugins: ["@typescript-eslint"],
   rules: {
+    "@typescript-eslint/await-thenable": "error",
     "@typescript-eslint/dot-notation": "off",
     "@typescript-eslint/no-duplicate-enum-values": "off",
     "@typescript-eslint/no-explicit-any": "off",

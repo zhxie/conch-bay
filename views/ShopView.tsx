@@ -80,8 +80,8 @@ const ShopView = (props: ShopViewProps) => {
       setDisplayShop(false);
     }
   };
-  const onOrderInNintendoSwitchOnlinePress = async () => {
-    await Linking.openURL("com.nintendo.znca://znca/game/4834290508791808?p=/gesotown");
+  const onOrderInNintendoSwitchOnlinePress = () => {
+    Linking.openURL("com.nintendo.znca://znca/game/4834290508791808?p=/gesotown");
   };
   const onShowMyGearsPress = async () => {
     setDisplayEquipments(true);

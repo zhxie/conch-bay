@@ -433,9 +433,7 @@ const MainView = () => {
                   const icon = summary.currentPlayer.userIcon.url;
                   const level = String(summary.playHistory.rank);
                   const rank = summary.playHistory.udemae;
-                  await setIcon(icon);
-                  await setRank(rank);
-                  await setLevel(level);
+                  await Promise.all([setIcon(icon), setRank(rank), setLevel(level)]);
                 })
                 .catch((e) => {
                   showBanner(BannerLevel.Warn, t("failed_to_load_summary", { error: e }));
@@ -718,8 +716,8 @@ const MainView = () => {
       setLogIn(false);
     }
   };
-  const onPrivacyPolicyPress = async () => {
-    await WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay/wiki/Privacy-Policy");
+  const onPrivacyPolicyPress = () => {
+    WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay/wiki/Privacy-Policy");
   };
   const onLogInContinuePress = async () => {
     try {
@@ -774,7 +772,7 @@ const MainView = () => {
     try {
       setLoggingOut(true);
       if (autoRefresh) {
-        await onAutoRefreshPress();
+        onAutoRefreshPress();
       }
       setFilterOptions(undefined);
       setFilter(undefined);
@@ -907,26 +905,20 @@ const MainView = () => {
   const onImportClose = () => {
     setImport(false);
   };
-  const onConvertS3sOutputsPress = async () => {
-    await WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay#import-data-from-s3s");
+  const onConvertS3sOutputsPress = () => {
+    WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay#import-data-from-s3s");
   };
-  const onConvertIkawidget3Ikax3Press = async () => {
-    await WebBrowser.openBrowserAsync(
-      "https://github.com/zhxie/conch-bay#import-data-from-ikawidget3"
-    );
+  const onConvertIkawidget3Ikax3Press = () => {
+    WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay#import-data-from-ikawidget3");
   };
-  const onConvertSalmroidnwBackupPress = async () => {
-    await WebBrowser.openBrowserAsync(
-      "https://github.com/zhxie/conch-bay#import-data-from-salmdroidnw"
-    );
+  const onConvertSalmroidnwBackupPress = () => {
+    WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay#import-data-from-salmdroidnw");
   };
-  const onConvertSalmonia3PlusBackupPress = async () => {
-    await WebBrowser.openBrowserAsync(
-      "https://github.com/zhxie/conch-bay#import-data-from-salmonia3"
-    );
+  const onConvertSalmonia3PlusBackupPress = () => {
+    WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay#import-data-from-salmonia3");
   };
-  const onSplitResultsPress = async () => {
-    await WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay#split-data");
+  const onSplitResultsPress = () => {
+    WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay#split-data");
   };
   const onImportContinuePress = async () => {
     setImporting(true);
@@ -1107,8 +1099,8 @@ const MainView = () => {
       setExport(false);
     }
   };
-  const onUpdatePress = async () => {
-    await WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay/releases");
+  const onUpdatePress = () => {
+    WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay/releases");
   };
   const onSupportPress = () => {
     setSupport(true);
@@ -1125,8 +1117,8 @@ const MainView = () => {
       await setLanguage(language);
     }
   };
-  const onChangeDisplayLanguagePress = async () => {
-    await Linking.openSettings();
+  const onChangeDisplayLanguagePress = () => {
+    Linking.openSettings();
   };
   const onClearCachePress = async () => {
     setClearingCache(true);
@@ -1341,11 +1333,11 @@ const MainView = () => {
     }
     setPreloadingResources(false);
   };
-  const onCreateAGithubIssuePress = async () => {
-    await Linking.openURL("https://github.com/zhxie/conch-bay/issues/new");
+  const onCreateAGithubIssuePress = () => {
+    Linking.openURL("https://github.com/zhxie/conch-bay/issues/new");
   };
-  const onSendAMailPress = async () => {
-    await Linking.openURL("mailto:conch-bay@outlook.com");
+  const onSendAMailPress = () => {
+    Linking.openURL("mailto:conch-bay@outlook.com");
   };
   const onCopySessionTokenPress = async () => {
     if (sessionToken.length > 0) {
@@ -1379,28 +1371,28 @@ const MainView = () => {
   const onAcknowledgmentsClose = () => {
     setAcknowledgments(false);
   };
-  const onSplatoon3InkPress = async () => {
-    await WebBrowser.openBrowserAsync("https://splatoon3.ink/");
+  const onSplatoon3InkPress = () => {
+    WebBrowser.openBrowserAsync("https://splatoon3.ink/");
   };
-  const onIminkFApiPress = async () => {
-    await WebBrowser.openBrowserAsync("https://github.com/imink-app/f-API");
+  const onIminkFApiPress = () => {
+    WebBrowser.openBrowserAsync("https://github.com/imink-app/f-API");
   };
-  const onNintendoAppVersionsPress = async () => {
-    await WebBrowser.openBrowserAsync("https://github.com/nintendoapis/nintendo-app-versions");
+  const onNintendoAppVersionsPress = () => {
+    WebBrowser.openBrowserAsync("https://github.com/nintendoapis/nintendo-app-versions");
   };
-  const onOssLicensesPress = async () => {
-    await WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay/wiki/OSS-Licenses");
+  const onOssLicensesPress = () => {
+    WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay/wiki/OSS-Licenses");
   };
-  const onSourceCodeRepositoryPress = async () => {
-    await WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay");
+  const onSourceCodeRepositoryPress = () => {
+    WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay");
   };
-  const onAutoRefreshPress = async () => {
+  const onAutoRefreshPress = () => {
     if (!autoRefresh) {
       showBanner(BannerLevel.Info, t("auto_refresh_enabled"));
-      await activateKeepAwakeAsync();
+      activateKeepAwakeAsync();
     } else {
       showBanner(BannerLevel.Info, t("auto_refresh_disabled"));
-      await deactivateKeepAwake();
+      deactivateKeepAwake();
     }
     setAutoRefresh(!autoRefresh);
   };
@@ -1946,8 +1938,8 @@ const MainView = () => {
               image={getUserIconCacheSource(
                 "https://cdn-image-e0d67c509fb203858ebcb2fe3f88c2aa.baas.nintendo.com/1/1afd1450a5a5ebec"
               )}
-              onPress={async () => {
-                await WebBrowser.openBrowserAsync("https://weibo.com/u/2269567390");
+              onPress={() => {
+                WebBrowser.openBrowserAsync("https://weibo.com/u/2269567390");
               }}
               style={ViewStyles.mr2}
             />
@@ -1956,8 +1948,8 @@ const MainView = () => {
               image={getUserIconCacheSource(
                 "https://cdn-image-e0d67c509fb203858ebcb2fe3f88c2aa.baas.nintendo.com/1/4b98d8291ae60b8c"
               )}
-              onPress={async () => {
-                await WebBrowser.openBrowserAsync("https://weibo.com/u/6622470330");
+              onPress={() => {
+                WebBrowser.openBrowserAsync("https://weibo.com/u/6622470330");
               }}
               style={ViewStyles.mr2}
             />

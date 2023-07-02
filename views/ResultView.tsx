@@ -414,15 +414,15 @@ const ResultView = (props: ResultViewProps) => {
     setDisplayBattle(false);
     setDisplayCoop(false);
   };
-  const onOpenInNintendoSwitchOnlinePress = async () => {
+  const onOpenInNintendoSwitchOnlinePress = () => {
     if (result!.battle) {
-      await Linking.openURL(
+      Linking.openURL(
         `com.nintendo.znca://znca/game/4834290508791808?p=/history/detail/${
           result!.battle.vsHistoryDetail!.id
         }`
       );
     } else {
-      await Linking.openURL(
+      Linking.openURL(
         `com.nintendo.znca://znca/game/4834290508791808?p=/coop/${
           result!.coop!.coopHistoryDetail!.id
         }`
