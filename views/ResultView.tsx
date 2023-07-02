@@ -22,7 +22,6 @@ import {
   BattleWeaponBox,
   BossSalmonidBox,
   Button,
-  Center,
   Circle,
   Color,
   CoopButton,
@@ -31,7 +30,6 @@ import {
   Display,
   GearBox,
   HStack,
-  Icon,
   Image,
   KingSalmonidBox,
   Marquee,
@@ -123,7 +121,7 @@ const ResultView = (props: ResultViewProps) => {
         return true;
     }
   };
-  const IsCoopClear = (coop: CoopHistoryDetailResult) => {
+  const isCoopClear = (coop: CoopHistoryDetailResult) => {
     if (coop.coopHistoryDetail!.resultWave === 0) {
       if (coop.coopHistoryDetail!.bossResult) {
         return coop.coopHistoryDetail!.bossResult.hasDefeatBoss;
@@ -132,7 +130,7 @@ const ResultView = (props: ResultViewProps) => {
     }
     return false;
   };
-  const IsCoopWaveClear = (coop: CoopHistoryDetailResult, wave: number) => {
+  const isCoopWaveClear = (coop: CoopHistoryDetailResult, wave: number) => {
     if (coop.coopHistoryDetail!.resultWave === 0) {
       if (!coop.coopHistoryDetail!.waveResults[wave].deliverNorm) {
         return coop.coopHistoryDetail!.bossResult!.hasDefeatBoss;
@@ -527,7 +525,7 @@ const ResultView = (props: ResultViewProps) => {
               ? td(result.item.coop!.coopHistoryDetail!.bossResult.boss)
               : undefined
           }
-          isClear={IsCoopClear(result.item.coop!)}
+          isClear={isCoopClear(result.item.coop!)}
           hazardLevel={formatHazardLevel(result.item.coop!)}
           info={formatCoopInfo(result.item.coop!)}
           gradeChange={formatGradeChange(result.item.coop!)}
@@ -899,7 +897,7 @@ const ResultView = (props: ResultViewProps) => {
                             <WaveBox
                               key={i}
                               color={
-                                IsCoopWaveClear(result.coop!, i)
+                                isCoopWaveClear(result.coop!, i)
                                   ? getCoopRuleColor(result.coop!.coopHistoryDetail!.rule)!
                                   : undefined
                               }
