@@ -2,7 +2,7 @@ import { FlashList, ListRenderItemInfo } from "@shopify/flash-list";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import * as Clipboard from "expo-clipboard";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import {
   Linking,
   NativeScrollEvent,
@@ -111,6 +111,23 @@ const ResultView = (props: ResultViewProps) => {
   const [displayCoopPlayer, setDisplayCoopPlayer] = useState(false);
   const willDisplayNext = useRef<number>();
   const [hidePlayerNames, setHidePlayerNames] = useState(false);
+
+  const findIndex = () => {
+    const id = result?.battle?.vsHistoryDetail?.id || result?.coop?.coopHistoryDetail?.id;
+    if (id) {
+      return props.results?.findIndex(
+        (result) =>
+          result.battle?.vsHistoryDetail?.id === id || result.coop?.coopHistoryDetail?.id === id
+      );
+    }
+  };
+  const i = useMemo(() => {
+    const j = findIndex();
+    if (j === undefined) {
+      return undefined;
+    }
+    return j >= 0 ? j : undefined;
+  }, [props.results, result]);
 
   const isVsPlayerDragon = (player: VsPlayer) => {
     switch (player.festDragonCert as FestDragonCert) {
@@ -343,16 +360,6 @@ const ResultView = (props: ResultViewProps) => {
     return result.join("-");
   };
 
-  const findIndex = () => {
-    const id = result?.battle?.vsHistoryDetail?.id || result?.coop?.coopHistoryDetail?.id;
-    if (id) {
-      return props.results?.findIndex(
-        (result) =>
-          result.battle?.vsHistoryDetail?.id === id || result.coop?.coopHistoryDetail?.id === id
-      );
-    }
-  };
-
   const onDisplayResultClose = () => {
     setDisplayResult(false);
   };
@@ -369,7 +376,6 @@ const ResultView = (props: ResultViewProps) => {
     setDisplayCoopPlayer(false);
   };
   const onShowNextResultPress = () => {
-    const i = findIndex();
     if (i !== undefined && i - 1 >= 0) {
       if (
         (displayBattle && props.results![i - 1].battle) ||
@@ -384,7 +390,6 @@ const ResultView = (props: ResultViewProps) => {
     setDisplayCoop(false);
   };
   const onShowPreviousResultPress = () => {
-    const i = findIndex();
     if (i !== undefined && i + 1 < props.results!.length) {
       if (
         (displayBattle && props.results![i + 1].battle) ||
@@ -849,20 +854,26 @@ const ResultView = (props: ResultViewProps) => {
                 )}
               </Modal>
             </TitledList>
-            <PureIconButton
-              size={24}
-              icon="chevron-left"
-              hitSlop={8}
-              style={{ position: "absolute", top: 14, marginLeft: -4 }}
-              onPress={onShowNextResultPress}
-            />
-            <PureIconButton
-              size={24}
-              icon="chevron-right"
-              hitSlop={8}
-              style={{ position: "absolute", top: 14, right: 0, marginRight: -4 }}
-              onPress={onShowPreviousResultPress}
-            />
+            {i !== undefined && (
+              <PureIconButton
+                isDisabled={i === 0}
+                size={24}
+                icon="chevron-left"
+                hitSlop={8}
+                style={{ position: "absolute", top: 14, marginLeft: -4 }}
+                onPress={onShowNextResultPress}
+              />
+            )}
+            {i !== undefined && (
+              <PureIconButton
+                isDisabled={i === (props.results?.length ?? 1) - 1}
+                size={24}
+                icon="chevron-right"
+                hitSlop={8}
+                style={{ position: "absolute", top: 14, right: 0, marginRight: -4 }}
+                onPress={onShowPreviousResultPress}
+              />
+            )}
           </>
         )}
       </Modal>
@@ -1154,20 +1165,26 @@ const ResultView = (props: ResultViewProps) => {
                 )}
               </Modal>
             </TitledList>
-            <PureIconButton
-              size={24}
-              icon="chevron-left"
-              hitSlop={8}
-              style={{ position: "absolute", top: 14, left: 16, marginLeft: -4 }}
-              onPress={onShowNextResultPress}
-            />
-            <PureIconButton
-              size={24}
-              icon="chevron-right"
-              hitSlop={8}
-              style={{ position: "absolute", top: 14, right: 16, marginRight: -4 }}
-              onPress={onShowPreviousResultPress}
-            />
+            {i !== undefined && (
+              <PureIconButton
+                isDisabled={i === 0}
+                size={24}
+                icon="chevron-left"
+                hitSlop={8}
+                style={{ position: "absolute", top: 14, left: 16, marginLeft: -4 }}
+                onPress={onShowNextResultPress}
+              />
+            )}
+            {i !== undefined && (
+              <PureIconButton
+                isDisabled={i === (props.results?.length ?? 1) - 1}
+                size={24}
+                icon="chevron-right"
+                hitSlop={8}
+                style={{ position: "absolute", top: 14, right: 16, marginRight: -4 }}
+                onPress={onShowPreviousResultPress}
+              />
+            )}
           </>
         )}
       </Modal>
