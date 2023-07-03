@@ -3,6 +3,7 @@ import { ViewStyles, useTheme } from "./Styles";
 
 interface PressableProps {
   isDisabled?: boolean;
+  hitSlop?: number;
   style?: StyleProp<ViewStyle>;
   onPress?: () => void;
   onLongPress?: () => void;
@@ -17,6 +18,7 @@ const Pressable = (props: PressableProps) => {
   return (
     <TouchableOpacity
       disabled={props.isDisabled}
+      hitSlop={props.hitSlop}
       style={[theme.territoryStyle, disabledStyle, props.style]}
       onPress={props.onPress}
       onLongPress={props.onLongPress}

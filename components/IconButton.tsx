@@ -9,6 +9,7 @@ interface IconButtonProps {
   size: number;
   color?: string;
   icon: string;
+  hitSlop?: number;
   style?: StyleProp<ViewStyle>;
   onPress?: () => void;
   onLongPress?: () => void;
@@ -18,6 +19,7 @@ const IconButton = (props: IconButtonProps) => {
   return (
     <Pressable
       isDisabled={props.isDisabled}
+      hitSlop={props.hitSlop}
       style={[
         {
           width: props.size,
@@ -45,6 +47,7 @@ const PureIconButton = (props: IconButtonProps) => {
   return (
     <Pressable
       isDisabled={props.isDisabled}
+      hitSlop={props.hitSlop}
       style={[
         {
           width: props.size,

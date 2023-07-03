@@ -852,12 +852,14 @@ const ResultView = (props: ResultViewProps) => {
             <PureIconButton
               size={24}
               icon="chevron-left"
+              hitSlop={8}
               style={{ position: "absolute", top: 14, marginLeft: -4 }}
               onPress={onShowNextResultPress}
             />
             <PureIconButton
               size={24}
               icon="chevron-right"
+              hitSlop={8}
               style={{ position: "absolute", top: 14, right: 0, marginRight: -4 }}
               onPress={onShowPreviousResultPress}
             />
@@ -1155,14 +1157,16 @@ const ResultView = (props: ResultViewProps) => {
             <PureIconButton
               size={24}
               icon="chevron-left"
+              hitSlop={8}
               style={{ position: "absolute", top: 14, left: 16, marginLeft: -4 }}
-              onPress={onShowPreviousResultPress}
+              onPress={onShowNextResultPress}
             />
             <PureIconButton
               size={24}
               icon="chevron-right"
+              hitSlop={8}
               style={{ position: "absolute", top: 14, right: 16, marginRight: -4 }}
-              onPress={onShowNextResultPress}
+              onPress={onShowPreviousResultPress}
             />
           </>
         )}
