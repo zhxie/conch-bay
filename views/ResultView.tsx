@@ -368,21 +368,6 @@ const ResultView = (props: ResultViewProps) => {
   const onDisplayCoopPlayerClose = () => {
     setDisplayCoopPlayer(false);
   };
-  const onShowPreviousResultPress = () => {
-    const i = findIndex();
-    if (i !== undefined && i + 1 < props.results!.length) {
-      if (
-        (displayBattle && props.results![i + 1].battle) ||
-        (displayCoop && props.results![i + 1].coop)
-      ) {
-        setResult(props.results![i + 1]);
-        return;
-      }
-      willDisplayNext.current = i + 1;
-    }
-    setDisplayBattle(false);
-    setDisplayCoop(false);
-  };
   const onShowNextResultPress = () => {
     const i = findIndex();
     if (i !== undefined && i - 1 >= 0) {
@@ -394,6 +379,21 @@ const ResultView = (props: ResultViewProps) => {
         return;
       }
       willDisplayNext.current = i - 1;
+    }
+    setDisplayBattle(false);
+    setDisplayCoop(false);
+  };
+  const onShowPreviousResultPress = () => {
+    const i = findIndex();
+    if (i !== undefined && i + 1 < props.results!.length) {
+      if (
+        (displayBattle && props.results![i + 1].battle) ||
+        (displayCoop && props.results![i + 1].coop)
+      ) {
+        setResult(props.results![i + 1]);
+        return;
+      }
+      willDisplayNext.current = i + 1;
     }
     setDisplayBattle(false);
     setDisplayCoop(false);
@@ -853,13 +853,13 @@ const ResultView = (props: ResultViewProps) => {
               size={24}
               icon="chevron-left"
               style={{ position: "absolute", top: 14, marginLeft: -4 }}
-              onPress={onShowPreviousResultPress}
+              onPress={onShowNextResultPress}
             />
             <PureIconButton
               size={24}
               icon="chevron-right"
               style={{ position: "absolute", top: 14, right: 0, marginRight: -4 }}
-              onPress={onShowNextResultPress}
+              onPress={onShowPreviousResultPress}
             />
           </>
         )}
