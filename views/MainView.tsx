@@ -910,7 +910,10 @@ const MainView = () => {
         num = await Database.count(filter, dayjs().utc().startOf("month").valueOf());
         break;
       case TimeRange.ThisSeason:
-        num = await Database.count(filter, dayjs().utc().startOf("quarter").valueOf());
+        num = await Database.count(
+          filter,
+          dayjs().utc().startOf("quarter").subtract(1, "month").valueOf()
+        );
         break;
       case TimeRange.AllResults:
         num = count;
