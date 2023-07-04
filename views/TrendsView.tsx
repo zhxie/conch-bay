@@ -1,5 +1,17 @@
+import SegmentedControl, {
+  NativeSegmentedControlIOSChangeEvent,
+} from "@react-native-segmented-control/segmented-control";
+import dayjs from "dayjs";
+import quarterOfYear from "dayjs/plugin/quarterOfYear";
+import utc from "dayjs/plugin/utc";
 import { useMemo, useState } from "react";
-import { LayoutChangeEvent, ScrollView, StyleProp, ViewStyle } from "react-native";
+import {
+  LayoutChangeEvent,
+  NativeSyntheticEvent,
+  ScrollView,
+  StyleProp,
+  ViewStyle,
+} from "react-native";
 import {
   Center,
   Chart,
@@ -18,8 +30,12 @@ import {
   useTheme,
 } from "../components";
 import t from "../i18n";
+import { CoopHistoryDetailResult, VsHistoryDetailResult } from "../models/types";
 import { burnColor, countBattles, countCoops } from "../utils/ui";
 import { ResultProps } from "./ResultView";
+
+dayjs.extend(quarterOfYear);
+dayjs.extend(utc);
 
 interface TrendViewProps {
   results?: ResultProps[];
@@ -61,38 +77,85 @@ const TrendsView = (props: TrendViewProps) => {
 
   const [point, setPoint] = useState(20);
   const [trends, setTrends] = useState(false);
+  const [group, setPeriod] = useState(0);
   const [battleDimensions, setBattleDimensions] = useState<BattleDimension[]>(["VICTORY"]);
   const [coopDimensions, setCoopDimensions] = useState<CoopDimension[]>(["CLEAR"]);
 
-  const split = <T,>(arr: T[], count: number) => {
+  const split = <T extends VsHistoryDetailResult | CoopHistoryDetailResult>(
+    arr: T[],
+    count: number,
+    group: number
+  ) => {
     const result: T[][] = [];
-    const size = Math.max(arr.length / count, 1);
-    let start = arr.length - size;
-    let n = 0;
-    while (start >= 0) {
-      const part: T[] = [];
-      for (let i = Math.ceil(start); i < start + size && i < arr.length; i++) {
-        part.push(arr[i]);
-        n++;
-      }
-      if (part.length > 0) {
-        result.push(part.reverse());
-      }
-      start -= size;
-    }
-    // HACK: complete remaining elements due to loss of precision.
-    if (n < arr.length) {
-      if (result.length === count) {
-        for (let i = arr.length - n - 1; i >= 0; i--) {
-          result[result.length - 1].push(arr[i]);
-        }
-      } else {
+    if (group === 0) {
+      const size = Math.max(arr.length / count, 1);
+      let start = arr.length - size;
+      let n = 0;
+      while (start >= 0) {
         const part: T[] = [];
-        for (let i = arr.length - n - 1; i >= 0; i--) {
+        for (let i = Math.ceil(start); i < start + size && i < arr.length; i++) {
           part.push(arr[i]);
+          n++;
         }
-        result.push(part);
+        if (part.length > 0) {
+          result.push(part.reverse());
+        }
+        start -= size;
       }
+      // HACK: complete remaining elements due to loss of precision.
+      if (n < arr.length) {
+        if (result.length === count) {
+          for (let i = arr.length - n - 1; i >= 0; i--) {
+            result[result.length - 1].push(arr[i]);
+          }
+        } else {
+          const part: T[] = [];
+          for (let i = arr.length - n - 1; i >= 0; i--) {
+            part.push(arr[i]);
+          }
+          result.push(part);
+        }
+      }
+    } else {
+      let stops: number[] = [];
+      for (let i = 0; i < count; i++) {
+        switch (group) {
+          case 1:
+            stops.push(dayjs().utc().startOf("day").subtract(i, "day").valueOf());
+            break;
+          case 2:
+            stops.push(dayjs().utc().startOf("week").subtract(i, "week").valueOf());
+            break;
+          case 3:
+            stops.push(dayjs().utc().startOf("month").subtract(i, "month").valueOf());
+            break;
+          case 4:
+            stops.push(
+              dayjs().utc().startOf("quarter").subtract(1, "month").subtract(i, "quarter").valueOf()
+            );
+            break;
+          default:
+            throw new Error(`unexpected group ${group}`);
+        }
+      }
+      // 1661990400000 represents 2022-9-1.
+      stops = stops.filter((stop) => stop >= 1661990400000);
+      for (let i = 0; i < stops.length; i++) {
+        const begin = stops[i];
+        const end = i === 0 ? Number.POSITIVE_INFINITY : stops[i - 1];
+        result.push(
+          arr.filter((r) => {
+            const playedTime = (
+              r["vsHistoryDetail"]
+                ? r["vsHistoryDetail"]["playedTime"]
+                : r["coopHistoryDetail"]["playedTime"]
+            ) as string;
+            const time = new Date(playedTime).valueOf();
+            return time >= begin && time < end;
+          })
+        );
+      }
+      result.reverse();
     }
     return result;
   };
@@ -101,12 +164,15 @@ const TrendsView = (props: TrendViewProps) => {
     () => props.results?.filter((result) => result.battle).map((result) => result.battle!),
     [props.results]
   );
-  const battleGroups = useMemo(() => (battles ? split(battles, point) : []), [battles]);
+  const battleGroups = useMemo(
+    () => (battles ? split(battles, point, group) : []),
+    [battles, group]
+  );
   const coops = useMemo(
     () => props.results?.filter((result) => result.coop).map((result) => result.coop!),
     [props.results]
   );
-  const coopGroups = useMemo(() => (coops ? split(coops, point) : []), [coops]);
+  const coopGroups = useMemo(() => (coops ? split(coops, point, group) : []), [coops, group]);
 
   const battleStats = useMemo(
     () => battleGroups.map((group) => countBattles(group)),
@@ -124,7 +190,7 @@ const TrendsView = (props: TrendViewProps) => {
     switch (dimension) {
       case "VICTORY":
         return {
-          data: battleStats.map((stat) => (stat.win * 100) / stat.count),
+          data: battleStats.map((stat) => rationalize((stat.win * 100) / stat.count)),
           color: Color.AccentColor,
           max: 100,
           relative: true,
@@ -207,7 +273,7 @@ const TrendsView = (props: TrendViewProps) => {
     switch (dimension) {
       case "CLEAR":
         return {
-          data: coopStats.map((stat) => (stat.clear * 100) / stat.count),
+          data: coopStats.map((stat) => rationalize((stat.clear * 100) / stat.count)),
           color: Color.AccentColor,
           max: 100,
           relative: true,
@@ -306,6 +372,9 @@ const TrendsView = (props: TrendViewProps) => {
   const onTrendsClose = () => {
     setTrends(false);
   };
+  const onGroupChange = (event: NativeSyntheticEvent<NativeSegmentedControlIOSChangeEvent>) => {
+    setPeriod(event.nativeEvent.selectedSegmentIndex);
+  };
   const onBattleDimensionPress = (dimension: BattleDimension) => {
     const newBattleDimensions = battleDimensions.map((dimension) => dimension);
     if (newBattleDimensions.includes(dimension)) {
@@ -336,6 +405,13 @@ const TrendsView = (props: TrendViewProps) => {
         onLayout={onLayout}
         style={ViewStyles.modal2d}
       >
+        <VStack style={ViewStyles.mb2}>
+          <SegmentedControl
+            values={[t("average"), t("day"), t("week"), t("month"), t("season")]}
+            selectedIndex={group}
+            onChange={onGroupChange}
+          />
+        </VStack>
         <VStack style={ViewStyles.mb2}>
           <Display isFirst isLast={battleGroups.length === 0} title={t("battle")}>
             <Text numberOfLines={1}>{battles?.length ?? 0}</Text>

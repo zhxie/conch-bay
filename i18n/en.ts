@@ -186,6 +186,11 @@ const en = {
     "Statistics from currently loaded results. The number in parentheses is over 1-minute average in battles and over each shift average in Salmon Run.",
   // Trends.
   trends: "Trends",
+  average: "Average",
+  day: "Day",
+  week: "Week",
+  month: "Month",
+  season: "Season",
   splatted_including_assisted: "Splatted (Including Assisted)",
   golden_eggs_collected_including_assisted: "Golden Eggs Collected (Including Assisted)",
   trends_notice: "Long press on tags to show team's average.",
