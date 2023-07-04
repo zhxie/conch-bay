@@ -192,7 +192,7 @@ const MainView = () => {
     "0"
   );
   const [grade, setGrade, clearGrade] = useAsyncStorage("grade");
-  const [_, setPlayedTime, clearPlayedTime] = useAsyncStorage("playedTime");
+  const [playedTime, setPlayedTime, clearPlayedTime] = useAsyncStorage("playedTime");
 
   const [apiUpdated, setApiUpdated] = useState(false);
   const [schedules, setSchedules] = useState<Schedules>();
@@ -295,9 +295,15 @@ const MainView = () => {
         if ((await Notifications.getPermissionsAsync()).granted) {
           Notifications.setBadgeCountAsync(0);
         }
+        if (ready) {
+          const updated = await updatePlayedTime();
+          if (updated) {
+            await loadResults(20);
+          }
+        }
       }
     })();
-  }, [appState]);
+  }, [ready, appState]);
 
   const loadResults = async (length: number) => {
     setLoadingMore(true);
@@ -331,6 +337,17 @@ const MainView = () => {
       }
     }
     setLoadingMore(false);
+  };
+  const updatePlayedTime = async () => {
+    const records = await Database.query(0, 1);
+    if (records.length > 0) {
+      const lastPlayedTime = records[0].time.toString();
+      if (playedTime !== lastPlayedTime) {
+        await setPlayedTime(lastPlayedTime);
+        return true;
+      }
+    }
+    return false;
   };
   const generateBulletToken = async () => {
     if (bulletToken.length > 0) {
@@ -455,14 +472,7 @@ const MainView = () => {
                 .catch((e) => {
                   showBanner(BannerLevel.Warn, t("failed_to_load_catalog", { error: e }));
                 }),
-              ok(
-                refreshResults(newBulletToken, false).then(async () => {
-                  const records = await Database.query(0, 1);
-                  if (records.length > 0) {
-                    await setPlayedTime(records[0].time.toString());
-                  }
-                })
-              ),
+              ok(refreshResults(newBulletToken, false)),
             ]);
 
             // Background refresh.
@@ -693,7 +703,9 @@ const MainView = () => {
       } else {
         showBanner(BannerLevel.Success, t("loaded_n_results", { n }));
       }
-
+    }
+    const updated = await updatePlayedTime();
+    if (n > 0 || updated) {
       await loadResults(20);
     }
     if (throwable > 1) {
