@@ -80,6 +80,10 @@ export const TextStyles = StyleSheet.create({
     fontSize: 10,
     fontWeight: "bold",
   },
+  h9: {
+    fontSize: 8,
+    fontWeight: "bold",
+  },
   c: {
     textAlign: "center",
   },

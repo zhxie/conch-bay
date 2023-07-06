@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { StyleProp, ViewStyle } from "react-native";
 import Image, { ImageSource } from "./Image";
 import Marquee from "./Marquee";
@@ -15,27 +16,34 @@ interface WaveBoxProps {
   quota: number;
   appearance: number;
   specialWeapons: ImageSource[];
-  paddingTo: number;
+  specialWeaponPadding: boolean;
   style?: StyleProp<ViewStyle>;
 }
 
 const WaveBox = (props: WaveBoxProps) => {
   const theme = useTheme();
 
-  const specialWeaponPerRow = props.paddingTo <= 5 ? 5 : 4;
-  const specialWeaponRow = Math.floor(
-    (props.specialWeapons.length + (specialWeaponPerRow - 1)) / specialWeaponPerRow
-  );
-  const maxSpecialWeaponRow = Math.floor(
-    (props.paddingTo + (specialWeaponPerRow - 1)) / specialWeaponPerRow
-  );
+  const specialWeapons = useMemo(() => {
+    const result: { image: ImageSource; count: number }[] = [];
+    const map = new Map<string, number>();
+    for (const specialWeapon of props.specialWeapons) {
+      let i = map.get(specialWeapon.uri!);
+      if (i === undefined) {
+        result.push({ image: specialWeapon, count: 0 });
+        map.set(specialWeapon.uri!, result.length - 1);
+        i = map.get(specialWeapon.uri!)!;
+      }
+      result[i].count += 1;
+    }
+    return result;
+  }, [props.specialWeapons]);
 
   return (
     <VStack center style={[{ width: 125 }, props.style]}>
       <VStack
         style={[
           ViewStyles.wf,
-          ViewStyles.mb1,
+          props.specialWeaponPadding && ViewStyles.mb1,
           ViewStyles.r2,
           ViewStyles.p2,
           { height: 90 },
@@ -70,35 +78,24 @@ const WaveBox = (props: WaveBoxProps) => {
           </HStack>
         </VStack>
       </VStack>
-      {/* HACK: add a mb1 in each row. */}
-      <VStack
-        center
-        style={{
-          height:
-            20 * maxSpecialWeaponRow + ViewStyles.mb1.marginBottom * (maxSpecialWeaponRow - 1),
-        }}
-      >
-        {new Array(specialWeaponRow).fill(0).map((_, i) => (
-          <HStack key={i} style={i !== specialWeaponRow - 1 && ViewStyles.mb1}>
-            {new Array(
-              Math.min(props.specialWeapons.length - i * specialWeaponPerRow, specialWeaponPerRow)
-            )
-              .fill(0)
-              .map((_, j, row) => (
-                <Center key={j} style={j !== row.length - 1 && ViewStyles.mr1}>
-                  <Circle size={20} color={theme.territoryColor} style={ViewStyles.r1} />
-                  <Image
-                    source={props.specialWeapons[i * specialWeaponPerRow + j]}
-                    style={[
-                      ViewStyles.transparent,
-                      { width: 15, height: 15, position: "absolute" },
-                    ]}
-                  />
-                </Center>
-              ))}
-          </HStack>
-        ))}
-      </VStack>
+      {props.specialWeaponPadding && (
+        <HStack style={{ height: 20 }}>
+          {specialWeapons.map((specialWeapon, i, specialWeapons) => (
+            <Center key={i} style={i !== specialWeapons.length - 1 && ViewStyles.mr1}>
+              <Circle size={20} color={theme.territoryColor} style={ViewStyles.r1} />
+              <Image
+                source={specialWeapon.image}
+                style={[ViewStyles.transparent, { width: 15, height: 15, position: "absolute" }]}
+              />
+              {specialWeapon.count > 1 && (
+                <Text center style={[TextStyles.h9, { position: "absolute", right: 1, bottom: 0 }]}>
+                  {specialWeapon.count}
+                </Text>
+              )}
+            </Center>
+          ))}
+        </HStack>
+      )}
     </VStack>
   );
 };

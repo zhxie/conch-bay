@@ -156,9 +156,11 @@ const ResultView = (props: ResultViewProps) => {
     }
     return wave + 1 < coop.coopHistoryDetail!.resultWave;
   };
-  const getCoopSpecialWeaponPadding = (coop: CoopHistoryDetailResult) => {
-    return Math.max(
-      ...coop.coopHistoryDetail!.waveResults.map((waveResult) => waveResult.specialWeapons.length)
+  const isCoopSpecialWeaponPadding = (coop: CoopHistoryDetailResult) => {
+    return (
+      coop.coopHistoryDetail!.waveResults.filter(
+        (waveResult) => waveResult.specialWeapons.length > 0
+      ).length > 0
     );
   };
 
@@ -922,7 +924,7 @@ const ResultView = (props: ResultViewProps) => {
                               quota={waveResult.deliverNorm ?? 1}
                               appearance={waveResult.goldenPopCount}
                               specialWeapons={formatWaveSpecialWeapons(result.coop!, waveResult)}
-                              paddingTo={getCoopSpecialWeaponPadding(result.coop!)}
+                              specialWeaponPadding={isCoopSpecialWeaponPadding(result.coop!)}
                               style={i !== waveResults.length - 1 ? ViewStyles.mr2 : undefined}
                             />
                           )
