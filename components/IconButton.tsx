@@ -34,6 +34,7 @@ const IconButton = (props: IconButtonProps) => {
     >
       <Center flex>
         <Icon
+          // HACK: forcly cast.
           name={props.icon as any}
           size={props.size * 0.5}
           color={props.color ? "white" : Color.MiddleTerritory}
@@ -61,6 +62,7 @@ const PureIconButton = (props: IconButtonProps) => {
     >
       <Center flex>
         <Icon
+          // HACK: forcly cast.
           name={props.icon as any}
           size={props.size}
           color={props.color ? "white" : Color.MiddleTerritory}

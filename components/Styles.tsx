@@ -249,6 +249,9 @@ export const ViewStyles = StyleSheet.create({
   mr4: {
     marginRight: 16,
   },
+  mt2: {
+    marginTop: 8,
+  },
   mb0_5: {
     marginBottom: 2,
   },

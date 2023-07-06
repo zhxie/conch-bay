@@ -1,4 +1,4 @@
-import { StyleProp, StyleSheet, ViewStyle } from "react-native";
+import { StyleProp, ViewStyle } from "react-native";
 import Image, { ImageSource } from "./Image";
 import Marquee from "./Marquee";
 import { Circle } from "./Shape";
@@ -71,7 +71,13 @@ const WaveBox = (props: WaveBoxProps) => {
         </VStack>
       </VStack>
       {/* HACK: add a mb1 in each row. */}
-      <VStack center style={{ height: 20 * maxSpecialWeaponRow + 4 * (maxSpecialWeaponRow - 1) }}>
+      <VStack
+        center
+        style={{
+          height:
+            20 * maxSpecialWeaponRow + ViewStyles.mb1.marginBottom * (maxSpecialWeaponRow - 1),
+        }}
+      >
         {new Array(specialWeaponRow).fill(0).map((_, i) => (
           <HStack key={i} style={i !== specialWeaponRow - 1 && ViewStyles.mb1}>
             {new Array(
@@ -96,13 +102,5 @@ const WaveBox = (props: WaveBoxProps) => {
     </VStack>
   );
 };
-
-const styles = StyleSheet.create({
-  specialWeapon: {
-    width: 6,
-    height: 4,
-    borderRadius: 2,
-  },
-});
 
 export default WaveBox;

@@ -88,7 +88,7 @@ const Splashtag = (props: SplashtagProps) => {
             color: props.color,
             transform: [{ skewX: "-5deg" }],
           },
-          // TODO: skew transform does not work on Android, using italic font style instead. Track
+          // HACK: skew transform does not work on Android, using italic font style instead. Track
           // the issue in facebook/react-native#27649.
           Platform.OS === "android" && {
             fontStyle: "italic",

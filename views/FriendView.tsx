@@ -198,7 +198,7 @@ const FriendView = (props: FriendViewProps) => {
               </Text>
             </Marquee>
             {/* HACK: withdraw 4px margin in the last badge. */}
-            <HStack center style={{ marginRight: -4 }}>
+            <HStack center style={{ marginRight: -ViewStyles.mr1.marginRight }}>
               <Badge
                 color={getFriendOnlineStatusColor(friend)!}
                 title={t(formatFriendOnlineStatus(friend)!)}

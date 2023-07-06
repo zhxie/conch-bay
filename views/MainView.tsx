@@ -476,7 +476,7 @@ const MainView = () => {
             ]);
 
             // Background refresh.
-            // TODO: not use notification and background refresh in Expo Go currently.
+            // HACK: not use notification and background refresh in Expo Go currently.
             if (Constants.appOwnership !== AppOwnership.Expo) {
               switch ((await Notifications.getPermissionsAsync()).status) {
                 case ModulesCore.PermissionStatus.GRANTED:
@@ -715,7 +715,7 @@ const MainView = () => {
 
   const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     // HACK: there is an extra 8 padding on the top.
-    setBlurOnTop(event.nativeEvent.contentOffset.y > 8);
+    setBlurOnTop(event.nativeEvent.contentOffset.y > ViewStyles.mt2.marginTop);
   };
   const onScrollEndDrag = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     if (refreshing) {
@@ -1447,7 +1447,7 @@ const MainView = () => {
             <SafeAreaView
               edges={["top", "left", "right"]}
               // HACK: add additional 8px margin in the top.
-              style={{ marginTop: 8, alignItems: "center" }}
+              style={[ViewStyles.mt2, { alignItems: "center" }]}
             >
               {!sessionToken && (
                 <Center flex style={[ViewStyles.px4, ViewStyles.mb4]}>
@@ -1465,7 +1465,7 @@ const MainView = () => {
                     style={ViewStyles.mb2}
                   />
                   {/* HACK: withdraw 4px margin in the last badge. */}
-                  <HStack style={{ marginRight: -4 }}>
+                  <HStack style={{ marginRight: -ViewStyles.mr1.marginRight }}>
                     {catalogLevel.length > 0 && (
                       <Badge
                         color={Color.AccentColor}
