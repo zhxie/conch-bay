@@ -5,7 +5,7 @@ import weapons from "../models/weapons.json";
 import { decode64Index } from "./codec";
 import { getImageHash, getVsSelfPlayer } from "./ui";
 
-let db: SQLite.WebSQLDatabase | undefined = undefined;
+let db: SQLite.SQLiteDatabase | undefined = undefined;
 
 export const BATCH_SIZE = Math.floor((Device.totalMemory! / 1024 / 1024 / 1024) * 150);
 

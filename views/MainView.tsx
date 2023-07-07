@@ -952,7 +952,7 @@ const MainView = () => {
         setImporting(false);
         return;
       }
-      uri = doc.uri;
+      uri = doc.uri!;
 
       setRefreshing(true);
       const result = JSON.parse(await FileSystem.readAsStringAsync(uri));
