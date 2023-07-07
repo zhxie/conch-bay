@@ -1,5 +1,4 @@
 import withAndroidLocalizedName from "@mmomtchev/expo-android-localized-app-name";
-import withExpoLocalization from "expo-localization/plugin/build/withExpoLocalization";
 
 const config = {
   name: "Conch Bay",
@@ -18,14 +17,14 @@ const config = {
     "zh-Hant": "./i18n/locales/zh-Hant.json",
   },
   assetBundlePatterns: ["**/*"],
-  plugins: [withAndroidLocalizedName, withExpoLocalization],
+  plugins: [withAndroidLocalizedName],
   splash: {
     image: "./assets/splash.png",
     backgroundColor: "#FAFAFA",
   },
   ios: {
     bundleIdentifier: "name.sketch.ConchBay",
-    buildNumber: "88",
+    buildNumber: "89",
     config: {
       usesNonExemptEncryption: false,
     },
@@ -45,7 +44,7 @@ const config = {
   },
   android: {
     package: "name.sketch.conch_bay",
-    versionCode: 88,
+    versionCode: 89,
     adaptiveIcon: {
       foregroundImage: "./assets/adaptive-icon.png",
       backgroundColor: "#6B84F5",
