@@ -39,20 +39,20 @@ const ja = {
   loaded_n_results_skip_skipped: "%{n}件のリザルトを読み込み、%{skip}件はスキップしました",
   loaded_n_results_fail_failed_skip_skipped:
     "%{n}件のリザルトを読み込み、%{fail}件は失敗、%{skip}件はスキップしました",
-  load_more: "もっと読み込む",
+  show_more: "もっと見る",
   loading_more: "もっと読み込む中",
-  loaded_all: "すべてを読み込みました",
+  all_results_showed: "すべてのリザルトが表示されました",
   current_battle_schedule: "いまのバトルスケジュール",
   current_salmon_run_schedule: "いまのサーモンランスケジュール",
-  loaded_n_total_results: "%{n}/%{total}件のリザルトを読み込みました",
-  loaded_n_filtered_total_filtered_results:
-    "%{n}/%{filtered} (%{total})件フィルタリングされたリザルトを読み込みました",
+  n_total_results_showed: "%{n}/%{total}件のリザルトが表示されました",
+  n_filtered_total_filtered_results_showed:
+    "%{n}/%{filtered} (%{total})件フィルタリングされたリザルトが表示されました",
   today: "今日",
   this_week: "今週",
   this_month: "今月",
   this_season: "今シーズン",
   all_results: "すべてのリザルト",
-  load_more_notice: "もっと読み込むを長押しして、指定期間のリザルトを読み込みます。",
+  show_more_notice: "もっと見るを長押しして、指定期間のリザルトを表示します。",
   import: "インポート",
   importing: "インポート中",
   import_notice:
@@ -183,7 +183,7 @@ const ja = {
   rescued: "たすけた",
   be_rescued: "たすけてもらった",
   stats_notice:
-    "現在ロードされているリザルトからの統計。カッコ内の数字はバトルでは1分あたり、サーモンランでは各バイトのアベレージです。",
+    "現在表示されているリザルトからの統計。カッコ内の数字はバトルでは1分あたり、サーモンランでは各バイトのアベレージです。",
   // Trend.
   trends: "トレンド",
   average: "平均",

@@ -207,7 +207,7 @@ const MainView = () => {
   const [filterOptions, setFilterOptions] = useState<Database.FilterProps>();
   const [blurOnTop, setBlurOnTop] = useState(false);
 
-  const loadedAll = (results?.length ?? 0) >= count;
+  const allResultsShown = (results?.length ?? 0) >= count;
 
   useEffect(() => {
     if (sessionTokenReady && webServiceTokenReady && bulletTokenReady && languageReady) {
@@ -721,12 +721,12 @@ const MainView = () => {
     if (refreshing) {
       return;
     }
-    if (loadedAll) {
+    if (allResultsShown) {
       return;
     }
     const overHeight = event.nativeEvent.contentSize.height - height;
     if (overHeight >= 0 && event.nativeEvent.contentOffset.y - 80 > overHeight) {
-      onLoadMorePress();
+      onShowMorePress();
     }
   };
   const onLogInPress = () => {
@@ -871,13 +871,13 @@ const MainView = () => {
   const onChangeFilterPress = (filter?: Database.FilterProps) => {
     setFilter(filter);
   };
-  const onLoadMorePress = async () => {
-    if (loadedAll) {
+  const onShowMorePress = async () => {
+    if (allResultsShown) {
       return;
     }
     await loadResults(results!.length + 20);
   };
-  const onLoadMoreSelected = async (key: TimeRange) => {
+  const onShowMoreSelected = async (key: TimeRange) => {
     let num = 20;
     switch (key) {
       case TimeRange.CurrentBattleSchedule:
@@ -1541,7 +1541,7 @@ const MainView = () => {
                 <Picker
                   isLoading={refreshing || loadingMore}
                   isLoadingText={t("loading_more")}
-                  title={loadedAll ? t("loaded_all") : t("load_more")}
+                  title={allResultsShown ? t("all_results_showed") : t("show_more")}
                   items={Object.values(TimeRange).map((range) => ({
                     key: range,
                     value: t(range),
@@ -1550,8 +1550,8 @@ const MainView = () => {
                     <VStack center>
                       <Marquee style={ViewStyles.mb2}>
                         {count === total
-                          ? t("loaded_n_total_results", { n: results?.length ?? 0, total })
-                          : t("loaded_n_filtered_total_filtered_results", {
+                          ? t("n_total_results_showed", { n: results?.length ?? 0, total })
+                          : t("n_filtered_total_filtered_results_showed", {
                               n: results?.length ?? 0,
                               filtered: count,
                               total,
@@ -1560,7 +1560,7 @@ const MainView = () => {
                     </VStack>
                   }
                   style={[
-                    (results?.length ?? 0) <= 20 && !loadedAll && ViewStyles.mb2,
+                    (results?.length ?? 0) <= 20 && !allResultsShown && ViewStyles.mb2,
                     ViewStyles.rt0,
                     ViewStyles.rb2,
                     { height: 64 },
@@ -1568,10 +1568,10 @@ const MainView = () => {
                   ]}
                   textStyle={[TextStyles.h3, theme.textStyle]}
                   // HACK: forcly cast.
-                  onSelected={onLoadMoreSelected as (_: string) => void}
-                  onPress={onLoadMorePress}
+                  onSelected={onShowMoreSelected as (_: string) => void}
+                  onPress={onShowMorePress}
                 />
-                {(results?.length ?? 0) <= 20 && !loadedAll && (
+                {(results?.length ?? 0) <= 20 && !allResultsShown && (
                   <HStack style={ViewStyles.c}>
                     <Icon
                       name="info"
@@ -1580,7 +1580,7 @@ const MainView = () => {
                       style={ViewStyles.mr1}
                     />
                     <HStack style={ViewStyles.i}>
-                      <Marquee style={TextStyles.subtle}>{t("load_more_notice")}</Marquee>
+                      <Marquee style={TextStyles.subtle}>{t("show_more_notice")}</Marquee>
                     </HStack>
                   </HStack>
                 )}

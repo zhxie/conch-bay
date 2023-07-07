@@ -39,19 +39,19 @@ const en = {
   loaded_n_results_skip_skipped: "Loaded %{n} result(s), %{skip} skipped",
   loaded_n_results_fail_failed_skip_skipped:
     "Loaded %{n} result(s), %{fail} failed, %{skip} skipped",
-  load_more: "Load more",
+  show_more: "Show more",
   loading_more: "Loading more",
-  loaded_all: "Loaded all",
+  all_results_showed: "All results showed",
   current_battle_schedule: "Current Battle Schedule",
   current_salmon_run_schedule: "Current Salmon Run Schedule",
-  loaded_n_total_results: "Loaded %{n}/%{total} result(s)",
-  loaded_n_filtered_total_filtered_results: "Loaded %{n}/%{filtered} (%{total}) filtered result(s)",
+  n_total_results_showed: "%{n}/%{total} result(s) showed",
+  n_filtered_total_filtered_results_showed: "%{n}/%{filtered} (%{total}) filtered result(s) showed",
   today: "Today",
   this_week: "This Week",
   this_month: "This Month",
   this_season: "This Season",
   all_results: "All Results",
-  load_more_notice: "Long press on Load more to load results for a specified time period.",
+  show_more_notice: "Long press on Show more to show results for a specified period.",
   import: "Import",
   importing: "Importing",
   import_notice:
@@ -183,7 +183,7 @@ const en = {
   rescued: "Rescued",
   be_rescued: "Be Rescued",
   stats_notice:
-    "Statistics from currently loaded results. The number in parentheses is over 1-minute average in battles and over each shift average in Salmon Run.",
+    "Statistics from currently showed results. The number in parentheses is over 1-minute average in battles and over each shift average in Salmon Run.",
   // Trends.
   trends: "Trends",
   average: "Average",
