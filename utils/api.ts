@@ -105,6 +105,30 @@ const callIminkFApi = async (step: number, idToken: string, naId: string, coralU
   });
   return res.data as { f: string; request_id: string; timestamp: string };
 };
+const callNxapiZncaApi = async (
+  step: number,
+  idToken: string,
+  naId: string,
+  coralUserId?: string
+) => {
+  const body = {
+    hash_method: step,
+    token: idToken,
+    na_id: naId,
+  };
+  if (coralUserId) {
+    body["coral_user_id"] = coralUserId;
+  }
+  const res = await axios.post("https://nxapi-znca-api.fancy.org.uk/api/znca/f", body, {
+    headers: {
+      "Content-Type": "application/json; charset=utf-8",
+      "X-znca-Platform": "Android",
+      "X-znca-Version": NSO_VERSION,
+    },
+    timeout: AXIOS_TOKEN_TIMEOUT,
+  });
+  return res.data as { f: string; request_id: string; timestamp: string };
+};
 export const generateLogIn = async () => {
   const state = encode64Url(encode64(Crypto.getRandomBytes(36)));
   const cv = encode64Url(encode64(Crypto.getRandomBytes(32)));
@@ -181,60 +205,72 @@ export const getWebServiceToken = async (sessionToken: string) => {
   });
   const { birthday, language, country, id } = res2.data;
 
-  // Get access token.
-  const json3 = await callIminkFApi(1, idToken, id);
-  const { f, request_id: requestId, timestamp } = json3;
-  const res4 = await axios.post(
-    "https://api-lp1.znc.srv.nintendo.net/v3/Account/Login",
-    {
-      parameter: {
-        f: f,
-        language: language,
-        naBirthday: birthday,
-        naCountry: country,
-        naIdToken: idToken,
-        requestId: requestId,
-        timestamp: timestamp,
-      },
-    },
-    {
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-        "X-Platform": "Android",
-        "X-ProductVersion": NSO_VERSION,
-      },
-      timeout: AXIOS_TOKEN_TIMEOUT,
-    }
-  );
-  const idToken2 = res4.data["result"]["webApiServerCredential"]["accessToken"];
-  const coralUserId = res4.data["result"]["user"]["id"].toString();
+  // Use imink f API as default and nxapi znca API as a backup.
+  let error: unknown = undefined;
+  for (const callApi of [callIminkFApi, callNxapiZncaApi]) {
+    try {
+      // Get access token.
+      const json3 = await callApi(1, idToken, id);
+      const { f, request_id: requestId, timestamp } = json3;
+      const res4 = await axios.post(
+        "https://api-lp1.znc.srv.nintendo.net/v3/Account/Login",
+        {
+          parameter: {
+            f: f,
+            language: language,
+            naBirthday: birthday,
+            naCountry: country,
+            naIdToken: idToken,
+            requestId: requestId,
+            timestamp: timestamp,
+          },
+        },
+        {
+          headers: {
+            "Content-Type": "application/json; charset=utf-8",
+            "X-Platform": "Android",
+            "X-ProductVersion": NSO_VERSION,
+          },
+          timeout: AXIOS_TOKEN_TIMEOUT,
+        }
+      );
+      const idToken2 = res4.data["result"]["webApiServerCredential"]["accessToken"];
+      const coralUserId = res4.data["result"]["user"]["id"].toString();
 
-  // Get web service token.
-  const json5 = await callIminkFApi(2, idToken2, id, coralUserId);
-  const { f: f2, request_id: requestId2, timestamp: timestamp2 } = json5;
-  const res6 = await axios.post(
-    "https://api-lp1.znc.srv.nintendo.net/v2/Game/GetWebServiceToken",
-    {
-      parameter: {
-        f: f2,
-        id: 4834290508791808,
-        registrationToken: idToken2,
-        requestId: requestId2,
-        timestamp: timestamp2,
-      },
-    },
-    {
-      headers: {
-        Authorization: `Bearer ${idToken2}`,
-        "Content-Type": "application/json; charset=utf-8",
-        "X-Platform": "Android",
-        "X-ProductVersion": NSO_VERSION,
-      },
-      timeout: AXIOS_TOKEN_TIMEOUT,
+      // Get web service token.
+      const json5 = await callApi(2, idToken2, id, coralUserId);
+      const { f: f2, request_id: requestId2, timestamp: timestamp2 } = json5;
+      const res6 = await axios.post(
+        "https://api-lp1.znc.srv.nintendo.net/v2/Game/GetWebServiceToken",
+        {
+          parameter: {
+            f: f2,
+            id: 4834290508791808,
+            registrationToken: idToken2,
+            requestId: requestId2,
+            timestamp: timestamp2,
+          },
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${idToken2}`,
+            "Content-Type": "application/json; charset=utf-8",
+            "X-Platform": "Android",
+            "X-ProductVersion": NSO_VERSION,
+          },
+          timeout: AXIOS_TOKEN_TIMEOUT,
+        }
+      );
+      const webServiceToken = res6.data["result"]["accessToken"];
+      return { webServiceToken, country, language };
+    } catch (e) {
+      // Throw the first error which would be an error using imink f API.
+      if (error === undefined) {
+        error = e;
+      }
     }
-  );
-  const webServiceToken = res6.data["result"]["accessToken"];
-  return { webServiceToken, country, language };
+  }
+  throw error;
 };
 export const getBulletToken = async (webServiceToken: string, language?: string) => {
   const res = await axios.post(

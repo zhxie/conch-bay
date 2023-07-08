@@ -1399,8 +1399,14 @@ const MainView = () => {
   const onIminkFApiPress = () => {
     WebBrowser.openBrowserAsync("https://github.com/imink-app/f-API");
   };
+  const onNxapiZncaApiPress = () => {
+    WebBrowser.openBrowserAsync("https://github.com/samuelthomas2774/nxapi-znca-api");
+  };
   const onNintendoAppVersionsPress = () => {
     WebBrowser.openBrowserAsync("https://github.com/nintendoapis/nintendo-app-versions");
+  };
+  const onSplat3Press = () => {
+    WebBrowser.openBrowserAsync("https://github.com/Leanny/splat3");
   };
   const onOssLicensesPress = () => {
     WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay/wiki/OSS-Licenses");
@@ -1985,8 +1991,14 @@ const MainView = () => {
             <Text style={[TextStyles.link, ViewStyles.mb1]} onPress={onIminkFApiPress}>
               imink f API
             </Text>
+            <Text style={[TextStyles.link, ViewStyles.mb1]} onPress={onNxapiZncaApiPress}>
+              nxapi znca API
+            </Text>
             <Text style={[TextStyles.link, ViewStyles.mb1]} onPress={onNintendoAppVersionsPress}>
               Nintendo app versions
+            </Text>
+            <Text style={[TextStyles.link, ViewStyles.mb1]} onPress={onSplat3Press}>
+              splat3
             </Text>
             <Text style={TextStyles.link} onPress={onOssLicensesPress}>
               {t("oss_licenses")}

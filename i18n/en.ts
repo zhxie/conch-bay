@@ -7,8 +7,7 @@ const en = {
   // UI.
   log_in: "Log In",
   log_in_notice:
-    "Conch Bay requires acquiring tokens to access SplatNet 3. The process involves making a secure request to non-Nintendo imink with minimal, non-identifying information. This information will not be logged or stored, please see the privacy policy for more information.",
-  imink_privacy_policy: "imink Privacy Policy",
+    "Conch Bay requires acquiring tokens to access SplatNet 3. The process involves making a secure request to non-Nintendo imink or nxapi with minimal, non-identifying information. This information will not be logged or stored, please see the privacy policy for more information.",
   log_in_continue: "I have read and understand",
   alternative_log_in_notice:
     "If you have a session token and want to skip acquiring tokens by Conch Bay, you can also copy the session token and complete logging in alternatively.",

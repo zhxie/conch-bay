@@ -68,7 +68,7 @@ python3 tools/validate.py <PATH_TO_JSON>
 
 Conch Bay is licensed under [the MIT License](/LICENSE).
 
-Conch Bay uses API provided by [Splatoon3.ink](https://splatoon3.ink/) for schedules and shifts information, [imink f API](https://github.com/imink-app/f-API) for account authorization and [Nintendo app versions](https://github.com/nintendoapis/nintendo-app-versions) for API version updates.
+Conch Bay uses API provided by [Splatoon3.ink](https://splatoon3.ink/) for schedules and shifts information, [imink f API](https://github.com/imink-app/f-API) and [nxapi znca API](https://github.com/samuelthomas2774/nxapi-znca-api/) for account authorization and [Nintendo app versions](https://github.com/nintendoapis/nintendo-app-versions) for API version updates.
 
 Conch Bay uses [splat3](https://github.com/Leanny/splat3) for mapping weapons in build time.
 
