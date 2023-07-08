@@ -215,28 +215,28 @@ const TrendsView = (props: TrendViewProps) => {
         };
       case "SPLATTED":
         return {
-          data: battleStats.map((stat) => rationalize(stat.kill / (stat.duration / 60))),
+          data: battleStats.map((stat) =>
+            rationalize((stat.kill - stat.assist) / (stat.duration / 60))
+          ),
           color: Color.KillAndRescue,
         };
       case "SPLATTED_TEAM_AVERAGE":
         return {
           data: battleStats.map((stat) =>
-            rationalize(stat.killTeam / ((stat.member * stat.duration) / 60))
+            rationalize((stat.killTeam - stat.assistTeam) / ((stat.member * stat.duration) / 60))
           ),
           color: burnColor(Color.KillAndRescue),
           dash: true,
         };
       case "SPLATTED_INCLUDING_ASSISTED":
         return {
-          data: battleStats.map((stat) =>
-            rationalize((stat.kill + stat.assist) / (stat.duration / 60))
-          ),
+          data: battleStats.map((stat) => rationalize(stat.kill / (stat.duration / 60))),
           color: Color.KillAndRescue,
         };
       case "SPLATTED_INCLUDING_ASSISTED_TEAM_AVERAGE":
         return {
           data: battleStats.map((stat) =>
-            rationalize((stat.killTeam + stat.assistTeam) / ((stat.member * stat.duration) / 60))
+            rationalize(stat.killTeam / ((stat.member * stat.duration) / 60))
           ),
           color: burnColor(Color.KillAndRescue),
           dash: true,
