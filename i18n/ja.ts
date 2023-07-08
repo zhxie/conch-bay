@@ -192,7 +192,9 @@ const ja = {
   season: "シーズン",
   splatted_including_assisted: "たおした (アシスト含む)",
   golden_eggs_collected_including_assisted: "集めた金イクラ (含助攻)",
-  trends_notice: "タグを長押しして、チームのアベレージが表示されます。",
+  trends_notice:
+    "現在表示されているリザルトからの統計。数字はバトルでは1分あたり、サーモンランでは各バイトのアベレージです。",
+  trends_notice2: "タグを長押しして、チームのアベレージが表示されます。",
   // Modes.
   modes: "モード",
   battle: "バトル",

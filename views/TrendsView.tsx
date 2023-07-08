@@ -653,13 +653,13 @@ const TrendsView = (props: TrendViewProps) => {
           )}
         </VStack>
         <VStack center style={(battleGroups.length > 0 || coopGroups.length > 0) && ViewStyles.mb2}>
-          <Marquee>{t("stats_notice")}</Marquee>
+          <Marquee>{t("trends_notice")}</Marquee>
         </VStack>
         {(battleGroups.length > 0 || coopGroups.length > 0) && (
           <HStack style={ViewStyles.c}>
             <Icon name="info" size={14} color={Color.MiddleTerritory} style={ViewStyles.mr1} />
             <HStack style={ViewStyles.i}>
-              <Marquee style={TextStyles.subtle}>{t("trends_notice")}</Marquee>
+              <Marquee style={TextStyles.subtle}>{t("trends_notice2")}</Marquee>
             </HStack>
           </HStack>
         )}

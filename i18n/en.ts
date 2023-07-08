@@ -192,7 +192,9 @@ const en = {
   season: "Season",
   splatted_including_assisted: "Splatted (Including Assisted)",
   golden_eggs_collected_including_assisted: "Golden Eggs Collected (Including Assisted)",
-  trends_notice: "Long press on tags to show team's average.",
+  trends_notice:
+    "Trends from currently showed results. The number is over 1-minute average in battles and over each shift average in Salmon Run.",
+  trends_notice2: "Long press on tags to show team's average.",
   // Modes.
   modes: "Modes",
   battle: "Battle",

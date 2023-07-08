@@ -184,7 +184,8 @@ const zhHant = {
   season: "赛季",
   splatted_including_assisted: "擊倒 (含助攻)",
   golden_eggs_collected_including_assisted: "收集的金鮭魚卵 (含助攻)",
-  trends_notice: "長按標籤以顯示團隊平均值。",
+  trends_notice: "由當前已顯示的記錄統計。對戰為每分鐘，鮭魚跑為每次打工的平均值。",
+  trends_notice2: "長按標籤以顯示團隊平均值。",
   // Modes.
   modes: "模式",
   battle: "對戰",

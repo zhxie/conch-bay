@@ -184,7 +184,8 @@ const zhHans = {
   season: "赛季",
   splatted_including_assisted: "击倒 (含助攻)",
   golden_eggs_collected_including_assisted: "收集的金鲑鱼卵 (含助攻)",
-  trends_notice: "长按标签以显示团队平均值。",
+  trends_notice: "由当前已显示的记录统计。对战为每分钟，鲑鱼跑为每场打工的平均值。",
+  trends_notice2: "长按标签以显示团队平均值。",
   // Modes.
   modes: "模式",
   battle: "对战",
