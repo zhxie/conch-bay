@@ -62,7 +62,7 @@
     "@mmomtchev/expo-android-localized-app-name": "^1.0.1",
     "@trivago/prettier-plugin-sort-imports": "^4.0.0",
     "@types/color-convert": "^2.0.0",
-    "@types/react": "~18.0.27",
+    "@types/react": "~18.2.14",
     "@typescript-eslint/eslint-plugin": "^5.60.0",
     "@typescript-eslint/parser": "^5.60.0",
     "eslint": "^8.30.0",

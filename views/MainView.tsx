@@ -948,11 +948,11 @@ const MainView = () => {
     let success = false;
     try {
       const doc = await DocumentPicker.getDocumentAsync({ copyToCacheDirectory: true });
-      if (doc.type !== "success") {
+      if (doc.canceled) {
         setImporting(false);
         return;
       }
-      uri = doc.uri!;
+      uri = doc.assets[0].uri;
 
       setRefreshing(true);
       const result = JSON.parse(await FileSystem.readAsStringAsync(uri));
