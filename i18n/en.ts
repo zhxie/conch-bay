@@ -34,10 +34,10 @@ const en = {
   failed_to_load_salmon_run_results: "Failed to load Salmon Run results (%{error})",
   loading_n_results: "Loading %{n} result(s)",
   loaded_n_results: "Loaded %{n} result(s)",
-  loaded_n_results_fail_failed: "Loaded %{n} result(s), %{fail} failed",
+  loaded_n_results_fail_failed: "Loaded %{n} result(s), %{fail} failed (%{error})",
   loaded_n_results_skip_skipped: "Loaded %{n} result(s), %{skip} skipped",
-  loaded_n_results_fail_failed_skip_skipped:
-    "Loaded %{n} result(s), %{fail} failed, %{skip} skipped",
+  loaded_n_results_skip_skipped_fail_failed:
+    "Loaded %{n} result(s), %{skip} skipped, %{fail} failed (%{error})",
   show_more: "Show more",
   loading_more: "Loading more",
   all_results_showed: "All results showed",

@@ -33,9 +33,10 @@ const zhHans = {
   failed_to_load_salmon_run_results: "未能加载鲑鱼跑记录 (%{error})",
   loading_n_results: "加载%{n}项记录中",
   loaded_n_results: "已加载%{n}项记录",
-  loaded_n_results_fail_failed: "已加载%{n}项记录，%{fail}项失败",
+  loaded_n_results_fail_failed: "已加载%{n}项记录，%{fail}项失败 (%{error})",
   loaded_n_results_skip_skipped: "已加载%{n}项记录，%{skip}项跳过",
-  loaded_n_results_fail_failed_skip_skipped: "已加载%{n}项记录，%{fail}项失败，%{skip}项跳过",
+  loaded_n_results_skip_skipped_fail_failed:
+    "已加载%{n}项记录，%{skip}项跳过，%{fail}项失败 (%{error})",
   show_more: "显示更多",
   loading_more: "加载更多中",
   all_results_showed: "已显示全部记录",

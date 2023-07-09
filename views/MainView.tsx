@@ -503,6 +503,7 @@ const MainView = () => {
     setProgressTotal(0);
     let n = -1;
     let throwable = 0;
+    let error: Error | undefined = undefined;
     const [battleFail, coopFail] = await Promise.all([
       Promise.all([
         fetchLatestBattleHistories(bulletToken),
@@ -635,12 +636,17 @@ const MainView = () => {
           }
           const results = await Promise.all(
             newIds.map((id) =>
-              ok(
-                fetchVsHistoryDetail(id, bulletToken, language).then(async (detail) => {
+              fetchVsHistoryDetail(id, bulletToken, language)
+                .then(async (detail) => {
                   setProgress((progress) => progress + 1);
                   await Database.addBattle(detail);
+                  return true;
                 })
-              )
+                .catch((e) => {
+                  if (!error) {
+                    error = e;
+                  }
+                })
             )
           );
           return results.filter((result) => !result).length;
@@ -679,12 +685,17 @@ const MainView = () => {
           }
           const results = await Promise.all(
             newIds.map((id) =>
-              ok(
-                fetchCoopHistoryDetail(id, bulletToken, language).then(async (detail) => {
+              fetchCoopHistoryDetail(id, bulletToken, language)
+                .then(async (detail) => {
                   setProgress((progress) => progress + 1);
                   await Database.addCoop(detail);
+                  return true;
                 })
-              )
+                .catch((e) => {
+                  if (!error) {
+                    error = e;
+                  }
+                })
             )
           );
           return results.filter((result) => !result).length;
@@ -699,7 +710,7 @@ const MainView = () => {
     if (n > 0) {
       const fail = battleFail + coopFail;
       if (fail > 0) {
-        showBanner(BannerLevel.Warn, t("loaded_n_results_fail_failed", { n, fail }));
+        showBanner(BannerLevel.Warn, t("loaded_n_results_fail_failed", { n, fail, error }));
       } else {
         showBanner(BannerLevel.Success, t("loaded_n_results", { n }));
       }
@@ -972,14 +983,33 @@ const MainView = () => {
       const newCoops = result["coops"].filter((_, i: number) => !coopExisted[i]);
       const skip = n - (newBattles.length + newCoops.length);
       let fail = 0;
+      let error: Error | undefined = undefined;
       for (const battle of newBattles) {
-        const result = await ok(Database.addBattle(battle));
+        const result = await Database.addBattle(battle)
+          .then(() => {
+            return true;
+          })
+          .catch((e) => {
+            if (!error) {
+              error = e;
+            }
+            return false;
+          });
         if (!result) {
           fail++;
         }
       }
       for (const coop of newCoops) {
-        const result = await ok(Database.addCoop(coop));
+        const result = await Database.addCoop(coop)
+          .then(() => {
+            return true;
+          })
+          .catch((e) => {
+            if (!error) {
+              error = e;
+            }
+            return false;
+          });
         if (!result) {
           fail++;
         }
@@ -987,10 +1017,10 @@ const MainView = () => {
       if (fail > 0 && skip > 0) {
         showBanner(
           BannerLevel.Warn,
-          t("loaded_n_results_fail_failed_skip_skipped", { n, fail, skip })
+          t("loaded_n_results_skip_skipped_fail_failed", { n, skip, fail, error })
         );
       } else if (fail > 0) {
-        showBanner(BannerLevel.Warn, t("loaded_n_results_fail_failed", { n, fail }));
+        showBanner(BannerLevel.Warn, t("loaded_n_results_fail_failed", { n, fail, error }));
       } else if (skip > 0) {
         showBanner(BannerLevel.Success, t("loaded_n_results_skip_skipped", { n, skip }));
       } else {

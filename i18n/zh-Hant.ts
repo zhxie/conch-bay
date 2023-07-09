@@ -33,9 +33,10 @@ const zhHant = {
   failed_to_load_salmon_run_results: "未能載入鮭魚跑記錄 (%{error})",
   loading_n_results: "載入%{n}項記錄中",
   loaded_n_results: "已載入%{n}項記錄",
-  loaded_n_results_fail_failed: "已載入%{n}項記錄，%{fail}項失敗",
+  loaded_n_results_fail_failed: "已載入%{n}項記錄，%{fail}項失敗 (%{error})",
   loaded_n_results_skip_skipped: "已載入%{n}項記錄，%{skip}項跳過",
-  loaded_n_results_fail_failed_skip_skipped: "已載入%{n}項記錄，%{fail}項失敗，%{skip}項跳過",
+  loaded_n_results_skip_skipped_fail_failed:
+    "已載入%{n}項記錄，%{skip}項跳過，%{fail}項失敗 (%{error})",
   show_more: "顯示更多",
   loading_more: "載入更多中",
   all_results_showed: "已顯示全部記錄",

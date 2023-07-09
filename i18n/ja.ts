@@ -34,10 +34,10 @@ const ja = {
   failed_to_load_salmon_run_results: "サーモンランのリザルトを読み込めません (%{error})",
   loading_n_results: "%{n}件のリザルトを読み込む中",
   loaded_n_results: "%{n}件のリザルトを読み込みました",
-  loaded_n_results_fail_failed: "%{n}件のリザルトを読み込み、%{fail}件は失敗しました",
+  loaded_n_results_fail_failed: "%{n}件のリザルトを読み込み、%{fail}件は失敗しました (%{error})",
   loaded_n_results_skip_skipped: "%{n}件のリザルトを読み込み、%{skip}件はスキップしました",
-  loaded_n_results_fail_failed_skip_skipped:
-    "%{n}件のリザルトを読み込み、%{fail}件は失敗、%{skip}件はスキップしました",
+  loaded_n_results_skip_skipped_fail_failed:
+    "%{n}件のリザルトを読み込み、%{skip}件はスキップ、%{fail}件は失敗しました (%{error})",
   show_more: "もっと見る",
   loading_more: "もっと読み込む中",
   all_results_showed: "すべてのリザルトが表示されました",
