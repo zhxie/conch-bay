@@ -54,7 +54,7 @@
     "react-native-svg": "13.9.0",
     "react-native-text-ticker": "^1.14.0",
     "react-native-toast-banner": "^1.1.0",
-    "splatnet3-types": "0.2.20230610222246"
+    "splatnet3-types": "0.2.20230615193659"
   },
   "devDependencies": {
     "@babel/core": "^7.19.3",

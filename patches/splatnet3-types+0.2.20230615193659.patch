@@ -12,7 +12,7 @@ index 596fd7f..08320d8 100644
  /** Current persisted queries */
  RequestId, 
 diff --git a/node_modules/splatnet3-types/dist/splatoon3ink.d.ts b/node_modules/splatnet3-types/dist/splatoon3ink.d.ts
-index 5820564..b36c181 100644
+index 20ce97d..1ad9b3e 100644
 --- a/node_modules/splatnet3-types/dist/splatoon3ink.d.ts
 +++ b/node_modules/splatnet3-types/dist/splatoon3ink.d.ts
 @@ -14,14 +14,15 @@ export interface Schedules {
@@ -35,7 +35,7 @@ index 5820564..b36c181 100644
  };
  declare type CoopSupplyWeapon_splatoon3ink = Pick<CoopSupplyWeapon, 'name' | 'image'> & {
 diff --git a/node_modules/splatnet3-types/dist/types.d.ts b/node_modules/splatnet3-types/dist/types.d.ts
-index b28e28a..947a54d 100644
+index b28e28a..d86b289 100644
 --- a/node_modules/splatnet3-types/dist/types.d.ts
 +++ b/node_modules/splatnet3-types/dist/types.d.ts
 @@ -95,7 +95,7 @@ export interface PhotoAlbumItem {
@@ -72,7 +72,7 @@ index b28e28a..947a54d 100644
  }
  export interface XPower {
 -    lastXPower: unknown;
-+    lastXPower: number;
++    lastXPower: number | null;
  }
  export interface VsHistoryGroup {
      __typename: 'VsHistoryGroup';

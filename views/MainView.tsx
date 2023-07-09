@@ -511,19 +511,19 @@ const MainView = () => {
         .then(async ([latestBattleHistories, xBattleHistoriesAttempt]) => {
           if (xBattleHistoriesAttempt) {
             setSplatZonesXPower(
-              xBattleHistoriesAttempt.xBattleHistories.summary.xPowerAr?.lastXPower.toFixed(1) ??
+              xBattleHistoriesAttempt.xBattleHistories.summary.xPowerAr?.lastXPower?.toFixed(1) ??
                 "0"
             );
             setTowerControlXPower(
-              xBattleHistoriesAttempt.xBattleHistories.summary.xPowerLf?.lastXPower.toFixed(1) ??
+              xBattleHistoriesAttempt.xBattleHistories.summary.xPowerLf?.lastXPower?.toFixed(1) ??
                 "0"
             );
             setRainmakerXPower(
-              xBattleHistoriesAttempt.xBattleHistories.summary.xPowerGl?.lastXPower.toFixed(1) ??
+              xBattleHistoriesAttempt.xBattleHistories.summary.xPowerGl?.lastXPower?.toFixed(1) ??
                 "0"
             );
             setClamBlitzXPower(
-              xBattleHistoriesAttempt.xBattleHistories.summary.xPowerCl?.lastXPower.toFixed(1) ??
+              xBattleHistoriesAttempt.xBattleHistories.summary.xPowerCl?.lastXPower?.toFixed(1) ??
                 "0"
             );
           }
