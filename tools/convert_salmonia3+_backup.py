@@ -182,9 +182,9 @@ def main():
                                 result["play_time"],
                                 result["uuid"],
                             ),
-                            "afterGrade": construct_obj(
-                                "CoopGrade", result["grade_id"]
-                            ),
+                            "afterGrade": construct_obj("CoopGrade", result["grade_id"])
+                            if result["grade_id"] != None
+                            else None,
                             "myResult": construct_member_result(
                                 result, result["players"][0]
                             ),

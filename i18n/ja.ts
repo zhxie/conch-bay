@@ -434,14 +434,14 @@ const ja = {
   normal: "普通",
   high_tide: "満潮",
   // Events.
+  Q29vcEV2ZW50V2F2ZS0x: "ラッシュ",
+  Q29vcEV2ZW50V2F2ZS0y: "キンシャケ探し",
+  Q29vcEV2ZW50V2F2ZS0z: "グリル発進",
   Q29vcEV2ZW50V2F2ZS00: "ハコビヤ襲来",
   Q29vcEV2ZW50V2F2ZS01: "霧",
   Q29vcEV2ZW50V2F2ZS02: "ドスコイ大量発生",
   Q29vcEV2ZW50V2F2ZS03: "巨大タツマキ",
   Q29vcEV2ZW50V2F2ZS04: "ドロシャケ噴出",
-  Q29vcEV2ZW50V2F2ZS0x: "ラッシュ",
-  Q29vcEV2ZW50V2F2ZS0y: "キンシャケ探し",
-  Q29vcEV2ZW50V2F2ZS0z: "グリル発進",
   // Boss Salmonids.
   boss_salmonids: "オオモノシャケ",
   "Q29vcEVuZW15LTQ=": "バクダン",

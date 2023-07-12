@@ -434,14 +434,14 @@ const en = {
   normal: "Normal",
   high_tide: "High Tide",
   // Events.
+  Q29vcEV2ZW50V2F2ZS0x: "Rush",
+  Q29vcEV2ZW50V2F2ZS0y: "Goldie Seeking",
+  Q29vcEV2ZW50V2F2ZS0z: "The Griller",
   Q29vcEV2ZW50V2F2ZS00: "The Mothership",
   Q29vcEV2ZW50V2F2ZS01: "Fog",
   Q29vcEV2ZW50V2F2ZS02: "Cohock Charge",
   Q29vcEV2ZW50V2F2ZS03: "Giant Tornado",
   Q29vcEV2ZW50V2F2ZS04: "Mudmouth Eruptions",
-  Q29vcEV2ZW50V2F2ZS0x: "Rush",
-  Q29vcEV2ZW50V2F2ZS0y: "Goldie Seeking",
-  Q29vcEV2ZW50V2F2ZS0z: "The Griller",
   // Boss Salmonids.
   boss_salmonids: "Boss Salmonids",
   "Q29vcEVuZW15LTQ=": "Steelhead",

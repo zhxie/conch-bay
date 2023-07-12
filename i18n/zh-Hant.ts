@@ -426,14 +426,14 @@ const zhHant = {
   normal: "普通",
   high_tide: "滿潮",
   // Events.
+  Q29vcEV2ZW50V2F2ZS0x: "狂潮",
+  Q29vcEV2ZW50V2F2ZS0y: "尋找金鮭魚",
+  Q29vcEV2ZW50V2F2ZS0z: "烤架魚出動",
   Q29vcEV2ZW50V2F2ZS00: "走私魚來襲",
   Q29vcEV2ZW50V2F2ZS01: "霧",
   Q29vcEV2ZW50V2F2ZS02: "大胖魚大量出現",
   Q29vcEV2ZW50V2F2ZS03: "巨型龍捲風",
   Q29vcEV2ZW50V2F2ZS04: "泥鮭魚噴發",
-  Q29vcEV2ZW50V2F2ZS0x: "狂潮",
-  Q29vcEV2ZW50V2F2ZS0y: "尋找金鮭魚",
-  Q29vcEV2ZW50V2F2ZS0z: "烤架魚出動",
   // Boss Salmonids.
   boss_salmonids: "巨大鮭魚",
   "Q29vcEVuZW15LTQ=": "炸彈魚",

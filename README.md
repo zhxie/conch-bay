@@ -10,7 +10,7 @@ You may also test the latest app within [TestFlight](https://testflight.apple.co
 
 ### Import data from s3s
 
-Run the following command and all outputs will be merged into `conch-bay-import.json`. You can then import it in Conch Bay.
+Run the following command and all outputs will be merged into `conch-bay-import.json`. You can then import it into Conch Bay.
 
 ```sh
 python3 tools/convert_s3s_outputs.py <PATH_TO_S3S>
@@ -18,7 +18,7 @@ python3 tools/convert_s3s_outputs.py <PATH_TO_S3S>
 
 ### Import data from ikawidget3
 
-Run the following command to extract data from a ikawidget3 database IKAX3 into `conch-bay-import.json`. You can then import it in Conch Bay. You have to agree [Couchbase Enterprise License](https://www.couchbase.com/ESLA01162020) before converting.
+Run the following command to extract and convert data from a ikawidget3 database IKAX3 into `conch-bay-import.json`. You can then import it into Conch Bay. You have to agree with [Couchbase Enterprise](https://www.couchbase.com/ESLA01162020) License](https://www.couchbase.com/ESLA01162020) before converting.
 
 ```sh
 python3 tools/convert_ikax3.py <PATH_TO_IKAX3>
@@ -26,7 +26,7 @@ python3 tools/convert_ikax3.py <PATH_TO_IKAX3>
 
 ### Import data from salmdroidNW
 
-Run the following command to extract data from a salmdroidNW backup into `conch-bay-import.json`. You can then import it in Conch Bay.
+Run the following command to extract and convert data from a salmdroidNW backup into `conch-bay-import.json`. You can then import it into Conch Bay.
 
 ```sh
 python3 tools/convert_salmdroidnw_backup.py <PATH_TO_EXTRACTED_SALMDROIDNW_BACKUP>
@@ -34,7 +34,7 @@ python3 tools/convert_salmdroidnw_backup.py <PATH_TO_EXTRACTED_SALMDROIDNW_BACKU
 
 ### Import data from Salmonia3+
 
-Run the following command to extract data from a Salmonia3+ backup into `conch-bay-import.json`. You can then import it in Conch Bay.
+Run the following command to extract and convert data from a Salmonia3+ backup into `conch-bay-import.json`. You can then import it into Conch Bay.
 
 ```sh
 python3 tools/convert_salmonia3+_backup.py <PATH_TO_SALMONIA3+_PLAIN_JSON_BACKUP>
@@ -42,7 +42,7 @@ python3 tools/convert_salmonia3+_backup.py <PATH_TO_SALMONIA3+_PLAIN_JSON_BACKUP
 
 ### Rescue data from a Conch Bay database
 
-Run the following command to extract data from a Conch Bay database into `conch-bay-import.json`. You can then import it in Conch Bay.
+Run the following command to extract and convert data from a Conch Bay database into `conch-bay-import.json`. You can then import it into Conch Bay.
 
 ```sh
 python3 tools/convert_db.py <PATH_TO_DB>
