@@ -3,12 +3,14 @@ import json
 import requests
 import sys
 
+
 VERSION = "400"
-GRIZZCO_WEAPON_IMAGE = []
 RANDOM_IMAGE = [
     "473fffb2442075078d8bb7125744905abdeae651b6a5b7453ae295582e45f7d1_0.png",
     "9d7272733ae2f2282938da17d69f13419a935eef42239132a02fcf37d8678f10_0.png",
 ]
+
+GRIZZCO_WEAPON_IMAGE = []
 
 
 def decorate_image_obj(obj, path, is_splatoon3_ink=False):
@@ -39,12 +41,26 @@ def format_member_result(member_result):
             decorate_image_obj(member_result["specialWeapon"], "special_img/blue")
 
 
+def warmup():
+    global GRIZZCO_WEAPON_IMAGE
+    weapons = requests.get(
+        f"https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/{VERSION}/WeaponInfoMain.json"
+    ).json()
+    coop_weapons = [
+        sha256(weapon["__RowId"].encode("utf-8")).hexdigest()
+        for weapon in weapons
+        if weapon["IsCoopRare"]
+    ]
+    GRIZZCO_WEAPON_IMAGE = [f"{weapon}_0.png" for weapon in coop_weapons]
+
+
 def main():
     if len(sys.argv) <= 1:
         print(
             f'Please specify the directory of salmdroidNW backup with "python3 {sys.argv[0]} <PATH>".'
         )
         return
+    warmup()
 
     coops = []
     with open(f"{sys.argv[1]}/1", encoding="utf-8") as f:
@@ -78,19 +94,5 @@ def main():
     print(f'Export {len(coops)} coops to "conch-bay-import.json".')
 
 
-def warmup():
-    global GRIZZCO_WEAPON_IMAGE
-    weapons = requests.get(
-        f"https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/{VERSION}/WeaponInfoMain.json"
-    ).json()
-    coop_weapons = [
-        sha256(weapon["__RowId"].encode("utf-8")).hexdigest()
-        for weapon in weapons
-        if weapon["IsCoopRare"]
-    ]
-    GRIZZCO_WEAPON_IMAGE = [f"{weapon}_0.png" for weapon in coop_weapons]
-
-
 if __name__ == "__main__":
-    warmup()
     main()

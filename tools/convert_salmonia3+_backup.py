@@ -129,12 +129,65 @@ def construct_member_result(result, player):
     }
 
 
+def format_image(path, name, is_splatoon3_ink=False):
+    sha = sha256(name.encode("utf-8")).hexdigest()
+    if is_splatoon3_ink:
+        return f"https://splatoon3.ink/assets/splatnet/v1/{path}/{sha}_0.png"
+    else:
+        return f"https://api.lp1.av5ja.srv.nintendo.net/resources/prod/v1/{path}/{sha}_0.png"
+
+
+def format_map(map, obj, path, is_splatoon3_ink=False, name_decorator=lambda x: x):
+    map[obj["Id"]] = format_image(
+        path, name_decorator(obj["__RowId"]), is_splatoon3_ink
+    )
+
+
+def fetch_resource(path):
+    return requests.get(
+        f"https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/{VERSION}/{path}.json"
+    ).json()
+
+
+def warmup():
+    global BACKGROUND_IMAGE, BADGE_IMAGE, UNIFORM_IMAGE, WEAPON_IMAGE, SPECIAL_WEAPON_IMAGE, COOP_STAGE_IMAGE
+    backgrounds = fetch_resource("NamePlateBgInfo")
+    for background in backgrounds:
+        format_map(BACKGROUND_IMAGE, background, "npl_img")
+
+    badges = fetch_resource("BadgeInfo")
+    for badge in badges:
+        BADGE_IMAGE[badge["Id"]] = format_image("badge_img", badge["Name"])
+
+    uniforms = fetch_resource("CoopSkinInfo")
+    for uniform in uniforms:
+        format_map(UNIFORM_IMAGE, uniform, "coop_skin_img")
+
+    weapons = fetch_resource("WeaponInfoMain")
+    for weapon in weapons:
+        format_map(WEAPON_IMAGE, weapon, "weapon_illust", not weapon["IsCoopRare"])
+
+    special_weapons = fetch_resource("WeaponInfoSpecial")
+    for special_weapon in special_weapons:
+        format_map(
+            SPECIAL_WEAPON_IMAGE,
+            special_weapon,
+            "special_img/blue",
+            name_decorator=lambda x: x.replace("_Coop", ""),
+        )
+
+    coop_stages = fetch_resource("CoopSceneInfo")
+    for coop_stage in coop_stages:
+        format_map(COOP_STAGE_IMAGE, coop_stage, "stage_img/icon/high_resolution", True)
+
+
 def main():
     if len(sys.argv) <= 1:
         print(
             f'Please specify the Salmonia3+ backup with "python3 {sys.argv[0]} <PATH>".'
         )
         return
+    warmup()
 
     coops = []
     with open(f"{sys.argv[1]}", encoding="utf-8") as f:
@@ -266,58 +319,5 @@ def main():
     print(f'Export {len(coops)} coops to "conch-bay-import.json".')
 
 
-def format_image(path, name, is_splatoon3_ink=False):
-    sha = sha256(name.encode("utf-8")).hexdigest()
-    if is_splatoon3_ink:
-        return f"https://splatoon3.ink/assets/splatnet/v1/{path}/{sha}_0.png"
-    else:
-        return f"https://api.lp1.av5ja.srv.nintendo.net/resources/prod/v1/{path}/{sha}_0.png"
-
-
-def format_map(map, obj, path, is_splatoon3_ink=False, name_decorator=lambda x: x):
-    map[obj["Id"]] = format_image(
-        path, name_decorator(obj["__RowId"]), is_splatoon3_ink
-    )
-
-
-def fetch_resource(path):
-    return requests.get(
-        f"https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/{VERSION}/{path}.json"
-    ).json()
-
-
-def warmup():
-    global BACKGROUND_IMAGE, BADGE_IMAGE, UNIFORM_IMAGE, WEAPON_IMAGE, SPECIAL_WEAPON_IMAGE, COOP_STAGE_IMAGE
-    backgrounds = fetch_resource("NamePlateBgInfo")
-    for background in backgrounds:
-        format_map(BACKGROUND_IMAGE, background, "npl_img")
-
-    badges = fetch_resource("BadgeInfo")
-    for badge in badges:
-        BADGE_IMAGE[badge["Id"]] = format_image("badge_img", badge["Name"])
-
-    uniforms = fetch_resource("CoopSkinInfo")
-    for uniform in uniforms:
-        format_map(UNIFORM_IMAGE, uniform, "coop_skin_img")
-
-    weapons = fetch_resource("WeaponInfoMain")
-    for weapon in weapons:
-        format_map(WEAPON_IMAGE, weapon, "weapon_illust", not weapon["IsCoopRare"])
-
-    special_weapons = fetch_resource("WeaponInfoSpecial")
-    for special_weapon in special_weapons:
-        format_map(
-            SPECIAL_WEAPON_IMAGE,
-            special_weapon,
-            "special_img/blue",
-            name_decorator=lambda x: x.replace("_Coop", ""),
-        )
-
-    coop_stages = fetch_resource("CoopSceneInfo")
-    for coop_stage in coop_stages:
-        format_map(COOP_STAGE_IMAGE, coop_stage, "stage_img/icon/high_resolution", True)
-
-
 if __name__ == "__main__":
-    warmup()
     main()
