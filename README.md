@@ -21,7 +21,7 @@ python3 tools/convert_s3s_outputs.py <PATH_TO_S3S>
 Run the following command to extract and convert stat.ink [Salmon Run JSON](https://stat.ink/user/download3?type=salmon-json) into `conch-bay-import.json`. You can then import it into Conch Bay. Notice that some fields (ID, banners and badges in Splashtags, etc.) were lost when uploaded to stat.ink which will be replaced with dummy ones.
 
 ```sh
-python3 tools/convert_stat_ink_results.py <PATH_TO_EXTRACTED_STAT_INK_SALMON_RUN_JSON>
+python3 tools/convert_stat_ink_salmon_run_json.py <PATH_TO_EXTRACTED_STAT_INK_SALMON_RUN_JSON>
 ```
 
 ### Import data from ikawidget3

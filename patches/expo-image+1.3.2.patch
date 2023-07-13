@@ -35,7 +35,7 @@ index d7ceb7e..0d2d8ad 100644
      }
  
 diff --git a/node_modules/expo-image/ios/ImageModule.swift b/node_modules/expo-image/ios/ImageModule.swift
-index 925d5c7..77b1242 100644
+index f862fc8..fe36525 100644
 --- a/node_modules/expo-image/ios/ImageModule.swift
 +++ b/node_modules/expo-image/ios/ImageModule.swift
 @@ -91,7 +91,13 @@ public final class ImageModule: Module {
