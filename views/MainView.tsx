@@ -941,6 +941,11 @@ const MainView = () => {
   const onConvertS3sOutputsPress = () => {
     WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay#import-data-from-s3s");
   };
+  const onConvertStatInkSalmonRunJsonPress = () => {
+    WebBrowser.openBrowserAsync(
+      "https://github.com/zhxie/conch-bay#import-salmon-run-data-from-statink"
+    );
+  };
   const onConvertIkawidget3Ikax3Press = () => {
     WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay#import-data-from-ikawidget3");
   };
@@ -1779,6 +1784,16 @@ const MainView = () => {
               onPress={onConvertS3sOutputsPress}
             >
               <Marquee>{t("convert_s3s_outputs")}</Marquee>
+            </Button>
+            <Button
+              style={[
+                ViewStyles.mb2,
+                { borderColor: Color.AccentColor, borderWidth: 1.5 },
+                theme.backgroundStyle,
+              ]}
+              onPress={onConvertStatInkSalmonRunJsonPress}
+            >
+              <Marquee>{t("convert_stat_ink_salmon_run_json")}</Marquee>
             </Button>
             <Button
               style={[

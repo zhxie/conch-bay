@@ -57,6 +57,7 @@ const ja = {
   import_notice:
     "ホラガイベイはホラガイベイによってエクスポートされたリザルトのインポートをサポートしており、他のサードパーティアプリによってエクスポートされたリザルトをホラガイベイでサポートされている形式に変換してインポートすることもできます。さらに、ホラガイベイはリザルトをインポートするために大量のメモリを必要とします。ホラガイベイがリザルトをインポートできない場合は、リザルトを分割してインポートできます。",
   convert_s3s_outputs: "s3sによってエクスポートされたリザルトを変換",
+  convert_stat_ink_salmon_run_json: "stat.inkサーモンランJSONを変換",
   convert_ikawidget3_ikax3: "ikawidget3 IKAX3を変換",
   convert_salmdroidnw_backup: "salmdroidNWバックアップを変換",
   "convert_salmonia3+_backup": "Salmonia3+バックアップを変換",

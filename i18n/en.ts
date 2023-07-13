@@ -56,6 +56,7 @@ const en = {
   import_notice:
     "Conch Bay supports importing results exported by Conch Bay, and you can also convert results exported by other 3rd party apps to formats supported by Conch Bay and import them. In addition, Conch Bay requires a lot of memory to import records. If Conch Bay cannot import records, you can split and import them.",
   convert_s3s_outputs: "Convert s3s Outputs",
+  convert_stat_ink_salmon_run_json: "Convert stat.ink Salmon Run JSON",
   convert_ikawidget3_ikax3: "Convert ikawidget3 IKAX3",
   convert_salmdroidnw_backup: "Convert salmdroidNW Backup",
   "convert_salmonia3+_backup": "Convert Salmonia3+ Backup",
