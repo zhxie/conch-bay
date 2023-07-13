@@ -16,6 +16,14 @@ Run the following command and all outputs will be merged into `conch-bay-import.
 python3 tools/convert_s3s_outputs.py <PATH_TO_S3S>
 ```
 
+### Import Salmon Run data from stat.ink
+
+Run the following command to extract and convert stat.ink [Salmon Run JSON](https://stat.ink/user/download3?type=salmon-json) into `conch-bay-import.json`. You can then import it into Conch Bay. Notice that some fields (ID, banners and badges in Splashtags, etc.) were lost when uploaded to stat.ink which will be replaced with dummy ones.
+
+```sh
+python3 tools/convert_stat_ink_results.py <PATH_TO_EXTRACTED_STAT_INK_SALMON_RUN_JSON>
+```
+
 ### Import data from ikawidget3
 
 Run the following command to extract and convert data from a ikawidget3 database IKAX3 into `conch-bay-import.json`. You can then import it into Conch Bay. You have to agree with [Couchbase Enterprise](https://www.couchbase.com/ESLA01162020) License](https://www.couchbase.com/ESLA01162020) before converting.
