@@ -103,9 +103,9 @@ def construct_member_result(result, player):
     )
     background["textColor"] = {
         "a": 1,
-        "b": 1,
-        "g": 1,
-        "r": 1,
+        "b": 0.67,
+        "g": 0.63,
+        "r": 0.63,
     }
     special_weapon = (
         construct_weapon(
