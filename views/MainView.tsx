@@ -204,6 +204,7 @@ const MainView = () => {
   const [count, setCount] = useState(0);
   const [total, setTotal] = useState(0);
   const [filter, setFilter] = useState<Database.FilterProps>();
+  const filterRef = useRef<Database.FilterProps>();
   const [filterOptions, setFilterOptions] = useState<Database.FilterProps>();
   const [blurOnTop, setBlurOnTop] = useState(false);
 
@@ -261,6 +262,7 @@ const MainView = () => {
     }
   }, [sessionToken]);
   useEffect(() => {
+    filterRef.current = filter;
     if (ready) {
       loadResults(20);
     }
@@ -316,7 +318,7 @@ const MainView = () => {
       limit = length;
     }
 
-    const details = (await Database.query(offset, limit, filter)).map((record) => {
+    const details = (await Database.query(offset, limit, filterRef.current)).map((record) => {
       if (record.mode === "salmon_run") {
         return {
           coop: JSON.parse(record.detail) as CoopHistoryDetailResult,
@@ -328,7 +330,10 @@ const MainView = () => {
       setResults(results.concat(details));
     } else {
       setResults(details);
-      const [count, newTotal] = await Promise.all([Database.count(filter), Database.count()]);
+      const [count, newTotal] = await Promise.all([
+        Database.count(filterRef.current),
+        Database.count(),
+      ]);
       setCount(count);
       setTotal(newTotal);
       if (newTotal !== total) {
@@ -729,10 +734,7 @@ const MainView = () => {
     setBlurOnTop(event.nativeEvent.contentOffset.y > ViewStyles.mt2.marginTop);
   };
   const onScrollEndDrag = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    if (refreshing) {
-      return;
-    }
-    if (allResultsShown) {
+    if (refreshing || loadingMore || allResultsShown) {
       return;
     }
     const overHeight = event.nativeEvent.contentSize.height - height;
@@ -1565,7 +1567,7 @@ const MainView = () => {
                   <FriendView friends={friends} voting={voting} style={ViewStyles.mb4} />
                 )}
               <FilterView
-                isDisabled={refreshing || loadingMore}
+                isDisabled={loadingMore}
                 filter={filter}
                 options={filterOptions}
                 onChange={onChangeFilterPress}

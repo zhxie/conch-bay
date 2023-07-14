@@ -398,6 +398,9 @@ export const addCoop = (coop: CoopHistoryDetailResult) => {
     coop.coopHistoryDetail!.coopStage.id
   );
 };
+export const remove = async (id: string) => {
+  await exec("DELETE FROM result WHERE id = ?", [id], false);
+};
 export const clear = async () => {
   await exec("DELETE FROM result", [], false);
   await exec("VACUUM result", [], false);
