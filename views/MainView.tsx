@@ -734,7 +734,7 @@ const MainView = () => {
     setBlurOnTop(event.nativeEvent.contentOffset.y > ViewStyles.mt2.marginTop);
   };
   const onScrollEndDrag = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    if (refreshing || loadingMore || allResultsShown) {
+    if (loadingMore || allResultsShown) {
       return;
     }
     const overHeight = event.nativeEvent.contentSize.height - height;
@@ -1582,7 +1582,7 @@ const MainView = () => {
             >
               <VStack style={[ViewStyles.mb4, ViewStyles.wf, ViewStyles.px4]}>
                 <Picker
-                  isLoading={refreshing || loadingMore}
+                  isLoading={loadingMore}
                   isLoadingText={t("loading_more")}
                   title={allResultsShown ? t("all_results_showed") : t("show_more")}
                   items={Object.values(TimeRange).map((range) => ({

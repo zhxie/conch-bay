@@ -16,7 +16,7 @@ import {
   useTheme,
 } from "../components";
 import t from "../i18n";
-import { FilterProps } from "../utils/database";
+import { FilterProps, isFilterEqual } from "../utils/database";
 
 interface FilterViewProps {
   isDisabled: boolean;
@@ -73,26 +73,6 @@ const FilterView = (props: FilterViewProps) => {
   const theme = useTheme();
 
   const [filter, setFilter] = useState(false);
-
-  const isFilterEqual = (a?: FilterProps, b?: FilterProps) => {
-    if (!a && !b) {
-      return true;
-    }
-    if (!a || !b) {
-      return false;
-    }
-    for (const group of ["modes", "rules", "stages", "weapons"]) {
-      if (a[group].length !== b[group].length) {
-        return false;
-      }
-      for (const item of a[group]) {
-        if (!b[group].includes(item)) {
-          return false;
-        }
-      }
-    }
-    return true;
-  };
 
   const onFilterPress = () => {
     setFilter(true);
