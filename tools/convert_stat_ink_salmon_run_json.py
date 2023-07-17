@@ -303,7 +303,7 @@ def main():
                         "resultWave": (
                             result["clear_waves"] + 1
                             if result["clear_waves"]
-                            is not (3 if not result["eggstra_work"] else 5)
+                            is not (3 if not result.get("eggstra_work") else 5)
                             else 0
                         )
                         if not result["players"][0]["disconnected"]
@@ -312,7 +312,7 @@ def main():
                             "+00:00", "Z"
                         ),
                         "rule": "TEAM_CONTEST"
-                        if result["eggstra_work"]
+                        if result.get("eggstra_work")
                         else ("BIG_RUN" if result["big_run"] else "REGULAR"),
                         "coopStage": construct_image_obj(
                             "CoopStage",
