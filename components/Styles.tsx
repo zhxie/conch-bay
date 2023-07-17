@@ -192,6 +192,14 @@ export const ViewStyles = StyleSheet.create({
     borderTopLeftRadius: 0,
     borderTopRightRadius: 0,
   },
+  rt0_5: {
+    borderTopLeftRadius: 2,
+    borderTopRightRadius: 2,
+  },
+  rt1: {
+    borderTopLeftRadius: 4,
+    borderTopRightRadius: 4,
+  },
   rt2: {
     borderTopLeftRadius: 8,
     borderTopRightRadius: 8,
@@ -200,8 +208,48 @@ export const ViewStyles = StyleSheet.create({
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,
   },
+  rb0_5: {
+    borderBottomLeftRadius: 2,
+    borderBottomRightRadius: 2,
+  },
+  rb1: {
+    borderBottomLeftRadius: 4,
+    borderBottomRightRadius: 4,
+  },
   rb2: {
     borderBottomLeftRadius: 8,
+    borderBottomRightRadius: 8,
+  },
+  rl0: {
+    borderTopLeftRadius: 0,
+    borderBottomLeftRadius: 0,
+  },
+  rl0_5: {
+    borderTopLeftRadius: 2,
+    borderBottomLeftRadius: 2,
+  },
+  rl1: {
+    borderTopLeftRadius: 4,
+    borderBottomLeftRadius: 4,
+  },
+  rl2: {
+    borderTopLeftRadius: 8,
+    borderBottomLeftRadius: 8,
+  },
+  rr0: {
+    borderTopRightRadius: 0,
+    borderBottomRightRadius: 0,
+  },
+  rr0_5: {
+    borderTopRightRadius: 2,
+    borderBottomRightRadius: 2,
+  },
+  rr1: {
+    borderTopRightRadius: 4,
+    borderBottomRightRadius: 4,
+  },
+  rr2: {
+    borderTopRightRadius: 8,
     borderBottomRightRadius: 8,
   },
   s1: {
@@ -235,6 +283,9 @@ export const ViewStyles = StyleSheet.create({
     borderRightColor: `${Color.MiddleTerritory}3f`,
   },
   // TODO: prefer applying margins to lefts and tops.
+  mr0_25: {
+    marginRight: 1,
+  },
   mr0_5: {
     marginRight: 2,
   },
@@ -255,6 +306,9 @@ export const ViewStyles = StyleSheet.create({
   },
   mt2: {
     marginTop: 8,
+  },
+  mb0_25: {
+    marginBottom: 1,
   },
   mb0_5: {
     marginBottom: 2,

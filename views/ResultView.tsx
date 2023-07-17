@@ -1091,10 +1091,12 @@ const ResultView = (props: ResultViewProps) => {
                                 {new Array(5).fill(0).map((_, i, rects) => (
                                   <Rectangle
                                     key={i}
-                                    width={12}
+                                    width={16}
                                     height={8}
                                     style={[
-                                      i !== rects.length - 1 && ViewStyles.mr0_5,
+                                      i !== rects.length - 1 && ViewStyles.mr0_25,
+                                      i === 0 && ViewStyles.rl0_5,
+                                      i === rects.length - 1 && ViewStyles.rr0_5,
                                       {
                                         backgroundColor:
                                           result.coop!.coopHistoryDetail!.smellMeter! >= i + 1
