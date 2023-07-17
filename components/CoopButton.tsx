@@ -28,7 +28,7 @@ interface CoopButtonProps<T> {
   onPress?: (coop: T) => void;
 }
 
-const CoopButton = <T extends any>(props: CoopButtonProps<T>) => {
+const CoopButton = <T,>(props: CoopButtonProps<T>) => {
   const theme = useTheme();
 
   const clearStyle = [TextStyles.b, { color: props.color }];

@@ -26,7 +26,7 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
     let bulletToken = "";
     const webServiceToken = await AsyncStorage.getItem("webServiceToken");
     if (webServiceToken) {
-      bulletToken = await getBulletToken(webServiceToken).catch((_) => "");
+      bulletToken = await getBulletToken(webServiceToken).catch(() => "");
     }
 
     // Reacquire tokens.

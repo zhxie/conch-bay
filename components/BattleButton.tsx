@@ -29,7 +29,7 @@ interface BattleButtonProps<T> {
   onPress?: (battle: T) => void;
 }
 
-const BattleButton = <T extends any>(props: BattleButtonProps<T>) => {
+const BattleButton = <T,>(props: BattleButtonProps<T>) => {
   const killAndAssist =
     props.kill == undefined
       ? "-"

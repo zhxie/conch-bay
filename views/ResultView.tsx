@@ -14,7 +14,6 @@ import {
   useWindowDimensions,
 } from "react-native";
 import JSONTree from "react-native-json-tree";
-import * as Progress from "react-native-progress";
 import {
   AccordionDisplay,
   BannerLevel,

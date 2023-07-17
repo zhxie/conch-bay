@@ -373,7 +373,7 @@ const MainView = () => {
     // Attempt to acquire bullet token from web service token.
     let newBulletTokenAttempt: string | undefined;
     if (webServiceToken.length > 0) {
-      newBulletTokenAttempt = await getBulletToken(webServiceToken).catch((_) => undefined);
+      newBulletTokenAttempt = await getBulletToken(webServiceToken).catch(() => undefined);
     }
     if (newBulletTokenAttempt) {
       await setBulletToken(newBulletTokenAttempt);
@@ -1105,7 +1105,6 @@ const MainView = () => {
   const onSplitAndExportPress = async () => {
     setExporting(true);
     let success = true;
-    let n = 0;
     let batch = 0;
     while (true) {
       const uri = FileSystem.cacheDirectory + `conch-bay-export-${batch}.json`;
@@ -1113,6 +1112,10 @@ const MainView = () => {
         const battles: string[] = [];
         const coops: string[] = [];
         const records = await Database.query(Database.BATCH_SIZE * batch, Database.BATCH_SIZE);
+        if (records.length === 0) {
+          break;
+        }
+        batch += 1;
         records.forEach((record) => {
           if (record.mode === "salmon_run") {
             coops.push(record.detail);
@@ -1126,14 +1129,9 @@ const MainView = () => {
           encoding: FileSystem.EncodingType.UTF8,
         });
 
-        n += records.length;
         if (records.length < Database.BATCH_SIZE) {
-          if (records.length === 0) {
-            batch -= 1;
-          }
           break;
         }
-        batch += 1;
       } catch (e) {
         success = false;
         showBanner(BannerLevel.Error, e);
@@ -1142,14 +1140,14 @@ const MainView = () => {
     }
 
     if (success) {
-      for (let i = 0; i <= batch; i++) {
+      for (let i = 0; i < batch; i++) {
         const uri = FileSystem.cacheDirectory + `conch-bay-export-${i}.json`;
         await Sharing.shareAsync(uri, { UTI: "public.json" });
       }
     }
 
     // Clean up.
-    for (let i = 0; i <= batch; i++) {
+    for (let i = 0; i < batch; i++) {
       const uri = FileSystem.cacheDirectory + `conch-bay-export-${i}.json`;
       await FileSystem.deleteAsync(uri, { idempotent: true });
     }

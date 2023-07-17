@@ -71,7 +71,7 @@ const AccordionDisplay = (props: AccordionDisplayProps) => {
     setExpand(!expand);
   };
 
-  if (props.subChildren === undefined || React.Children.count(props.subChildren) === 0) {
+  if (subChildren === undefined || React.Children.count(subChildren) === 0) {
     return <Display {...props} />;
   }
 
@@ -84,7 +84,7 @@ const AccordionDisplay = (props: AccordionDisplayProps) => {
           {...rest}
         />
       </Pressable>
-      {expand && props.subChildren}
+      {expand && subChildren}
     </VStack>
   );
 };
