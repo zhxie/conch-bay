@@ -152,7 +152,7 @@ const zhHans = {
   job_score: "打工分数",
   pay_grade: "评价倍率",
   clear_bonus: "通关奖励",
-  smell: "气味",
+  salmometer: "头目槽",
   scenario_code: "剧本代码",
   hide_player_names: "隐藏玩家名称",
   show_player_names: "显示玩家名称",

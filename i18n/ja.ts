@@ -158,7 +158,7 @@ const ja = {
   job_score: "バイトスコア",
   pay_grade: "評価レート",
   clear_bonus: "クリアボーナス",
-  smell: "ニオイ",
+  salmometer: "オカシラゲージ",
   scenario_code: "シナリオコード",
   hide_player_names: "プレイヤー名を隠す",
   show_player_names: "プレイヤー名を表示",

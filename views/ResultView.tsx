@@ -1084,7 +1084,7 @@ const ResultView = (props: ResultViewProps) => {
                         )}
                         {result.coop.coopHistoryDetail!.smellMeter !== null && (
                           <VStack>
-                            <Display level={1} title={t("smell")}>
+                            <Display level={1} title={t("salmometer")}>
                               <Text numberOfLines={1}>
                                 {`${result.coop.coopHistoryDetail!.smellMeter}/5`}
                               </Text>

@@ -152,7 +152,7 @@ const zhHant = {
   job_score: "打工分數",
   pay_grade: "評價倍率",
   clear_bonus: "完成獎勵",
-  smell: "氣味",
+  salmometer: "頭目槽",
   scenario_code: "劇本代碼",
   hide_player_names: "隱藏玩家名稱",
   show_player_names: "顯示玩家名稱",

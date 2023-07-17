@@ -158,7 +158,7 @@ const en = {
   job_score: "Job Score",
   pay_grade: "Pay Grade",
   clear_bonus: "Clear Bonus",
-  smell: "Smell",
+  salmometer: "Salmometer",
   scenario_code: "Scenario Code",
   hide_player_names: "Hide Player Names",
   show_player_names: "Show Player Names",
