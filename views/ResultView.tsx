@@ -14,6 +14,7 @@ import {
   useWindowDimensions,
 } from "react-native";
 import JSONTree from "react-native-json-tree";
+import * as Progress from "react-native-progress";
 import {
   AccordionDisplay,
   BannerLevel,
@@ -35,6 +36,7 @@ import {
   Marquee,
   Modal,
   PureIconButton,
+  Rectangle,
   Result,
   Splashtag,
   Text,
@@ -1085,9 +1087,26 @@ const ResultView = (props: ResultViewProps) => {
                         {result.coop.coopHistoryDetail!.smellMeter !== null && (
                           <VStack>
                             <Display level={1} title={t("salmometer")}>
-                              <Text numberOfLines={1}>
-                                {`${result.coop.coopHistoryDetail!.smellMeter}/5`}
-                              </Text>
+                              <HStack center>
+                                {new Array(5).fill(0).map((_, i, rects) => (
+                                  <Rectangle
+                                    key={i}
+                                    width={12}
+                                    height={8}
+                                    style={[
+                                      i !== rects.length - 1 && ViewStyles.mr0_5,
+                                      {
+                                        backgroundColor:
+                                          result.coop!.coopHistoryDetail!.smellMeter! >= i + 1
+                                            ? getCoopRuleColor(
+                                                result.coop!.coopHistoryDetail!.rule
+                                              )!
+                                            : Color.MiddleTerritory,
+                                      },
+                                    ]}
+                                  />
+                                ))}
+                              </HStack>
                             </Display>
                           </VStack>
                         )}
