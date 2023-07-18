@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { StyleProp, ViewStyle } from "react-native";
-import Icon from "./Icon";
+import Icon, { IconName } from "./Icon";
 import Marquee from "./Marquee";
 import Pressable from "./Pressable";
 import { HStack, VStack } from "./Stack";
@@ -10,7 +10,7 @@ interface DisplayProps {
   isFirst?: boolean;
   isLast?: boolean;
   level?: number;
-  icon?: string;
+  icon?: IconName;
   title: string;
   style?: StyleProp<ViewStyle>;
   children?: React.ReactNode;
@@ -39,13 +39,7 @@ const Display = (props: DisplayProps) => {
         <HStack flex center style={ViewStyles.mr1}>
           <HStack style={{ width: 16 * (props.level ?? 0) }} />
           {!!props.icon && (
-            <Icon
-              // HACK: forcly cast.
-              name={props.icon as any}
-              size={14}
-              color={theme.textColor}
-              style={ViewStyles.mr0_5}
-            />
+            <Icon name={props.icon} size={14} color={theme.textColor} style={ViewStyles.mr0_5} />
           )}
           <HStack flex>
             <Marquee style={TextStyles.b}>{props.title}</Marquee>

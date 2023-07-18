@@ -6,6 +6,7 @@ if (!existsSync("assets/fonts")) {
 }
 const css = createReadStream("node_modules/lucide-static/font/lucide.css");
 const glyphMap = createWriteStream("assets/fonts/Lucide.json", "utf-8");
+const type = createWriteStream("assets/fonts/Lucide.ts", "utf-8");
 
 let map = {};
 
@@ -22,4 +23,11 @@ rl.on("line", (line) => {
 
 rl.on("close", () => {
   glyphMap.write(JSON.stringify(map, undefined, 2) + "\n");
+  type.write(
+    "export type Lucide =\n" +
+      Object.keys(map)
+        .map((key) => `  | "${key}"`)
+        .join("\n") +
+      ";\n"
+  );
 });

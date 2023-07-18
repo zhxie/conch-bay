@@ -1,6 +1,6 @@
 import { StyleProp, StyleSheet, ViewStyle } from "react-native";
 import { Badge } from "./Badge";
-import Icon from "./Icon";
+import Icon, { IconName } from "./Icon";
 import Image, { ImageSource } from "./Image";
 import Marquee from "./Marquee";
 import Pressable from "./Pressable";
@@ -23,7 +23,7 @@ interface ResultButtonProps {
   tag?: string;
   image?: ImageSource;
   result?: Result;
-  icon?: string;
+  icon?: IconName;
   title: string;
   badge?: string;
   subtitle: React.ReactNode;
@@ -92,13 +92,7 @@ const ResultButton = (props: ResultButtonProps) => {
           <HStack flex center justify>
             <HStack flex center style={ViewStyles.mr1}>
               {props.icon && (
-                <Icon
-                  // HACK: forcly cast.
-                  name={props.icon as any}
-                  size={16}
-                  color={props.color}
-                  style={ViewStyles.mr1}
-                />
+                <Icon name={props.icon} size={16} color={props.color} style={ViewStyles.mr1} />
               )}
               <HStack style={[!!props.badge && ViewStyles.mr1, ViewStyles.i]}>
                 <Marquee style={[TextStyles.h2, !!props.color && { color: props.color }]}>
