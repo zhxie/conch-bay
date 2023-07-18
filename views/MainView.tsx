@@ -1697,6 +1697,7 @@ const MainView = () => {
             size={50}
             color={autoRefresh ? Color.AccentColor : undefined}
             icon="refresh-cw"
+            spin={autoRefresh}
             onPress={onAutoRefreshPress}
           />
         )}
