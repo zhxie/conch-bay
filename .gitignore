@@ -11,5 +11,4 @@ web-build/
 .vscode
 .DS_Store
 
-assets/fonts/
 models/*.json

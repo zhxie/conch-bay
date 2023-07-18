@@ -1,5 +1,5 @@
 import { StyleProp, ViewStyle } from "react-native";
-import Icon from "./Icon";
+import Icon, { IconName } from "./Icon";
 import Pressable from "./Pressable";
 import { Center } from "./Stack";
 import { Color } from "./Styles";
@@ -8,7 +8,7 @@ interface IconButtonProps {
   isDisabled?: boolean;
   size: number;
   color?: string;
-  icon: string;
+  icon: IconName;
   hitSlop?: number;
   style?: StyleProp<ViewStyle>;
   onPress?: () => void;
@@ -34,8 +34,7 @@ const IconButton = (props: IconButtonProps) => {
     >
       <Center flex>
         <Icon
-          // HACK: forcly cast.
-          name={props.icon as any}
+          name={props.icon}
           size={props.size * 0.5}
           color={props.color ? "white" : Color.MiddleTerritory}
         />
@@ -62,8 +61,7 @@ const PureIconButton = (props: IconButtonProps) => {
     >
       <Center flex>
         <Icon
-          // HACK: forcly cast.
-          name={props.icon as any}
+          name={props.icon}
           size={props.size}
           color={props.color ? "white" : Color.MiddleTerritory}
         />

@@ -1,5 +1,5 @@
 import { ActivityIndicator, StyleProp, ViewStyle } from "react-native";
-import Icon from "./Icon";
+import Icon, { IconName } from "./Icon";
 import Pressable from "./Pressable";
 import { Center, HStack } from "./Stack";
 import { Color, TextStyles, ViewStyles } from "./Styles";
@@ -10,7 +10,7 @@ interface ToolButtonProps {
   isLoading?: boolean;
   isLoadingText?: string;
   color?: string;
-  icon: string;
+  icon: IconName;
   title: string;
   style?: StyleProp<ViewStyle>;
   onPress?: () => void;
@@ -35,8 +35,7 @@ const ToolButton = (props: ToolButtonProps) => {
           } else {
             return (
               <Icon
-                // HACK: forcly cast.
-                name={props.icon as any}
+                name={props.icon}
                 size={16}
                 color={props.color ?? Color.MiddleTerritory}
                 style={ViewStyles.mr1}

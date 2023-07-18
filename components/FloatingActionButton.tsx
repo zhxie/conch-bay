@@ -1,3 +1,4 @@
+import { IconName } from "./Icon";
 import { IconButton } from "./IconButton";
 import { ViewStyles } from "./Styles";
 
@@ -5,7 +6,7 @@ interface FloatingActionButtonProps {
   isDisabled?: boolean;
   size: number;
   color?: string;
-  icon: string;
+  icon: IconName;
   onPress?: () => void;
 }
 

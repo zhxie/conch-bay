@@ -20,7 +20,6 @@ const App = () => {
   useEffect(() => {
     ok(
       Font.loadAsync({
-        Lucide: require("lucide-static/font/lucide.ttf"),
         MPLUSRounded1cExtraBold: require("@expo-google-fonts/m-plus-rounded-1c/MPLUSRounded1c_800ExtraBold.ttf"),
       })
     ).then(() => {
