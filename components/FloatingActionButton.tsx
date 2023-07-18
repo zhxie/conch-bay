@@ -7,6 +7,7 @@ interface FloatingActionButtonProps {
   size: number;
   color?: string;
   icon: IconName;
+  spin?: boolean;
   onPress?: () => void;
 }
 
@@ -17,6 +18,7 @@ const FloatingActionButton = (props: FloatingActionButtonProps) => {
       size={props.size}
       color={props.color}
       icon={props.icon}
+      spin={props.spin}
       style={[ViewStyles.s2, { position: "absolute", right: 20, bottom: 20 }]}
       onPress={props.onPress}
     />
