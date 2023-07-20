@@ -209,9 +209,17 @@ const MainView = () => {
   const [filterOptions, setFilterOptions] = useState<Database.FilterProps>();
 
   const fade = useRef(new Animated.Value(0)).current;
-  const [scrollOffset, setScrollOffset] = useState(0);
+  const blurOnTopFade = useRef(new Animated.Value(0)).current;
   const [headerHeight, setHeaderHeight] = useState(0);
   const [filterHeight, setFilterHeight] = useState(0);
+  const blurOnTopTranslateY = blurOnTopFade.interpolate({
+    inputRange: [1, 2],
+    outputRange: [0, filterHeight + ViewStyles.mt2.marginTop + ViewStyles.mb2.marginBottom],
+  });
+  const topFilterFade = blurOnTopFade.interpolate({
+    inputRange: [1, 2],
+    outputRange: [0, 1],
+  });
 
   const allResultsShown = (results?.length ?? 0) >= count;
 
@@ -740,7 +748,27 @@ const MainView = () => {
     setFilterHeight(event.nativeEvent.layout.height);
   };
   const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    setScrollOffset(event.nativeEvent.contentOffset.y);
+    const offset = event.nativeEvent.contentOffset.y;
+    if (offset >= headerHeight - filterHeight - insets.top - ViewStyles.mt2.marginTop) {
+      Animated.timing(blurOnTopFade, {
+        toValue: 2,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    } else if (offset >= ViewStyles.mt2.marginTop) {
+      // HACK: blur view shows following the extra 8px padding in the top.
+      Animated.timing(blurOnTopFade, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    } else {
+      Animated.timing(blurOnTopFade, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    }
   };
   const onScrollEndDrag = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     if (loadingMore || allResultsShown) {
@@ -1696,41 +1724,39 @@ const MainView = () => {
           onScroll={onScroll}
           onScrollEndDrag={onScrollEndDrag}
         />
-        {/* HACK: blur view shows following the extra 8px padding in the top. */}
-        {scrollOffset >= ViewStyles.mt2.marginTop &&
-          scrollOffset < headerHeight - filterHeight - insets.top - ViewStyles.mt2.marginTop && (
-            <BlurView
-              intensity={100}
-              tint={theme.colorScheme ?? "default"}
+        <Animated.View
+          style={{
+            position: "absolute",
+            top: -(filterHeight + ViewStyles.mt2.marginTop + ViewStyles.mb2.marginBottom),
+            width: "100%",
+            height:
+              filterHeight + insets.top + ViewStyles.mt2.marginTop + ViewStyles.mb2.marginBottom,
+            opacity: blurOnTopFade,
+            transform: [
+              {
+                translateY: blurOnTopTranslateY,
+              },
+            ],
+          }}
+        >
+          <BlurView intensity={100} tint={theme.colorScheme ?? "default"} style={ViewStyles.f}>
+            <Animated.View
               style={{
                 position: "absolute",
-                height: insets.top,
-                width: "100%",
+                bottom: ViewStyles.mb2.marginBottom,
+                opacity: topFilterFade,
               }}
-            />
-          )}
-        {scrollOffset >= headerHeight - filterHeight - insets.top - ViewStyles.mt2.marginTop && (
-          <BlurView
-            intensity={100}
-            tint={theme.colorScheme ?? "default"}
-            style={{
-              position: "absolute",
-              // HACK: apply an 8px vertical margin, which is in the same height of the top extra padding.
-              height:
-                filterHeight + insets.top + ViewStyles.mt2.marginTop + ViewStyles.mb2.marginBottom,
-              width: "100%",
-            }}
-          >
-            <FilterView
-              isDisabled={loadingMore}
-              filter={filter}
-              options={filterOptions}
-              onChange={onChangeFilterPress}
-              onLayout={onFilterLayout}
-              style={{ position: "absolute", bottom: ViewStyles.mb2.marginBottom }}
-            />
+            >
+              <FilterView
+                isDisabled={loadingMore}
+                filter={filter}
+                options={filterOptions}
+                onChange={onChangeFilterPress}
+                onLayout={onFilterLayout}
+              />
+            </Animated.View>
           </BlurView>
-        )}
+        </Animated.View>
         {sessionToken.length > 0 && (
           <FloatingActionButton
             size={50}
