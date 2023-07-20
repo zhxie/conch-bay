@@ -181,6 +181,7 @@ const zhHant = {
   power_eggs_collected: "收集的鮭魚卵",
   rescued: "救援",
   be_rescued: "被救助",
+  show_all_results: "顯示全部記錄",
   stats_notice: "由當前已顯示的記錄統計。括號內的數字對戰為每分鐘，鮭魚跑為每次打工的平均值。",
   // Trend.
   trends: "趨勢",

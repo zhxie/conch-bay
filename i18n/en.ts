@@ -187,6 +187,7 @@ const en = {
   power_eggs_collected: "Power Eggs Collected",
   rescued: "Rescued",
   be_rescued: "Be Rescued",
+  show_all_results: "Show All Results",
   stats_notice:
     "Statistics from currently showed results. The number in parentheses is over 1-minute average in battles and over each shift average in Salmon Run.",
   // Trends.

@@ -187,6 +187,7 @@ const ja = {
   power_eggs_collected: "集めたイクラ",
   rescued: "たすけた",
   be_rescued: "たすけてもらった",
+  show_all_results: "すべてのリザルトを見る",
   stats_notice:
     "現在表示されているリザルトからの統計。カッコ内の数字はバトルでは1分あたり、サーモンランでは各バイトのアベレージです。",
   // Trend.

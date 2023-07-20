@@ -971,6 +971,12 @@ const MainView = () => {
     }
     await loadResults(num);
   };
+  const onShowAllResultsPress = async () => {
+    if (allResultsShown) {
+      return;
+    }
+    await loadResults(count);
+  };
   const onImportPress = () => {
     setImport(true);
   };
@@ -1671,8 +1677,20 @@ const MainView = () => {
                 style={[ViewStyles.mb4, ViewStyles.wf]}
               >
                 <HStack flex center style={ViewStyles.px4}>
-                  <StatsView results={results} style={ViewStyles.mr2} />
-                  <TrendsView results={results} style={ViewStyles.mr2} />
+                  <StatsView
+                    results={results}
+                    loadingMore={loadingMore}
+                    allResultsShown={allResultsShown}
+                    onShowAllResultsPress={onShowAllResultsPress}
+                    style={ViewStyles.mr2}
+                  />
+                  <TrendsView
+                    results={results}
+                    loadingMore={loadingMore}
+                    allResultsShown={allResultsShown}
+                    onShowAllResultsPress={onShowAllResultsPress}
+                    style={ViewStyles.mr2}
+                  />
                   <ToolButton
                     icon="download"
                     title={t("import")}

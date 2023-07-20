@@ -8,6 +8,7 @@ import { useMemo, useState } from "react";
 import { NativeSyntheticEvent, StyleProp, ViewStyle } from "react-native";
 import {
   AccordionDisplay,
+  Button,
   Center,
   Display,
   Marquee,
@@ -17,6 +18,7 @@ import {
   ToolButton,
   VStack,
   ViewStyles,
+  useTheme,
 } from "../components";
 import t from "../i18n";
 import { CoopHistoryDetailResult, VsHistoryDetailResult } from "../models/types";
@@ -28,10 +30,15 @@ dayjs.extend(utc);
 
 interface StatsViewProps {
   results?: ResultProps[];
+  loadingMore: boolean;
+  allResultsShown: boolean;
+  onShowAllResultsPress: () => void;
   style?: StyleProp<ViewStyle>;
 }
 
 const StatsView = (props: StatsViewProps) => {
+  const theme = useTheme();
+
   const [stats, setStats] = useState(false);
   const [group, setGroup] = useState(0);
 
@@ -251,6 +258,19 @@ const StatsView = (props: StatsViewProps) => {
             </VStack>
           )}
         </VStack>
+        {!props.allResultsShown && (
+          <VStack style={ViewStyles.mb2}>
+            <Button
+              isLoading={props.loadingMore}
+              isLoadingText={t("loading_more")}
+              style={ViewStyles.accent}
+              textStyle={theme.reverseTextStyle}
+              onPress={props.onShowAllResultsPress}
+            >
+              <Marquee style={theme.reverseTextStyle}>{t("show_all_results")}</Marquee>
+            </Button>
+          </VStack>
+        )}
         <VStack center>
           <Marquee>{t("stats_notice")}</Marquee>
         </VStack>

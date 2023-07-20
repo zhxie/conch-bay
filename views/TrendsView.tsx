@@ -13,6 +13,7 @@ import {
   ViewStyle,
 } from "react-native";
 import {
+  Button,
   Center,
   Chart,
   Color,
@@ -39,6 +40,9 @@ dayjs.extend(utc);
 
 interface TrendViewProps {
   results?: ResultProps[];
+  loadingMore: boolean;
+  allResultsShown: boolean;
+  onShowAllResultsPress: () => void;
   style?: StyleProp<ViewStyle>;
 }
 
@@ -656,6 +660,19 @@ const TrendsView = (props: TrendViewProps) => {
             </VStack>
           )}
         </VStack>
+        {!props.allResultsShown && (
+          <VStack style={ViewStyles.mb2}>
+            <Button
+              isLoading={props.loadingMore}
+              isLoadingText={t("loading_more")}
+              style={ViewStyles.accent}
+              textStyle={theme.reverseTextStyle}
+              onPress={props.onShowAllResultsPress}
+            >
+              <Marquee style={theme.reverseTextStyle}>{t("show_all_results")}</Marquee>
+            </Button>
+          </VStack>
+        )}
         <VStack center style={(battleGroups.length > 0 || coopGroups.length > 0) && ViewStyles.mb2}>
           <Marquee>{t("trends_notice")}</Marquee>
         </VStack>

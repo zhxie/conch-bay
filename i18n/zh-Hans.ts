@@ -181,6 +181,7 @@ const zhHans = {
   power_eggs_collected: "收集的鲑鱼卵",
   rescued: "救援",
   be_rescued: "被救助",
+  show_all_results: "显示全部记录",
   stats_notice: "由当前已显示的记录统计。括号内的数字对战为每分钟，鲑鱼跑为每场打工的平均值。",
   // Trend.
   trends: "趋势",
