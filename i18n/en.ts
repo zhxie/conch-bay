@@ -166,6 +166,11 @@ const en = {
   open_in_nintendo_switch_online: "Open in Nintendo Switch Online",
   // Stats.
   stats: "Stats",
+  all: "All",
+  day: "Day",
+  week: "Week",
+  month: "Month",
+  season: "Season",
   victory: "VICTORY",
   defeat: "DEFEAT",
   power: "Power",
@@ -187,10 +192,6 @@ const en = {
   // Trends.
   trends: "Trends",
   average: "Average",
-  day: "Day",
-  week: "Week",
-  month: "Month",
-  season: "Season",
   splatted_including_assisted: "Splatted (Including Assisted)",
   golden_eggs_collected_including_assisted: "Golden Eggs Collected (Including Assisted)",
   trends_notice:

@@ -1,5 +1,11 @@
+import SegmentedControl, {
+  NativeSegmentedControlIOSChangeEvent,
+} from "@react-native-segmented-control/segmented-control";
+import dayjs from "dayjs";
+import quarterOfYear from "dayjs/plugin/quarterOfYear";
+import utc from "dayjs/plugin/utc";
 import { useMemo, useState } from "react";
-import { StyleProp, ViewStyle } from "react-native";
+import { NativeSyntheticEvent, StyleProp, ViewStyle } from "react-native";
 import {
   AccordionDisplay,
   Center,
@@ -17,6 +23,9 @@ import { CoopHistoryDetailResult, VsHistoryDetailResult } from "../models/types"
 import { countBattles, countCoops } from "../utils/ui";
 import { ResultProps } from "./ResultView";
 
+dayjs.extend(quarterOfYear);
+dayjs.extend(utc);
+
 interface StatsViewProps {
   results?: ResultProps[];
   style?: StyleProp<ViewStyle>;
@@ -24,30 +33,53 @@ interface StatsViewProps {
 
 const StatsView = (props: StatsViewProps) => {
   const [stats, setStats] = useState(false);
+  const [group, setGroup] = useState(0);
+
+  const beginTime = useMemo(() => {
+    switch (group) {
+      case 0:
+        return 0;
+      case 1:
+        return dayjs().utc().startOf("day").valueOf();
+      case 2:
+        return dayjs().utc().startOf("week").valueOf();
+      case 3:
+        return dayjs().utc().startOf("month").valueOf();
+      case 4:
+        return dayjs().utc().startOf("quarter").subtract(1, "month").valueOf();
+      default:
+        throw new Error(`unexpected group ${group}`);
+    }
+  }, [group]);
 
   const battleStats = useMemo(
     () =>
       countBattles(
-        (props.results?.map((result) => result.battle).filter((battle) => battle) ??
-          []) as VsHistoryDetailResult[]
+        (props.results
+          ?.map((result) => result.battle)
+          .filter((battle) => battle)
+          .filter(
+            (battle) =>
+              beginTime === 0 ||
+              new Date(battle!.vsHistoryDetail!.playedTime).valueOf() >= beginTime
+          ) ?? []) as VsHistoryDetailResult[]
       ),
-    [props.results]
+    [props.results, group]
   );
   const coopStats = useMemo(
     () =>
       countCoops(
-        (props.results?.map((result) => result.coop).filter((coop) => coop) ??
-          []) as CoopHistoryDetailResult[]
+        (props.results
+          ?.map((result) => result.coop)
+          .filter((coop) => coop)
+          .filter(
+            (coop) =>
+              beginTime === 0 ||
+              new Date(coop!.coopHistoryDetail!.playedTime).valueOf() >= beginTime
+          ) ?? []) as CoopHistoryDetailResult[]
       ),
-    [props.results]
+    [props.results, group]
   );
-
-  const onStatsPress = () => {
-    setStats(true);
-  };
-  const onStatsClose = () => {
-    setStats(false);
-  };
 
   const formatPower = (total: number, max: number, count: number) => {
     return `${max.toFixed(1)} (${(total / count).toFixed(1)})`;
@@ -86,10 +118,27 @@ const StatsView = (props: StatsViewProps) => {
     );
   };
 
+  const onStatsPress = () => {
+    setStats(true);
+  };
+  const onStatsClose = () => {
+    setStats(false);
+  };
+  const onGroupChange = (event: NativeSyntheticEvent<NativeSegmentedControlIOSChangeEvent>) => {
+    setGroup(event.nativeEvent.selectedSegmentIndex);
+  };
+
   return (
     <Center style={props.style}>
       <ToolButton icon="bar-chart-2" title={t("stats")} onPress={onStatsPress} />
       <Modal isVisible={stats} onClose={onStatsClose} style={ViewStyles.modal2d}>
+        <VStack style={ViewStyles.mb2}>
+          <SegmentedControl
+            values={[t("all"), t("day"), t("week"), t("month"), t("season")]}
+            selectedIndex={group}
+            onChange={onGroupChange}
+          />
+        </VStack>
         <VStack style={ViewStyles.mb2}>
           <Display isFirst isLast={battleStats.count === 0} title={t("battle")}>
             <Text numberOfLines={1}>{battleStats.count}</Text>

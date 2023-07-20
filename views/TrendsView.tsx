@@ -77,7 +77,7 @@ const TrendsView = (props: TrendViewProps) => {
 
   const [point, setPoint] = useState(20);
   const [trends, setTrends] = useState(false);
-  const [group, setPeriod] = useState(0);
+  const [group, setGroup] = useState(0);
   const [battleDimensions, setBattleDimensions] = useState<BattleDimension[]>(["VICTORY"]);
   const [coopDimensions, setCoopDimensions] = useState<CoopDimension[]>(["CLEAR"]);
 
@@ -377,7 +377,7 @@ const TrendsView = (props: TrendViewProps) => {
     setTrends(false);
   };
   const onGroupChange = (event: NativeSyntheticEvent<NativeSegmentedControlIOSChangeEvent>) => {
-    setPeriod(event.nativeEvent.selectedSegmentIndex);
+    setGroup(event.nativeEvent.selectedSegmentIndex);
   };
   const onBattleDimensionPress = (dimension: BattleDimension) => {
     const newBattleDimensions = battleDimensions.map((dimension) => dimension);

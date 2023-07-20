@@ -166,6 +166,11 @@ const ja = {
   open_in_nintendo_switch_online: "Nintendo Switch Onlineでチェック",
   // Stats.
   stats: "統計",
+  all: "すべて",
+  day: "日",
+  week: "週",
+  month: "月",
+  season: "シーズン",
   victory: "WIN!",
   defeat: "LOSE...",
   power: "パワー",
@@ -187,10 +192,6 @@ const ja = {
   // Trend.
   trends: "トレンド",
   average: "平均",
-  day: "日",
-  week: "週",
-  month: "月",
-  season: "シーズン",
   splatted_including_assisted: "たおした (アシスト含む)",
   golden_eggs_collected_including_assisted: "集めた金イクラ (含助攻)",
   trends_notice:
