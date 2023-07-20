@@ -22,6 +22,7 @@ interface ModalProps {
   children?: React.ReactNode;
 }
 
+// TODO: derive modals.
 const Modal = (props: ModalProps) => {
   const theme = useTheme();
 

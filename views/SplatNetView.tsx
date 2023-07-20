@@ -1,17 +1,16 @@
 import { useState } from "react";
-import { ActivityIndicator, SafeAreaView, StyleProp, ViewStyle } from "react-native";
+import { ActivityIndicator, Linking, SafeAreaView, StyleProp, ViewStyle } from "react-native";
 import { WebView } from "react-native-webview";
 import { Center, FullscreenModal, ToolButton } from "../components";
 import t from "../i18n";
 
-interface SplatNetViewViewProps {
-  path?: string;
+interface SplatNetViewProps {
   webServiceToken: string;
   lang: string;
   style?: StyleProp<ViewStyle>;
 }
 
-const SplatNetView = (props: SplatNetViewViewProps) => {
+const SplatNetView = (props: SplatNetViewProps) => {
   const [net, setNet] = useState(false);
 
   const onNetPress = () => {
@@ -34,9 +33,7 @@ const SplatNetView = (props: SplatNetViewViewProps) => {
           {net && (
             <WebView
               source={{
-                uri: `https://api.lp1.av5ja.srv.nintendo.net${props.path ?? "/"}?lang=${
-                  props.lang
-                }`,
+                uri: `https://api.lp1.av5ja.srv.nintendo.net/?lang=${props.lang}`,
                 headers: {
                   Cookie: `_gtoken=${props.webServiceToken}`,
                   "X-Web-View-Ver": "4.0.0-d5178440",
@@ -45,6 +42,9 @@ const SplatNetView = (props: SplatNetViewViewProps) => {
               onMessage={(event) => {
                 if (event.nativeEvent.data === "close") {
                   setNet(false);
+                } else if (event.nativeEvent.data === "error") {
+                  setNet(false);
+                  Linking.openURL("com.nintendo.znca://znca/game/4834290508791808");
                 }
               }}
               injectedJavaScript={`
@@ -52,6 +52,11 @@ const SplatNetView = (props: SplatNetViewViewProps) => {
                 window.closeWebView = function() {
                   window.ReactNativeWebView.postMessage("close")
                 };
+                setInterval(function() {
+                  if (document.querySelector('[class*="ErrorPage_ErrorPage"]')) {
+                    window.ReactNativeWebView.postMessage("error")
+                  }
+                }, 1000);
                 true;
               `}
               style={{ backgroundColor: "#292e35" }}
