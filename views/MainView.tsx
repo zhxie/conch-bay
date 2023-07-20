@@ -1739,18 +1739,17 @@ const MainView = () => {
             ],
           }}
         >
-          <BlurView intensity={100} tint={theme.colorScheme ?? "default"} style={ViewStyles.f}>
-            <Animated.View
-              style={{
-                position: "absolute",
-                bottom: ViewStyles.mb2.marginBottom,
-                opacity: topFilterFade,
-              }}
-            >
+          <BlurView
+            intensity={100}
+            tint={theme.colorScheme ?? "default"}
+            style={[ViewStyles.f, { flexDirection: "column-reverse" }]}
+          >
+            <Animated.View style={{ opacity: topFilterFade }}>
               <FilterView
                 isDisabled={loadingMore}
                 filter={filter}
                 options={filterOptions}
+                style={ViewStyles.mb2}
                 onChange={onChangeFilterPress}
                 onLayout={onFilterLayout}
               />

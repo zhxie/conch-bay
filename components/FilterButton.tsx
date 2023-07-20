@@ -22,7 +22,7 @@ const FilterButton = (props: FilterButtonProps) => {
       onPress={props.onPress}
       onLongPress={props.onLongPress}
     >
-      <HStack flex center>
+      <HStack center>
         <Text numberOfLines={1} style={!!props.textColor && { color: props.textColor }}>
           {props.title}
         </Text>
@@ -48,7 +48,7 @@ const ColorFilterButton = (props: ColorFilterButtonProps) => {
       onPress={props.onPress}
       onLongPress={props.onLongPress}
     >
-      <HStack flex center>
+      <HStack center>
         <Circle
           size={12}
           color={Color.MiddleTerritory}
