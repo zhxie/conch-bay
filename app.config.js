@@ -3,7 +3,7 @@ import withAndroidLocalizedName from "@mmomtchev/expo-android-localized-app-name
 const config = {
   name: "Conch Bay",
   slug: "conch-bay",
-  version: "1.7.0",
+  version: "1.8.0",
   orientation: "portrait",
   userInterfaceStyle: "automatic",
   icon: "./assets/icon.png",
@@ -24,7 +24,7 @@ const config = {
   },
   ios: {
     bundleIdentifier: "name.sketch.ConchBay",
-    buildNumber: "95",
+    buildNumber: "96",
     config: {
       usesNonExemptEncryption: false,
     },
@@ -44,7 +44,7 @@ const config = {
   },
   android: {
     package: "name.sketch.conch_bay",
-    versionCode: 95,
+    versionCode: 96,
     adaptiveIcon: {
       foregroundImage: "./assets/adaptive-icon.png",
       backgroundColor: "#6B84F5",
