@@ -39,6 +39,22 @@ const SplatNetView = (props: SplatNetViewProps) => {
                   "X-Web-View-Ver": "4.0.0-d5178440",
                 },
               }}
+              injectedJavaScript={`
+                document.cookie = "_gtoken=${props.webServiceToken}";
+                window.closeWebView = function() {
+                  window.ReactNativeWebView.postMessage("close");
+                };
+                setInterval(function() {
+                  if (document.querySelector('[class*="ErrorPage_ErrorPage"]')) {
+                    window.ReactNativeWebView.postMessage("error");
+                  }
+                }, 1000);
+                true;
+              `}
+              injectedJavaScriptBeforeContentLoaded={`
+                document.cookie = "_gtoken=${props.webServiceToken}";
+                true;
+              `}
               onMessage={(event) => {
                 if (event.nativeEvent.data === "close") {
                   setNet(false);
@@ -47,25 +63,14 @@ const SplatNetView = (props: SplatNetViewProps) => {
                   Linking.openURL("com.nintendo.znca://znca/game/4834290508791808");
                 }
               }}
-              injectedJavaScript={`
-                document.cookie = "_gtoken=${props.webServiceToken}";
-                window.closeWebView = function() {
-                  window.ReactNativeWebView.postMessage("close")
-                };
-                setInterval(function() {
-                  if (document.querySelector('[class*="ErrorPage_ErrorPage"]')) {
-                    window.ReactNativeWebView.postMessage("error")
-                  }
-                }, 1000);
-                true;
-              `}
-              style={{ backgroundColor: "#292e35" }}
-              startInLoadingState
               renderLoading={() => (
                 <Center style={[{ width: "100%", height: "100%", backgroundColor: "#292e35" }]}>
                   <ActivityIndicator />
                 </Center>
               )}
+              startInLoadingState
+              thirdPartyCookiesEnabled
+              style={{ backgroundColor: "#292e35" }}
             />
           )}
         </SafeAreaView>
