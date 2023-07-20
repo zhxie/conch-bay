@@ -108,6 +108,7 @@ import FriendView from "./FriendView";
 import ResultView from "./ResultView";
 import ScheduleView from "./ScheduleView";
 import ShopView from "./ShopView";
+import SplatNetView from "./SplatNetView";
 import StatsView from "./StatsView";
 import TrendsView from "./TrendsView";
 import XView from "./XView";
@@ -1696,6 +1697,11 @@ const MainView = () => {
                     loadingMore={loadingMore}
                     allResultsShown={allResultsShown}
                     onShowAllResultsPress={onShowAllResultsPress}
+                    style={ViewStyles.mr2}
+                  />
+                  <SplatNetView
+                    webServiceToken={webServiceToken}
+                    lang={language}
                     style={ViewStyles.mr2}
                   />
                   <ToolButton

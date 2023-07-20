@@ -50,6 +50,7 @@ const zhHans = {
   this_season: "本赛季",
   all_results: "全部记录",
   show_more_notice: "长按显示更多以显示指定时间段内的记录。",
+  splatnet: "鱿鱼圈",
   import: "导入",
   importing: "导入中",
   import_notice:

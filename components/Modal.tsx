@@ -57,6 +57,22 @@ const Modal = (props: ModalProps) => {
   );
 };
 
+const FullscreenModal = (props: ModalProps) => {
+  return (
+    <ReactNativeModal
+      isVisible={props.isVisible}
+      useNativeDriverForBackdrop
+      useNativeDriver
+      hideModalContentWhileAnimating
+      statusBarTranslucent
+      style={{ margin: 0 }}
+      onModalHide={props.onModalHide}
+    >
+      {props.children}
+    </ReactNativeModal>
+  );
+};
+
 interface FlashModalProps<T> {
   isVisible: boolean;
   data: T[];
@@ -121,4 +137,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export { Modal, FlashModal };
+export { Modal, FullscreenModal, FlashModal };

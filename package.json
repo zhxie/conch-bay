@@ -55,6 +55,7 @@
     "react-native-svg": "13.9.0",
     "react-native-text-ticker": "^1.14.0",
     "react-native-toast-banner": "^1.1.0",
+    "react-native-webview": "13.2.2",
     "splatnet3-types": "0.2.20230615193659"
   },
   "devDependencies": {

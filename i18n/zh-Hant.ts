@@ -50,6 +50,7 @@ const zhHant = {
   this_season: "本賽季",
   all_results: "全部記錄",
   show_more_notice: "長按顯示更多以顯示指定時間段內的記錄。",
+  splatnet: "魷魚圈",
   import: "匯入",
   importing: "匯入中",
   import_notice:

@@ -20,7 +20,7 @@ export { IconButton, PureIconButton } from "./IconButton";
 export { default as Image } from "./Image";
 export { default as KingSalmonidBox } from "./KingSalmonidBox";
 export { default as Marquee } from "./Marquee";
-export { Modal, FlashModal } from "./Modal";
+export { Modal, FullscreenModal, FlashModal } from "./Modal";
 export { default as Picker } from "./Picker";
 export { Result } from "./ResultButton";
 export { default as ScheduleButton } from "./ScheduleButton";
