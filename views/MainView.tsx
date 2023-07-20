@@ -10,6 +10,7 @@ import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
 import { Image } from "expo-image";
 import { activateKeepAwakeAsync, deactivateKeepAwake } from "expo-keep-awake";
+import * as MailComposer from "expo-mail-composer";
 import * as ModulesCore from "expo-modules-core";
 import * as Notifications from "expo-notifications";
 import * as Sharing from "expo-sharing";
@@ -1436,8 +1437,14 @@ const MainView = () => {
   const onCreateAGithubIssuePress = () => {
     Linking.openURL("https://github.com/zhxie/conch-bay/issues/new");
   };
-  const onSendAMailPress = () => {
-    Linking.openURL("mailto:conch-bay@outlook.com");
+  const onSendAMailPress = async () => {
+    if (await MailComposer.isAvailableAsync()) {
+      MailComposer.composeAsync({
+        recipients: ["conch-bay@outlook.com"],
+      });
+    } else {
+      Linking.openURL("mailto:conch-bay@outlook.com");
+    }
   };
   const onCopySessionTokenPress = async () => {
     if (sessionToken.length > 0) {

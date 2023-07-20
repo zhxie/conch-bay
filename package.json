@@ -35,6 +35,7 @@
     "expo-document-picker": "~11.5.3",
     "expo-image": "~1.3.2",
     "expo-localization": "~14.3.0",
+    "expo-mail-composer": "~12.3.0",
     "expo-notifications": "~0.20.1",
     "expo-sharing": "~11.5.0",
     "expo-sqlite": "~11.3.1",
