@@ -117,6 +117,10 @@ const TrendsView = (props: TrendViewProps) => {
         }
       }
     } else {
+      // Escape splitting by period if there is no result.
+      if (arr.length <= 0) {
+        return result;
+      }
       let stops: number[] = [];
       for (let i = 0; i < count; i++) {
         switch (group) {
