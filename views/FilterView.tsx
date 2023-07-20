@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ScrollView, StyleProp, ViewStyle } from "react-native";
+import { LayoutChangeEvent, ScrollView, StyleProp, ViewStyle } from "react-native";
 import {
   Button,
   Center,
@@ -23,6 +23,7 @@ interface FilterViewProps {
   filter?: FilterProps;
   options?: FilterProps;
   onChange: (filter?: FilterProps) => void;
+  onLayout?: (event: LayoutChangeEvent) => void;
   style?: StyleProp<ViewStyle>;
 }
 
@@ -114,7 +115,7 @@ const FilterView = (props: FilterViewProps) => {
   };
 
   return (
-    <VStack style={[ViewStyles.wf, props.style]}>
+    <VStack style={[ViewStyles.wf, props.style]} onLayout={props.onLayout}>
       <HStack center>
         <Center style={[ViewStyles.pl4, ViewStyles.pr2, ViewStyles.sepr]}>
           <IconButton

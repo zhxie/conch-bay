@@ -17,6 +17,7 @@ import * as WebBrowser from "expo-web-browser";
 import React, { useEffect, useRef, useState } from "react";
 import {
   Animated,
+  LayoutChangeEvent,
   Linking,
   NativeScrollEvent,
   NativeSyntheticEvent,
@@ -206,7 +207,11 @@ const MainView = () => {
   const [filter, setFilter] = useState<Database.FilterProps>();
   const filterRef = useRef<Database.FilterProps>();
   const [filterOptions, setFilterOptions] = useState<Database.FilterProps>();
-  const [blurOnTop, setBlurOnTop] = useState(false);
+
+  const fade = useRef(new Animated.Value(0)).current;
+  const [scrollOffset, setScrollOffset] = useState(0);
+  const [headerHeight, setHeaderHeight] = useState(0);
+  const [filterHeight, setFilterHeight] = useState(0);
 
   const allResultsShown = (results?.length ?? 0) >= count;
 
@@ -224,7 +229,6 @@ const MainView = () => {
       })();
     }
   }, [sessionTokenReady, webServiceTokenReady, bulletTokenReady, languageReady]);
-  const fade = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     if (ready) {
       Animated.timing(fade, {
@@ -729,9 +733,14 @@ const MainView = () => {
     }
   };
 
+  const onHeaderLayout = (event: LayoutChangeEvent) => {
+    setHeaderHeight(event.nativeEvent.layout.height);
+  };
+  const onFilterLayout = (event: LayoutChangeEvent) => {
+    setFilterHeight(event.nativeEvent.layout.height);
+  };
   const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    // HACK: there is an extra 8 padding on the top.
-    setBlurOnTop(event.nativeEvent.contentOffset.y > ViewStyles.mt2.marginTop);
+    setScrollOffset(event.nativeEvent.contentOffset.y);
   };
   const onScrollEndDrag = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     if (loadingMore || allResultsShown) {
@@ -1489,6 +1498,7 @@ const MainView = () => {
               edges={["top", "left", "right"]}
               // HACK: add additional 8px margin in the top.
               style={[ViewStyles.mt2, { alignItems: "center" }]}
+              onLayout={onHeaderLayout}
             >
               {!sessionToken && (
                 <Center flex style={[ViewStyles.px4, ViewStyles.mb4]}>
@@ -1569,6 +1579,7 @@ const MainView = () => {
                 filter={filter}
                 options={filterOptions}
                 onChange={onChangeFilterPress}
+                onLayout={onFilterLayout}
                 style={ViewStyles.mb2}
               />
             </SafeAreaView>
@@ -1685,12 +1696,40 @@ const MainView = () => {
           onScroll={onScroll}
           onScrollEndDrag={onScrollEndDrag}
         />
-        {blurOnTop && (
+        {/* HACK: blur view shows following the extra 8px padding in the top. */}
+        {scrollOffset >= ViewStyles.mt2.marginTop &&
+          scrollOffset < headerHeight - filterHeight - insets.top - ViewStyles.mt2.marginTop && (
+            <BlurView
+              intensity={100}
+              tint={theme.colorScheme ?? "default"}
+              style={{
+                position: "absolute",
+                height: insets.top,
+                width: "100%",
+              }}
+            />
+          )}
+        {scrollOffset >= headerHeight - filterHeight - insets.top - ViewStyles.mt2.marginTop && (
           <BlurView
             intensity={100}
             tint={theme.colorScheme ?? "default"}
-            style={{ position: "absolute", height: insets.top, width: "100%" }}
-          />
+            style={{
+              position: "absolute",
+              // HACK: apply an 8px vertical margin, which is in the same height of the top extra padding.
+              height:
+                filterHeight + insets.top + ViewStyles.mt2.marginTop + ViewStyles.mb2.marginBottom,
+              width: "100%",
+            }}
+          >
+            <FilterView
+              isDisabled={loadingMore}
+              filter={filter}
+              options={filterOptions}
+              onChange={onChangeFilterPress}
+              onLayout={onFilterLayout}
+              style={{ position: "absolute", bottom: ViewStyles.mb2.marginBottom }}
+            />
+          </BlurView>
         )}
         {sessionToken.length > 0 && (
           <FloatingActionButton
