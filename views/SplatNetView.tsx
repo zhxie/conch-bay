@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ActivityIndicator, Linking, SafeAreaView, StyleProp, ViewStyle } from "react-native";
-import { WebView } from "react-native-webview";
+import { WebView, WebViewMessageEvent } from "react-native-webview";
 import { Center, FullscreenModal, ToolButton } from "../components";
 import t from "../i18n";
 
@@ -11,20 +11,28 @@ interface SplatNetViewProps {
 }
 
 const SplatNetView = (props: SplatNetViewProps) => {
-  const [webView, setWebView] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [webServiceToken, setWebServiceToken] = useState("");
 
   const onWebViewPress = async () => {
-    setWebView(true);
+    setLoading(true);
     const webServiceToken = await props.onGetWebServiceToken();
     setWebServiceToken(webServiceToken);
-    setWebView(false);
+    setLoading(false);
+  };
+  const onMessage = (event: WebViewMessageEvent) => {
+    if (event.nativeEvent.data === "close") {
+      setWebServiceToken("");
+    } else if (event.nativeEvent.data === "error") {
+      setWebServiceToken("");
+      Linking.openURL("com.nintendo.znca://znca/game/4834290508791808");
+    }
   };
 
   return (
     <Center style={props.style}>
       <ToolButton
-        isLoading={webView}
+        isLoading={loading}
         icon="donut"
         title={t("splatnet_3")}
         onPress={onWebViewPress}
@@ -65,14 +73,7 @@ const SplatNetView = (props: SplatNetViewProps) => {
                 document.cookie = "_gtoken=${webServiceToken}";
                 true;
               `}
-              onMessage={(event) => {
-                if (event.nativeEvent.data === "close") {
-                  setWebServiceToken("");
-                } else if (event.nativeEvent.data === "error") {
-                  setWebServiceToken("");
-                  Linking.openURL("com.nintendo.znca://znca/game/4834290508791808");
-                }
-              }}
+              onMessage={onMessage}
               renderLoading={() => (
                 <Center style={[{ width: "100%", height: "100%", backgroundColor: "#292e35" }]}>
                   <ActivityIndicator />

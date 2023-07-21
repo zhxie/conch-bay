@@ -749,7 +749,7 @@ const MainView = () => {
   const onFilterLayout = (event: LayoutChangeEvent) => {
     setFilterHeight(event.nativeEvent.layout.height);
   };
-  const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+  const onScrollEnd = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const offset = event.nativeEvent.contentOffset.y;
     if (offset >= headerHeight - filterHeight - insets.top - ViewStyles.mt2.marginTop) {
       Animated.timing(blurOnTopFade, {
@@ -773,6 +773,7 @@ const MainView = () => {
     }
   };
   const onScrollEndDrag = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    onScrollEnd(event);
     if (loadingMore || allResultsShown) {
       return;
     }
@@ -1788,8 +1789,9 @@ const MainView = () => {
               </VStack>
             </SafeAreaView>
           }
-          onScroll={onScroll}
           onScrollEndDrag={onScrollEndDrag}
+          onScrollToTop={onScrollEnd}
+          onMomentumScrollEnd={onScrollEnd}
         />
         <Animated.View
           style={{
