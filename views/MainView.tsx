@@ -749,12 +749,27 @@ const MainView = () => {
   const onFilterLayout = (event: LayoutChangeEvent) => {
     setFilterHeight(event.nativeEvent.layout.height);
   };
+  const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    // HACK: onScrollToTop has a delay, use onScroll instead.
+    if (event.nativeEvent.contentOffset.y < 8) {
+      onScrollEnd(event);
+    }
+  };
+  const onScrollBegin = () => {
+    // HACK: blur view shows following the extra 8px padding in the top.
+    Animated.timing(blurOnTopFade, {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  };
   const onScrollEnd = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const offset = event.nativeEvent.contentOffset.y;
     if (offset >= headerHeight - filterHeight - insets.top - ViewStyles.mt2.marginTop) {
       Animated.timing(blurOnTopFade, {
         toValue: 2,
         duration: 300,
+        delay: 100,
         useNativeDriver: true,
       }).start();
     } else if (offset >= ViewStyles.mt2.marginTop) {
@@ -762,12 +777,14 @@ const MainView = () => {
       Animated.timing(blurOnTopFade, {
         toValue: 1,
         duration: 300,
+        delay: 100,
         useNativeDriver: true,
       }).start();
     } else {
       Animated.timing(blurOnTopFade, {
         toValue: 0,
         duration: 300,
+        delay: 100,
         useNativeDriver: true,
       }).start();
     }
@@ -1789,8 +1806,10 @@ const MainView = () => {
               </VStack>
             </SafeAreaView>
           }
+          onScroll={onScroll}
+          onScrollBeginDrag={onScrollBegin}
           onScrollEndDrag={onScrollEndDrag}
-          onScrollToTop={onScrollEnd}
+          onMomentumScrollBegin={onScrollBegin}
           onMomentumScrollEnd={onScrollEnd}
         />
         <Animated.View
