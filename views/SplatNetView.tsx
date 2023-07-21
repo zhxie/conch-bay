@@ -5,22 +5,31 @@ import { Center, FullscreenModal, ToolButton } from "../components";
 import t from "../i18n";
 
 interface SplatNetViewProps {
-  webServiceToken: string;
   lang: string;
   style?: StyleProp<ViewStyle>;
+  onGetWebServiceToken: () => Promise<string>;
 }
 
 const SplatNetView = (props: SplatNetViewProps) => {
-  const [net, setNet] = useState(false);
+  const [webView, setWebView] = useState(false);
+  const [webServiceToken, setWebServiceToken] = useState("");
 
-  const onNetPress = () => {
-    setNet(true);
+  const onWebViewPress = async () => {
+    setWebView(true);
+    const webServiceToken = await props.onGetWebServiceToken();
+    setWebServiceToken(webServiceToken);
+    setWebView(false);
   };
 
   return (
     <Center style={props.style}>
-      <ToolButton icon="donut" title={t("splatnet")} onPress={onNetPress} />
-      <FullscreenModal isVisible={net}>
+      <ToolButton
+        isLoading={webView}
+        icon="donut"
+        title={t("splatnet_3")}
+        onPress={onWebViewPress}
+      />
+      <FullscreenModal isVisible={webServiceToken.length > 0}>
         <SafeAreaView
           style={{
             height: "100%",
@@ -30,17 +39,18 @@ const SplatNetView = (props: SplatNetViewProps) => {
             backgroundColor: "black",
           }}
         >
-          {net && (
+          {webServiceToken.length > 0 && (
+            // TODO: audit injected scripts and third-party cookies usage.
             <WebView
               source={{
                 uri: `https://api.lp1.av5ja.srv.nintendo.net/?lang=${props.lang}`,
                 headers: {
-                  Cookie: `_gtoken=${props.webServiceToken}`,
+                  Cookie: `_gtoken=${webServiceToken}`,
                   "X-Web-View-Ver": "4.0.0-d5178440",
                 },
               }}
               injectedJavaScript={`
-                document.cookie = "_gtoken=${props.webServiceToken}";
+                document.cookie = "_gtoken=${webServiceToken}";
                 window.closeWebView = function() {
                   window.ReactNativeWebView.postMessage("close");
                 };
@@ -52,14 +62,14 @@ const SplatNetView = (props: SplatNetViewProps) => {
                 true;
               `}
               injectedJavaScriptBeforeContentLoaded={`
-                document.cookie = "_gtoken=${props.webServiceToken}";
+                document.cookie = "_gtoken=${webServiceToken}";
                 true;
               `}
               onMessage={(event) => {
                 if (event.nativeEvent.data === "close") {
-                  setNet(false);
+                  setWebServiceToken("");
                 } else if (event.nativeEvent.data === "error") {
-                  setNet(false);
+                  setWebServiceToken("");
                   Linking.openURL("com.nintendo.znca://znca/game/4834290508791808");
                 }
               }}

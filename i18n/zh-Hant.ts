@@ -51,6 +51,7 @@ const zhHant = {
   all_results: "全部記錄",
   show_more_notice: "長按顯示更多以顯示指定時間段內的記錄。",
   splatnet: "魷魚圈",
+  splatnet_3: "魷魚圈3",
   import: "匯入",
   importing: "匯入中",
   import_notice:

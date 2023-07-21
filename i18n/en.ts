@@ -52,6 +52,7 @@ const en = {
   all_results: "All Results",
   show_more_notice: "Long press on Show more to show results for a specified period.",
   splatnet: "SplatNet",
+  splatnet_3: "SplatNet 3",
   import: "Import",
   importing: "Importing",
   import_notice:

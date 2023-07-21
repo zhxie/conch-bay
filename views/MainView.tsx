@@ -979,6 +979,40 @@ const MainView = () => {
     }
     await loadResults(count);
   };
+  const onGetWebServiceToken = async () => {
+    // Update versions.
+    if (!apiUpdated) {
+      await Promise.all([updateNsoVersion(), updateSplatnetVersion()])
+        .then(() => {
+          setApiUpdated(true);
+        })
+        .catch((e) => {
+          showBanner(BannerLevel.Warn, t("failed_to_check_api_update", { error: e }));
+        });
+    }
+
+    // Attempt to acquire bullet token from web service token.
+    let newBulletTokenAttempt: string | undefined;
+    if (webServiceToken.length > 0) {
+      newBulletTokenAttempt = await getBulletToken(webServiceToken).catch(() => undefined);
+    }
+    if (newBulletTokenAttempt) {
+      await setBulletToken(newBulletTokenAttempt);
+      return webServiceToken;
+    }
+
+    // Acquire web service token.
+    showBanner(BannerLevel.Info, t("reacquiring_tokens"));
+    const res = await getWebServiceToken(sessionToken).catch((e) => {
+      showBanner(BannerLevel.Error, t("failed_to_acquire_web_service_token", { error: e }));
+      return undefined;
+    });
+    if (res) {
+      await setWebServiceToken(res.webServiceToken);
+      return res.webServiceToken as string;
+    }
+    return "";
+  };
   const onImportPress = () => {
     setImport(true);
   };
@@ -1699,11 +1733,13 @@ const MainView = () => {
                     onShowAllResultsPress={onShowAllResultsPress}
                     style={ViewStyles.mr2}
                   />
-                  <SplatNetView
-                    webServiceToken={webServiceToken}
-                    lang={language}
-                    style={ViewStyles.mr2}
-                  />
+                  {sessionToken.length > 0 && (
+                    <SplatNetView
+                      lang={language}
+                      style={ViewStyles.mr2}
+                      onGetWebServiceToken={onGetWebServiceToken}
+                    />
+                  )}
                   <ToolButton
                     icon="download"
                     title={t("import")}

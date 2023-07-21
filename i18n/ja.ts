@@ -53,6 +53,7 @@ const ja = {
   all_results: "すべてのリザルト",
   show_more_notice: "もっと見るを長押しして、指定期間のリザルトを表示します。",
   splatnet: "イカリング",
+  splatnet_3: "イカリング3",
   import: "インポート",
   importing: "インポート中",
   import_notice:
