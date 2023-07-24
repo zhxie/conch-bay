@@ -607,7 +607,24 @@ const MainView = () => {
           ] = await Promise.all([
             skipRegular ? undefined : fetchRegularBattleHistories(bulletToken),
             skipAnarchy ? undefined : fetchAnarchyBattleHistories(bulletToken),
-            skipX ? undefined : xBattleHistoriesAttempt || fetchXBattleHistories(bulletToken),
+            skipX
+              ? undefined
+              : xBattleHistoriesAttempt ||
+                fetchXBattleHistories(bulletToken).then((historyDetail) => {
+                  setSplatZonesXPower(
+                    historyDetail.xBattleHistories.summary.xPowerAr?.lastXPower?.toFixed(1) ?? "0"
+                  );
+                  setTowerControlXPower(
+                    historyDetail.xBattleHistories.summary.xPowerLf?.lastXPower?.toFixed(1) ?? "0"
+                  );
+                  setRainmakerXPower(
+                    historyDetail.xBattleHistories.summary.xPowerGl?.lastXPower?.toFixed(1) ?? "0"
+                  );
+                  setClamBlitzXPower(
+                    historyDetail.xBattleHistories.summary.xPowerCl?.lastXPower?.toFixed(1) ?? "0"
+                  );
+                  return historyDetail;
+                }),
             skipChallenge ? undefined : fetchChallengeHistories(bulletToken),
             skipPrivate ? undefined : fetchPrivateBattleHistories(bulletToken),
           ]);
