@@ -249,7 +249,7 @@ export const getWebServiceToken = async (sessionToken: string) => {
           parameter: {
             f: f2,
             id: 4834290508791808,
-            registrationToken: idToken2,
+            registrationToken: "",
             requestId: requestId2,
             timestamp: timestamp2,
           },
