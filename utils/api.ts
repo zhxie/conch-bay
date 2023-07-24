@@ -25,6 +25,7 @@ import {
   WeaponRecordResult,
   XBattleHistoriesResult,
 } from "../models/types";
+import versions from "../models/versions.json";
 import { encode64, encode64Url } from "./codec";
 import { getParam, parameterize } from "./url";
 
@@ -72,10 +73,11 @@ export const fetchSplatfests = async () => {
   return (json as FestivalsQuery).US.data;
 };
 
-let NSO_VERSION = "2.5.2";
-let SPLATNET_VERSION = "4.0.0-d5178440";
+let NSO_VERSION = versions.NSO_VERSION;
+let SPLATNET_VERSION = versions.SPLATNET_VERSION;
 
 export const updateNsoVersion = async () => {
+  // TODO: use Google Play version instead since f API is built upon Android apps.
   const res = await axios.get("https://itunes.apple.com/lookup?id=1234806557", {
     timeout: AXIOS_TIMEOUT,
   });
@@ -83,6 +85,7 @@ export const updateNsoVersion = async () => {
   NSO_VERSION = res.data["results"][0]["version"];
 };
 export const updateSplatnetVersion = async () => {
+  // HACK: use jsDelivr to avoid any network issues in China Mainland.
   const res = await axios.get(
     "https://cdn.jsdelivr.net/gh/nintendoapis/nintendo-app-versions/data/splatnet3-app.json",
     { timeout: AXIOS_TIMEOUT }
