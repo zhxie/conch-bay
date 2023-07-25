@@ -38,7 +38,7 @@ const BadgeButton = (props: BadgeButtonProps) => {
   const { onPress, style, ...rest } = props;
 
   return (
-    <Pressable onPress={onPress} style={style}>
+    <Pressable onPress={onPress} style={[ViewStyles.transparent, style]}>
       <Badge {...rest} />
     </Pressable>
   );
