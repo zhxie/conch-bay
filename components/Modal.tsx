@@ -13,6 +13,32 @@ import ReactNativeModal from "react-native-modal";
 import { VStack } from "./Stack";
 import { ViewStyles, useTheme } from "./Styles";
 
+interface ModalBaseProps {
+  isVisible: boolean;
+  style?: StyleProp<ViewStyle>;
+  onClose?: () => void;
+  onModalHide?: () => void;
+  children?: React.ReactNode;
+}
+
+const ModalBase = (props: ModalBaseProps) => {
+  return (
+    <ReactNativeModal
+      isVisible={props.isVisible}
+      backdropOpacity={0.5}
+      onBackdropPress={props.onClose}
+      useNativeDriverForBackdrop
+      useNativeDriver
+      hideModalContentWhileAnimating
+      statusBarTranslucent
+      style={[ViewStyles.c, props.style]}
+      onModalHide={props.onModalHide}
+    >
+      {props.children}
+    </ReactNativeModal>
+  );
+};
+
 interface ModalProps {
   isVisible: boolean;
   style?: StyleProp<ViewStyle>;
@@ -22,7 +48,6 @@ interface ModalProps {
   children?: React.ReactNode;
 }
 
-// TODO: derive modals.
 const Modal = (props: ModalProps) => {
   const theme = useTheme();
 
@@ -33,17 +58,7 @@ const Modal = (props: ModalProps) => {
   };
 
   return (
-    <ReactNativeModal
-      isVisible={props.isVisible}
-      backdropOpacity={0.5}
-      onBackdropPress={props.onClose}
-      useNativeDriverForBackdrop
-      useNativeDriver
-      hideModalContentWhileAnimating
-      statusBarTranslucent
-      style={ViewStyles.c}
-      onModalHide={props.onModalHide}
-    >
+    <ModalBase isVisible={props.isVisible} onClose={props.onClose} onModalHide={props.onModalHide}>
       <ScrollView
         showsHorizontalScrollIndicator={false}
         onScrollEndDrag={onScrollEndDrag}
@@ -54,23 +69,21 @@ const Modal = (props: ModalProps) => {
         {props.children}
         <View style={styles.padding} />
       </ScrollView>
-    </ReactNativeModal>
+    </ModalBase>
   );
 };
 
-const FullscreenModal = (props: ModalProps) => {
+interface FullscreenModalProps {
+  isVisible: boolean;
+  onModalHide?: () => void;
+  children?: React.ReactNode;
+}
+
+const FullscreenModal = (props: FullscreenModalProps) => {
   return (
-    <ReactNativeModal
-      isVisible={props.isVisible}
-      useNativeDriverForBackdrop
-      useNativeDriver
-      hideModalContentWhileAnimating
-      statusBarTranslucent
-      style={{ margin: 0 }}
-      onModalHide={props.onModalHide}
-    >
+    <ModalBase isVisible={props.isVisible} style={{ margin: 0 }} onModalHide={props.onModalHide}>
       {props.children}
-    </ReactNativeModal>
+    </ModalBase>
   );
 };
 
@@ -96,17 +109,7 @@ const FlashModal = <T,>(props: FlashModalProps<T>) => {
   };
 
   return (
-    <ReactNativeModal
-      isVisible={props.isVisible}
-      backdropOpacity={0.5}
-      onBackdropPress={props.onClose}
-      useNativeDriverForBackdrop
-      useNativeDriver
-      hideModalContentWhileAnimating
-      statusBarTranslucent
-      style={ViewStyles.c}
-      onModalHide={props.onModalHide}
-    >
+    <ModalBase isVisible={props.isVisible} onClose={props.onClose} onModalHide={props.onModalHide}>
       <VStack style={[styles.panel, theme.backgroundStyle, props.style]}>
         <FlashList
           showsHorizontalScrollIndicator={false}
@@ -124,7 +127,7 @@ const FlashModal = <T,>(props: FlashModalProps<T>) => {
           onScrollEndDrag={onScrollEndDrag}
         />
       </VStack>
-    </ReactNativeModal>
+    </ModalBase>
   );
 };
 
