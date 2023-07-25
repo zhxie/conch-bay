@@ -52,6 +52,7 @@ import {
 } from "../components";
 import t from "../i18n";
 import {
+  CatalogResult,
   CoopHistoryDetailResult,
   DetailVotingStatusResult,
   FriendListResult,
@@ -103,6 +104,7 @@ import {
   getUserIconCacheSource,
   isImageExpired,
 } from "../utils/ui";
+import CatalogView from "./CatalogView";
 import FilterView from "./FilterView";
 import FriendView from "./FriendView";
 import ResultView from "./ResultView";
@@ -202,6 +204,7 @@ const MainView = () => {
   const [shop, setShop] = useState<Shop>();
   const [friends, setFriends] = useState<FriendListResult>();
   const [voting, setVoting] = useState<DetailVotingStatusResult>();
+  const [catalog, setCatalog] = useState<CatalogResult>();
   const [results, setResults] =
     useState<{ battle?: VsHistoryDetailResult; coop?: CoopHistoryDetailResult }[]>();
   const [count, setCount] = useState(0);
@@ -483,8 +486,9 @@ const MainView = () => {
                 .catch((e) => {
                   showBanner(BannerLevel.Warn, t("failed_to_load_summary", { error: e }));
                 }),
-              fetchCatalog(newBulletToken)
+              fetchCatalog(newBulletToken, language)
                 .then(async (catalog) => {
+                  setCatalog(catalog);
                   const catalogLevel = String(catalog.catalog.progress?.level ?? 0);
                   await setCatalogLevel(catalogLevel);
                 })
@@ -886,6 +890,7 @@ const MainView = () => {
       setResults(undefined);
       setFriends(undefined);
       setVoting(undefined);
+      setCatalog(undefined);
       await Promise.all([
         clearSessionToken(),
         clearWebServiceToken(),
@@ -1629,9 +1634,9 @@ const MainView = () => {
                   {/* HACK: withdraw 4px margin in the last badge. */}
                   <HStack style={{ marginRight: -ViewStyles.mr1.marginRight }}>
                     {catalogLevel.length > 0 && (
-                      <Badge
-                        color={Color.AccentColor}
-                        title={catalogLevel}
+                      <CatalogView
+                        catalogLevel={catalogLevel}
+                        catalog={catalog}
                         style={ViewStyles.mr1}
                       />
                     )}
