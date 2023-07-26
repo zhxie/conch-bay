@@ -426,7 +426,8 @@ export const fetchXBattleHistories = async (bulletToken: string, language?: stri
   return result.data;
 };
 export const fetchChallengeHistories = async (bulletToken: string, language?: string) => {
-  const res = await fetchGraphQl(bulletToken, RequestId.EventBattleHistoriesQuery, language);
+  // HACK: update query to 4.0.0-22ddb0fd.
+  const res = await fetchGraphQl(bulletToken, "e7bbaf1fa255305d607351da434b2d0f", language);
   const json = await res.json();
   const result = json as GraphQLSuccessResponse<EventBattleHistoriesResult>;
   if (result.errors) {
@@ -460,7 +461,8 @@ export const fetchVsHistoryDetail = async (id: string, bulletToken: string, lang
   return detail.data;
 };
 export const fetchCoopResult = async (bulletToken: string, language?: string) => {
-  const res = await fetchGraphQl(bulletToken, RequestId.CoopHistoryQuery, language);
+  // HACK: update query to 4.0.0-22ddb0fd.
+  const res = await fetchGraphQl(bulletToken, "01fb9793ad92f91892ea713410173260", language);
   const json = await res.json();
   const result = json as GraphQLSuccessResponse<CoopHistoryResult>;
   if (result.errors) {
