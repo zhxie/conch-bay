@@ -65,9 +65,6 @@ const zhHant = {
   split_results: "分割記錄",
   export: "匯出",
   exporting: "匯出中",
-  export_notice:
-    "法螺灣需要佔用大量的內存以匯出記錄。如果法螺灣無法匯出記錄，您可以分割並匯出記錄。",
-  split_and_export: "分割並匯出",
   disclaimer: "本應用是使用魷魚圈3的資訊的非官方應用，與任天堂有限公司無關。",
   update: "更新",
   support: "支援",
@@ -93,7 +90,6 @@ const zhHant = {
   copy_bullet_token: "複製Bullet令牌",
   copied_to_clipboard: "已復製到剪貼板",
   export_results: "匯出記錄",
-  split_and_export_results: "分割並匯出記錄",
   export_database: "匯出資料庫",
   privacy_policy: "私隱政策",
   acknowledgments: "致謝",

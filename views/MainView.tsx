@@ -152,7 +152,6 @@ const MainView = () => {
   const [loadingMore, setLoadingMore] = useState(false);
   const [import_, setImport] = useState(false);
   const [importing, setImporting] = useState(false);
-  const [export_, setExport] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [support, setSupport] = useState(false);
   const [clearingCache, setClearingCache] = useState(false);
@@ -1163,46 +1162,97 @@ const MainView = () => {
       setImport(false);
     }
   };
-  const onExportPress = () => {
-    setExport(true);
-  };
-  const onExportClose = () => {
-    setExport(false);
-  };
-  const onExportContinuePress = async () => {
+  const onExportPress = async () => {
     setExporting(true);
-    let success = false;
     const uri = FileSystem.cacheDirectory + `conch-bay-export.json`;
     try {
-      let battles = "";
-      let coops = "";
-      let batch = 0;
-      while (true) {
-        const records = await Database.query(Database.BATCH_SIZE * batch, Database.BATCH_SIZE);
-        for (const record of records) {
-          if (record.mode === "salmon_run") {
-            coops += `${record.detail},`;
-          } else {
-            battles += `${record.detail},`;
+      // TODO: better to use switch instead of if to avoid branch addition.
+      if (Constants.appOwnership === AppOwnership.Expo) {
+        let battles = "";
+        let coops = "";
+        let batch = 0;
+        while (true) {
+          const records = await Database.query(Database.BATCH_SIZE * batch, Database.BATCH_SIZE);
+          for (const record of records) {
+            if (record.mode === "salmon_run") {
+              coops += `${record.detail},`;
+            } else {
+              battles += `${record.detail},`;
+            }
+          }
+          if (records.length < Database.BATCH_SIZE) {
+            break;
+          }
+          batch += 1;
+        }
+
+        if (battles.endsWith(",")) {
+          battles = battles.substring(0, battles.length - 1);
+        }
+        if (coops.endsWith(",")) {
+          coops = coops.substring(0, coops.length - 1);
+        }
+        await FileSystem.writeAsStringAsync(uri, `{"battles":[${battles}],"coop":[${coops}]}`, {
+          encoding: FileSystem.EncodingType.UTF8,
+        });
+      } else {
+        // HACK: dynamic import the library.
+        const FileAccess = await import("react-native-file-access");
+        await FileSystem.writeAsStringAsync(uri, '{"battles":[', {
+          encoding: FileSystem.EncodingType.UTF8,
+        });
+        const battleModes = (filterOptions?.modes ?? []).filter((mode) => mode !== "salmon_run");
+        if (battleModes.length > 0) {
+          let batch = 0;
+          while (true) {
+            let result = "";
+            const records = await Database.query(Database.BATCH_SIZE * batch, Database.BATCH_SIZE, {
+              modes: battleModes,
+              rules: [],
+              stages: [],
+              weapons: [],
+            });
+            for (let i = 0; i < records.length; i++) {
+              if (batch === 0 && i === 0) {
+                result += `${records[i].detail}`;
+              } else {
+                result += `,${records[i].detail}`;
+              }
+            }
+            await FileAccess.FileSystem.appendFile(uri, result, "utf8");
+            if (records.length < Database.BATCH_SIZE) {
+              break;
+            }
+            batch += 1;
           }
         }
-        if (records.length < Database.BATCH_SIZE) {
-          break;
+        await FileAccess.FileSystem.appendFile(uri, '],"coops":[', "utf8");
+        let batch = 0;
+        while (true) {
+          let result = "";
+          const records = await Database.query(Database.BATCH_SIZE * batch, Database.BATCH_SIZE, {
+            modes: ["salmon_run"],
+            rules: [],
+            stages: [],
+            weapons: [],
+          });
+          for (let i = 0; i < records.length; i++) {
+            if (batch === 0 && i === 0) {
+              result += `${records[i].detail}`;
+            } else {
+              result += `,${records[i].detail}`;
+            }
+          }
+          await FileAccess.FileSystem.appendFile(uri, result, "utf8");
+          if (records.length < Database.BATCH_SIZE) {
+            break;
+          }
+          batch += 1;
         }
-        batch += 1;
+        await FileAccess.FileSystem.appendFile(uri, "]}", "utf8");
       }
 
-      if (battles.endsWith(",")) {
-        battles = battles.substring(0, battles.length - 1);
-      }
-      if (coops.endsWith(",")) {
-        coops = coops.substring(0, coops.length - 1);
-      }
-      await FileSystem.writeAsStringAsync(uri, `{"battles":[${battles}],"coop":[${coops}]}`, {
-        encoding: FileSystem.EncodingType.UTF8,
-      });
       await Sharing.shareAsync(uri, { UTI: "public.json" });
-      success = true;
     } catch (e) {
       showBanner(BannerLevel.Error, e);
     }
@@ -1210,63 +1260,6 @@ const MainView = () => {
     // Clean up.
     await FileSystem.deleteAsync(uri, { idempotent: true });
     setExporting(false);
-    if (success) {
-      setExport(false);
-    }
-  };
-  const onSplitAndExportPress = async () => {
-    setExporting(true);
-    let success = true;
-    let batch = 0;
-    while (true) {
-      const uri = FileSystem.cacheDirectory + `conch-bay-export-${batch}.json`;
-      try {
-        const battles: string[] = [];
-        const coops: string[] = [];
-        const records = await Database.query(Database.BATCH_SIZE * batch, Database.BATCH_SIZE);
-        if (records.length === 0) {
-          break;
-        }
-        batch += 1;
-        records.forEach((record) => {
-          if (record.mode === "salmon_run") {
-            coops.push(record.detail);
-          } else {
-            battles.push(record.detail);
-          }
-        });
-
-        const result = { battles, coops };
-        await FileSystem.writeAsStringAsync(uri, JSON.stringify(result), {
-          encoding: FileSystem.EncodingType.UTF8,
-        });
-
-        if (records.length < Database.BATCH_SIZE) {
-          break;
-        }
-      } catch (e) {
-        success = false;
-        showBanner(BannerLevel.Error, e);
-        break;
-      }
-    }
-
-    if (success) {
-      for (let i = 0; i < batch; i++) {
-        const uri = FileSystem.cacheDirectory + `conch-bay-export-${i}.json`;
-        await Sharing.shareAsync(uri, { UTI: "public.json" });
-      }
-    }
-
-    // Clean up.
-    for (let i = 0; i < batch; i++) {
-      const uri = FileSystem.cacheDirectory + `conch-bay-export-${i}.json`;
-      await FileSystem.deleteAsync(uri, { idempotent: true });
-    }
-    setExporting(false);
-    if (success) {
-      setExport(false);
-    }
   };
   const onUpdatePress = () => {
     WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay/releases");
@@ -1779,7 +1772,13 @@ const MainView = () => {
                     style={ViewStyles.mr2}
                     onPress={onImportPress}
                   />
-                  <ToolButton icon="upload" title={t("export")} onPress={onExportPress} />
+                  <ToolButton
+                    isLoading={exporting}
+                    isLoadingText={t("exporting")}
+                    icon="upload"
+                    title={t("export")}
+                    onPress={onExportPress}
+                  />
                 </HStack>
               </ScrollView>
               <VStack center style={ViewStyles.px4}>
@@ -2016,32 +2015,6 @@ const MainView = () => {
           </VStack>
         </VStack>
       </Modal>
-      <Modal isVisible={export_} onClose={onExportClose} style={ViewStyles.modal1d}>
-        <VStack center>
-          <Icon name="upload" size={48} color={Color.MiddleTerritory} style={ViewStyles.mb4} />
-          <Text style={ViewStyles.mb4}>{t("export_notice")}</Text>
-          <VStack style={ViewStyles.wf}>
-            <Button
-              isLoading={exporting}
-              isLoadingText={t("exporting")}
-              style={[ViewStyles.mb2, ViewStyles.accent]}
-              textStyle={theme.reverseTextStyle}
-              onPress={onExportContinuePress}
-            >
-              <Marquee style={theme.reverseTextStyle}>{t("export")}</Marquee>
-            </Button>
-            <Button
-              isLoading={exporting}
-              isLoadingText={t("exporting")}
-              style={ViewStyles.accent}
-              textStyle={theme.reverseTextStyle}
-              onPress={onSplitAndExportPress}
-            >
-              <Marquee style={theme.reverseTextStyle}>{t("split_and_export")}</Marquee>
-            </Button>
-          </VStack>
-        </VStack>
-      </Modal>
       <Modal isVisible={support} onClose={onSupportClose} style={ViewStyles.modal1d}>
         <VStack center>
           <Icon name="help-circle" size={48} color={Color.MiddleTerritory} style={ViewStyles.mb4} />
@@ -2237,18 +2210,9 @@ const MainView = () => {
               isLoadingText={t("exporting")}
               style={[ViewStyles.mb2, ViewStyles.accent]}
               textStyle={theme.reverseTextStyle}
-              onPress={onExportContinuePress}
+              onPress={onExportPress}
             >
               <Marquee style={theme.reverseTextStyle}>{t("export_results")}</Marquee>
-            </Button>
-            <Button
-              isLoading={exporting}
-              isLoadingText={t("exporting")}
-              style={[ViewStyles.mb2, ViewStyles.accent]}
-              textStyle={theme.reverseTextStyle}
-              onPress={onSplitAndExportPress}
-            >
-              <Marquee style={theme.reverseTextStyle}>{t("split_and_export_results")}</Marquee>
             </Button>
             <Button style={ViewStyles.accent} onPress={onExportDatabasePress}>
               <Marquee style={theme.reverseTextStyle}>{t("export_database")}</Marquee>

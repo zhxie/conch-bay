@@ -65,9 +65,6 @@ const en = {
   split_results: "Split Results",
   export: "Export",
   exporting: "Exporting",
-  export_notice:
-    "Conch Bay requires a lot of memory to export records. If Conch Bay cannot export records, you can split and export them.",
-  split_and_export: "Split and Export",
   disclaimer:
     "This app is an unofficial app which uses the information of SplatNet 3, and is not related to Nintendo Co., Ltd.",
   update: "Update",
@@ -95,7 +92,6 @@ const en = {
   copy_bullet_token: "Copy Bullet Token",
   copied_to_clipboard: "Copied to clipboard",
   export_results: "Export Results",
-  split_and_export_results: "Split and Export Results",
   export_database: "Export Database",
   privacy_policy: "Privacy Policy",
   acknowledgments: "Acknowledgments",

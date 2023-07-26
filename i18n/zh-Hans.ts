@@ -65,9 +65,6 @@ const zhHans = {
   split_results: "分割记录",
   export: "导出",
   exporting: "导出中",
-  export_notice:
-    "法螺湾需要占用大量的内存以导出记录。如果法螺湾无法导出记录，您可以分割并导出记录。",
-  split_and_export: "分割并导出",
   disclaimer: "本应用是使用鱿鱼圈3的信息的非官方应用，与任天堂有限公司无关。",
   update: "更新",
   support: "支持",
@@ -93,7 +90,6 @@ const zhHans = {
   copy_bullet_token: "复制Bullet令牌",
   copied_to_clipboard: "已复制到剪贴板",
   export_results: "导出记录",
-  split_and_export_results: "分割并导出记录",
   export_database: "导出数据库",
   privacy_policy: "隐私政策",
   acknowledgments: "致谢",
