@@ -14,8 +14,9 @@ const zhHant = {
   log_in_with_session_token: "通過會話令牌登錄",
   logging_in: "獲取令牌中",
   failed_to_acquire_session_token: "未能獲取會話令牌 (%{error})",
-  log_out_notice: "登出將清除法螺灣所有存儲的數據！請在繼續之前完成備份。",
-  log_out_continue: "清除數據並登出",
+  log_out_notice:
+    "登出後，您無法載入記錄、朋友與目錄，顯示持有的裝備與訪問魷魚圈3。法螺灣已存儲的記錄不會被清除。",
+  log_out_continue: "登出",
   logging_out: "登出中",
   failed_to_check_update: "未能檢查法螺灣更新",
   reacquiring_tokens: "重新獲取令牌中",
@@ -112,7 +113,7 @@ const zhHant = {
   // Shop.
   gesotown: "魷魚鬚商城",
   order_in_nintendo_switch_online: "在Nintendo Switch Online中預訂",
-  show_owned_gears: "显示持有的裝備",
+  show_owned_gears: "顯示持有的裝備",
   loading_owned_gears: "載入持有的裝備中",
   failed_to_load_owned_gears: "未能載入持有的裝備 (%{error})",
   headgear: "頭部裝備",

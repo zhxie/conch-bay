@@ -15,8 +15,8 @@ const ja = {
   logging_in: "トークン取得中",
   failed_to_acquire_session_token: "セッショントークンを取得できません (%{error})",
   log_out_notice:
-    "ログアウトすると、ホラガイベイに保存されているすべてのデータが削除されます！続行する前にバックアップを完了してください。",
-  log_out_continue: "データを削除してログアウト",
+    "ログアウト後はリザルト、フレンドとカタログの読み込み、持つギアの表示、イカリング3へのアクセスができなくなります。ホラガイベイに保存されているリザルトは消去されません。",
+  log_out_continue: "ログアウト",
   logging_out: "ログアウト中",
   failed_to_check_update: "ホラガイベイのアップデートを確認できません",
   reacquiring_tokens: "トークン再取得中",

@@ -15,8 +15,8 @@ const en = {
   logging_in: "Acquiring tokens",
   failed_to_acquire_session_token: "Failed to acquire session token (%{error})",
   log_out_notice:
-    "Logging out will remove all stored data from Conch Bay! Please complete backup before proceeding.",
-  log_out_continue: "Remove Data and Log Out",
+    "After logging out, you will be not able to load results, friends and catalog, display owned gears and access SplatNet 3. Results stored in Conch Bay will not be removed.",
+  log_out_continue: "Log Out",
   logging_out: "Logging out",
   failed_to_check_update: "Failed to check Conch Bay update",
   reacquiring_tokens: "Reacquiring tokens",

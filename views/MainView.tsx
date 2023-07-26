@@ -197,7 +197,7 @@ const MainView = () => {
     "0"
   );
   const [grade, setGrade, clearGrade] = useAsyncStorage("grade");
-  const [playedTime, setPlayedTime, clearPlayedTime] = useAsyncStorage("playedTime");
+  const [playedTime, setPlayedTime] = useAsyncStorage("playedTime");
 
   const [apiUpdated, setApiUpdated] = useState(false);
   const [schedules, setSchedules] = useState<Schedules>();
@@ -883,11 +883,6 @@ const MainView = () => {
   const onLogOutContinuePress = async () => {
     try {
       setLoggingOut(true);
-      setFilterOptions(undefined);
-      setFilter(undefined);
-      setTotal(0);
-      setCount(0);
-      setResults(undefined);
       setFriends(undefined);
       setVoting(undefined);
       setCatalog(undefined);
@@ -905,13 +900,11 @@ const MainView = () => {
         clearRainmakerXPower(),
         clearClamBlitzXPower(),
         clearGrade(),
-        clearPlayedTime(),
         Notifications.getPermissionsAsync().then(async (res) => {
           if (res.granted) {
             await Notifications.setBadgeCountAsync(0);
           }
         }),
-        Database.clear(),
         ok(
           isBackgroundTaskRegistered().then(async (res) => {
             if (res) {

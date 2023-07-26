@@ -14,8 +14,9 @@ const zhHans = {
   log_in_with_session_token: "通过会话令牌登录",
   logging_in: "获取令牌中",
   failed_to_acquire_session_token: "未能获取会话令牌 (%{error})",
-  log_out_notice: "登出将清除法螺湾所有存储的数据！请在继续之前完成备份。",
-  log_out_continue: "清除数据并登出",
+  log_out_notice:
+    "登出后，您无法加载记录、好友与目录，显示持有的装备与访问鱿鱼圈3。法螺湾已存储的记录不会被清除。",
+  log_out_continue: "登出",
   logging_out: "登出中",
   failed_to_check_update: "未能检查法螺湾更新 (%{error})",
   reacquiring_tokens: "重新获取令牌中",
