@@ -3881,10 +3881,10 @@ expo-doctor@^1.1.1:
   resolved "https://registry.yarnpkg.com/expo-doctor/-/expo-doctor-1.1.1.tgz#acdc2e251264fa20d681a512b0a7eff8968e75cf"
   integrity sha512-LFn+jTaBBVWvcx4Fu5aHQdnaj4ZQ62EHzFfqiDbzaGdOILVS4d4umrVMB/+Fk9mD9uHjBsW/nOJuBQw/fx4otg==
 
-expo-document-picker@~11.5.3:
-  version "11.5.3"
-  resolved "https://registry.yarnpkg.com/expo-document-picker/-/expo-document-picker-11.5.3.tgz#90f23412332ea6ec7ee42fcaaff7ede175114b8e"
-  integrity sha512-nneIdDIKGtU6DQfcF5YJPQdIF2CYug5LapOkktE/0Lc7nXs1O+ejQ8zHLzgbdm2VFymL8d6I6x86sNt8VheBXw==
+expo-document-picker@~11.5.4:
+  version "11.5.4"
+  resolved "https://registry.yarnpkg.com/expo-document-picker/-/expo-document-picker-11.5.4.tgz#11c274d1a2f4aa1f0ca7c0403ca02017a20d832e"
+  integrity sha512-4lpRixi33kjoQQy9lfrGs48yFRMOgBgdnqjYWVFe85WFy/WkEoFC2E8usxcFdrIigtfy9Z+HY3/je4lHEYqyLg==
 
 expo-file-system@~15.4.0, expo-file-system@~15.4.2:
   version "15.4.2"
