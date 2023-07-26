@@ -89,7 +89,7 @@ const CatalogView = (props: CatalogViewProps) => {
         estimatedItemSize={128}
         onClose={onCatalogClose}
         style={[
-          ViewStyles.modal1d,
+          ViewStyles.modal2d,
           // HACK: fixed height should be provided to FlashList.
           {
             height: (136 * ((props.catalog?.catalog.progress?.rewards.length ?? 0) + 1)) / 2 - 8,
