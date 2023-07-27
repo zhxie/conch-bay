@@ -15,7 +15,7 @@ const zhHant = {
   logging_in: "獲取令牌中",
   failed_to_acquire_session_token: "未能獲取會話令牌 (%{error})",
   log_out_notice:
-    "登出後，您無法載入記錄、朋友與目錄，顯示持有的裝備與訪問魷魚圈3。法螺灣已存儲的記錄不會被清除。",
+    "登出後，您將無法載入記錄、朋友與目錄，顯示持有的裝備與訪問魷魚圈3。法螺灣已存儲的記錄不會被清除。",
   log_out_continue: "登出",
   logging_out: "登出中",
   failed_to_check_update: "未能檢查法螺灣更新",

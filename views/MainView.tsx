@@ -861,11 +861,17 @@ const MainView = () => {
   const onAlternativeLogInPress = async () => {
     try {
       setLoggingIn(true);
-      await setSessionToken(await Clipboard.getStringAsync());
+      const paste = await Clipboard.getStringAsync();
+      const sessionToken = paste.trim();
+      if (sessionToken.length > 0) {
+        await setSessionToken(await Clipboard.getStringAsync());
+      }
 
       setLoggingIn(false);
-      setLogIn(false);
-      setLogOut(false);
+      if (sessionToken.length > 0) {
+        setLogIn(false);
+        setLogOut(false);
+      }
     } catch (e) {
       showBanner(BannerLevel.Error, e);
       setLoggingIn(false);
@@ -1922,7 +1928,30 @@ const MainView = () => {
             color={Color.MiddleTerritory}
             style={ViewStyles.mb4}
           />
-          <Text style={ViewStyles.mb4}>{t("log_out_notice")}</Text>
+          <Text style={ViewStyles.mb2}>{t("relog_in_notice")}</Text>
+          <VStack style={[ViewStyles.mb4, ViewStyles.wf]}>
+            <Button
+              isDisabled={refreshing}
+              isLoading={loggingIn}
+              isLoadingText={t("logging_in")}
+              style={[ViewStyles.mb2, ViewStyles.accent]}
+              textStyle={theme.reverseTextStyle}
+              onPress={onLogInContinuePress}
+            >
+              <Marquee style={theme.reverseTextStyle}>{t("relog_in")}</Marquee>
+            </Button>
+            <Button
+              isDisabled={refreshing}
+              isLoading={loggingIn}
+              isLoadingText={t("logging_in")}
+              style={ViewStyles.accent}
+              textStyle={theme.reverseTextStyle}
+              onPress={onAlternativeLogInPress}
+            >
+              <Marquee style={theme.reverseTextStyle}>{t("relog_in_with_session_token")}</Marquee>
+            </Button>
+          </VStack>
+          <Text style={ViewStyles.mb2}>{t("log_out_notice")}</Text>
           <VStack style={ViewStyles.wf}>
             <Button
               isDisabled={loggingIn || refreshing || loadingMore || exporting}
@@ -2019,8 +2048,8 @@ const MainView = () => {
         <VStack center>
           <Icon name="help-circle" size={48} color={Color.MiddleTerritory} style={ViewStyles.mb4} />
           <VStack style={[ViewStyles.mb4, ViewStyles.wf]}>
-            <VStack center>
-              <Text style={ViewStyles.mb2}>{t("language_notice")}</Text>
+            <VStack center style={ViewStyles.mb2}>
+              <Text>{t("language_notice")}</Text>
             </VStack>
             <Picker
               isDisabled={refreshing}
@@ -2053,36 +2082,9 @@ const MainView = () => {
               </Marquee>
             </Button>
           </VStack>
-          {sessionToken.length > 0 && (
-            <VStack style={[ViewStyles.mb4, ViewStyles.wf]}>
-              <VStack center>
-                <Text style={ViewStyles.mb2}>{t("relog_in_notice")}</Text>
-              </VStack>
-              <Button
-                isDisabled={refreshing}
-                isLoading={loggingIn}
-                isLoadingText={t("logging_in")}
-                style={[ViewStyles.mb2, ViewStyles.accent]}
-                textStyle={theme.reverseTextStyle}
-                onPress={onLogInContinuePress}
-              >
-                <Marquee style={theme.reverseTextStyle}>{t("relog_in")}</Marquee>
-              </Button>
-              <Button
-                isDisabled={refreshing}
-                isLoading={loggingIn}
-                isLoadingText={t("logging_in")}
-                style={ViewStyles.accent}
-                textStyle={theme.reverseTextStyle}
-                onPress={onAlternativeLogInPress}
-              >
-                <Marquee style={theme.reverseTextStyle}>{t("relog_in_with_session_token")}</Marquee>
-              </Button>
-            </VStack>
-          )}
           <VStack style={[ViewStyles.mb4, ViewStyles.wf]}>
-            <VStack center>
-              <Text style={ViewStyles.mb2}>{t("resource_notice")}</Text>
+            <VStack center style={ViewStyles.mb2}>
+              <Text>{t("resource_notice")}</Text>
             </VStack>
             <Button
               isLoading={clearingCache}
@@ -2104,8 +2106,8 @@ const MainView = () => {
             </Button>
           </VStack>
           <VStack style={[sessionToken.length > 0 && ViewStyles.mb4, ViewStyles.wf]}>
-            <VStack center>
-              <Text style={ViewStyles.mb2}>{t("feedback_notice")}</Text>
+            <VStack center style={ViewStyles.mb2}>
+              <Text>{t("feedback_notice")}</Text>
             </VStack>
             <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onCreateAGithubIssuePress}>
               <Marquee style={theme.reverseTextStyle}>{t("create_a_github_issue")}</Marquee>
@@ -2116,8 +2118,8 @@ const MainView = () => {
           </VStack>
           {sessionToken.length > 0 && (
             <VStack style={ViewStyles.wf}>
-              <VStack center>
-                <Text style={ViewStyles.mb2}>{t("debug_notice")}</Text>
+              <VStack center style={ViewStyles.mb2}>
+                <Text>{t("debug_notice")}</Text>
               </VStack>
               <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onCopySessionTokenPress}>
                 <Marquee style={theme.reverseTextStyle}>{t("copy_session_token")}</Marquee>
