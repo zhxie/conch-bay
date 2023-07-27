@@ -1,9 +1,9 @@
 import { StyleProp, ViewStyle } from "react-native";
-import { ImageSource } from "./Image";
+import Image, { ImageSource } from "./Image";
 import ResultButton from "./ResultButton";
 import { Circle } from "./Shape";
-import { HStack } from "./Stack";
-import { Color, ViewStyles } from "./Styles";
+import { Center, HStack } from "./Stack";
+import { Color, ViewStyles, useTheme } from "./Styles";
 import Text from "./Text";
 
 interface BattlePlayerButtonProps {
@@ -13,6 +13,8 @@ interface BattlePlayerButtonProps {
   self?: boolean;
   name: string;
   weapon: ImageSource;
+  subWeapon: ImageSource;
+  specialWeapon: ImageSource;
   paint: number;
   kill?: number;
   assist?: number;
@@ -26,6 +28,10 @@ interface BattlePlayerButtonProps {
 }
 
 const BattlePlayerButton = (props: BattlePlayerButtonProps) => {
+  const theme = useTheme();
+  const backgroundColor =
+    theme.colorScheme === "light" ? `${Color.MiddleTerritory}1f` : Color.DarkBackground;
+
   const killAndAssist =
     props.kill === undefined
       ? "-"
@@ -43,6 +49,24 @@ const BattlePlayerButton = (props: BattlePlayerButtonProps) => {
       icon={props.crown ? "crown" : props.dragon ? "party-popper" : undefined}
       title={props.name}
       subtitle={`${props.paint} pt`}
+      subChildren={
+        <HStack center>
+          <Center style={ViewStyles.mr1}>
+            <Circle size={20} color={backgroundColor} style={ViewStyles.r1} />
+            <Image
+              source={props.subWeapon}
+              style={[ViewStyles.transparent, { width: 15, height: 15, position: "absolute" }]}
+            />
+          </Center>
+          <Center>
+            <Circle size={20} color={backgroundColor} style={ViewStyles.r1} />
+            <Image
+              source={props.specialWeapon}
+              style={[ViewStyles.transparent, { width: 15, height: 15, position: "absolute" }]}
+            />
+          </Center>
+        </HStack>
+      }
       style={props.style}
       onPress={props.onPress}
     >

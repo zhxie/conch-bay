@@ -656,6 +656,8 @@ const ResultView = (props: ResultViewProps) => {
                         self={player.isMyself}
                         name={formatName(player.name, player.species, player.isMyself)}
                         weapon={getImageCacheSource(player.weapon.image2d.url)}
+                        subWeapon={getImageCacheSource(player.weapon.subWeapon.image.url)}
+                        specialWeapon={getImageCacheSource(player.weapon.specialWeapon.image.url)}
                         paint={player.paint}
                         kill={player.result?.kill}
                         assist={player.result?.assist}
