@@ -3,7 +3,7 @@ import { createHash } from "crypto";
 import { createWriteStream } from "fs";
 import { get } from "https";
 
-const VERSION = "400";
+const VERSION = "410";
 
 const versionsFile = createWriteStream("models/versions.json", "utf-8");
 const weaponsFile = createWriteStream("models/weapons.json", "utf-8");

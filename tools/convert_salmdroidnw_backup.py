@@ -4,7 +4,7 @@ import requests
 import sys
 
 
-VERSION = "400"
+VERSION = "410"
 RANDOM_IMAGE = [
     "473fffb2442075078d8bb7125744905abdeae651b6a5b7453ae295582e45f7d1_0.png",
     "9d7272733ae2f2282938da17d69f13419a935eef42239132a02fcf37d8678f10_0.png",
