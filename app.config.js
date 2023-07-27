@@ -24,7 +24,7 @@ const config = {
   },
   ios: {
     bundleIdentifier: "name.sketch.ConchBay",
-    buildNumber: "100",
+    buildNumber: "101",
     config: {
       usesNonExemptEncryption: false,
     },
@@ -44,7 +44,7 @@ const config = {
   },
   android: {
     package: "name.sketch.conch_bay",
-    versionCode: 100,
+    versionCode: 101,
     adaptiveIcon: {
       foregroundImage: "./assets/adaptive-icon.png",
       backgroundColor: "#6B84F5",
