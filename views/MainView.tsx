@@ -96,7 +96,13 @@ import {
   registerBackgroundTask,
   unregisterBackgroundTask,
 } from "../utils/background";
-import { decode64String, encode64String } from "../utils/codec";
+import {
+  IMPORT_READ_SIZE,
+  ImportStreamParser,
+  decode64,
+  decode64String,
+  encode64String,
+} from "../utils/codec";
 import * as Database from "../utils/database";
 import { ok } from "../utils/promise";
 import {
@@ -1287,9 +1293,6 @@ const MainView = () => {
   const onConvertSalmonia3PlusBackupPress = () => {
     WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay#import-data-from-salmonia3");
   };
-  const onSplitResultsPress = () => {
-    WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay#split-data");
-  };
   const onImportContinuePress = async () => {
     setImporting(true);
     let uri = "";
@@ -1303,53 +1306,70 @@ const MainView = () => {
       uri = doc.assets[0].uri;
 
       setRefreshing(true);
-      const result = JSON.parse(await FileSystem.readAsStringAsync(uri));
-      const n = result["battles"].length + result["coops"].length;
-      showBanner(BannerLevel.Info, t("loading_n_results", { n }));
-      const battleExisted = await Promise.all(
-        result["battles"].map((battle: VsHistoryDetailResult) =>
-          Database.isExist(battle.vsHistoryDetail!.id)
-        )
-      );
-      const coopExisted = await Promise.all(
-        result["coops"].map((coop: CoopHistoryDetailResult) =>
-          Database.isExist(coop.coopHistoryDetail!.id)
-        )
-      );
-      const newBattles = result["battles"].filter((_, i: number) => !battleExisted[i]);
-      const newCoops = result["coops"].filter((_, i: number) => !coopExisted[i]);
-      const skip = n - (newBattles.length + newCoops.length);
-      let fail = 0;
-      let error: Error | undefined;
-      for (const battle of newBattles) {
-        const result = await Database.addBattle(battle)
-          .then(() => {
-            return true;
-          })
-          .catch((e) => {
-            if (!error) {
-              error = e;
-            }
-            return false;
-          });
-        if (!result) {
-          fail++;
+      const parser = new ImportStreamParser();
+      let n = 0,
+        skip = 0,
+        fail = 0;
+      let error: Error | undefined = undefined;
+      let batch = 0;
+      while (true) {
+        const encoded = await FileSystem.readAsStringAsync(uri, {
+          encoding: "base64",
+          length: IMPORT_READ_SIZE,
+          position: IMPORT_READ_SIZE * batch,
+        });
+        const text = decode64(encoded);
+        const result = parser.parse(text);
+        const current = result["battles"].length + result["coops"].length;
+        n += current;
+        const battleExisted = await Promise.all(
+          result["battles"].map((battle: VsHistoryDetailResult) =>
+            Database.isExist(battle.vsHistoryDetail!.id)
+          )
+        );
+        const coopExisted = await Promise.all(
+          result["coops"].map((coop: CoopHistoryDetailResult) =>
+            Database.isExist(coop.coopHistoryDetail!.id)
+          )
+        );
+        const newBattles = result["battles"].filter((_, i: number) => !battleExisted[i]);
+        const newCoops = result["coops"].filter((_, i: number) => !coopExisted[i]);
+        skip += current - (newBattles.length + newCoops.length);
+        for (const battle of newBattles) {
+          const result = await Database.addBattle(battle)
+            .then(() => {
+              return true;
+            })
+            .catch((e) => {
+              if (!error) {
+                error = e;
+              }
+              return false;
+            });
+          if (!result) {
+            fail++;
+          }
         }
-      }
-      for (const coop of newCoops) {
-        const result = await Database.addCoop(coop)
-          .then(() => {
-            return true;
-          })
-          .catch((e) => {
-            if (!error) {
-              error = e;
-            }
-            return false;
-          });
-        if (!result) {
-          fail++;
+        for (const coop of newCoops) {
+          const result = await Database.addCoop(coop)
+            .then(() => {
+              return true;
+            })
+            .catch((e) => {
+              if (!error) {
+                error = e;
+              }
+              return false;
+            });
+          if (!result) {
+            fail++;
+          }
         }
+
+        if (text.length < IMPORT_READ_SIZE) {
+          break;
+        }
+        batch += 1;
       }
       if (fail > 0 && skip > 0) {
         showBanner(
@@ -2244,16 +2264,6 @@ const MainView = () => {
             onPress={onConvertSalmonia3PlusBackupPress}
           >
             <Marquee>{t("convert_salmonia3+_backup")}</Marquee>
-          </Button>
-          <Button
-            style={[
-              ViewStyles.mb2,
-              { borderColor: Color.AccentColor, borderWidth: 1.5 },
-              theme.backgroundStyle,
-            ]}
-            onPress={onSplitResultsPress}
-          >
-            <Marquee>{t("split_results")}</Marquee>
           </Button>
           <Button
             disabled={refreshing && !importing}

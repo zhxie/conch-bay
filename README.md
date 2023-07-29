@@ -56,14 +56,6 @@ Run the following command to extract and convert data from a Conch Bay database 
 python3 tools/convert_db.py <PATH_TO_DB>
 ```
 
-### Split data
-
-Run the following command to split a results JSON.
-
-```sh
-python3 tools/split.py <PATH_TO_JSON>
-```
-
 ### Validate data
 
 Run the following command to validate a results JSON.
