@@ -29,6 +29,7 @@ import {
   CoopWeaponBox,
   Display,
   GearBox,
+  GroupButton,
   HStack,
   Image,
   KingSalmonidBox,
@@ -87,6 +88,9 @@ export interface GroupProps {
   battles?: VsHistoryDetailResult[];
   coops?: CoopHistoryDetailResult[];
 }
+interface GroupAndResultProps extends ResultProps {
+  group?: GroupProps;
+}
 interface ResultViewProps {
   groups?: GroupProps[];
   refreshControl: React.ReactElement<RefreshControlProps>;
@@ -127,6 +131,21 @@ const ResultView = (props: ResultViewProps) => {
     }
     const results: ResultProps[] = [];
     for (const group of props.groups) {
+      if (group.battles) {
+        results.push(...group.battles!.map((battle) => ({ battle: battle })));
+      } else {
+        results.push(...group.coops!.map((coop) => ({ coop: coop })));
+      }
+    }
+    return results;
+  }, [props.groups]);
+  const groupsAndResults = useMemo(() => {
+    if (!props.groups) {
+      return undefined;
+    }
+    const results: GroupAndResultProps[] = [];
+    for (const group of props.groups) {
+      results.push({ group: group });
       if (group.battles) {
         results.push(...group.battles!.map((battle) => ({ battle: battle })));
       } else {
@@ -285,6 +304,22 @@ const ResultView = (props: ResultViewProps) => {
       case CoopRule.TEAM_CONTEST:
         return undefined;
     }
+  };
+  const formatGroupPeriod = (start: string, end: string) => {
+    const dateTimeFormat = "M/D HH:mm";
+
+    const startTime = dayjs(start).format(dateTimeFormat);
+    const endTime = dayjs(end).format(dateTimeFormat);
+    const startTimeComponents = startTime.split(" ");
+    const endTimeComponents = endTime.split(" ");
+    // Same day.
+    if (startTimeComponents[0] === endTimeComponents[0]) {
+      if (startTimeComponents[1] === endTimeComponents[1]) {
+        return startTime;
+      }
+      return `${startTime} – ${endTimeComponents[1]}`;
+    }
+    return `${startTime} – ${endTime}`;
   };
   const formatAnnotation = (battle: VsHistoryDetailResult) => {
     switch (battle.vsHistoryDetail!.judgement as Judgement) {
@@ -475,15 +510,18 @@ const ResultView = (props: ResultViewProps) => {
     setDisplayCoop(true);
   }, []);
 
-  const renderItem = (result: ListRenderItemInfo<ResultProps>) => {
+  const renderItem = (result: ListRenderItemInfo<GroupAndResultProps>) => {
     if (result.item.battle) {
       const color = getVsModeColor(result.item.battle.vsHistoryDetail!.vsMode)!;
       return (
         <VStack flex style={ViewStyles.px4}>
           <BattleButton
             battle={(result.item as ResultProps).battle}
-            isFirst={result.index === 0}
-            isLast={false}
+            isFirst={false}
+            isLast={
+              groupsAndResults!.length > result.index + 1 &&
+              groupsAndResults![result.index + 1].group !== undefined
+            }
             tag={
               result.extraData?.battle?.vsHistoryDetail?.id ===
               result.item.battle.vsHistoryDetail!.id
@@ -511,45 +549,78 @@ const ResultView = (props: ResultViewProps) => {
         </VStack>
       );
     }
-    const color = getCoopRuleColor(result.item.coop!.coopHistoryDetail!.rule)!;
-    const powerEgg =
-      // HACK: cast out union uncertainty.
-      (result.item.coop!.coopHistoryDetail!.memberResults as CoopMemberResult[]).reduce(
-        (sum, result) => sum + result.deliverCount,
-        result.item.coop!.coopHistoryDetail!.myResult.deliverCount
+    if (result.item.coop) {
+      const color = getCoopRuleColor(result.item.coop.coopHistoryDetail!.rule)!;
+      const powerEgg =
+        // HACK: cast out union uncertainty.
+        (result.item.coop.coopHistoryDetail!.memberResults as CoopMemberResult[]).reduce(
+          (sum, result) => sum + result.deliverCount,
+          result.item.coop.coopHistoryDetail!.myResult.deliverCount
+        );
+      const goldenEgg = result.item.coop.coopHistoryDetail!.waveResults.reduce(
+        (sum, result) => sum + (result.teamDeliverCount ?? 0),
+        0
       );
-    const goldenEgg = result.item.coop!.coopHistoryDetail!.waveResults.reduce(
-      (sum, result) => sum + (result.teamDeliverCount ?? 0),
-      0
-    );
+      return (
+        <VStack flex style={ViewStyles.px4}>
+          <CoopButton
+            coop={(result.item as ResultProps).coop}
+            isFirst={false}
+            isLast={
+              groupsAndResults!.length > result.index + 1 &&
+              groupsAndResults![result.index + 1].group !== undefined
+            }
+            tag={
+              result.extraData?.coop?.coopHistoryDetail?.id ===
+              result.item.coop.coopHistoryDetail!.id
+                ? color
+                : undefined
+            }
+            color={color}
+            result={result.item.coop.coopHistoryDetail!.resultWave === 0 ? Result.Win : Result.Lose}
+            rule={t(result.item.coop.coopHistoryDetail!.rule)}
+            stage={td(result.item.coop.coopHistoryDetail!.coopStage)}
+            kingSalmonid={
+              result.item.coop.coopHistoryDetail!.bossResult
+                ? td(result.item.coop.coopHistoryDetail!.bossResult.boss)
+                : undefined
+            }
+            isClear={isCoopClear(result.item.coop)}
+            hazardLevel={formatHazardLevel(result.item.coop)}
+            info={formatCoopInfo(result.item.coop)}
+            gradeChange={formatGradeChange(result.item.coop)}
+            powerEgg={powerEgg}
+            goldenEgg={goldenEgg}
+            onPress={onCoopPress}
+          />
+        </VStack>
+      );
+    }
+    let mode = "";
+    let period = "";
+    if (result.item.group!.battles) {
+      mode = result.item.group!.battles[0].vsHistoryDetail!.vsMode.id;
+      period = formatGroupPeriod(
+        result.item.group!.battles[result.item.group!.battles.length - 1].vsHistoryDetail!
+          .playedTime,
+        result.item.group!.battles[0].vsHistoryDetail!.playedTime
+      );
+    } else {
+      mode = result.item.group!.coops![0].coopHistoryDetail!.rule;
+      period = formatGroupPeriod(
+        result.item.group!.coops![result.item.group!.coops!.length - 1].coopHistoryDetail!
+          .playedTime,
+        result.item.group!.coops![0].coopHistoryDetail!.playedTime
+      );
+    }
     return (
       <VStack flex style={ViewStyles.px4}>
-        <CoopButton
-          coop={(result.item as ResultProps).coop}
-          isFirst={result.index === 0}
+        <GroupButton
+          isFirst={true}
           isLast={false}
-          tag={
-            result.extraData?.coop?.coopHistoryDetail?.id ===
-            result.item.coop!.coopHistoryDetail!.id
-              ? color
-              : undefined
-          }
-          color={color}
-          result={result.item.coop!.coopHistoryDetail!.resultWave === 0 ? Result.Win : Result.Lose}
-          rule={t(result.item.coop!.coopHistoryDetail!.rule)}
-          stage={td(result.item.coop!.coopHistoryDetail!.coopStage)}
-          kingSalmonid={
-            result.item.coop!.coopHistoryDetail!.bossResult
-              ? td(result.item.coop!.coopHistoryDetail!.bossResult.boss)
-              : undefined
-          }
-          isClear={isCoopClear(result.item.coop!)}
-          hazardLevel={formatHazardLevel(result.item.coop!)}
-          info={formatCoopInfo(result.item.coop!)}
-          gradeChange={formatGradeChange(result.item.coop!)}
-          powerEgg={powerEgg}
-          goldenEgg={goldenEgg}
-          onPress={onCoopPress}
+          title={t(mode)}
+          subtitle={period}
+          style={result.index !== 0 && { marginTop: 8 }}
         />
       </VStack>
     );
@@ -559,16 +630,27 @@ const ResultView = (props: ResultViewProps) => {
     <VStack flex>
       <FlashList
         refreshControl={props.refreshControl}
-        data={results}
-        keyExtractor={(result) => {
-          if (result.battle) {
-            return result.battle.vsHistoryDetail!.id;
+        data={groupsAndResults}
+        keyExtractor={(groupAndResult) => {
+          if (groupAndResult.battle) {
+            return groupAndResult.battle.vsHistoryDetail!.id;
           }
-          return result.coop!.coopHistoryDetail!.id;
+          if (groupAndResult.coop) {
+            return groupAndResult.coop!.coopHistoryDetail!.id;
+          }
+          if (groupAndResult.group!.battles) {
+            return `${groupAndResult.group!.battles[0].vsHistoryDetail!.id}-${
+              groupAndResult.group!.battles.length
+            }`;
+          }
+          return `${groupAndResult.group!.coops![0].coopHistoryDetail!.id}-${
+            groupAndResult.group!.coops!.length
+          }`;
         }}
         renderItem={renderItem}
         extraData={result}
-        estimatedItemSize={64}
+        // HACK: use the smaller one.
+        estimatedItemSize={32}
         ListEmptyComponent={
           <VStack flex style={ViewStyles.px4}>
             {new Array(placeholder).fill(0).map((_, i) => (

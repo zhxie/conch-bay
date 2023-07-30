@@ -6,7 +6,6 @@ import { TextStyles, ViewStyles } from "./Styles";
 import Text from "./Text";
 
 interface GroupButtonProps {
-  color?: string;
   isFirst?: boolean;
   isLast?: boolean;
   title: string;
@@ -20,7 +19,7 @@ const GroupButton = (props: GroupButtonProps) => {
     <Pressable
       style={[
         ViewStyles.px3,
-        { height: 64 },
+        { height: 32 },
         props.isFirst && ViewStyles.rt2,
         props.isLast && ViewStyles.rb2,
         props.style,
@@ -30,6 +29,7 @@ const GroupButton = (props: GroupButtonProps) => {
       <HStack
         flex
         center
+        justify
         style={[
           ViewStyles.py1,
           !props.isFirst && ViewStyles.sept,
@@ -37,12 +37,10 @@ const GroupButton = (props: GroupButtonProps) => {
         ]}
       >
         <HStack style={ViewStyles.i}>
-          <Marquee style={[TextStyles.h2, !!props.color && { color: props.color }]}>
-            {props.title}
-          </Marquee>
+          <Marquee style={[TextStyles.b, TextStyles.subtle]}>{props.title}</Marquee>
         </HStack>
         <HStack center>
-          <Text>{props.subtitle}</Text>
+          <Text style={TextStyles.subtle}>{props.subtitle}</Text>
         </HStack>
       </HStack>
     </Pressable>
