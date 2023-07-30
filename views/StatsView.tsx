@@ -23,13 +23,13 @@ import {
 import t from "../i18n";
 import { CoopHistoryDetailResult, VsHistoryDetailResult } from "../models/types";
 import { countBattles, countCoops } from "../utils/ui";
-import { ResultProps } from "./ResultView";
+import { GroupProps, ResultProps } from "./ResultView";
 
 dayjs.extend(quarterOfYear);
 dayjs.extend(utc);
 
 interface StatsViewProps {
-  results?: ResultProps[];
+  groups?: GroupProps[];
   loadingMore: boolean;
   allResultsShown: boolean;
   onShowAllResultsPress: () => void;
@@ -59,10 +59,24 @@ const StatsView = (props: StatsViewProps) => {
     }
   }, [group]);
 
+  const results = useMemo(() => {
+    if (!props.groups) {
+      return undefined;
+    }
+    const results: ResultProps[] = [];
+    for (const group of props.groups) {
+      if (group.battles) {
+        results.push(...group.battles!.map((battle) => ({ battle: battle })));
+      } else {
+        results.push(...group.coops!.map((coop) => ({ coop: coop })));
+      }
+    }
+    return results;
+  }, [props.groups]);
   const battleStats = useMemo(
     () =>
       countBattles(
-        (props.results
+        (results
           ?.map((result) => result.battle)
           .filter((battle) => battle)
           .filter(
@@ -71,12 +85,12 @@ const StatsView = (props: StatsViewProps) => {
               new Date(battle!.vsHistoryDetail!.playedTime).valueOf() >= beginTime
           ) ?? []) as VsHistoryDetailResult[]
       ),
-    [props.results, group]
+    [results, group]
   );
   const coopStats = useMemo(
     () =>
       countCoops(
-        (props.results
+        (results
           ?.map((result) => result.coop)
           .filter((coop) => coop)
           .filter(
@@ -85,7 +99,7 @@ const StatsView = (props: StatsViewProps) => {
               new Date(coop!.coopHistoryDetail!.playedTime).valueOf() >= beginTime
           ) ?? []) as CoopHistoryDetailResult[]
       ),
-    [props.results, group]
+    [results, group]
   );
 
   const formatPower = (total: number, max: number, count: number) => {

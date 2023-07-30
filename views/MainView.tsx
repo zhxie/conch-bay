@@ -15,7 +15,7 @@ import * as ModulesCore from "expo-modules-core";
 import * as Notifications from "expo-notifications";
 import * as Sharing from "expo-sharing";
 import * as WebBrowser from "expo-web-browser";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Animated,
   LayoutChangeEvent,
@@ -101,13 +101,14 @@ import { ok } from "../utils/promise";
 import {
   convertStageImageUrl,
   getImageCacheKey,
+  getImageHash,
   getUserIconCacheSource,
   isImageExpired,
 } from "../utils/ui";
 import CatalogView from "./CatalogView";
 import FilterView from "./FilterView";
 import FriendView from "./FriendView";
-import ResultView from "./ResultView";
+import ResultView, { GroupProps, ResultProps } from "./ResultView";
 import ScheduleView from "./ScheduleView";
 import ShopView from "./ShopView";
 import SplatNetView from "./SplatNetView";
@@ -204,9 +205,8 @@ const MainView = () => {
   const [friends, setFriends] = useState<FriendListResult>();
   const [voting, setVoting] = useState<DetailVotingStatusResult>();
   const [catalog, setCatalog] = useState<CatalogResult>();
-  const [results, setResults] =
-    useState<{ battle?: VsHistoryDetailResult; coop?: CoopHistoryDetailResult }[]>();
-  const [count, setCount] = useState(0);
+  const [groups, setGroups] = useState<GroupProps[]>();
+  const [filtered, setFiltered] = useState(0);
   const [total, setTotal] = useState(0);
   const [filter, setFilter] = useState<Database.FilterProps>();
   const filterRef = useRef<Database.FilterProps>();
@@ -225,7 +225,14 @@ const MainView = () => {
     outputRange: [0, 1],
   });
 
-  const allResultsShown = (results?.length ?? 0) >= count;
+  const count = useMemo(() => {
+    let current = 0;
+    for (const group of groups ?? []) {
+      current += (group.battles?.length ?? 0) + (group.coops?.length ?? 0);
+    }
+    return current;
+  }, [groups]);
+  const allResultsShown = count >= filtered;
 
   useEffect(() => {
     if (sessionTokenReady && webServiceTokenReady && bulletTokenReady && languageReady) {
@@ -323,17 +330,75 @@ const MainView = () => {
     })();
   }, [ready, appState]);
 
+  const canGroup = (current: ResultProps, group: GroupProps) => {
+    // Battles with the same mode and in the 2 hour (24 hour for tricolors and unlimited for
+    // privates) period will be regarded in the same group, coops with the same rule, stage and
+    // supplied weapons in the 48 hours (2 hours period) will be regarded in the same group.
+    if (current.battle && group.battles) {
+      const mode = current.battle.vsHistoryDetail!.vsMode.id;
+      if (mode === group.battles[0].vsHistoryDetail!.vsMode.id) {
+        let gap = 0;
+        switch (mode) {
+          case "VnNNb2RlLTE=":
+          case "VnNNb2RlLTY=":
+          case "VnNNb2RlLTc=":
+          case "VnNNb2RlLTI=":
+          case "VnNNb2RlLTUx":
+          case "VnNNb2RlLTM=":
+          case "VnNNb2RlLTQ=":
+            gap = 7200000;
+            break;
+          case "VnNNb2RlLTg=":
+            gap = 86400000;
+            break;
+          case "VnNNb2RlLTU=":
+            gap = Number.MAX_VALUE;
+            break;
+          default:
+            gap = 7200000;
+            break;
+        }
+        if (
+          Math.floor(dayjs(current.battle.vsHistoryDetail!.playedTime).valueOf() / gap) ===
+          Math.floor(dayjs(group.battles[0].vsHistoryDetail!.playedTime).valueOf() / gap)
+        ) {
+          return true;
+        }
+      }
+    }
+    if (current.coop && group.coops) {
+      if (
+        current.coop.coopHistoryDetail!.rule === group.coops[0].coopHistoryDetail!.rule &&
+        current.coop.coopHistoryDetail!.coopStage.id ===
+          group.coops[0].coopHistoryDetail!.coopStage.id &&
+        current.coop
+          .coopHistoryDetail!.weapons.map((weapon) => getImageHash(weapon.image.url))
+          .join() ===
+          group.coops[0]
+            .coopHistoryDetail!.weapons.map((weapon) => getImageHash(weapon.image.url))
+            .join() &&
+        Math.ceil(dayjs(current.coop.coopHistoryDetail!.playedTime).valueOf() / 7200000) -
+          Math.floor(dayjs(group.coops[0].coopHistoryDetail!.playedTime).valueOf() / 7200000) <=
+          24
+      ) {
+        return true;
+      }
+    }
+    return false;
+  };
+
   const loadResults = async (length: number) => {
     setLoadingMore(true);
     let offset: number, limit: number;
-    if (results !== undefined && results.length >= 20 && length > results.length) {
-      offset = results.length;
-      limit = length - results.length;
+    if (groups !== undefined && count >= 20 && length > count) {
+      offset = count;
+      limit = length - count;
     } else {
       offset = 0;
       limit = length;
     }
 
+    // Query results and merge into groups.
     const details = (await Database.query(offset, limit, filterRef.current)).map((record) => {
       if (record.mode === "salmon_run") {
         return {
@@ -342,15 +407,63 @@ const MainView = () => {
       }
       return { battle: JSON.parse(record.detail) as VsHistoryDetailResult };
     });
-    if (results !== undefined && results.length >= 20 && length > results.length) {
-      setResults(results.concat(details));
+    const newGroups: GroupProps[] = [];
+    let group: GroupProps = {};
+    for (const detail of details) {
+      if (canGroup(detail, group)) {
+        if (detail.battle) {
+          group.battles!.push(detail.battle);
+        } else {
+          group.coops!.push(detail.coop);
+        }
+      } else {
+        if (group.battles || group.coops) {
+          newGroups.push(group);
+        }
+        if (detail.battle) {
+          group = { battles: [detail.battle] };
+        } else {
+          group = { coops: [detail.coop] };
+        }
+      }
+    }
+    if (group.battles || group.coops) {
+      newGroups.push(group);
+    }
+
+    // Set groups.
+    if (groups !== undefined && count >= 20 && length > count) {
+      let final = groups;
+      const lastGroupIndex = groups.length - 1;
+      if (
+        newGroups.length > 0 &&
+        groups.length > 0 &&
+        newGroups[0].battles &&
+        canGroup({ battle: newGroups[0].battles[0] }, groups[lastGroupIndex])
+      ) {
+        final = groups.concat(newGroups.slice(1));
+        final[lastGroupIndex].battles = final[lastGroupIndex].battles!.concat(
+          newGroups[0].battles!
+        );
+      } else if (
+        newGroups.length > 0 &&
+        groups.length > 0 &&
+        newGroups[0].coops &&
+        canGroup({ coop: newGroups[0].coops[0] }, groups[lastGroupIndex])
+      ) {
+        final = groups.concat(newGroups.slice(1));
+        final[lastGroupIndex].coops = final[lastGroupIndex].coops!.concat(newGroups[0].coops!);
+      } else {
+        final = groups.concat(newGroups);
+      }
+      setGroups(final);
     } else {
-      setResults(details);
-      const [count, newTotal] = await Promise.all([
+      setGroups(newGroups);
+      const [filtered, newTotal] = await Promise.all([
         Database.count(filterRef.current),
         Database.count(),
       ]);
-      setCount(count);
+      setFiltered(filtered);
       setTotal(newTotal);
       if (newTotal !== total) {
         const filterOptions = await Database.queryFilterOptions();
@@ -965,7 +1078,7 @@ const MainView = () => {
     if (allResultsShown) {
       return;
     }
-    await loadResults(results!.length + 20);
+    await loadResults(count + 20);
   };
   const onShowMoreSelected = async (key: TimeRange) => {
     let num = 20;
@@ -1006,7 +1119,7 @@ const MainView = () => {
         );
         break;
       case TimeRange.AllResults:
-        num = count;
+        num = filtered;
         break;
     }
     await loadResults(num);
@@ -1015,7 +1128,7 @@ const MainView = () => {
     if (allResultsShown) {
       return;
     }
-    await loadResults(count);
+    await loadResults(filtered);
   };
   const onGetWebServiceToken = async () => {
     // Update versions.
@@ -1593,7 +1706,7 @@ const MainView = () => {
       <Animated.View style={[ViewStyles.f, { opacity: fade }]}>
         {/* HACK: it is a little bit weird concentrating on result list. */}
         <ResultView
-          results={results}
+          groups={groups}
           refreshControl={
             <RefreshControl
               progressViewOffset={insets.top}
@@ -1709,18 +1822,18 @@ const MainView = () => {
                   header={
                     <VStack center>
                       <Marquee style={ViewStyles.mb2}>
-                        {count === total
-                          ? t("n_total_results_showed", { n: results?.length ?? 0, total })
+                        {filtered === total
+                          ? t("n_total_results_showed", { n: count, total })
                           : t("n_filtered_total_filtered_results_showed", {
-                              n: results?.length ?? 0,
-                              filtered: count,
+                              n: count,
+                              filtered,
                               total,
                             })}
                       </Marquee>
                     </VStack>
                   }
                   style={[
-                    (results?.length ?? 0) <= 20 && !allResultsShown && ViewStyles.mb2,
+                    count <= 20 && !allResultsShown && ViewStyles.mb2,
                     ViewStyles.rt0,
                     ViewStyles.rb2,
                     { height: 64 },
@@ -1731,7 +1844,7 @@ const MainView = () => {
                   onSelected={onShowMoreSelected as (_: string) => void}
                   onPress={onShowMorePress}
                 />
-                {(results?.length ?? 0) <= 20 && !allResultsShown && (
+                {count <= 20 && !allResultsShown && (
                   <HStack style={ViewStyles.c}>
                     <Icon
                       name="info"
@@ -1752,14 +1865,14 @@ const MainView = () => {
               >
                 <HStack flex center style={ViewStyles.px4}>
                   <StatsView
-                    results={results}
+                    groups={groups}
                     loadingMore={loadingMore}
                     allResultsShown={allResultsShown}
                     onShowAllResultsPress={onShowAllResultsPress}
                     style={ViewStyles.mr2}
                   />
                   <TrendsView
-                    results={results}
+                    groups={groups}
                     loadingMore={loadingMore}
                     allResultsShown={allResultsShown}
                     onShowAllResultsPress={onShowAllResultsPress}

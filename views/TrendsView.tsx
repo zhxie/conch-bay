@@ -33,13 +33,13 @@ import {
 import t from "../i18n";
 import { CoopHistoryDetailResult, VsHistoryDetailResult } from "../models/types";
 import { burnColor, countBattles, countCoops } from "../utils/ui";
-import { ResultProps } from "./ResultView";
+import { GroupProps, ResultProps } from "./ResultView";
 
 dayjs.extend(quarterOfYear);
 dayjs.extend(utc);
 
 interface TrendViewProps {
-  results?: ResultProps[];
+  groups?: GroupProps[];
   loadingMore: boolean;
   allResultsShown: boolean;
   onShowAllResultsPress: () => void;
@@ -168,17 +168,31 @@ const TrendsView = (props: TrendViewProps) => {
     return result;
   };
 
+  const results = useMemo(() => {
+    if (!props.groups) {
+      return undefined;
+    }
+    const results: ResultProps[] = [];
+    for (const group of props.groups) {
+      if (group.battles) {
+        results.push(...group.battles!.map((battle) => ({ battle: battle })));
+      } else {
+        results.push(...group.coops!.map((coop) => ({ coop: coop })));
+      }
+    }
+    return results;
+  }, [props.groups]);
   const battles = useMemo(
-    () => props.results?.filter((result) => result.battle).map((result) => result.battle!),
-    [props.results]
+    () => results?.filter((result) => result.battle).map((result) => result.battle!),
+    [results]
   );
   const battleGroups = useMemo(
     () => (battles ? split(battles, point, group) : []),
     [battles, group]
   );
   const coops = useMemo(
-    () => props.results?.filter((result) => result.coop).map((result) => result.coop!),
-    [props.results]
+    () => results?.filter((result) => result.coop).map((result) => result.coop!),
+    [results]
   );
   const coopGroups = useMemo(() => (coops ? split(coops, point, group) : []), [coops, group]);
 

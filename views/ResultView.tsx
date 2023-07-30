@@ -83,8 +83,12 @@ export interface ResultProps {
   battle?: VsHistoryDetailResult;
   coop?: CoopHistoryDetailResult;
 }
+export interface GroupProps {
+  battles?: VsHistoryDetailResult[];
+  coops?: CoopHistoryDetailResult[];
+}
 interface ResultViewProps {
-  results?: ResultProps[];
+  groups?: GroupProps[];
   refreshControl: React.ReactElement<RefreshControlProps>;
   header: React.ReactElement;
   footer: React.ReactElement;
@@ -117,10 +121,24 @@ const ResultView = (props: ResultViewProps) => {
   const willDisplayNext = useRef<number>();
   const [hidePlayerNames, setHidePlayerNames] = useState(false);
 
+  const results = useMemo(() => {
+    if (!props.groups) {
+      return undefined;
+    }
+    const results: ResultProps[] = [];
+    for (const group of props.groups) {
+      if (group.battles) {
+        results.push(...group.battles!.map((battle) => ({ battle: battle })));
+      } else {
+        results.push(...group.coops!.map((coop) => ({ coop: coop })));
+      }
+    }
+    return results;
+  }, [props.groups]);
   const findIndex = () => {
     const id = result?.battle?.vsHistoryDetail?.id || result?.coop?.coopHistoryDetail?.id;
     if (id) {
-      return props.results?.findIndex(
+      return results?.findIndex(
         (result) =>
           result.battle?.vsHistoryDetail?.id === id || result.coop?.coopHistoryDetail?.id === id
       );
@@ -132,7 +150,7 @@ const ResultView = (props: ResultViewProps) => {
       return undefined;
     }
     return j >= 0 ? j : undefined;
-  }, [props.results, result]);
+  }, [results, result]);
 
   const isVsPlayerDragon = (player: VsPlayer) => {
     switch (player.festDragonCert as FestDragonCert) {
@@ -384,11 +402,8 @@ const ResultView = (props: ResultViewProps) => {
   };
   const onShowNextResultPress = () => {
     if (i !== undefined && i - 1 >= 0) {
-      if (
-        (displayBattle && props.results![i - 1].battle) ||
-        (displayCoop && props.results![i - 1].coop)
-      ) {
-        setResult(props.results![i - 1]);
+      if ((displayBattle && results![i - 1].battle) || (displayCoop && results![i - 1].coop)) {
+        setResult(results![i - 1]);
         return;
       }
       willDisplayNext.current = i - 1;
@@ -397,12 +412,9 @@ const ResultView = (props: ResultViewProps) => {
     setDisplayCoop(false);
   };
   const onShowPreviousResultPress = () => {
-    if (i !== undefined && i + 1 < props.results!.length) {
-      if (
-        (displayBattle && props.results![i + 1].battle) ||
-        (displayCoop && props.results![i + 1].coop)
-      ) {
-        setResult(props.results![i + 1]);
+    if (i !== undefined && i + 1 < results!.length) {
+      if ((displayBattle && results![i + 1].battle) || (displayCoop && results![i + 1].coop)) {
+        setResult(results![i + 1]);
         return;
       }
       willDisplayNext.current = i + 1;
@@ -442,11 +454,11 @@ const ResultView = (props: ResultViewProps) => {
       if (willDisplayNext.current < 0) {
         setDisplayResult(true);
       } else {
-        if (props.results?.[willDisplayNext.current].battle) {
-          setResult({ battle: props.results![willDisplayNext.current].battle });
+        if (results?.[willDisplayNext.current].battle) {
+          setResult({ battle: results![willDisplayNext.current].battle });
           setDisplayBattle(true);
-        } else if (props.results?.[willDisplayNext.current].coop) {
-          setResult({ coop: props.results![willDisplayNext.current].coop });
+        } else if (results?.[willDisplayNext.current].coop) {
+          setResult({ coop: results![willDisplayNext.current].coop });
           setDisplayCoop(true);
         }
       }
@@ -547,7 +559,7 @@ const ResultView = (props: ResultViewProps) => {
     <VStack flex>
       <FlashList
         refreshControl={props.refreshControl}
-        data={props.results}
+        data={results}
         keyExtractor={(result) => {
           if (result.battle) {
             return result.battle.vsHistoryDetail!.id;
@@ -879,7 +891,7 @@ const ResultView = (props: ResultViewProps) => {
             )}
             {i !== undefined && (
               <PureIconButton
-                isDisabled={i === (props.results?.length ?? 1) - 1}
+                isDisabled={i === (results?.length ?? 1) - 1}
                 size={24}
                 icon="chevron-right"
                 hitSlop={8}
@@ -1209,7 +1221,7 @@ const ResultView = (props: ResultViewProps) => {
             )}
             {i !== undefined && (
               <PureIconButton
-                isDisabled={i === (props.results?.length ?? 1) - 1}
+                isDisabled={i === (results?.length ?? 1) - 1}
                 size={24}
                 icon="chevron-right"
                 hitSlop={8}
