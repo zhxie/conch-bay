@@ -176,6 +176,8 @@ const en = {
   splatted: "Splatted",
   be_splatted: "Be Splatted",
   special_weapon_uses: "Special Weapon Uses",
+  stage_stats: "Stage Stats",
+  weapon_stats: "Weapon Stats",
   clear: "Clear!",
   failure: "Defeat",
   waves_cleared: "Waves Cleared",
@@ -185,6 +187,8 @@ const en = {
   power_eggs_collected: "Power Eggs Collected",
   rescued: "Rescued",
   be_rescued: "Be Rescued",
+  wave_stats: "Wave Stats",
+  special_weapon_stats: "Special Weapon Stats",
   show_all_results: "Show All Results",
   stats_notice:
     "Statistics from currently showed results. The number in parentheses is over 1-minute average in battles and over each shift average in Salmon Run.",

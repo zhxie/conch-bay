@@ -176,6 +176,8 @@ const ja = {
   splatted: "たおした",
   be_splatted: "たおされた",
   special_weapon_uses: "スペシャルウェポン発動",
+  stage_stats: "ステージのきろく",
+  weapon_stats: "ブキのきろく",
   clear: "Clear!!",
   failure: "Failure",
   waves_cleared: "クリアWAVE",
@@ -185,6 +187,8 @@ const ja = {
   power_eggs_collected: "集めたイクラ",
   rescued: "たすけた",
   be_rescued: "たすけてもらった",
+  wave_stats: "WAVEのきろく",
+  special_weapon_stats: "スペシャルウェポンのきろく",
   show_all_results: "すべてのリザルトを見る",
   stats_notice:
     "現在表示されているリザルトからの統計。カッコ内の数字はバトルでは1分あたり、サーモンランでは各バイトのアベレージです。",

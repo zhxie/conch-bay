@@ -171,6 +171,8 @@ const zhHans = {
   splatted: "击倒",
   be_splatted: "阵亡",
   special_weapon_uses: "特殊武器发动",
+  stage_stats: "场地记录",
+  weapon_stats: "武器记录",
   clear: "Clear!!",
   failure: "Failure",
   waves_cleared: "通关的WAVE",
@@ -180,6 +182,8 @@ const zhHans = {
   power_eggs_collected: "收集的鲑鱼卵",
   rescued: "救援",
   be_rescued: "被救助",
+  wave_stats: "WAVE记录",
+  special_weapon_stats: "特殊武器记录",
   show_all_results: "显示全部记录",
   stats_notice: "由当前已显示的记录统计。括号内的数字对战为每分钟，鲑鱼跑为每场打工的平均值。",
   // Trend.

@@ -106,6 +106,9 @@ const StatsView = (props: StatsViewProps) => {
     }
     return formatTotalAndAverage(kill, count);
   };
+  const formatWinRateAndTotal = (win: number, total: number) => {
+    return `${win} (${((win / total) * 100).toFixed(1)}%) / ${total}`;
+  };
   const formatTotalAndAverageGoldenEggs = (deliver: number, assist: number, count: number) => {
     if (deliver + assist === 0) {
       return <Text numberOfLines={1}>0</Text>;
@@ -123,6 +126,18 @@ const StatsView = (props: StatsViewProps) => {
         )
       </Text>
     );
+  };
+  const formatWaterLevel = (level: number) => {
+    switch (level) {
+      case 0:
+        return t("low_tide");
+      case 1:
+        return t("normal");
+      case 2:
+        return t("high_tide");
+      default:
+        throw new Error(`unexpected water level ${level}`);
+    }
   };
 
   const onStatsPress = () => {
@@ -188,11 +203,76 @@ const StatsView = (props: StatsViewProps) => {
                   {formatTotalAndAverage(battleStats.self.death, battleStats.duration / 60)}
                 </Text>
               </Display>
-              <Display isLast title={t("special_weapon_uses")}>
+              <Display isLast={battleStats.stages.length === 0} title={t("special_weapon_uses")}>
                 <Text numberOfLines={1}>
                   {formatTotalAndAverage(battleStats.self.special, battleStats.duration / 60)}
                 </Text>
               </Display>
+              {battleStats.stages.length > 0 && (
+                <VStack>
+                  <AccordionDisplay
+                    title={t("stage_stats")}
+                    subChildren={battleStats.stages.map((stage) => (
+                      <AccordionDisplay
+                        key={stage.id}
+                        level={1}
+                        title={t(stage.id)}
+                        subChildren={stage.rules.map((rule) => (
+                          <Display key={rule.id} level={2} title={t(rule.id)}>
+                            <Text numberOfLines={1}>
+                              {formatWinRateAndTotal(rule.win, rule.win + rule.lose)}
+                            </Text>
+                          </Display>
+                        ))}
+                      >
+                        <Text numberOfLines={1}>
+                          {formatWinRateAndTotal(
+                            stage.rules.reduce((prev, current) => prev + current.win, 0),
+                            stage.rules.reduce(
+                              (prev, current) => prev + current.win + current.lose,
+                              0
+                            )
+                          )}
+                        </Text>
+                      </AccordionDisplay>
+                    ))}
+                  />
+                  <AccordionDisplay
+                    isLast
+                    title={t("weapon_stats")}
+                    subChildren={battleStats.weapons.map((weapon, i, weapons) => (
+                      <AccordionDisplay
+                        key={weapon.id}
+                        isLast={i === weapons.length - 1}
+                        level={1}
+                        title={t(weapon.id)}
+                        subChildren={weapon.rules.map((rule, j, rules) => (
+                          <Display
+                            key={rule.id}
+                            isLast={i === weapons.length - 1 && j === rules.length - 1}
+                            level={2}
+                            title={t(rule.id)}
+                          >
+                            <Text numberOfLines={1}>
+                              {formatWinRateAndTotal(rule.win, rule.win + rule.lose)}
+                            </Text>
+                          </Display>
+                        ))}
+                      >
+                        <Text numberOfLines={1}>
+                          {formatWinRateAndTotal(
+                            weapon.rules.reduce((prev, current) => prev + current.win, 0),
+                            weapon.rules.reduce(
+                              (prev, current) => prev + current.win + current.lose,
+                              0
+                            )
+                          )}
+                        </Text>
+                      </AccordionDisplay>
+                    ))}
+                  />
+                </VStack>
+              )}
             </VStack>
           )}
         </VStack>
@@ -208,69 +288,118 @@ const StatsView = (props: StatsViewProps) => {
               <Display title={t("failure")}>
                 <Text numberOfLines={1}>{coopStats.count - coopStats.clear}</Text>
               </Display>
-              <VStack>
-                <Display title={t("waves_cleared")}>
-                  <Text numberOfLines={1}>
-                    {formatTotalAndAverage(coopStats.wave, coopStats.count - coopStats.deemed)}
-                  </Text>
-                </Display>
-                <AccordionDisplay
-                  title={t("boss_salmonids_defeated")}
-                  subChildren={coopStats.bosses.map((boss) => (
-                    <Display key={boss.id} level={1} title={t(boss.id)}>
-                      <Text numberOfLines={1}>{boss.defeat}</Text>
-                    </Display>
-                  ))}
-                >
-                  <Text numberOfLines={1}>
-                    {formatTotalAndAverage(
-                      coopStats.self.defeat,
-                      coopStats.count - coopStats.deemed
-                    )}
-                  </Text>
-                </AccordionDisplay>
-                <AccordionDisplay
-                  title={t("king_salmonids_defeated")}
-                  subChildren={coopStats.kings.map((king) => (
-                    <Display key={king.id} level={1} title={t(king.id)}>
-                      <Text numberOfLines={1}>{king.defeat}</Text>
-                    </Display>
-                  ))}
-                >
-                  <Text numberOfLines={1}>{coopStats.king}</Text>
-                </AccordionDisplay>
-                <Display title={t("golden_eggs_collected")}>
-                  {formatTotalAndAverageGoldenEggs(
-                    coopStats.self.golden,
-                    coopStats.self.assist,
+              <Display title={t("waves_cleared")}>
+                <Text numberOfLines={1}>
+                  {formatTotalAndAverage(coopStats.wave, coopStats.count - coopStats.deemed)}
+                </Text>
+              </Display>
+              <AccordionDisplay
+                title={t("boss_salmonids_defeated")}
+                subChildren={coopStats.bosses.map((boss) => (
+                  <Display key={boss.id} level={1} title={t(boss.id)}>
+                    <Text numberOfLines={1}>{boss.defeat}</Text>
+                  </Display>
+                ))}
+              >
+                <Text numberOfLines={1}>
+                  {formatTotalAndAverage(coopStats.self.defeat, coopStats.count - coopStats.deemed)}
+                </Text>
+              </AccordionDisplay>
+              <AccordionDisplay
+                title={t("king_salmonids_defeated")}
+                subChildren={coopStats.kings.map((king) => (
+                  <Display key={king.id} level={1} title={t(king.id)}>
+                    <Text numberOfLines={1}>{king.defeat}</Text>
+                  </Display>
+                ))}
+              >
+                <Text numberOfLines={1}>{coopStats.king}</Text>
+              </AccordionDisplay>
+              <Display title={t("golden_eggs_collected")}>
+                {formatTotalAndAverageGoldenEggs(
+                  coopStats.self.golden,
+                  coopStats.self.assist,
+                  coopStats.count - coopStats.deemed
+                )}
+              </Display>
+              <Display title={t("power_eggs_collected")}>
+                <Text numberOfLines={1}>
+                  {formatTotalAndAverage(coopStats.self.power, coopStats.count - coopStats.deemed)}
+                </Text>
+              </Display>
+              <Display title={t("rescued")}>
+                <Text numberOfLines={1}>
+                  {formatTotalAndAverage(coopStats.self.rescue, coopStats.count - coopStats.deemed)}
+                </Text>
+              </Display>
+              <Display isLast={coopStats.waves.length === 0} title={t("be_rescued")}>
+                <Text numberOfLines={1}>
+                  {formatTotalAndAverage(
+                    coopStats.self.rescued,
                     coopStats.count - coopStats.deemed
                   )}
-                </Display>
-                <Display title={t("power_eggs_collected")}>
-                  <Text numberOfLines={1}>
-                    {formatTotalAndAverage(
-                      coopStats.self.power,
-                      coopStats.count - coopStats.deemed
+                </Text>
+              </Display>
+              {coopStats.waves.length > 0 && (
+                <VStack>
+                  <AccordionDisplay
+                    title={t("wave_stats")}
+                    subChildren={coopStats.waves.map((wave) => (
+                      <AccordionDisplay
+                        key={wave.id}
+                        level={1}
+                        title={t(wave.id)}
+                        subChildren={wave.levels.map((level) => (
+                          <Display key={level.id} level={2} title={formatWaterLevel(level.id)}>
+                            <Text numberOfLines={1}>
+                              {formatWinRateAndTotal(level.clear, level.appear)}
+                            </Text>
+                          </Display>
+                        ))}
+                      >
+                        <Text numberOfLines={1}>
+                          {formatWinRateAndTotal(
+                            wave.levels.reduce((prev, current) => prev + current.clear, 0),
+                            wave.levels.reduce((prev, current) => prev + current.appear, 0)
+                          )}
+                        </Text>
+                      </AccordionDisplay>
+                    ))}
+                  />
+                  <AccordionDisplay
+                    title={t("stage_stats")}
+                    subChildren={coopStats.stages.map((stage) => (
+                      <Display key={stage.id} level={1} title={t(stage.id)}>
+                        <Text numberOfLines={1}>{stage.count}</Text>
+                      </Display>
+                    ))}
+                  />
+                  <AccordionDisplay
+                    title={t("weapon_stats")}
+                    subChildren={coopStats.weapons.map((weapon) => (
+                      <Display key={weapon.id} level={1} title={t(weapon.id)}>
+                        <Text numberOfLines={1}>{weapon.count}</Text>
+                      </Display>
+                    ))}
+                  />
+                  <AccordionDisplay
+                    isLast
+                    title={t("special_weapon_stats")}
+                    subChildren={coopStats.specialWeapons.map(
+                      (specialWeapon, i, specialWeapons) => (
+                        <Display
+                          key={specialWeapon.id}
+                          isLast={i === specialWeapons.length - 1}
+                          level={1}
+                          title={t(specialWeapon.id)}
+                        >
+                          <Text numberOfLines={1}>{specialWeapon.count}</Text>
+                        </Display>
+                      )
                     )}
-                  </Text>
-                </Display>
-                <Display title={t("rescued")}>
-                  <Text numberOfLines={1}>
-                    {formatTotalAndAverage(
-                      coopStats.self.rescue,
-                      coopStats.count - coopStats.deemed
-                    )}
-                  </Text>
-                </Display>
-                <Display isLast title={t("be_rescued")}>
-                  <Text numberOfLines={1}>
-                    {formatTotalAndAverage(
-                      coopStats.self.rescued,
-                      coopStats.count - coopStats.deemed
-                    )}
-                  </Text>
-                </Display>
-              </VStack>
+                  />
+                </VStack>
+              )}
             </VStack>
           )}
         </VStack>
