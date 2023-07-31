@@ -208,13 +208,13 @@ const ScheduleView = (props: ScheduleViewProps) => {
     const startTime = formatTime(schedule.startTime, false, withDate);
     const endTime = formatTime(schedule.endTime, true, withDate);
 
-    return `${startTime} - ${endTime}`;
+    return `${startTime} – ${endTime}`;
   };
   const formatSplatfestTimeRange = (splatfest: CurrentFest) => {
     const startTime = formatTime(splatfest.midtermTime, false, true);
     const endTime = formatTime(splatfest.endTime, true, true);
 
-    return `${startTime} - ${endTime}`;
+    return `${startTime} – ${endTime}`;
   };
   const formatStage = (stage: VsStage | CoopStage) => {
     return {
