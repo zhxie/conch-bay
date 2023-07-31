@@ -158,35 +158,39 @@ const StatsView = (props: StatsViewProps) => {
               <Display title={t("defeat")}>
                 <Text numberOfLines={1}>{battleStats.lose}</Text>
               </Display>
-              {battleStats.powerCount > 0 && (
+              {battleStats.power.count > 0 && (
                 <Display title={t("power")}>
                   <Text numberOfLines={1}>
-                    {formatPower(battleStats.power, battleStats.powerMax, battleStats.powerCount)}
+                    {formatPower(
+                      battleStats.power.total,
+                      battleStats.power.max,
+                      battleStats.power.count
+                    )}
                   </Text>
                 </Display>
               )}
               <Display title={t("turf_inked")}>
                 <Text numberOfLines={1}>
-                  {formatTotalAndAverage(battleStats.turf, battleStats.duration / 60)}
+                  {formatTotalAndAverage(battleStats.self.turf, battleStats.duration / 60)}
                 </Text>
               </Display>
               <Display title={t("splatted")}>
                 <Text numberOfLines={1}>
                   {formatTotalAndAverageKillAndAssist(
-                    battleStats.kill,
-                    battleStats.assist,
+                    battleStats.self.kill,
+                    battleStats.self.assist,
                     battleStats.duration / 60
                   )}
                 </Text>
               </Display>
               <Display title={t("be_splatted")}>
                 <Text numberOfLines={1}>
-                  {formatTotalAndAverage(battleStats.death, battleStats.duration / 60)}
+                  {formatTotalAndAverage(battleStats.self.death, battleStats.duration / 60)}
                 </Text>
               </Display>
               <Display isLast title={t("special_weapon_uses")}>
                 <Text numberOfLines={1}>
-                  {formatTotalAndAverage(battleStats.special, battleStats.duration / 60)}
+                  {formatTotalAndAverage(battleStats.self.special, battleStats.duration / 60)}
                 </Text>
               </Display>
             </VStack>
@@ -219,7 +223,10 @@ const StatsView = (props: StatsViewProps) => {
                   ))}
                 >
                   <Text numberOfLines={1}>
-                    {formatTotalAndAverage(coopStats.defeat, coopStats.count - coopStats.deemed)}
+                    {formatTotalAndAverage(
+                      coopStats.self.defeat,
+                      coopStats.count - coopStats.deemed
+                    )}
                   </Text>
                 </AccordionDisplay>
                 <AccordionDisplay
@@ -234,24 +241,33 @@ const StatsView = (props: StatsViewProps) => {
                 </AccordionDisplay>
                 <Display title={t("golden_eggs_collected")}>
                   {formatTotalAndAverageGoldenEggs(
-                    coopStats.golden,
-                    coopStats.assist,
+                    coopStats.self.golden,
+                    coopStats.self.assist,
                     coopStats.count - coopStats.deemed
                   )}
                 </Display>
                 <Display title={t("power_eggs_collected")}>
                   <Text numberOfLines={1}>
-                    {formatTotalAndAverage(coopStats.power, coopStats.count - coopStats.deemed)}
+                    {formatTotalAndAverage(
+                      coopStats.self.power,
+                      coopStats.count - coopStats.deemed
+                    )}
                   </Text>
                 </Display>
                 <Display title={t("rescued")}>
                   <Text numberOfLines={1}>
-                    {formatTotalAndAverage(coopStats.rescue, coopStats.count - coopStats.deemed)}
+                    {formatTotalAndAverage(
+                      coopStats.self.rescue,
+                      coopStats.count - coopStats.deemed
+                    )}
                   </Text>
                 </Display>
                 <Display isLast title={t("be_rescued")}>
                   <Text numberOfLines={1}>
-                    {formatTotalAndAverage(coopStats.rescued, coopStats.count - coopStats.deemed)}
+                    {formatTotalAndAverage(
+                      coopStats.self.rescued,
+                      coopStats.count - coopStats.deemed
+                    )}
                   </Text>
                 </Display>
               </VStack>

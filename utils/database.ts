@@ -260,7 +260,6 @@ export const query = async (offset: number, limit: number, filter?: FilterProps)
 export const queryAll = async () => {
   return await query(0, await count());
 };
-const WEAPON_IMAGE_MAP = new Map<string, string>();
 export const queryFilterOptions = async () => {
   const modeSql = "SELECT DISTINCT mode FROM result";
   const ruleSql = "SELECT DISTINCT rule FROM result";
@@ -276,14 +275,9 @@ export const queryFilterOptions = async () => {
   const weaponSet = new Set<string>();
   for (const row of weaponRecord.rows) {
     const weapon = row["weapon"];
-    if (WEAPON_IMAGE_MAP.size === 0) {
-      for (const weapon in weapons) {
-        WEAPON_IMAGE_MAP.set(weapons[weapon], weapon);
-      }
-    }
     for (const w of weapon.split(",")) {
       if (w.length > 0) {
-        weaponSet.add(WEAPON_IMAGE_MAP.get(w) ?? w);
+        weaponSet.add(weapons.images[w] ?? w);
       }
     }
   }

@@ -376,6 +376,14 @@ const zhHans = {
   V2VhcG9uLTI2OTAw: "熊先生印章防空伞",
   V2VhcG9uLTI3OTAw: "熊先生印章猎鱼弓",
   V2VhcG9uLTI4OTAw: "熊先生印章刮水刀",
+  // Special weapons (coop).
+  "U3BlY2lhbFdlYXBvbi0yMDAwNg==": "赞气弹",
+  "U3BlY2lhbFdlYXBvbi0yMDAwNw==": "弹跳声呐",
+  "U3BlY2lhbFdlYXBvbi0yMDAwOQ==": "喇叭镭射5.1ch",
+  "U3BlY2lhbFdlYXBvbi0yMDAxMA==": "喷射背包",
+  "U3BlY2lhbFdlYXBvbi0yMDAxMg==": "螃蟹坦克",
+  "U3BlY2lhbFdlYXBvbi0yMDAxMw==": "鲨鱼坐骑",
+  "U3BlY2lhbFdlYXBvbi0yMDAxNA==": "三重龙卷风",
   // Brands.
   "QnJhbmQtMA==": "战斗鱿鱼",
   "QnJhbmQtMQ==": "钢铁先锋",

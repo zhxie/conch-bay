@@ -376,6 +376,14 @@ const zhHant = {
   V2VhcG9uLTI2OTAw: "熊先生印章防空傘",
   V2VhcG9uLTI3OTAw: "熊先生印章獵魚弓",
   V2VhcG9uLTI4OTAw: "熊先生印章刮水刀",
+  // Special weapons (coop).
+  "U3BlY2lhbFdlYXBvbi0yMDAwNg==": "讚氣彈",
+  "U3BlY2lhbFdlYXBvbi0yMDAwNw==": "彈跳聲納",
+  "U3BlY2lhbFdlYXBvbi0yMDAwOQ==": "喇叭雷射5.1ch",
+  "U3BlY2lhbFdlYXBvbi0yMDAxMA==": "噴射背包",
+  "U3BlY2lhbFdlYXBvbi0yMDAxMg==": "螃蟹坦克",
+  "U3BlY2lhbFdlYXBvbi0yMDAxMw==": "鯊魚坐騎",
+  "U3BlY2lhbFdlYXBvbi0yMDAxNA==": "三重龍捲風",
   // Brands.
   "QnJhbmQtMA==": "戰鬥魷魚",
   "QnJhbmQtMQ==": "鋼鐵先鋒",

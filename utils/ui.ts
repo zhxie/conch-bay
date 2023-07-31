@@ -1,5 +1,6 @@
 import * as Convert from "color-convert";
 import { Color } from "../components";
+import specialWeaponsCoop from "../models/specialWeaponsCoop.json";
 import {
   VsMode,
   VsHistoryDetailResult,
@@ -9,6 +10,7 @@ import {
   Judgement,
   CoopHistoryDetailResult,
 } from "../models/types";
+import weaponList from "../models/weapons.json";
 import { decode64Index } from "./codec";
 import { getAuthorityAndPath } from "./url";
 
@@ -140,22 +142,38 @@ export const countBattles = (battles: VsHistoryDetailResult[]) => {
     count: 0,
     win: 0,
     lose: 0,
-    power: 0,
-    powerCount: 0,
-    powerMax: 0,
+    power: {
+      count: 0,
+      total: 0,
+      max: 0,
+    },
     duration: 0,
-    member: 0,
-    turf: 0,
-    turfTeam: 0,
-    kill: 0,
-    killTeam: 0,
-    assist: 0,
-    assistTeam: 0,
-    death: 0,
-    deathTeam: 0,
-    special: 0,
-    specialTeam: 0,
+    self: {
+      turf: 0,
+      kill: 0,
+      assist: 0,
+      death: 0,
+      special: 0,
+    },
+    team: {
+      member: 0,
+      turf: 0,
+      kill: 0,
+      assist: 0,
+      death: 0,
+      special: 0,
+    },
+    all: {
+      member: 0,
+      turf: 0,
+      kill: 0,
+      assist: 0,
+      death: 0,
+      special: 0,
+    },
   };
+  const stageMap = new Map<string, Map<string, { win: number; lose: number }>>(),
+    weaponMap = new Map<string, Map<string, { win: number; lose: number }>>();
   for (const battle of battles) {
     result.count += 1;
     switch (battle.vsHistoryDetail!.judgement as Judgement) {
@@ -172,9 +190,9 @@ export const countBattles = (battles: VsHistoryDetailResult[]) => {
     }
     const power = getVsPower(battle);
     if (power !== undefined && power !== null) {
-      result.power += power;
-      result.powerCount += 1;
-      result.powerMax = Math.max(result.powerMax, power);
+      result.power.count += 1;
+      result.power.total += power;
+      result.power.max = Math.max(result.power.max, power);
     }
     // Disconnected and draw should be skipped.
     if (
@@ -186,46 +204,118 @@ export const countBattles = (battles: VsHistoryDetailResult[]) => {
     }
     result.duration += battle.vsHistoryDetail!.duration;
     const selfPlayer = getVsSelfPlayer(battle);
-    result.turf += selfPlayer.paint;
-    result.kill += selfPlayer.result?.kill ?? 0;
-    result.assist += selfPlayer.result?.assist ?? 0;
-    result.death += selfPlayer.result?.death ?? 0;
-    result.special += selfPlayer.result?.special ?? 0;
+    result.self.turf += selfPlayer.paint;
+    result.self.kill += selfPlayer.result?.kill ?? 0;
+    result.self.assist += selfPlayer.result?.assist ?? 0;
+    result.self.death += selfPlayer.result?.death ?? 0;
+    result.self.special += selfPlayer.result?.special ?? 0;
     for (const player of battle.vsHistoryDetail!.myTeam.players) {
-      result.member += 1;
-      result.turfTeam += player.paint;
-      result.killTeam += player.result?.kill ?? 0;
-      result.assistTeam += player.result?.assist ?? 0;
-      result.deathTeam += player.result?.death ?? 0;
-      result.specialTeam += player.result?.special ?? 0;
+      result.team.member += 1;
+      result.team.turf += player.paint;
+      result.team.kill += player.result?.kill ?? 0;
+      result.team.assist += player.result?.assist ?? 0;
+      result.team.death += player.result?.death ?? 0;
+      result.team.special += player.result?.special ?? 0;
+    }
+    for (const team of [battle.vsHistoryDetail!.myTeam, ...battle.vsHistoryDetail!.otherTeams]) {
+      for (const player of team.players) {
+        result.all.member += 1;
+        result.all.turf += player.paint;
+        result.all.kill += player.result?.kill ?? 0;
+        result.all.assist += player.result?.assist ?? 0;
+        result.all.death += player.result?.death ?? 0;
+        result.all.special += player.result?.special ?? 0;
+      }
+    }
+    if (!stageMap.has(battle.vsHistoryDetail!.vsStage.id)) {
+      stageMap.set(battle.vsHistoryDetail!.vsStage.id, new Map());
+    }
+    if (!stageMap.get(battle.vsHistoryDetail!.vsStage.id)!.has(battle.vsHistoryDetail!.vsRule.id)) {
+      stageMap
+        .get(battle.vsHistoryDetail!.vsStage.id)!
+        .set(battle.vsHistoryDetail!.vsRule.id, { win: 0, lose: 0 });
+    }
+    if (!weaponMap.has(selfPlayer.weapon.id)) {
+      weaponMap.set(selfPlayer.weapon.id, new Map());
+    }
+    if (!weaponMap.get(selfPlayer.weapon.id)!.has(battle.vsHistoryDetail!.vsRule.id)) {
+      weaponMap
+        .get(selfPlayer.weapon.id)!
+        .set(battle.vsHistoryDetail!.vsRule.id, { win: 0, lose: 0 });
+    }
+    if (battle.vsHistoryDetail!.judgement === Judgement.WIN) {
+      stageMap
+        .get(battle.vsHistoryDetail!.vsStage.id)!
+        .get(battle.vsHistoryDetail!.vsRule.id)!.win += 1;
+      weaponMap.get(selfPlayer.weapon.id)!.get(battle.vsHistoryDetail!.vsRule.id)!.win += 1;
+    } else {
+      stageMap
+        .get(battle.vsHistoryDetail!.vsStage.id)!
+        .get(battle.vsHistoryDetail!.vsRule.id)!.lose += 1;
+      weaponMap.get(selfPlayer.weapon.id)!.get(battle.vsHistoryDetail!.vsRule.id)!.lose += 1;
     }
   }
-  return result;
+  const stages = Array.from(stageMap, (stage) => {
+    const rules = Array.from(stage[1], (rule) => ({
+      id: rule[0],
+      win: rule[1].win,
+      lose: rule[1].lose,
+    }));
+    rules.sort((a, b) => decode64Index(a.id) - decode64Index(b.id));
+    return {
+      id: stage[0],
+      rules,
+    };
+  });
+  stages.sort((a, b) => decode64Index(a.id) - decode64Index(b.id));
+  const weapons = Array.from(weaponMap, (weapon) => {
+    const rules = Array.from(weapon[1], (rule) => ({
+      id: rule[0],
+      win: rule[1].win,
+      lose: rule[1].lose,
+    }));
+    rules.sort((a, b) => decode64Index(a.id) - decode64Index(b.id));
+    return {
+      id: weapon[0],
+      rules,
+    };
+  });
+  weapons.sort((a, b) => decode64Index(a.id) - decode64Index(b.id));
+
+  return { ...result, stages, weapons };
 };
 export const countCoops = (coops: CoopHistoryDetailResult[]) => {
   const result = {
     count: 0,
     deemed: 0,
     clear: 0,
-    member: 0,
     wave: 0,
     hazardLevel: 0,
     king: 0,
-    defeat: 0,
-    defeatTeam: 0,
-    golden: 0,
-    goldenTeam: 0,
-    assist: 0,
-    assistTeam: 0,
-    power: 0,
-    powerTeam: 0,
-    rescue: 0,
-    rescueTeam: 0,
-    rescued: 0,
-    rescuedTeam: 0,
+    self: {
+      defeat: 0,
+      golden: 0,
+      assist: 0,
+      power: 0,
+      rescue: 0,
+      rescued: 0,
+    },
+    team: {
+      member: 0,
+      defeat: 0,
+      golden: 0,
+      assist: 0,
+      power: 0,
+      rescue: 0,
+      rescued: 0,
+    },
   };
-  const kingMap = new Map(),
-    bossMap = new Map();
+  const kingMap = new Map<string, { appear: number; defeat: number }>(),
+    bossMap = new Map<string, { appear: number; defeat: number; defeatTeam: number }>();
+  const stageMap = new Map<string, number>(),
+    weaponMap = new Map<string, number>(),
+    specialWeaponMap = new Map<string, number>();
+  const waveMap = new Map<string, Map<number, { appear: number; clear: number }>>();
   for (const coop of coops) {
     result.count += 1;
     // Disconnected should be skipped.
@@ -253,57 +343,140 @@ export const countCoops = (coops: CoopHistoryDetailResult[]) => {
     result.hazardLevel += coop.coopHistoryDetail!.dangerRate;
     if (coop.coopHistoryDetail!.bossResult) {
       if (!kingMap.has(coop.coopHistoryDetail!.bossResult.boss.id)) {
-        kingMap.set(coop.coopHistoryDetail!.bossResult.boss.id, { appear: 0, defeat: 0 });
+        kingMap.set(coop.coopHistoryDetail!.bossResult.boss.id, {
+          appear: 0,
+          defeat: 0,
+        });
       }
-      kingMap.get(coop.coopHistoryDetail!.bossResult.boss.id)["appear"] += 1;
+      kingMap.get(coop.coopHistoryDetail!.bossResult.boss.id)!.appear += 1;
       if (coop.coopHistoryDetail!.bossResult.hasDefeatBoss) {
         result.king += 1;
-        kingMap.get(coop.coopHistoryDetail!.bossResult.boss.id)["defeat"] += 1;
+        kingMap.get(coop.coopHistoryDetail!.bossResult.boss.id)!.defeat += 1;
       }
     }
-    result.defeat += coop.coopHistoryDetail!.myResult.defeatEnemyCount;
-    result.golden += coop.coopHistoryDetail!.myResult.goldenDeliverCount;
-    result.assist += coop.coopHistoryDetail!.myResult.goldenAssistCount;
-    result.power += coop.coopHistoryDetail!.myResult.deliverCount;
-    result.rescue += coop.coopHistoryDetail!.myResult.rescueCount;
-    result.rescued += coop.coopHistoryDetail!.myResult.rescuedCount;
+    result.self.defeat += coop.coopHistoryDetail!.myResult.defeatEnemyCount;
+    result.self.golden += coop.coopHistoryDetail!.myResult.goldenDeliverCount;
+    result.self.assist += coop.coopHistoryDetail!.myResult.goldenAssistCount;
+    result.self.power += coop.coopHistoryDetail!.myResult.deliverCount;
+    result.self.rescue += coop.coopHistoryDetail!.myResult.rescueCount;
+    result.self.rescued += coop.coopHistoryDetail!.myResult.rescuedCount;
     for (const memberResult of coop.coopHistoryDetail!.memberResults) {
-      result.member += 1;
-      result.defeatTeam += memberResult.defeatEnemyCount;
-      result.goldenTeam += memberResult.goldenDeliverCount;
-      result.assistTeam += memberResult.goldenAssistCount;
-      result.powerTeam += memberResult.deliverCount;
-      result.rescueTeam += memberResult.rescueCount;
-      result.rescuedTeam += memberResult.rescuedCount;
+      result.team.member += 1;
+      result.team.defeat += memberResult.defeatEnemyCount;
+      result.team.golden += memberResult.goldenDeliverCount;
+      result.team.assist += memberResult.goldenAssistCount;
+      result.team.power += memberResult.deliverCount;
+      result.team.rescue += memberResult.rescueCount;
+      result.team.rescued += memberResult.rescuedCount;
     }
     for (const enemyResult of coop.coopHistoryDetail!.enemyResults) {
       if (!bossMap.has(enemyResult.enemy.id)) {
         bossMap.set(enemyResult.enemy.id, { appear: 0, defeat: 0, defeatTeam: 0 });
       }
-      bossMap.get(enemyResult.enemy.id)["appear"] += enemyResult.popCount;
-      bossMap.get(enemyResult.enemy.id)["defeat"] += enemyResult.defeatCount;
-      bossMap.get(enemyResult.enemy.id)["defeatTeam"] += enemyResult.teamDefeatCount;
+      bossMap.get(enemyResult.enemy.id)!.appear += enemyResult.popCount;
+      bossMap.get(enemyResult.enemy.id)!.defeat += enemyResult.defeatCount;
+      bossMap.get(enemyResult.enemy.id)!.defeatTeam += enemyResult.teamDefeatCount;
+    }
+    stageMap.set(
+      coop.coopHistoryDetail!.coopStage.id,
+      (stageMap.get(coop.coopHistoryDetail!.coopStage.id) ?? 0) + 1
+    );
+    for (const weapon of coop.coopHistoryDetail!.myResult.weapons) {
+      const hash = getImageHash(weapon.image.url);
+      weaponMap.set(
+        weaponList.images[hash] ?? hash,
+        (weaponMap.get(weaponList.images[hash] ?? hash) ?? 0) + 1
+      );
+    }
+    const specialWeaponHash = getImageHash(
+      coop.coopHistoryDetail!.myResult.specialWeapon!.image.url
+    );
+    specialWeaponMap.set(
+      specialWeaponsCoop.images[specialWeaponHash] ?? specialWeaponHash,
+      (specialWeaponMap.get(specialWeaponsCoop.images[specialWeaponHash] ?? specialWeaponHash) ??
+        0) + 1
+    );
+    for (let i = 0; i < coop.coopHistoryDetail!.waveResults.length; i++) {
+      switch (coop.coopHistoryDetail!.rule as CoopRule) {
+        case CoopRule.REGULAR:
+        case CoopRule.BIG_RUN:
+          if (i >= 3) {
+            continue;
+          }
+          break;
+        case CoopRule.TEAM_CONTEST:
+          break;
+      }
+      const waveResult = coop.coopHistoryDetail!.waveResults[i];
+      if (!waveMap.has(waveResult.eventWave?.id ?? "-")) {
+        waveMap.set(waveResult.eventWave?.id ?? "-", new Map());
+      }
+      if (!waveMap.get(waveResult.eventWave?.id ?? "-")!.has(waveResult.waterLevel)) {
+        waveMap
+          .get(waveResult.eventWave?.id ?? "-")!
+          .set(waveResult.waterLevel, { appear: 0, clear: 0 });
+      }
+      waveMap.get(waveResult.eventWave?.id ?? "-")!.get(waveResult.waterLevel)!.appear += 1;
+      if (coop.coopHistoryDetail!.resultWave === 0 || coop.coopHistoryDetail!.resultWave > i + 1) {
+        waveMap.get(waveResult.eventWave?.id ?? "-")!.get(waveResult.waterLevel)!.clear += 1;
+      }
     }
   }
-  result.member += result.count;
-  result.defeatTeam += result.defeat;
-  result.goldenTeam += result.golden;
-  result.assistTeam += result.assist;
-  result.powerTeam += result.power;
-  result.rescueTeam += result.rescue;
-  result.rescuedTeam += result.rescued;
+  result.team.member += result.count;
+  result.team.defeat += result.self.defeat;
+  result.team.golden += result.self.golden;
+  result.team.assist += result.self.assist;
+  result.team.power += result.self.power;
+  result.team.rescue += result.self.rescue;
+  result.team.rescued += result.self.rescued;
   const kings = Array.from(kingMap, (king) => ({
     id: king[0],
-    appear: king[1]["appear"],
-    defeat: king[1]["defeat"],
+    appear: king[1].appear,
+    defeat: king[1].defeat,
   }));
   kings.sort((a, b) => decode64Index(a.id) - decode64Index(b.id));
   const bosses = Array.from(bossMap, (boss) => ({
     id: boss[0],
-    appear: boss[1]["appear"],
-    defeat: boss[1]["defeat"],
-    defeatTeam: boss[1]["defeatTeam"] + boss[1]["defeat"],
+    appear: boss[1].appear,
+    defeat: boss[1].defeat,
+    defeatTeam: boss[1].defeat + boss[1].defeatTeam,
   }));
   bosses.sort((a, b) => decode64Index(a.id) - decode64Index(b.id));
-  return { ...result, bosses, kings };
+  const stages = Array.from(stageMap, (stage) => ({
+    id: stage[0],
+    count: stage[1],
+  }));
+  stages.sort((a, b) => decode64Index(a.id) - decode64Index(b.id));
+  const weapons = Array.from(weaponMap, (weapon) => ({
+    id: weapon[0],
+    count: weapon[1],
+  }));
+  weapons.sort((a, b) => decode64Index(a.id) - decode64Index(b.id));
+  const specialWeapons = Array.from(specialWeaponMap, (specialWeapon) => ({
+    id: specialWeapon[0],
+    count: specialWeapon[1],
+  }));
+  specialWeapons.sort((a, b) => decode64Index(a.id) - decode64Index(b.id));
+  const waves = Array.from(waveMap, (wave) => {
+    const levels = Array.from(wave[1], (level) => ({
+      id: level[0],
+      appear: level[1].appear,
+      clear: level[1].clear,
+    }));
+    levels.sort((a, b) => a.id - b.id);
+    return {
+      id: wave[0],
+      levels,
+    };
+  });
+  waves.sort((a, b) => {
+    if (a.id === "-") {
+      return -1;
+    }
+    if (b.id === "-") {
+      return 1;
+    }
+    return decode64Index(a.id) - decode64Index(b.id);
+  });
+  return { ...result, bosses, kings, waves, stages, weapons, specialWeapons };
 };

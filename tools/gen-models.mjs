@@ -7,6 +7,7 @@ const VERSION = "410";
 
 const versionsFile = createWriteStream("models/versions.json", "utf-8");
 const weaponsFile = createWriteStream("models/weapons.json", "utf-8");
+const specialWeaponsCoopFile = createWriteStream("models/specialWeaponsCoop.json", "utf-8");
 
 function getAll(url, callback) {
   return get(url, (res) => {
@@ -50,11 +51,33 @@ getAll(
   (res) => {
     const json = JSON.parse(res);
     const weapons = {};
+    const images = {};
     for (const weapon of json) {
       const id = Buffer.from(`Weapon-${weapon["Id"]}`).toString("base64");
       const image = createHash("sha256").update(weapon["__RowId"]).digest("hex");
       weapons[id] = image;
+      images[image] = id;
     }
-    weaponsFile.write(JSON.stringify(weapons, undefined, 2) + "\n");
+    weaponsFile.write(JSON.stringify({ weapons, images }, undefined, 2) + "\n");
+  }
+);
+
+getAll(
+  `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${VERSION}/WeaponInfoSpecial.json`,
+  (res) => {
+    const json = JSON.parse(res);
+    const specialWeapons = {};
+    const images = {};
+    for (const weapon of json) {
+      if (weapon["__RowId"].endsWith("_Coop")) {
+        const id = Buffer.from(`SpecialWeapon-${weapon["Id"]}`).toString("base64");
+        const image = createHash("sha256")
+          .update(weapon["__RowId"].replace("_Coop", ""))
+          .digest("hex");
+        specialWeapons[id] = image;
+        images[image] = id;
+      }
+    }
+    specialWeaponsCoopFile.write(JSON.stringify({ specialWeapons, images }, undefined, 2) + "\n");
   }
 );

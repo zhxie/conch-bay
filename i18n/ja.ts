@@ -383,6 +383,14 @@ const ja = {
   V2VhcG9uLTI2OTAw: "クマサン印のシェルター",
   V2VhcG9uLTI3OTAw: "クマサン印のストリンガー",
   V2VhcG9uLTI4OTAw: "クマサン印のストリンガー",
+  // Special weapons (coop).
+  "U3BlY2lhbFdlYXBvbi0yMDAwNg==": "ナイスダマ",
+  "U3BlY2lhbFdlYXBvbi0yMDAwNw==": "ホップソナー",
+  "U3BlY2lhbFdlYXBvbi0yMDAwOQ==": "メガホンレーザー5.1ch",
+  "U3BlY2lhbFdlYXBvbi0yMDAxMA==": "ジェットパック",
+  "U3BlY2lhbFdlYXBvbi0yMDAxMg==": "カニタンク",
+  "U3BlY2lhbFdlYXBvbi0yMDAxMw==": "サメライド",
+  "U3BlY2lhbFdlYXBvbi0yMDAxNA==": "トリプルトルネード",
   // Brands.
   "QnJhbmQtMA==": "バトロイカ",
   "QnJhbmQtMQ==": "アイロニック",

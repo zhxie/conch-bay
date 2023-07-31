@@ -205,18 +205,18 @@ const TrendsView = (props: TrendViewProps) => {
         };
       case "POWER":
         return {
-          data: battleStats.map((stat) => rationalize(stat.power / stat.powerCount)),
+          data: battleStats.map((stat) => rationalize(stat.power.total / stat.power.count)),
           color: Color.AnarchyBattle,
         };
       case "TURF_INKED":
         return {
-          data: battleStats.map((stat) => rationalize(stat.turf / (stat.duration / 60))),
+          data: battleStats.map((stat) => rationalize(stat.self.turf / (stat.duration / 60))),
           color: Color.AccentColor,
         };
       case "TURF_INKED_TEAM_AVERAGE":
         return {
           data: battleStats.map((stat) =>
-            rationalize(stat.turfTeam / ((stat.member * stat.duration) / 60))
+            rationalize(stat.team.turf / ((stat.team.member * stat.duration) / 60))
           ),
           color: burnColor(Color.AccentColor),
           dash: true,
@@ -224,53 +224,55 @@ const TrendsView = (props: TrendViewProps) => {
       case "SPLATTED":
         return {
           data: battleStats.map((stat) =>
-            rationalize((stat.kill - stat.assist) / (stat.duration / 60))
+            rationalize((stat.self.kill - stat.self.assist) / (stat.duration / 60))
           ),
           color: Color.KillAndRescue,
         };
       case "SPLATTED_TEAM_AVERAGE":
         return {
           data: battleStats.map((stat) =>
-            rationalize((stat.killTeam - stat.assistTeam) / ((stat.member * stat.duration) / 60))
+            rationalize(
+              (stat.team.kill - stat.team.assist) / ((stat.team.member * stat.duration) / 60)
+            )
           ),
           color: burnColor(Color.KillAndRescue),
           dash: true,
         };
       case "SPLATTED_INCLUDING_ASSISTED":
         return {
-          data: battleStats.map((stat) => rationalize(stat.kill / (stat.duration / 60))),
+          data: battleStats.map((stat) => rationalize(stat.self.kill / (stat.duration / 60))),
           color: Color.KillAndRescue,
         };
       case "SPLATTED_INCLUDING_ASSISTED_TEAM_AVERAGE":
         return {
           data: battleStats.map((stat) =>
-            rationalize(stat.killTeam / ((stat.member * stat.duration) / 60))
+            rationalize(stat.team.kill / ((stat.team.member * stat.duration) / 60))
           ),
           color: burnColor(Color.KillAndRescue),
           dash: true,
         };
       case "BE_SPLATTED":
         return {
-          data: battleStats.map((stat) => rationalize(stat.death / (stat.duration / 60))),
+          data: battleStats.map((stat) => rationalize(stat.self.death / (stat.duration / 60))),
           color: Color.Death,
         };
       case "BE_SPLATTED_TEAM_AVERAGE":
         return {
           data: battleStats.map((stat) =>
-            rationalize(stat.deathTeam / ((stat.member * stat.duration) / 60))
+            rationalize(stat.team.death / ((stat.team.member * stat.duration) / 60))
           ),
           color: burnColor(Color.Death),
           dash: true,
         };
       case "SPECIAL_WEAPON_USES":
         return {
-          data: battleStats.map((stat) => rationalize(stat.special / (stat.duration / 60))),
+          data: battleStats.map((stat) => rationalize(stat.self.special / (stat.duration / 60))),
           color: Color.Special,
         };
       case "SPECIAL_WEAPON_USES_TEAM_AVERAGE":
         return {
           data: battleStats.map((stat) =>
-            rationalize(stat.specialTeam / ((stat.member * stat.duration) / 60))
+            rationalize(stat.team.special / ((stat.team.member * stat.duration) / 60))
           ),
           color: burnColor(Color.Special),
           dash: true,
@@ -300,71 +302,73 @@ const TrendsView = (props: TrendViewProps) => {
         };
       case "BOSS_SALMONIDS_DEFEATED":
         return {
-          data: coopStats.map((stat) => rationalize(stat.defeat / (stat.count - stat.deemed))),
+          data: coopStats.map((stat) => rationalize(stat.self.defeat / (stat.count - stat.deemed))),
           color: Color.KillAndRescue,
         };
       case "BOSS_SALMONIDS_DEFEATED_TEAM_AVERAGE":
         return {
-          data: coopStats.map((stat) => rationalize(stat.defeatTeam / stat.member)),
+          data: coopStats.map((stat) => rationalize(stat.team.defeat / stat.team.member)),
           color: burnColor(Color.KillAndRescue),
           dash: true,
         };
       case "GOLDEN_EGGS_COLLECTED":
         return {
-          data: coopStats.map((stat) => rationalize(stat.golden / (stat.count - stat.deemed))),
+          data: coopStats.map((stat) => rationalize(stat.self.golden / (stat.count - stat.deemed))),
           color: Color.GoldenEgg,
         };
       case "GOLDEN_EGGS_COLLECTED_TEAM_AVERAGE":
         return {
-          data: coopStats.map((stat) => rationalize(stat.goldenTeam / stat.member)),
+          data: coopStats.map((stat) => rationalize(stat.team.golden / stat.team.member)),
           color: burnColor(Color.GoldenEgg),
           dash: true,
         };
       case "GOLDEN_EGGS_COLLECTED_INCLUDING_ASSISTED":
         return {
           data: coopStats.map((stat) =>
-            rationalize((stat.golden + stat.assist) / (stat.count - stat.deemed))
+            rationalize((stat.self.golden + stat.self.assist) / (stat.count - stat.deemed))
           ),
           color: Color.GoldenEgg,
         };
       case "GOLDEN_EGGS_COLLECTED_INCLUDING_ASSISTED_TEAM_AVERAGE":
         return {
           data: coopStats.map((stat) =>
-            rationalize((stat.goldenTeam + stat.assistTeam) / stat.member)
+            rationalize((stat.team.golden + stat.team.assist) / stat.team.member)
           ),
           color: burnColor(Color.GoldenEgg),
           dash: true,
         };
       case "POWER_EGGS_COLLECTED":
         return {
-          data: coopStats.map((stat) => rationalize(stat.power / (stat.count - stat.deemed))),
+          data: coopStats.map((stat) => rationalize(stat.self.power / (stat.count - stat.deemed))),
           color: Color.PowerEgg,
         };
       case "POWER_EGGS_COLLECTED_TEAM_AVERAGE":
         return {
-          data: coopStats.map((stat) => rationalize(stat.powerTeam / stat.member)),
+          data: coopStats.map((stat) => rationalize(stat.team.power / stat.team.member)),
           color: burnColor(Color.PowerEgg),
           dash: true,
         };
       case "RESCUED":
         return {
-          data: coopStats.map((stat) => rationalize(stat.rescue / (stat.count - stat.deemed))),
+          data: coopStats.map((stat) => rationalize(stat.self.rescue / (stat.count - stat.deemed))),
           color: Color.KillAndRescue,
         };
       case "RESCUED_TEAM_AVERAGE":
         return {
-          data: coopStats.map((stat) => rationalize(stat.rescueTeam / stat.member)),
+          data: coopStats.map((stat) => rationalize(stat.team.rescue / stat.team.member)),
           color: burnColor(Color.KillAndRescue),
           dash: true,
         };
       case "BE_RESCUED":
         return {
-          data: coopStats.map((stat) => rationalize(stat.rescued / (stat.count - stat.deemed))),
+          data: coopStats.map((stat) =>
+            rationalize(stat.self.rescued / (stat.count - stat.deemed))
+          ),
           color: Color.Death,
         };
       case "BE_RESCUED_TEAM_AVERAGE":
         return {
-          data: coopStats.map((stat) => rationalize(stat.rescuedTeam / stat.member)),
+          data: coopStats.map((stat) => rationalize(stat.team.rescued / stat.team.member)),
           color: burnColor(Color.Death),
           dash: true,
         };

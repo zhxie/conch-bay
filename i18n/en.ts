@@ -383,6 +383,14 @@ const en = {
   V2VhcG9uLTI2OTAw: "Grizzco Brella",
   V2VhcG9uLTI3OTAw: "Grizzco Stringer",
   V2VhcG9uLTI4OTAw: "Grizzco Splatana",
+  // Special weapons (coop).
+  "U3BlY2lhbFdlYXBvbi0yMDAwNg==": "Booyah Bomb",
+  "U3BlY2lhbFdlYXBvbi0yMDAwNw==": "Wave Breaker",
+  "U3BlY2lhbFdlYXBvbi0yMDAwOQ==": "Killer Wail 5.1",
+  "U3BlY2lhbFdlYXBvbi0yMDAxMA==": "Inkjet",
+  "U3BlY2lhbFdlYXBvbi0yMDAxMg==": "Crab Tank",
+  "U3BlY2lhbFdlYXBvbi0yMDAxMw==": "Reefslider",
+  "U3BlY2lhbFdlYXBvbi0yMDAxNA==": "Triple Inkstrike",
   // Brands.
   "QnJhbmQtMA==": "SquidForce",
   "QnJhbmQtMQ==": "Zink",
