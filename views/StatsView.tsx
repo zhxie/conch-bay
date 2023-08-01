@@ -28,78 +28,31 @@ import { GroupProps, ResultProps } from "./ResultView";
 dayjs.extend(quarterOfYear);
 dayjs.extend(utc);
 
-interface StatsViewProps {
-  groups?: GroupProps[];
-  loadingMore: boolean;
-  allResultsShown: boolean;
-  onShowAllResultsPress: () => void;
-  style?: StyleProp<ViewStyle>;
+interface StatsModalProps {
+  results?: ResultProps[];
+  hideEmpty?: boolean;
+  isVisible: boolean;
+  onClose: () => void;
+  header?: React.ReactNode;
+  footer?: React.ReactNode;
 }
 
-const StatsView = (props: StatsViewProps) => {
-  const theme = useTheme();
-
-  const [stats, setStats] = useState(false);
-  const [group, setGroup] = useState(0);
-
-  const beginTime = useMemo(() => {
-    switch (group) {
-      case 0:
-        return 0;
-      case 1:
-        return dayjs().utc().startOf("day").valueOf();
-      case 2:
-        return dayjs().utc().startOf("week").valueOf();
-      case 3:
-        return dayjs().utc().startOf("month").valueOf();
-      case 4:
-        return dayjs().utc().startOf("quarter").subtract(1, "month").valueOf();
-      default:
-        throw new Error(`unexpected group ${group}`);
-    }
-  }, [group]);
-
-  const results = useMemo(() => {
-    if (!props.groups) {
-      return undefined;
-    }
-    const results: ResultProps[] = [];
-    for (const group of props.groups) {
-      if (group.battles) {
-        results.push(...group.battles!.map((battle) => ({ battle: battle })));
-      } else {
-        results.push(...group.coops!.map((coop) => ({ coop: coop })));
-      }
-    }
-    return results;
-  }, [props.groups]);
+const StatsModal = (props: StatsModalProps) => {
   const battleStats = useMemo(
     () =>
       countBattles(
-        (results
-          ?.map((result) => result.battle)
-          .filter((battle) => battle)
-          .filter(
-            (battle) =>
-              beginTime === 0 ||
-              new Date(battle!.vsHistoryDetail!.playedTime).valueOf() >= beginTime
-          ) ?? []) as VsHistoryDetailResult[]
+        (props.results?.map((result) => result.battle).filter((battle) => battle) ??
+          []) as VsHistoryDetailResult[]
       ),
-    [results, group]
+    [props.results]
   );
   const coopStats = useMemo(
     () =>
       countCoops(
-        (results
-          ?.map((result) => result.coop)
-          .filter((coop) => coop)
-          .filter(
-            (coop) =>
-              beginTime === 0 ||
-              new Date(coop!.coopHistoryDetail!.playedTime).valueOf() >= beginTime
-          ) ?? []) as CoopHistoryDetailResult[]
+        (props.results?.map((result) => result.coop).filter((coop) => coop) ??
+          []) as CoopHistoryDetailResult[]
       ),
-    [results, group]
+    [props.results]
   );
 
   const formatPower = (total: number, max: number, count: number) => {
@@ -154,28 +107,13 @@ const StatsView = (props: StatsViewProps) => {
     }
   };
 
-  const onStatsPress = () => {
-    setStats(true);
-  };
-  const onStatsClose = () => {
-    setStats(false);
-  };
-  const onGroupChange = (event: NativeSyntheticEvent<NativeSegmentedControlIOSChangeEvent>) => {
-    setGroup(event.nativeEvent.selectedSegmentIndex);
-  };
-
   return (
-    <Center style={props.style}>
-      <ToolButton icon="bar-chart-2" title={t("stats")} onPress={onStatsPress} />
-      <Modal isVisible={stats} onClose={onStatsClose} style={ViewStyles.modal2d}>
-        <VStack style={ViewStyles.mb2}>
-          <SegmentedControl
-            values={[t("all"), t("day"), t("week"), t("month"), t("season")]}
-            selectedIndex={group}
-            onChange={onGroupChange}
-          />
-        </VStack>
-        <VStack style={ViewStyles.mb2}>
+    <Modal isVisible={props.isVisible} onClose={props.onClose} style={ViewStyles.modal2d}>
+      {props.header}
+      {(!props.hideEmpty || battleStats.count > 0) && (
+        <VStack
+          style={(!!props.footer || !props.hideEmpty || coopStats.count > 0) && ViewStyles.mb2}
+        >
           <Display isFirst isLast={battleStats.count === 0} title={t("battle")}>
             <Text numberOfLines={1}>{battleStats.count}</Text>
           </Display>
@@ -290,7 +228,9 @@ const StatsView = (props: StatsViewProps) => {
             </VStack>
           )}
         </VStack>
-        <VStack style={ViewStyles.mb2}>
+      )}
+      {(!props.hideEmpty || coopStats.count > 0) && (
+        <VStack style={!!props.footer && ViewStyles.mb2}>
           <Display isFirst isLast={coopStats.count === 0} title={t("salmon_run")}>
             <Text numberOfLines={1}>{coopStats.count}</Text>
           </Display>
@@ -417,25 +357,116 @@ const StatsView = (props: StatsViewProps) => {
             </VStack>
           )}
         </VStack>
-        {!props.allResultsShown && (
+      )}
+      {props.footer}
+    </Modal>
+  );
+};
+
+interface StatsViewProps {
+  groups?: GroupProps[];
+  loadingMore: boolean;
+  allResultsShown: boolean;
+  onShowAllResultsPress: () => void;
+  style?: StyleProp<ViewStyle>;
+}
+
+const StatsView = (props: StatsViewProps) => {
+  const theme = useTheme();
+
+  const [stats, setStats] = useState(false);
+  const [group, setGroup] = useState(0);
+
+  const beginTime = useMemo(() => {
+    switch (group) {
+      case 0:
+        return 0;
+      case 1:
+        return dayjs().utc().startOf("day").valueOf();
+      case 2:
+        return dayjs().utc().startOf("week").valueOf();
+      case 3:
+        return dayjs().utc().startOf("month").valueOf();
+      case 4:
+        return dayjs().utc().startOf("quarter").subtract(1, "month").valueOf();
+      default:
+        throw new Error(`unexpected group ${group}`);
+    }
+  }, [group]);
+
+  const results = useMemo(() => {
+    if (!props.groups) {
+      return undefined;
+    }
+    const results: ResultProps[] = [];
+    for (const group of props.groups) {
+      if (group.battles) {
+        results.push(...group.battles!.map((battle) => ({ battle: battle })));
+      } else {
+        results.push(...group.coops!.map((coop) => ({ coop: coop })));
+      }
+    }
+    return results.filter((result) => {
+      if (beginTime === 0) {
+        return true;
+      }
+      if (result.battle) {
+        return new Date(result.battle.vsHistoryDetail!.playedTime).valueOf() >= beginTime;
+      }
+      return new Date(result.coop!.coopHistoryDetail!.playedTime).valueOf() >= beginTime;
+    });
+  }, [props.groups]);
+
+  const onStatsPress = () => {
+    setStats(true);
+  };
+  const onStatsClose = () => {
+    setStats(false);
+  };
+  const onGroupChange = (event: NativeSyntheticEvent<NativeSegmentedControlIOSChangeEvent>) => {
+    setGroup(event.nativeEvent.selectedSegmentIndex);
+  };
+
+  return (
+    <Center style={props.style}>
+      <ToolButton icon="bar-chart-2" title={t("stats")} onPress={onStatsPress} />
+      <StatsModal
+        results={results}
+        isVisible={stats}
+        onClose={onStatsClose}
+        header={
           <VStack style={ViewStyles.mb2}>
-            <Button
-              isLoading={props.loadingMore}
-              isLoadingText={t("loading_more")}
-              style={ViewStyles.accent}
-              textStyle={theme.reverseTextStyle}
-              onPress={props.onShowAllResultsPress}
-            >
-              <Marquee style={theme.reverseTextStyle}>{t("show_all_results")}</Marquee>
-            </Button>
+            <SegmentedControl
+              values={[t("all"), t("day"), t("week"), t("month"), t("season")]}
+              selectedIndex={group}
+              onChange={onGroupChange}
+            />
           </VStack>
-        )}
-        <VStack center>
-          <Marquee>{t("stats_notice")}</Marquee>
-        </VStack>
-      </Modal>
+        }
+        footer={
+          <VStack>
+            {!props.allResultsShown && (
+              <VStack style={ViewStyles.mb2}>
+                <Button
+                  isLoading={props.loadingMore}
+                  isLoadingText={t("loading_more")}
+                  style={ViewStyles.accent}
+                  textStyle={theme.reverseTextStyle}
+                  onPress={props.onShowAllResultsPress}
+                >
+                  <Marquee style={theme.reverseTextStyle}>{t("show_all_results")}</Marquee>
+                </Button>
+              </VStack>
+            )}
+            <VStack center>
+              <Marquee>{t("stats_notice")}</Marquee>
+            </VStack>
+          </VStack>
+        }
+      />
     </Center>
   );
 };
 
+export { StatsModal };
 export default StatsView;

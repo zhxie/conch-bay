@@ -5,16 +5,23 @@ import { HStack } from "./Stack";
 import { TextStyles, ViewStyles } from "./Styles";
 import Text from "./Text";
 
-interface GroupButtonProps {
+interface GroupButtonProps<T> {
+  group?: T;
   isFirst?: boolean;
   isLast?: boolean;
   title: string;
   subtitle: string;
   style?: StyleProp<ViewStyle>;
-  onPress?: () => void;
+  onPress?: (group: T) => void;
 }
 
-const GroupButton = (props: GroupButtonProps) => {
+const GroupButton = <T,>(props: GroupButtonProps<T>) => {
+  const onPress = () => {
+    if (props.group && props.onPress) {
+      props.onPress(props.group);
+    }
+  };
+
   return (
     <Pressable
       style={[
@@ -24,7 +31,7 @@ const GroupButton = (props: GroupButtonProps) => {
         props.isLast && ViewStyles.rb2,
         props.style,
       ]}
-      onPress={props.onPress}
+      onPress={onPress}
     >
       <HStack
         flex

@@ -77,6 +77,7 @@ import {
   getGearPadding,
   getVsPower,
 } from "../utils/ui";
+import { StatsModal } from "./StatsView";
 
 dayjs.extend(duration);
 
@@ -115,6 +116,7 @@ const ResultView = (props: ResultViewProps) => {
   const showBanner = useBanner();
 
   const [result, setResult] = useState<ResultProps>();
+  const [group, setGroup] = useState<ResultProps[]>();
   const [displayResult, setDisplayResult] = useState(false);
   const [displayBattle, setDisplayBattle] = useState(false);
   const [battlePlayer, setBattlePlayer] = useState<VsPlayer>();
@@ -124,6 +126,7 @@ const ResultView = (props: ResultViewProps) => {
   const [displayCoopPlayer, setDisplayCoopPlayer] = useState(false);
   const willDisplayNext = useRef<number>();
   const [hidePlayerNames, setHidePlayerNames] = useState(false);
+  const [displayGroup, setDisplayGroup] = useState(false);
 
   const results = useMemo(() => {
     if (!props.groups) {
@@ -500,6 +503,9 @@ const ResultView = (props: ResultViewProps) => {
       willDisplayNext.current = undefined;
     }
   };
+  const onDisplayGroupClose = () => {
+    setDisplayGroup(false);
+  };
 
   const onBattlePress = useCallback((battle: VsHistoryDetailResult) => {
     setResult({ battle });
@@ -509,6 +515,17 @@ const ResultView = (props: ResultViewProps) => {
     setResult({ coop });
     setDisplayCoop(true);
   }, []);
+  const onGroupPress = useCallback((group: GroupProps) => {
+    const results: ResultProps[] = [];
+    for (const battle of group.battles ?? []) {
+      results.push({ battle });
+    }
+    for (const coop of group.coops ?? []) {
+      results.push({ coop });
+    }
+    setGroup(results);
+    setDisplayGroup(true);
+  }, []);
 
   const renderItem = (result: ListRenderItemInfo<GroupAndResultProps>) => {
     if (result.item.battle) {
@@ -516,7 +533,7 @@ const ResultView = (props: ResultViewProps) => {
       return (
         <VStack flex style={ViewStyles.px4}>
           <BattleButton
-            battle={(result.item as ResultProps).battle}
+            battle={(result.item as GroupAndResultProps).battle}
             isFirst={false}
             isLast={
               groupsAndResults!.length > result.index + 1 &&
@@ -564,7 +581,7 @@ const ResultView = (props: ResultViewProps) => {
       return (
         <VStack flex style={ViewStyles.px4}>
           <CoopButton
-            coop={(result.item as ResultProps).coop}
+            coop={(result.item as GroupAndResultProps).coop}
             isFirst={false}
             isLast={
               groupsAndResults!.length > result.index + 1 &&
@@ -616,10 +633,12 @@ const ResultView = (props: ResultViewProps) => {
     return (
       <VStack flex style={ViewStyles.px4}>
         <GroupButton
+          group={(result.item as GroupAndResultProps).group}
           isFirst={true}
           isLast={false}
           title={t(mode)}
           subtitle={period}
+          onPress={onGroupPress}
           style={result.index !== 0 && { marginTop: 8 }}
         />
       </VStack>
@@ -1314,6 +1333,12 @@ const ResultView = (props: ResultViewProps) => {
           </>
         )}
       </Modal>
+      <StatsModal
+        results={group}
+        hideEmpty
+        isVisible={displayGroup}
+        onClose={onDisplayGroupClose}
+      />
     </VStack>
   );
 };
