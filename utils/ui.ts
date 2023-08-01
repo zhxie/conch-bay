@@ -399,28 +399,55 @@ export const countCoops = (coops: CoopHistoryDetailResult[]) => {
         0) + 1
     );
     for (let i = 0; i < coop.coopHistoryDetail!.waveResults.length; i++) {
-      let id = coop.coopHistoryDetail!.waveResults[i].eventWave?.id ?? "-";
+      const waveResult = coop.coopHistoryDetail!.waveResults[i];
       switch (coop.coopHistoryDetail!.rule as CoopRule) {
         case CoopRule.REGULAR:
         case CoopRule.BIG_RUN:
           // HACK: hardcoded the 4th wave is a king salmonid wave.
           if (i >= 3 && coop.coopHistoryDetail!.bossResult) {
-            id = coop.coopHistoryDetail!.bossResult.boss.id;
+            if (!waveMap.has(coop.coopHistoryDetail!.bossResult.boss.id)) {
+              waveMap.set(coop.coopHistoryDetail!.bossResult.boss.id, new Map());
+            }
+            if (
+              !waveMap.get(coop.coopHistoryDetail!.bossResult.boss.id)!.has(waveResult.waterLevel)
+            ) {
+              waveMap
+                .get(coop.coopHistoryDetail!.bossResult.boss.id)!
+                .set(waveResult.waterLevel, { appear: 0, clear: 0 });
+            }
+            waveMap
+              .get(coop.coopHistoryDetail!.bossResult.boss.id)!
+              .get(waveResult.waterLevel)!.appear += 1;
+            if (coop.coopHistoryDetail!.bossResult.hasDefeatBoss) {
+              waveMap
+                .get(coop.coopHistoryDetail!.bossResult.boss.id)!
+                .get(waveResult.waterLevel)!.clear += 1;
+            }
+            continue;
           }
           break;
         case CoopRule.TEAM_CONTEST:
           break;
       }
-      const waveResult = coop.coopHistoryDetail!.waveResults[i];
-      if (!waveMap.has(id)) {
-        waveMap.set(id, new Map());
+      if (!waveMap.has(coop.coopHistoryDetail!.waveResults[i].eventWave?.id ?? "-")) {
+        waveMap.set(coop.coopHistoryDetail!.waveResults[i].eventWave?.id ?? "-", new Map());
       }
-      if (!waveMap.get(id)!.has(waveResult.waterLevel)) {
-        waveMap.get(id)!.set(waveResult.waterLevel, { appear: 0, clear: 0 });
+      if (
+        !waveMap
+          .get(coop.coopHistoryDetail!.waveResults[i].eventWave?.id ?? "-")!
+          .has(waveResult.waterLevel)
+      ) {
+        waveMap
+          .get(coop.coopHistoryDetail!.waveResults[i].eventWave?.id ?? "-")!
+          .set(waveResult.waterLevel, { appear: 0, clear: 0 });
       }
-      waveMap.get(id)!.get(waveResult.waterLevel)!.appear += 1;
+      waveMap
+        .get(coop.coopHistoryDetail!.waveResults[i].eventWave?.id ?? "-")!
+        .get(waveResult.waterLevel)!.appear += 1;
       if (coop.coopHistoryDetail!.resultWave === 0 || coop.coopHistoryDetail!.resultWave > i + 1) {
-        waveMap.get(id)!.get(waveResult.waterLevel)!.clear += 1;
+        waveMap
+          .get(coop.coopHistoryDetail!.waveResults[i].eventWave?.id ?? "-")!
+          .get(waveResult.waterLevel)!.clear += 1;
       }
     }
   }
