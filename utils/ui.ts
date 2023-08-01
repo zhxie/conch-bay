@@ -331,7 +331,9 @@ export const countCoops = (coops: CoopHistoryDetailResult[]) => {
         switch (coop.coopHistoryDetail!.rule as CoopRule) {
           case CoopRule.REGULAR:
           case CoopRule.BIG_RUN:
-            result.wave -= 1;
+            if (coop.coopHistoryDetail!.bossResult) {
+              result.wave -= 1;
+            }
             break;
           case CoopRule.TEAM_CONTEST:
             break;
