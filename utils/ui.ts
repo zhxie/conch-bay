@@ -399,28 +399,28 @@ export const countCoops = (coops: CoopHistoryDetailResult[]) => {
         0) + 1
     );
     for (let i = 0; i < coop.coopHistoryDetail!.waveResults.length; i++) {
+      let id = coop.coopHistoryDetail!.waveResults[i].eventWave?.id ?? "-";
       switch (coop.coopHistoryDetail!.rule as CoopRule) {
         case CoopRule.REGULAR:
         case CoopRule.BIG_RUN:
-          if (i >= 3) {
-            continue;
+          // HACK: hardcoded the 4th wave is a king salmonid wave.
+          if (i >= 3 && coop.coopHistoryDetail!.bossResult) {
+            id = coop.coopHistoryDetail!.bossResult.boss.id;
           }
           break;
         case CoopRule.TEAM_CONTEST:
           break;
       }
       const waveResult = coop.coopHistoryDetail!.waveResults[i];
-      if (!waveMap.has(waveResult.eventWave?.id ?? "-")) {
-        waveMap.set(waveResult.eventWave?.id ?? "-", new Map());
+      if (!waveMap.has(id)) {
+        waveMap.set(id, new Map());
       }
-      if (!waveMap.get(waveResult.eventWave?.id ?? "-")!.has(waveResult.waterLevel)) {
-        waveMap
-          .get(waveResult.eventWave?.id ?? "-")!
-          .set(waveResult.waterLevel, { appear: 0, clear: 0 });
+      if (!waveMap.get(id)!.has(waveResult.waterLevel)) {
+        waveMap.get(id)!.set(waveResult.waterLevel, { appear: 0, clear: 0 });
       }
-      waveMap.get(waveResult.eventWave?.id ?? "-")!.get(waveResult.waterLevel)!.appear += 1;
+      waveMap.get(id)!.get(waveResult.waterLevel)!.appear += 1;
       if (coop.coopHistoryDetail!.resultWave === 0 || coop.coopHistoryDetail!.resultWave > i + 1) {
-        waveMap.get(waveResult.eventWave?.id ?? "-")!.get(waveResult.waterLevel)!.clear += 1;
+        waveMap.get(id)!.get(waveResult.waterLevel)!.clear += 1;
       }
     }
   }
@@ -477,6 +477,13 @@ export const countCoops = (coops: CoopHistoryDetailResult[]) => {
     }
     if (b.id === "-") {
       return 1;
+    }
+    // Move king salmonids behind events.
+    if (a.id.startsWith("Q29vcEVu") && !b.id.startsWith("Q29vcEVu")) {
+      return 1;
+    }
+    if (!a.id.startsWith("Q29vcEVu") && b.id.startsWith("Q29vcEVu")) {
+      return -1;
     }
     return decode64Index(a.id) - decode64Index(b.id);
   });
