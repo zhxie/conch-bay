@@ -19,7 +19,7 @@ interface BattleButtonProps<T> {
   dragon?: string;
   stage: string;
   weapon: string;
-  power?: number | null;
+  power?: string;
   kill?: number;
   assist?: number;
   death?: number;
@@ -56,7 +56,7 @@ const BattleButton = <T,>(props: BattleButtonProps<T>) => {
       subtitle={props.stage}
       subChildren={
         <Text numberOfLines={1}>{`${props.weapon}${
-          props.power !== undefined && props.power !== null ? ` (${props.power.toFixed(1)})` : ""
+          props.power !== undefined ? ` (${props.power})` : ""
         }`}</Text>
       }
       style={props.style}

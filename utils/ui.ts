@@ -133,6 +133,9 @@ export const getVsPower = (battle: VsHistoryDetailResult) => {
   }
   return undefined;
 };
+export const roundPower = (power: number) => {
+  return (Math.floor(power * 10) / 10).toFixed(1);
+};
 export const getVsSelfPlayer = (battle: VsHistoryDetailResult) => {
   return battle.vsHistoryDetail!.myTeam.players.find((player) => player.isMyself)!;
 };

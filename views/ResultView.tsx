@@ -76,6 +76,7 @@ import {
   getVsSelfPlayer,
   getGearPadding,
   getVsPower,
+  roundPower,
 } from "../utils/ui";
 import { StatsModal } from "./StatsView";
 
@@ -235,6 +236,12 @@ const ResultView = (props: ResultViewProps) => {
           return t("n_x_battle", { n: 333 });
       }
     }
+  };
+  const formatPower = (power: number | null | undefined) => {
+    if (power === null || power === undefined) {
+      return undefined;
+    }
+    return roundPower(power);
   };
   const formatName = (name: string, species: Enum<typeof Species>, isSelf: boolean) => {
     if (hidePlayerNames && !isSelf) {
@@ -551,7 +558,7 @@ const ResultView = (props: ResultViewProps) => {
             dragon={formatDragon(result.item.battle)}
             stage={td(result.item.battle.vsHistoryDetail!.vsStage)}
             weapon={td(getVsSelfPlayer(result.item.battle).weapon)}
-            power={getVsPower(result.item.battle)}
+            power={formatPower(getVsPower(result.item.battle))}
             kill={getVsSelfPlayer(result.item.battle).result?.kill}
             assist={getVsSelfPlayer(result.item.battle).result?.assist}
             death={getVsSelfPlayer(result.item.battle).result?.death}
@@ -825,9 +832,11 @@ const ResultView = (props: ResultViewProps) => {
                             null && (
                             <Display level={1} title={t("anarchy_power")}>
                               <Text numberOfLines={1}>
-                                {result.battle.vsHistoryDetail!.bankaraMatch["bankaraPower"][
-                                  "power"
-                                ].toFixed(1)}
+                                {roundPower(
+                                  result.battle.vsHistoryDetail!.bankaraMatch["bankaraPower"][
+                                    "power"
+                                  ]
+                                )}
                               </Text>
                             </Display>
                           )}
@@ -835,7 +844,7 @@ const ResultView = (props: ResultViewProps) => {
                           result.battle.vsHistoryDetail!.xMatch.lastXPower !== null && (
                             <Display level={1} title={t("x_power")}>
                               <Text numberOfLines={1}>
-                                {`${result.battle.vsHistoryDetail!.xMatch.lastXPower.toFixed(1)}`}
+                                {`${roundPower(result.battle.vsHistoryDetail!.xMatch.lastXPower)}`}
                               </Text>
                             </Display>
                           )}
@@ -854,9 +863,9 @@ const ResultView = (props: ResultViewProps) => {
                                 null && (
                                 <Display level={1} title={t("challenge_power")}>
                                   <Text numberOfLines={1}>
-                                    {`${result.battle.vsHistoryDetail!.leagueMatch[
-                                      "myLeaguePower"
-                                    ].toFixed(1)}`}
+                                    {`${roundPower(
+                                      result.battle.vsHistoryDetail!.leagueMatch["myLeaguePower"]
+                                    )}`}
                                   </Text>
                                 </Display>
                               )}

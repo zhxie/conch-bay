@@ -104,6 +104,7 @@ import {
   getImageHash,
   getUserIconCacheSource,
   isImageExpired,
+  roundPower,
   trimBattle,
   trimCoop,
 } from "../utils/ui";
@@ -699,20 +700,16 @@ const MainView = () => {
         .then(async ([latestBattleHistories, xBattleHistoriesAttempt]) => {
           if (xBattleHistoriesAttempt) {
             setSplatZonesXPower(
-              xBattleHistoriesAttempt.xBattleHistories.summary.xPowerAr?.lastXPower?.toFixed(1) ??
-                "0"
+              roundPower(xBattleHistoriesAttempt.xBattleHistories.summary.xPowerAr?.lastXPower ?? 0)
             );
             setTowerControlXPower(
-              xBattleHistoriesAttempt.xBattleHistories.summary.xPowerLf?.lastXPower?.toFixed(1) ??
-                "0"
+              roundPower(xBattleHistoriesAttempt.xBattleHistories.summary.xPowerLf?.lastXPower ?? 0)
             );
             setRainmakerXPower(
-              xBattleHistoriesAttempt.xBattleHistories.summary.xPowerGl?.lastXPower?.toFixed(1) ??
-                "0"
+              roundPower(xBattleHistoriesAttempt.xBattleHistories.summary.xPowerGl?.lastXPower ?? 0)
             );
             setClamBlitzXPower(
-              xBattleHistoriesAttempt.xBattleHistories.summary.xPowerCl?.lastXPower?.toFixed(1) ??
-                "0"
+              roundPower(xBattleHistoriesAttempt.xBattleHistories.summary.xPowerCl?.lastXPower ?? 0)
             );
           }
 
@@ -780,16 +777,16 @@ const MainView = () => {
               : xBattleHistoriesAttempt ||
                 fetchXBattleHistories(bulletToken).then((historyDetail) => {
                   setSplatZonesXPower(
-                    historyDetail.xBattleHistories.summary.xPowerAr?.lastXPower?.toFixed(1) ?? "0"
+                    roundPower(historyDetail.xBattleHistories.summary.xPowerAr?.lastXPower ?? 0)
                   );
                   setTowerControlXPower(
-                    historyDetail.xBattleHistories.summary.xPowerLf?.lastXPower?.toFixed(1) ?? "0"
+                    roundPower(historyDetail.xBattleHistories.summary.xPowerLf?.lastXPower ?? 0)
                   );
                   setRainmakerXPower(
-                    historyDetail.xBattleHistories.summary.xPowerGl?.lastXPower?.toFixed(1) ?? "0"
+                    roundPower(historyDetail.xBattleHistories.summary.xPowerGl?.lastXPower ?? 0)
                   );
                   setClamBlitzXPower(
-                    historyDetail.xBattleHistories.summary.xPowerCl?.lastXPower?.toFixed(1) ?? "0"
+                    roundPower(historyDetail.xBattleHistories.summary.xPowerCl?.lastXPower ?? 0)
                   );
                   return historyDetail;
                 }),

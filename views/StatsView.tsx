@@ -20,7 +20,7 @@ import {
 } from "../components";
 import t from "../i18n";
 import { CoopHistoryDetailResult, VsHistoryDetailResult } from "../models/types";
-import { countBattles, countCoops } from "../utils/ui";
+import { countBattles, countCoops, roundPower } from "../utils/ui";
 import { ResultProps } from "./ResultView";
 
 dayjs.extend(quarterOfYear);
@@ -55,7 +55,7 @@ const StatsModal = (props: StatsModalProps) => {
   );
 
   const formatPower = (total: number, max: number, count: number) => {
-    return `${max.toFixed(1)} (${(total / count).toFixed(1)})`;
+    return `${roundPower(max)} (${roundPower(total / count)})`;
   };
   const formatTotalAndAverage = (total: number, count: number) => {
     if (count === 0) {
