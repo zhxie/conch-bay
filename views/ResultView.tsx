@@ -329,6 +329,14 @@ const ResultView = (props: ResultViewProps) => {
       }
       return `${startTime} – ${endTimeComponents[1]}`;
     }
+    // Different day.
+    if (endTimeComponents[1] === "00:00") {
+      const prevDate = dayjs(endTime).subtract(1, "day").format(dateTimeFormat);
+      const prevDateComponents = prevDate.split(" ");
+      if (prevDateComponents[0] === startTimeComponents[0]) {
+        return `${startTime} – 24:00`;
+      }
+    }
     return `${startTime} – ${endTime}`;
   };
   const formatAnnotation = (battle: VsHistoryDetailResult) => {

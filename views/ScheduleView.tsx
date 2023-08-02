@@ -193,7 +193,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
     }
     // Different day.
     if (end && timeCheck[1] === "00:00") {
-      const prevDate = dayjs(time).add(-1, "day").format(dateFormat);
+      const prevDate = dayjs(time).subtract(1, "day").format(dateFormat);
       if (prevDate === nowCheck && !withDate) {
         return "24:00";
       }
