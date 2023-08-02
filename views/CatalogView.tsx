@@ -35,6 +35,7 @@ const CatalogView = (props: CatalogViewProps) => {
     });
     return rewards;
   }, [props.catalog]);
+  const isAllAccepted = useMemo(() => (rewards[0]?.state ?? "") === "ACCEPTED", [rewards]);
 
   const onCatalogPress = () => {
     setCatalog(true);
@@ -54,7 +55,7 @@ const CatalogView = (props: CatalogViewProps) => {
       >
         <RewardBox
           isLast={reward.index === rewards.length - 2 || reward.index === rewards.length - 1}
-          isAccepted={reward.item.state === "ACCEPTED"}
+          isAccepted={!isAllAccepted && reward.item.state === "ACCEPTED"}
           level={reward.item.level}
           image={getImageCacheSource(reward.item.item.image.url)}
           // TODO: need translation.
