@@ -92,34 +92,10 @@ const TrendsView = (props: TrendViewProps) => {
   ) => {
     const result: T[][] = [];
     if (group === 0) {
-      const size = Math.max(arr.length / count, 1);
-      let start = arr.length - size;
-      let n = 0;
-      while (start >= 0) {
-        const part: T[] = [];
-        for (let i = Math.ceil(start); i < start + size && i < arr.length; i++) {
-          part.push(arr[i]);
-          n++;
-        }
-        if (part.length > 0) {
-          result.push(part.reverse());
-        }
-        start -= size;
+      for (let i = 0; i < count && i < arr.length - 1; i++) {
+        result.push([arr[i]]);
       }
-      // HACK: complete remaining elements due to loss of precision.
-      if (n < arr.length) {
-        if (result.length === count) {
-          for (let i = arr.length - n - 1; i >= 0; i--) {
-            result[result.length - 1].push(arr[i]);
-          }
-        } else {
-          const part: T[] = [];
-          for (let i = arr.length - n - 1; i >= 0; i--) {
-            part.push(arr[i]);
-          }
-          result.push(part);
-        }
-      }
+      result.reverse();
     } else {
       // Escape splitting by period if there is no result.
       if (arr.length <= 0) {
@@ -433,7 +409,7 @@ const TrendsView = (props: TrendViewProps) => {
       >
         <VStack style={ViewStyles.mb2}>
           <SegmentedControl
-            values={[t("average"), t("day"), t("week"), t("month"), t("season")]}
+            values={[t("recent"), t("day"), t("week"), t("month"), t("season")]}
             selectedIndex={group}
             onChange={onGroupChange}
           />

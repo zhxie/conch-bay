@@ -188,7 +188,7 @@ const zhHant = {
   stats_notice: "括號內的數字對戰為每分鐘，鮭魚跑為每次打工的平均值。",
   // Trend.
   trends: "趨勢",
-  average: "平均",
+  recent: "近期",
   splatted_including_assisted: "擊倒 (含助攻)",
   golden_eggs_collected_including_assisted: "收集的金鮭魚卵 (含助攻)",
   trends_notice: "對戰為每分鐘，鮭魚跑為每次打工的平均值。",

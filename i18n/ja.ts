@@ -193,6 +193,7 @@ const ja = {
   stats_notice: "カッコ内の数字はバトルでは1分あたり、サーモンランでは各バイトのアベレージです。",
   // Trend.
   trends: "トレンド",
+  recent: "最近",
   average: "平均",
   splatted_including_assisted: "たおした (アシスト含む)",
   golden_eggs_collected_including_assisted: "集めた金イクラ (含助攻)",

@@ -194,7 +194,7 @@ const en = {
     "The number in parentheses is over 1-minute average in battles and over each shift average in Salmon Run.",
   // Trends.
   trends: "Trends",
-  average: "Average",
+  recent: "Recent",
   splatted_including_assisted: "Splatted (Including Assisted)",
   golden_eggs_collected_including_assisted: "Golden Eggs Collected (Including Assisted)",
   trends_notice:

@@ -188,7 +188,7 @@ const zhHans = {
   stats_notice: "括号内的数字对战为每分钟，鲑鱼跑为每场打工的平均值。",
   // Trend.
   trends: "趋势",
-  average: "平均",
+  recent: "近期",
   splatted_including_assisted: "击倒 (含助攻)",
   golden_eggs_collected_including_assisted: "收集的金鲑鱼卵 (含助攻)",
   trends_notice: "对战为每分钟，鲑鱼跑为每场打工的平均值。",
