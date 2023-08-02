@@ -189,7 +189,6 @@ const ja = {
   be_rescued: "たすけてもらった",
   wave_stats: "WAVEのきろく",
   special_weapon_stats: "スペシャルウェポンのきろく",
-  show_all_results: "すべてのリザルトを見る",
   stats_notice: "カッコ内の数字はバトルでは1分あたり、サーモンランでは各バイトのアベレージです。",
   // Trend.
   trends: "トレンド",

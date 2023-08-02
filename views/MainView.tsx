@@ -151,6 +151,7 @@ const MainView = () => {
   const [progress, setProgress] = useState(0);
   const [progressTotal, setProgressTotal] = useState(0);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [counting, setCounting] = useState(false);
   const [import_, setImport] = useState(false);
   const [importing, setImporting] = useState(false);
   const [exporting, setExporting] = useState(false);
@@ -1124,11 +1125,36 @@ const MainView = () => {
     }
     await loadResults(num);
   };
-  const onShowAllResultsPress = async () => {
-    if (allResultsShown) {
-      return;
+  const onStatsPress = async () => {
+    setCounting(true);
+    const results: ResultProps[] = [];
+    for (const group of groups ?? []) {
+      if (group.battles) {
+        results.push(
+          ...group.battles.map((battle) => ({
+            battle,
+          }))
+        );
+      } else {
+        results.push(
+          ...group.coops!.map((coop) => ({
+            coop,
+          }))
+        );
+      }
     }
-    await loadResults(filtered);
+    const details = (await Database.query(results.length, filtered, filterRef.current)).map(
+      (record) => {
+        if (record.mode === "salmon_run") {
+          return {
+            coop: JSON.parse(record.detail) as CoopHistoryDetailResult,
+          };
+        }
+        return { battle: JSON.parse(record.detail) as VsHistoryDetailResult };
+      }
+    );
+    setCounting(false);
+    return results.concat(details);
   };
   const onGetWebServiceToken = async () => {
     // Update versions.
@@ -1865,17 +1891,13 @@ const MainView = () => {
               >
                 <HStack flex center style={ViewStyles.px4}>
                   <StatsView
-                    groups={groups}
-                    loadingMore={loadingMore}
-                    allResultsShown={allResultsShown}
-                    onShowAllResultsPress={onShowAllResultsPress}
+                    isDisabled={counting}
+                    onResults={onStatsPress}
                     style={ViewStyles.mr2}
                   />
                   <TrendsView
-                    groups={groups}
-                    loadingMore={loadingMore}
-                    allResultsShown={allResultsShown}
-                    onShowAllResultsPress={onShowAllResultsPress}
+                    isDisabled={counting}
+                    onResults={onStatsPress}
                     style={ViewStyles.mr2}
                   />
                   {sessionToken.length > 0 && (

@@ -13,7 +13,6 @@ import {
   ViewStyle,
 } from "react-native";
 import {
-  Button,
   Center,
   Chart,
   Color,
@@ -33,16 +32,14 @@ import {
 import t from "../i18n";
 import { CoopHistoryDetailResult, VsHistoryDetailResult } from "../models/types";
 import { burnColor, countBattles, countCoops } from "../utils/ui";
-import { GroupProps, ResultProps } from "./ResultView";
+import { ResultProps } from "./ResultView";
 
 dayjs.extend(quarterOfYear);
 dayjs.extend(utc);
 
 interface TrendViewProps {
-  groups?: GroupProps[];
-  loadingMore: boolean;
-  allResultsShown: boolean;
-  onShowAllResultsPress: () => void;
+  isDisabled?: boolean;
+  onResults: () => Promise<ResultProps[]>;
   style?: StyleProp<ViewStyle>;
 }
 
@@ -80,6 +77,8 @@ const TrendsView = (props: TrendViewProps) => {
   const theme = useTheme();
 
   const [point, setPoint] = useState(20);
+  const [results, setResults] = useState<ResultProps[]>();
+  const [loading, setLoading] = useState(false);
   const [trends, setTrends] = useState(false);
   const [group, setGroup] = useState(0);
   const [battleDimensions, setBattleDimensions] = useState<BattleDimension[]>(["VICTORY"]);
@@ -144,20 +143,6 @@ const TrendsView = (props: TrendViewProps) => {
     return result;
   };
 
-  const results = useMemo(() => {
-    if (!props.groups) {
-      return undefined;
-    }
-    const results: ResultProps[] = [];
-    for (const group of props.groups) {
-      if (group.battles) {
-        results.push(...group.battles!.map((battle) => ({ battle: battle })));
-      } else {
-        results.push(...group.coops!.map((coop) => ({ coop: coop })));
-      }
-    }
-    return results;
-  }, [props.groups]);
   const battles = useMemo(
     () => results?.filter((result) => result.battle).map((result) => result.battle!),
     [results]
@@ -365,14 +350,21 @@ const TrendsView = (props: TrendViewProps) => {
     }
   };
 
-  const onLayout = (event: LayoutChangeEvent) => {
-    setPoint(Math.max(Math.round(event.nativeEvent.layout.width / 20), 20));
-  };
-  const onTrendsPress = () => {
+  const onTrendsPress = async () => {
+    setLoading(true);
+    const results = await props.onResults();
+    setResults(results);
     setTrends(true);
+    setLoading(false);
   };
   const onTrendsClose = () => {
     setTrends(false);
+  };
+  const onModalHide = () => {
+    setResults(undefined);
+  };
+  const onLayout = (event: LayoutChangeEvent) => {
+    setPoint(Math.max(Math.round(event.nativeEvent.layout.width / 20), 20));
   };
   const onGroupChange = (event: NativeSyntheticEvent<NativeSegmentedControlIOSChangeEvent>) => {
     setGroup(event.nativeEvent.selectedSegmentIndex);
@@ -400,10 +392,17 @@ const TrendsView = (props: TrendViewProps) => {
 
   return (
     <Center style={props.style}>
-      <ToolButton icon="trending-up" title={t("trends")} onPress={onTrendsPress} />
+      <ToolButton
+        isDisabled={props.isDisabled}
+        isLoading={loading}
+        icon="trending-up"
+        title={t("trends")}
+        onPress={onTrendsPress}
+      />
       <Modal
         isVisible={trends}
         onClose={onTrendsClose}
+        onModalHide={onModalHide}
         onLayout={onLayout}
         style={ViewStyles.modal2d}
       >
@@ -654,19 +653,6 @@ const TrendsView = (props: TrendViewProps) => {
             </VStack>
           )}
         </VStack>
-        {!props.allResultsShown && (
-          <VStack style={ViewStyles.mb2}>
-            <Button
-              isLoading={props.loadingMore}
-              isLoadingText={t("loading_more")}
-              style={ViewStyles.accent}
-              textStyle={theme.reverseTextStyle}
-              onPress={props.onShowAllResultsPress}
-            >
-              <Marquee style={theme.reverseTextStyle}>{t("show_all_results")}</Marquee>
-            </Button>
-          </VStack>
-        )}
         <VStack center style={(battleGroups.length > 0 || coopGroups.length > 0) && ViewStyles.mb2}>
           <Marquee>{t("trends_notice")}</Marquee>
         </VStack>

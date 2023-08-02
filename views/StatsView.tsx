@@ -8,7 +8,6 @@ import { useMemo, useState } from "react";
 import { NativeSyntheticEvent, StyleProp, ViewStyle } from "react-native";
 import {
   AccordionDisplay,
-  Button,
   Center,
   Display,
   Marquee,
@@ -18,12 +17,11 @@ import {
   ToolButton,
   VStack,
   ViewStyles,
-  useTheme,
 } from "../components";
 import t from "../i18n";
 import { CoopHistoryDetailResult, VsHistoryDetailResult } from "../models/types";
 import { countBattles, countCoops } from "../utils/ui";
-import { GroupProps, ResultProps } from "./ResultView";
+import { ResultProps } from "./ResultView";
 
 dayjs.extend(quarterOfYear);
 dayjs.extend(utc);
@@ -33,6 +31,7 @@ interface StatsModalProps {
   hideEmpty?: boolean;
   isVisible: boolean;
   onClose: () => void;
+  onModalHide?: () => void;
   header?: React.ReactNode;
   children?: React.ReactNode;
 }
@@ -108,7 +107,12 @@ const StatsModal = (props: StatsModalProps) => {
   };
 
   return (
-    <Modal isVisible={props.isVisible} onClose={props.onClose} style={ViewStyles.modal2d}>
+    <Modal
+      isVisible={props.isVisible}
+      onClose={props.onClose}
+      onModalHide={props.onModalHide}
+      style={ViewStyles.modal2d}
+    >
       {props.header}
       {(!props.hideEmpty || battleStats.count > 0) && (
         <VStack style={ViewStyles.mb2}>
@@ -365,16 +369,14 @@ const StatsModal = (props: StatsModalProps) => {
 };
 
 interface StatsViewProps {
-  groups?: GroupProps[];
-  loadingMore: boolean;
-  allResultsShown: boolean;
-  onShowAllResultsPress: () => void;
+  isDisabled?: boolean;
+  onResults: () => Promise<ResultProps[]>;
   style?: StyleProp<ViewStyle>;
 }
 
 const StatsView = (props: StatsViewProps) => {
-  const theme = useTheme();
-
+  const [results, setResults] = useState<ResultProps[]>();
+  const [loading, setLoading] = useState(false);
   const [stats, setStats] = useState(false);
   const [group, setGroup] = useState(0);
 
@@ -395,17 +397,9 @@ const StatsView = (props: StatsViewProps) => {
     }
   }, [group]);
 
-  const results = useMemo(() => {
-    if (!props.groups) {
+  const filtered = useMemo(() => {
+    if (!results) {
       return undefined;
-    }
-    const results: ResultProps[] = [];
-    for (const group of props.groups) {
-      if (group.battles) {
-        results.push(...group.battles!.map((battle) => ({ battle: battle })));
-      } else {
-        results.push(...group.coops!.map((coop) => ({ coop: coop })));
-      }
     }
     return results.filter((result) => {
       if (beginTime === 0) {
@@ -416,13 +410,20 @@ const StatsView = (props: StatsViewProps) => {
       }
       return new Date(result.coop!.coopHistoryDetail!.playedTime).valueOf() >= beginTime;
     });
-  }, [props.groups]);
+  }, [results, beginTime]);
 
-  const onStatsPress = () => {
+  const onStatsPress = async () => {
+    setLoading(true);
+    const results = await props.onResults();
+    setResults(results);
     setStats(true);
+    setLoading(false);
   };
   const onStatsClose = () => {
     setStats(false);
+  };
+  const onModalHide = () => {
+    setResults(undefined);
   };
   const onGroupChange = (event: NativeSyntheticEvent<NativeSegmentedControlIOSChangeEvent>) => {
     setGroup(event.nativeEvent.selectedSegmentIndex);
@@ -430,11 +431,18 @@ const StatsView = (props: StatsViewProps) => {
 
   return (
     <Center style={props.style}>
-      <ToolButton icon="bar-chart-2" title={t("stats")} onPress={onStatsPress} />
+      <ToolButton
+        isDisabled={props.isDisabled}
+        isLoading={loading}
+        icon="bar-chart-2"
+        title={t("stats")}
+        onPress={onStatsPress}
+      />
       <StatsModal
-        results={results}
+        results={filtered}
         isVisible={stats}
         onClose={onStatsClose}
+        onModalHide={onModalHide}
         header={
           <VStack style={ViewStyles.mb2}>
             <SegmentedControl
@@ -444,21 +452,7 @@ const StatsView = (props: StatsViewProps) => {
             />
           </VStack>
         }
-      >
-        {!props.allResultsShown && (
-          <VStack style={ViewStyles.mb2}>
-            <Button
-              isLoading={props.loadingMore}
-              isLoadingText={t("loading_more")}
-              style={ViewStyles.accent}
-              textStyle={theme.reverseTextStyle}
-              onPress={props.onShowAllResultsPress}
-            >
-              <Marquee style={theme.reverseTextStyle}>{t("show_all_results")}</Marquee>
-            </Button>
-          </VStack>
-        )}
-      </StatsModal>
+      />
     </Center>
   );
 };

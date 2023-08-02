@@ -184,7 +184,6 @@ const zhHant = {
   be_rescued: "被救助",
   wave_stats: "WAVE記錄",
   special_weapon_stats: "特殊武器記錄",
-  show_all_results: "顯示全部記錄",
   stats_notice: "括號內的數字對戰為每分鐘，鮭魚跑為每次打工的平均值。",
   // Trend.
   trends: "趨勢",
