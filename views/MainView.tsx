@@ -104,6 +104,8 @@ import {
   getImageHash,
   getUserIconCacheSource,
   isImageExpired,
+  trimBattle,
+  trimCoop,
 } from "../utils/ui";
 import CatalogView from "./CatalogView";
 import FilterView from "./FilterView";
@@ -1180,16 +1182,30 @@ const MainView = () => {
         );
       }
     }
-    const details = (await Database.query(results.length, filtered, filterRef.current)).map(
-      (record) => {
+    const details: ResultProps[] = [];
+    let batch = 0;
+    while (true) {
+      const records = await Database.query(
+        Database.BATCH_SIZE * batch,
+        Database.BATCH_SIZE,
+        filter
+      );
+      for (const record of records) {
         if (record.mode === "salmon_run") {
-          return {
-            coop: JSON.parse(record.detail) as CoopHistoryDetailResult,
-          };
+          const coop = JSON.parse(record.detail) as CoopHistoryDetailResult;
+          trimCoop(coop);
+          details.push({ coop });
+        } else {
+          const battle = JSON.parse(record.detail) as VsHistoryDetailResult;
+          trimBattle(battle);
+          details.push({ battle });
         }
-        return { battle: JSON.parse(record.detail) as VsHistoryDetailResult };
       }
-    );
+      if (records.length < Database.BATCH_SIZE) {
+        break;
+      }
+      batch += 1;
+    }
     setCounting(false);
     return results.concat(details);
   };

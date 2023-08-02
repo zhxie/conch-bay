@@ -517,3 +517,78 @@ export const countCoops = (coops: CoopHistoryDetailResult[]) => {
   });
   return { ...result, bosses, kings, waves, stages, weapons, specialWeapons };
 };
+
+export const trimBattle = (battle: VsHistoryDetailResult) => {
+  battle.vsHistoryDetail!.player.nameplate = null;
+  for (const gear of [
+    battle.vsHistoryDetail!.player.headGear,
+    battle.vsHistoryDetail!.player.clothingGear,
+    battle.vsHistoryDetail!.player.shoesGear,
+  ]) {
+    gear.image.url = "";
+    gear.primaryGearPower.image.url = "";
+    for (const gearPower of gear.additionalGearPowers) {
+      gearPower.image.url = "";
+    }
+    gear.originalImage.url = "";
+    gear.brand.image.url = "";
+  }
+  battle.vsHistoryDetail!.player.headGear = undefined as any;
+  battle.vsHistoryDetail!.player.clothingGear = undefined as any;
+  battle.vsHistoryDetail!.player.shoesGear = undefined as any;
+  for (const team of [battle.vsHistoryDetail!.myTeam, ...battle.vsHistoryDetail!.otherTeams]) {
+    for (const player of team.players) {
+      player.weapon.image.url = "";
+      player.weapon.specialWeapon.maskingImage.maskImageUrl = "";
+      player.weapon.specialWeapon.maskingImage.overlayImageUrl = "";
+      player.weapon.specialWeapon.image.url = "";
+      player.weapon.image3d.url = "";
+      player.weapon.image2d.url = "";
+      player.weapon.image3dThumbnail.url = "";
+      player.weapon.image2dThumbnail.url = "";
+      player.weapon.subWeapon.image.url = "";
+      player.nameplate = null;
+      for (const gear of [player.headGear, player.clothingGear, player.shoesGear]) {
+        gear.thumbnailImage.url = "";
+        gear.primaryGearPower.image.url = "";
+        for (const gearPower of gear.additionalGearPowers) {
+          gearPower.image.url = "";
+        }
+        gear.originalImage.url = "";
+        gear.brand.image.url = "";
+      }
+    }
+  }
+  battle.vsHistoryDetail!.vsStage.image.url = "";
+  battle.vsHistoryDetail!.nextHistoryDetail = null;
+  battle.vsHistoryDetail!.previousHistoryDetail = null;
+};
+export const trimCoop = (coop: CoopHistoryDetailResult) => {
+  for (const memberResult of [
+    coop.coopHistoryDetail!.myResult,
+    ...coop.coopHistoryDetail!.memberResults,
+  ]) {
+    memberResult.player.nameplate = null;
+    memberResult.player.uniform.image.url = "";
+    for (const weapon of memberResult.weapons) {
+      weapon.image.url = getImageCacheKey(weapon.image.url);
+    }
+    if (memberResult.specialWeapon) {
+      memberResult.specialWeapon.image.url = getImageCacheKey(memberResult.specialWeapon.image.url);
+    }
+  }
+  for (const enemyResult of coop.coopHistoryDetail!.enemyResults) {
+    enemyResult.enemy.image.url = "";
+  }
+  for (const waveResult of coop.coopHistoryDetail!.waveResults) {
+    for (const specialWeapon of waveResult.specialWeapons) {
+      specialWeapon.image.url = getImageCacheKey(specialWeapon.image.url);
+    }
+  }
+  coop.coopHistoryDetail!.coopStage.image.url = "";
+  for (const weapon of coop.coopHistoryDetail!.weapons) {
+    weapon.image.url = getImageCacheKey(weapon.image.url);
+  }
+  coop.coopHistoryDetail!.nextHistoryDetail = null;
+  coop.coopHistoryDetail!.previousHistoryDetail = null;
+};
