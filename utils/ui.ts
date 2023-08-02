@@ -326,7 +326,8 @@ export const countCoops = (coops: CoopHistoryDetailResult[]) => {
     if (coop.coopHistoryDetail!.resultWave >= 0) {
       if (coop.coopHistoryDetail!.resultWave === 0) {
         result.clear += 1;
-        // The maximum wave cleared is 3 in SplatNet, but we will fix it and have 5 in eggstra works.
+        // The maximum wave cleared is 3 in SplatNet, but we will fix it and have 5 in eggstra
+        // works.
         result.wave += coop.coopHistoryDetail!.waveResults.length;
         switch (coop.coopHistoryDetail!.rule as CoopRule) {
           case CoopRule.REGULAR:

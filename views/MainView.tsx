@@ -332,38 +332,69 @@ const MainView = () => {
   }, [ready, appState]);
 
   const canGroup = (current: ResultProps, group: GroupProps) => {
-    // Battles with the same mode and in the 2 hour (24 hour for tricolors and unlimited for
+    // Battles with the same mode and in the 2 hours (24 hours for tricolors and unlimited for
     // privates) period will be regarded in the same group, coops with the same rule, stage and
-    // supplied weapons in the 48 hours (2 hours period) will be regarded in the same group.
+    // supplied weapons in the 48 hours (2 hours period) will be regarded in the same group. There
+    // is also a 2 minutes grace period for both battles and coops when certain conditions are met.
+    // TODO: these grade conditions are not completed. E.g., regular battles even with the same
+    // stages cannot be regarded as in the same rotation. We have to check the context (the above
+    // only now) to group correctly.
     if (current.battle && group.battles) {
       const mode = current.battle.vsHistoryDetail!.vsMode.id;
       if (mode === group.battles[0].vsHistoryDetail!.vsMode.id) {
-        let gap = 0;
         switch (mode) {
           case "VnNNb2RlLTE=":
           case "VnNNb2RlLTY=":
           case "VnNNb2RlLTc=":
+            if (
+              Math.floor(dayjs(current.battle.vsHistoryDetail!.playedTime).valueOf() / 7200000) ===
+              Math.floor(dayjs(group.battles[0].vsHistoryDetail!.playedTime).valueOf() / 7200000)
+            ) {
+              return true;
+            }
+            break;
           case "VnNNb2RlLTI=":
           case "VnNNb2RlLTUx":
           case "VnNNb2RlLTM=":
           case "VnNNb2RlLTQ=":
-            gap = 7200000;
+            if (
+              Math.floor(dayjs(current.battle.vsHistoryDetail!.playedTime).valueOf() / 7200000) ===
+                Math.floor(
+                  dayjs(group.battles[0].vsHistoryDetail!.playedTime).valueOf() / 7200000
+                ) ||
+              (current.battle.vsHistoryDetail!.vsRule.id ===
+                group.battles[0].vsHistoryDetail!.vsRule.id &&
+                Math.floor(
+                  dayjs(current.battle.vsHistoryDetail!.playedTime).valueOf() / 7200000
+                ) ===
+                  Math.floor(
+                    dayjs(group.battles[0].vsHistoryDetail!.playedTime)
+                      .subtract(2, "minute")
+                      .valueOf() / 7200000
+                  ))
+            ) {
+              return true;
+            }
             break;
           case "VnNNb2RlLTg=":
-            gap = 86400000;
+            if (
+              Math.floor(dayjs(current.battle.vsHistoryDetail!.playedTime).valueOf() / 86400000) ===
+                Math.floor(
+                  dayjs(group.battles[0].vsHistoryDetail!.playedTime).valueOf() / 86400000
+                ) ||
+              Math.floor(dayjs(current.battle.vsHistoryDetail!.playedTime).valueOf() / 86400000) ===
+                Math.floor(
+                  dayjs(group.battles[0].vsHistoryDetail!.playedTime)
+                    .subtract(2, "minute")
+                    .valueOf() / 86400000
+                )
+            ) {
+              return true;
+            }
             break;
           case "VnNNb2RlLTU=":
-            gap = Number.MAX_VALUE;
-            break;
           default:
-            gap = 7200000;
-            break;
-        }
-        if (
-          Math.floor(dayjs(current.battle.vsHistoryDetail!.playedTime).valueOf() / gap) ===
-          Math.floor(dayjs(group.battles[0].vsHistoryDetail!.playedTime).valueOf() / gap)
-        ) {
-          return true;
+            return true;
         }
       }
     }
@@ -378,9 +409,15 @@ const MainView = () => {
           group.coops[0]
             .coopHistoryDetail!.weapons.map((weapon) => getImageHash(weapon.image.url))
             .join() &&
-        Math.ceil(dayjs(current.coop.coopHistoryDetail!.playedTime).valueOf() / 7200000) -
+        (Math.ceil(dayjs(current.coop.coopHistoryDetail!.playedTime).valueOf() / 7200000) -
           Math.floor(dayjs(group.coops[0].coopHistoryDetail!.playedTime).valueOf() / 7200000) <=
-          24
+          24 ||
+          Math.ceil(dayjs(current.coop.coopHistoryDetail!.playedTime).valueOf() / 7200000) -
+            Math.floor(
+              dayjs(group.coops[0].coopHistoryDetail!.playedTime).subtract(2, "minute").valueOf() /
+                7200000
+            ) <=
+            24)
       ) {
         return true;
       }
@@ -1633,7 +1670,8 @@ const MainView = () => {
       }
 
       // Preload images.
-      // HACK: add a hashtag do not break the URL. Here the cache key will be appended after the hashtag.
+      // HACK: add a hashtag do not break the URL. Here the cache key will be appended after the
+      // hashtag.
       Image.prefetch(Array.from(resources).map((resource) => `${resource[1]}#${resource[0]}`));
     } catch (e) {
       showBanner(BannerLevel.Error, e);
