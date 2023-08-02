@@ -584,7 +584,7 @@ const MainView = () => {
           .catch((e) => {
             showBanner(BannerLevel.Warn, t("failed_to_update_schedules", { error: e }));
           }),
-        fetchShop(t("lang"))
+        fetchShop()
           .then((shop) => setShop(shop))
           .catch((e) => {
             showBanner(BannerLevel.Warn, t("failed_to_update_splatnet_shop", { error: e }));

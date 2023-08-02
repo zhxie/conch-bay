@@ -1,7 +1,9 @@
 import base from "./base";
+import generated from "./zh-Hant.json";
 
 const zhHant = {
   ...base,
+  ...generated,
   // API.
   lang: "zh-TW",
   // UI.

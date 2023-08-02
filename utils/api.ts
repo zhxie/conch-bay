@@ -44,28 +44,10 @@ export const fetchSchedules = async () => {
   const json = await res.json();
   return (json as SchedulesQuery).data;
 };
-export const fetchShop = async (language: string) => {
-  const [res, locale] = await Promise.all([
-    fetch("https://splatoon3.ink/data/gear.json"),
-    fetch(`https://splatoon3.ink/data/locale/${language}.json`),
-  ]);
-  const [json, localeJson] = await Promise.all([res.json(), locale.json()]);
-  const shop = (json as ShopQuery).data;
-  shop.gesotown.pickupBrand.brandGears.forEach((gear) => {
-    try {
-      gear.gear.name = localeJson["gear"][gear.gear.__splatoon3ink_id]["name"];
-    } catch {
-      /* empty */
-    }
-  });
-  shop.gesotown.limitedGears.forEach((gear) => {
-    try {
-      gear.gear.name = localeJson["gear"][gear.gear.__splatoon3ink_id]["name"];
-    } catch {
-      /* empty */
-    }
-  });
-  return shop;
+export const fetchShop = async () => {
+  const res = await fetch("https://splatoon3.ink/data/gear.json");
+  const json = await res.json();
+  return (json as ShopQuery).data;
 };
 export const fetchSplatfests = async () => {
   const res = await fetch("https://splatoon3.ink/data/festivals.json");

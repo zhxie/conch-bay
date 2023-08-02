@@ -23,7 +23,7 @@ import {
   SaleGear,
   Shop,
 } from "../models/types";
-import { getGearPadding, getImageCacheSource } from "../utils/ui";
+import { getGearPadding, getImageCacheSource, getImageHash } from "../utils/ui";
 
 enum GearType {
   HeadGears = "headGears",
@@ -106,8 +106,7 @@ const ShopView = (props: ShopViewProps) => {
         last={gear.index === equipments![filter].nodes.length - 1}
         image={getImageCacheSource(gear.item.image.url)}
         brandImage={getImageCacheSource(gear.item.brand.image.url)}
-        // TODO: need translation.
-        name={gear.item.name}
+        name={t(getImageHash(gear.item.image.url), { defaultValue: gear.item.name })}
         brand={t(gear.item.brand.id)}
         primaryAbility={getImageCacheSource(gear.item.primaryGearPower.image.url)}
         additionalAbility={gear.item.additionalGearPowers.map((gearPower) =>
@@ -125,7 +124,13 @@ const ShopView = (props: ShopViewProps) => {
         color={theme.textColor}
         rule={t("gesotown")}
         stages={(pickupBrand ? [t(pickupBrand.brand.id)] : []).concat(
-          limitedGears.length > 0 ? [limitedGears[0].gear.name] : []
+          limitedGears.length > 0
+            ? [
+                t(getImageHash(limitedGears[0].gear.image.url), {
+                  defaultValue: limitedGears[0].gear.name,
+                }),
+              ]
+            : []
         )}
         onPress={onShopPress}
         style={props.style}
@@ -141,7 +146,7 @@ const ShopView = (props: ShopViewProps) => {
                   last={i === gears.length - 1}
                   image={getImageCacheSource(gear.gear.image.url)}
                   brandImage={getImageCacheSource(gear.gear.brand.image.url)}
-                  name={gear.gear.name}
+                  name={t(getImageHash(gear.gear.image.url), { defaultValue: gear.gear.name })}
                   brand={t(gear.gear.brand.id)}
                   primaryAbility={getImageCacheSource(gear.gear.primaryGearPower.image.url)}
                   additionalAbility={gear.gear.additionalGearPowers.map((gearPower) =>
@@ -161,7 +166,7 @@ const ShopView = (props: ShopViewProps) => {
                   last={i === gears.length - 1}
                   image={getImageCacheSource(gear.gear.image.url)}
                   brandImage={getImageCacheSource(gear.gear.brand.image.url)}
-                  name={gear.gear.name}
+                  name={t(getImageHash(gear.gear.image.url), { defaultValue: gear.gear.name })}
                   brand={t(gear.gear.brand.id)}
                   primaryAbility={getImageCacheSource(gear.gear.primaryGearPower.image.url)}
                   additionalAbility={gear.gear.additionalGearPowers.map((gearPower) =>

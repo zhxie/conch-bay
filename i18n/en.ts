@@ -1,7 +1,9 @@
 import base from "./base";
+import generated from "./en.json";
 
 const en = {
   ...base,
+  ...generated,
   // API.
   lang: "en-US",
   // UI.

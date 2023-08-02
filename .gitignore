@@ -13,3 +13,4 @@ web-build/
 
 assets/fonts/
 models/*.json
+i18n/*.json

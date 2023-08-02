@@ -77,6 +77,7 @@ import {
   getGearPadding,
   getVsPower,
   roundPower,
+  getImageHash,
 } from "../utils/ui";
 import { StatsModal } from "./StatsView";
 
@@ -978,8 +979,9 @@ const ResultView = (props: ResultViewProps) => {
                           last={i === gears.length - 1}
                           image={getImageCacheSource(gear.originalImage.url)}
                           brandImage={getImageCacheSource(gear.brand.image.url)}
-                          // TODO: need translation.
-                          name={gear.name}
+                          name={t(getImageHash(gear.originalImage.url), {
+                            defaultValue: gear.name,
+                          })}
                           brand={t(gear.brand.id)}
                           primaryAbility={getImageCacheSource(gear.primaryGearPower.image.url)}
                           additionalAbility={gear.additionalGearPowers.map((gearPower) =>

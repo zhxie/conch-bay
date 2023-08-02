@@ -11,7 +11,7 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "eject": "expo eject",
-    "postinstall": "patch-package && node tools/gen-lucide-glyphmap.mjs && node tools/gen-models.mjs",
+    "postinstall": "patch-package && node tools/gen-lucide-glyphmap.mjs && node tools/gen-models.mjs && node tools/gen-i18n.mjs",
     "doctor": "expo-doctor",
     "compile": "tsc --noEmit",
     "lint": "eslint . --ext .tsx --ext .ts",
