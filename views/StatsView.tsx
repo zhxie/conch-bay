@@ -34,7 +34,7 @@ interface StatsModalProps {
   isVisible: boolean;
   onClose: () => void;
   header?: React.ReactNode;
-  footer?: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 const StatsModal = (props: StatsModalProps) => {
@@ -111,9 +111,7 @@ const StatsModal = (props: StatsModalProps) => {
     <Modal isVisible={props.isVisible} onClose={props.onClose} style={ViewStyles.modal2d}>
       {props.header}
       {(!props.hideEmpty || battleStats.count > 0) && (
-        <VStack
-          style={(!!props.footer || !props.hideEmpty || coopStats.count > 0) && ViewStyles.mb2}
-        >
+        <VStack style={ViewStyles.mb2}>
           <Display isFirst isLast={battleStats.count === 0} title={t("battle")}>
             <Text numberOfLines={1}>{battleStats.count}</Text>
           </Display>
@@ -230,7 +228,7 @@ const StatsModal = (props: StatsModalProps) => {
         </VStack>
       )}
       {(!props.hideEmpty || coopStats.count > 0) && (
-        <VStack style={!!props.footer && ViewStyles.mb2}>
+        <VStack style={ViewStyles.mb2}>
           <Display isFirst isLast={coopStats.count === 0} title={t("salmon_run")}>
             <Text numberOfLines={1}>{coopStats.count}</Text>
           </Display>
@@ -358,7 +356,10 @@ const StatsModal = (props: StatsModalProps) => {
           )}
         </VStack>
       )}
-      {props.footer}
+      {props.children}
+      <VStack center>
+        <Marquee>{t("stats_notice")}</Marquee>
+      </VStack>
     </Modal>
   );
 };
@@ -443,27 +444,21 @@ const StatsView = (props: StatsViewProps) => {
             />
           </VStack>
         }
-        footer={
-          <VStack>
-            {!props.allResultsShown && (
-              <VStack style={ViewStyles.mb2}>
-                <Button
-                  isLoading={props.loadingMore}
-                  isLoadingText={t("loading_more")}
-                  style={ViewStyles.accent}
-                  textStyle={theme.reverseTextStyle}
-                  onPress={props.onShowAllResultsPress}
-                >
-                  <Marquee style={theme.reverseTextStyle}>{t("show_all_results")}</Marquee>
-                </Button>
-              </VStack>
-            )}
-            <VStack center>
-              <Marquee>{t("stats_notice")}</Marquee>
-            </VStack>
+      >
+        {!props.allResultsShown && (
+          <VStack style={ViewStyles.mb2}>
+            <Button
+              isLoading={props.loadingMore}
+              isLoadingText={t("loading_more")}
+              style={ViewStyles.accent}
+              textStyle={theme.reverseTextStyle}
+              onPress={props.onShowAllResultsPress}
+            >
+              <Marquee style={theme.reverseTextStyle}>{t("show_all_results")}</Marquee>
+            </Button>
           </VStack>
-        }
-      />
+        )}
+      </StatsModal>
     </Center>
   );
 };

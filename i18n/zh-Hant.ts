@@ -185,13 +185,13 @@ const zhHant = {
   wave_stats: "WAVE記錄",
   special_weapon_stats: "特殊武器記錄",
   show_all_results: "顯示全部記錄",
-  stats_notice: "由當前已顯示的記錄統計。括號內的數字對戰為每分鐘，鮭魚跑為每次打工的平均值。",
+  stats_notice: "括號內的數字對戰為每分鐘，鮭魚跑為每次打工的平均值。",
   // Trend.
   trends: "趨勢",
   average: "平均",
   splatted_including_assisted: "擊倒 (含助攻)",
   golden_eggs_collected_including_assisted: "收集的金鮭魚卵 (含助攻)",
-  trends_notice: "由當前已顯示的記錄統計。對戰為每分鐘，鮭魚跑為每次打工的平均值。",
+  trends_notice: "對戰為每分鐘，鮭魚跑為每次打工的平均值。",
   trends_notice2: "長按標籤以顯示團隊平均值。",
   // Modes.
   modes: "模式",

@@ -190,15 +190,13 @@ const ja = {
   wave_stats: "WAVEのきろく",
   special_weapon_stats: "スペシャルウェポンのきろく",
   show_all_results: "すべてのリザルトを見る",
-  stats_notice:
-    "現在表示されているリザルトからの統計。カッコ内の数字はバトルでは1分あたり、サーモンランでは各バイトのアベレージです。",
+  stats_notice: "カッコ内の数字はバトルでは1分あたり、サーモンランでは各バイトのアベレージです。",
   // Trend.
   trends: "トレンド",
   average: "平均",
   splatted_including_assisted: "たおした (アシスト含む)",
   golden_eggs_collected_including_assisted: "集めた金イクラ (含助攻)",
-  trends_notice:
-    "現在表示されているリザルトからの統計。数字はバトルでは1分あたり、サーモンランでは各バイトのアベレージです。",
+  trends_notice: "数字はバトルでは1分あたり、サーモンランでは各バイトのアベレージです。",
   trends_notice2: "タグを長押しして、チームのアベレージが表示されます。",
   // Modes.
   modes: "モード",

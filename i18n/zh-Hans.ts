@@ -185,13 +185,13 @@ const zhHans = {
   wave_stats: "WAVE记录",
   special_weapon_stats: "特殊武器记录",
   show_all_results: "显示全部记录",
-  stats_notice: "由当前已显示的记录统计。括号内的数字对战为每分钟，鲑鱼跑为每场打工的平均值。",
+  stats_notice: "括号内的数字对战为每分钟，鲑鱼跑为每场打工的平均值。",
   // Trend.
   trends: "趋势",
   average: "平均",
   splatted_including_assisted: "击倒 (含助攻)",
   golden_eggs_collected_including_assisted: "收集的金鲑鱼卵 (含助攻)",
-  trends_notice: "由当前已显示的记录统计。对战为每分钟，鲑鱼跑为每场打工的平均值。",
+  trends_notice: "对战为每分钟，鲑鱼跑为每场打工的平均值。",
   trends_notice2: "长按标签以显示团队平均值。",
   // Modes.
   modes: "模式",
