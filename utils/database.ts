@@ -215,50 +215,24 @@ const convertFilter = (filter?: FilterProps, from?: number) => {
   return `WHERE ${condition}`;
 };
 
-interface Query {
-  id: string;
-  time: number;
-  mode: string;
-  rule: string;
-  weapon: string;
-  players: string[];
-  detail: string;
-  stage: string;
-}
-
 export const query = async (offset: number, limit: number, filter?: FilterProps) => {
   let condition: string = "";
   if (filter) {
     condition = convertFilter(filter);
   }
-  const result: Query[] = [];
-  let batch = 0;
-  while (batch * BATCH_SIZE < limit) {
-    const newOffset = offset + batch * BATCH_SIZE;
-    const newLimit = Math.min(limit - batch * BATCH_SIZE, BATCH_SIZE);
-    const sql = `SELECT * FROM result ${condition} ORDER BY time DESC LIMIT ${newLimit} OFFSET ${newOffset}`;
-    const record = await exec(sql, [], true);
-    if (record.rows.length === 0) {
-      break;
-    }
-    for (const row of record.rows) {
-      result.push({
-        id: row["id"],
-        time: row["time"],
-        mode: row["mode"],
-        rule: row["rule"],
-        weapon: row["weapon"],
-        players: row["players"].split(","),
-        detail: row["detail"],
-        stage: row["stage"],
-      });
-    }
-    batch += 1;
-  }
+  const sql = `SELECT * FROM result ${condition} ORDER BY time DESC LIMIT ${limit} OFFSET ${offset}`;
+  const record = await exec(sql, [], true);
+  const result = record.rows.map((row) => ({
+    id: row["id"],
+    time: row["time"],
+    mode: row["mode"],
+    rule: row["rule"],
+    weapon: row["weapon"],
+    players: row["players"].split(","),
+    detail: row["detail"],
+    stage: row["stage"],
+  }));
   return result;
-};
-export const queryAll = async () => {
-  return await query(0, await count());
 };
 export const queryFilterOptions = async () => {
   const modeSql = "SELECT DISTINCT mode FROM result";
