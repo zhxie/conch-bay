@@ -6,7 +6,7 @@ import { Center } from "./Stack";
 import { Color } from "./Styles";
 
 interface IconButtonProps {
-  isDisabled?: boolean;
+  disabled?: boolean;
   size: number;
   color?: string;
   icon: IconName;
@@ -53,7 +53,7 @@ const IconButton = (props: IconButtonProps) => {
 
   return (
     <Pressable
-      isDisabled={props.isDisabled}
+      disabled={props.disabled}
       hitSlop={props.hitSlop}
       style={[
         {
@@ -89,7 +89,7 @@ const IconButton = (props: IconButtonProps) => {
 const PureIconButton = (props: IconButtonProps) => {
   return (
     <Pressable
-      isDisabled={props.isDisabled}
+      disabled={props.disabled}
       hitSlop={props.hitSlop}
       style={[
         {

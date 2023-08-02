@@ -7,8 +7,8 @@ import { HStack, VStack } from "./Stack";
 import { TextStyles, ViewStyles, useTheme } from "./Styles";
 
 interface DisplayProps {
-  isFirst?: boolean;
-  isLast?: boolean;
+  first?: boolean;
+  last?: boolean;
   level?: number;
   icon?: IconName;
   title: string;
@@ -24,8 +24,8 @@ const Display = (props: DisplayProps) => {
       style={[
         ViewStyles.px3,
         { height: 32 },
-        props.isFirst && ViewStyles.rt2,
-        props.isLast && ViewStyles.rb2,
+        props.first && ViewStyles.rt2,
+        props.last && ViewStyles.rb2,
         theme.territoryStyle,
         props.style,
       ]}
@@ -34,7 +34,7 @@ const Display = (props: DisplayProps) => {
         flex
         center
         justify
-        style={[!props.isFirst && ViewStyles.sept, !props.isLast && ViewStyles.sepb]}
+        style={[!props.first && ViewStyles.sept, !props.last && ViewStyles.sepb]}
       >
         <HStack flex center style={ViewStyles.mr1}>
           <HStack style={{ width: 16 * (props.level ?? 0) }} />
@@ -57,7 +57,7 @@ interface AccordionDisplayProps extends DisplayProps {
 }
 
 const AccordionDisplay = (props: AccordionDisplayProps) => {
-  const { subChildren, isLast, ...rest } = props;
+  const { subChildren, last, ...rest } = props;
 
   const [expand, setExpand] = useState(props.expand ?? false);
 
@@ -73,7 +73,7 @@ const AccordionDisplay = (props: AccordionDisplayProps) => {
     <VStack>
       <Pressable onPress={onPress} style={{ backgroundColor: "transparent" }}>
         <Display
-          isLast={isLast && !expand}
+          last={last && !expand}
           icon={expand ? "chevron-down" : "chevron-right"}
           {...rest}
         />

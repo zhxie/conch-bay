@@ -38,7 +38,7 @@ dayjs.extend(quarterOfYear);
 dayjs.extend(utc);
 
 interface TrendViewProps {
-  isDisabled?: boolean;
+  disabled?: boolean;
   onResults: () => Promise<ResultProps[]>;
   style?: StyleProp<ViewStyle>;
 }
@@ -393,8 +393,8 @@ const TrendsView = (props: TrendViewProps) => {
   return (
     <Center style={props.style}>
       <ToolButton
-        isDisabled={props.isDisabled}
-        isLoading={loading}
+        disabled={props.disabled}
+        loading={loading}
         icon="trending-up"
         title={t("trends")}
         onPress={onTrendsPress}
@@ -414,7 +414,7 @@ const TrendsView = (props: TrendViewProps) => {
           />
         </VStack>
         <VStack style={ViewStyles.mb2}>
-          <Display isFirst isLast={battleGroups.length === 0} title={t("battle")}>
+          <Display first last={battleGroups.length === 0} title={t("battle")}>
             <Text numberOfLines={1}>{battles?.length ?? 0}</Text>
           </Display>
           {battleGroups.length > 0 && (
@@ -522,7 +522,7 @@ const TrendsView = (props: TrendViewProps) => {
           )}
         </VStack>
         <VStack style={ViewStyles.mb2}>
-          <Display isFirst isLast={coopGroups.length === 0} title={t("salmon_run")}>
+          <Display first last={coopGroups.length === 0} title={t("salmon_run")}>
             <Text numberOfLines={1}>{coops?.length ?? 0}</Text>
           </Display>
           {coopGroups.length > 0 && (

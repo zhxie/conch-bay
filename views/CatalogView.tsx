@@ -54,7 +54,7 @@ const CatalogView = (props: CatalogViewProps) => {
         }
       >
         <RewardBox
-          isLast={reward.index === rewards.length - 2 || reward.index === rewards.length - 1}
+          last={reward.index === rewards.length - 2 || reward.index === rewards.length - 1}
           isAccepted={!isAllAccepted && reward.item.state === "ACCEPTED"}
           level={reward.item.level}
           image={getImageCacheSource(reward.item.item.image.url)}

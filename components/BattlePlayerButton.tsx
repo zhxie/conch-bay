@@ -7,8 +7,8 @@ import { Color, ViewStyles, useTheme } from "./Styles";
 import Text from "./Text";
 
 interface BattlePlayerButtonProps {
-  isFirst?: boolean;
-  isLast?: boolean;
+  first?: boolean;
+  last?: boolean;
   team: string;
   self?: boolean;
   name: string;
@@ -42,8 +42,8 @@ const BattlePlayerButton = (props: BattlePlayerButtonProps) => {
   return (
     <ResultButton
       color={props.crown ? Color.AnarchyBattle : props.dragon}
-      isFirst={props.isFirst}
-      isLast={props.isLast}
+      first={props.first}
+      last={props.last}
       tag={props.self ? props.team : undefined}
       image={props.weapon}
       icon={props.crown ? "crown" : props.dragon ? "party-popper" : undefined}

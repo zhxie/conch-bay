@@ -7,8 +7,8 @@ import { Color, TextStyles, ViewStyles, useTheme } from "./Styles";
 import Text from "./Text";
 
 interface CoopPlayerButtonProps {
-  isFirst?: boolean;
-  isLast?: boolean;
+  first?: boolean;
+  last?: boolean;
   name: string;
   subtitle: string;
   mainWeapons: ImageSource[];
@@ -31,8 +31,8 @@ const CoopPlayerButton = (props: CoopPlayerButtonProps) => {
 
   return (
     <ResultButton
-      isFirst={props.isFirst}
-      isLast={props.isLast}
+      first={props.first}
+      last={props.last}
       title={props.name}
       subtitle={props.subtitle}
       subChildren={

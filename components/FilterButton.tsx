@@ -6,7 +6,7 @@ import { Color, ViewStyles } from "./Styles";
 import Text from "./Text";
 
 interface FilterButtonProps {
-  isDisabled?: boolean;
+  disabled?: boolean;
   textColor?: string;
   title: string;
   style?: StyleProp<ViewStyle>;
@@ -17,7 +17,7 @@ interface FilterButtonProps {
 const FilterButton = (props: FilterButtonProps) => {
   return (
     <Pressable
-      isDisabled={props.isDisabled}
+      disabled={props.disabled}
       style={[styles.button, props.style]}
       onPress={props.onPress}
       onLongPress={props.onLongPress}
@@ -32,7 +32,7 @@ const FilterButton = (props: FilterButtonProps) => {
 };
 
 interface ColorFilterButtonProps {
-  isDisabled?: boolean;
+  disabled?: boolean;
   color?: string;
   title: string;
   style?: StyleProp<ViewStyle>;
@@ -43,7 +43,7 @@ interface ColorFilterButtonProps {
 const ColorFilterButton = (props: ColorFilterButtonProps) => {
   return (
     <Pressable
-      isDisabled={props.isDisabled}
+      disabled={props.disabled}
       style={[styles.button, props.style]}
       onPress={props.onPress}
       onLongPress={props.onLongPress}

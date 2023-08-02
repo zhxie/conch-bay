@@ -7,7 +7,7 @@ import { Color, TextStyles, ViewStyles, useTheme } from "./Styles";
 import Text from "./Text";
 
 interface RewardBoxProps {
-  isLast?: boolean;
+  last?: boolean;
   isAccepted: boolean;
   level: number;
   image: ImageSource;
@@ -24,7 +24,7 @@ const RewardBox = (props: RewardBoxProps) => {
     <HStack
       center
       style={[
-        !props.isLast && ViewStyles.mb2,
+        !props.last && ViewStyles.mb2,
         ViewStyles.p3,
         { height: 128 },
         ViewStyles.r2,

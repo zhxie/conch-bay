@@ -1822,7 +1822,7 @@ const MainView = () => {
                   <FriendView friends={friends} voting={voting} style={ViewStyles.mb4} />
                 )}
               <FilterView
-                isDisabled={loadingMore}
+                disabled={loadingMore}
                 filter={filter}
                 options={filterOptions}
                 onChange={onChangeFilterPress}
@@ -1838,8 +1838,8 @@ const MainView = () => {
             >
               <VStack style={[ViewStyles.mb4, ViewStyles.wf, ViewStyles.px4]}>
                 <Picker
-                  isLoading={loadingMore}
-                  isLoadingText={t("loading_more")}
+                  loading={loadingMore}
+                  loadingText={t("loading_more")}
                   title={allResultsShown ? t("all_results_showed") : t("show_more")}
                   items={Object.values(TimeRange).map((range) => ({
                     key: range,
@@ -1890,16 +1890,8 @@ const MainView = () => {
                 style={[ViewStyles.mb4, ViewStyles.wf]}
               >
                 <HStack flex center style={ViewStyles.px4}>
-                  <StatsView
-                    isDisabled={counting}
-                    onResults={onStatsPress}
-                    style={ViewStyles.mr2}
-                  />
-                  <TrendsView
-                    isDisabled={counting}
-                    onResults={onStatsPress}
-                    style={ViewStyles.mr2}
-                  />
+                  <StatsView disabled={counting} onResults={onStatsPress} style={ViewStyles.mr2} />
+                  <TrendsView disabled={counting} onResults={onStatsPress} style={ViewStyles.mr2} />
                   {sessionToken.length > 0 && (
                     <SplatNetView
                       lang={language}
@@ -1914,8 +1906,8 @@ const MainView = () => {
                     onPress={onImportPress}
                   />
                   <ToolButton
-                    isLoading={exporting}
-                    isLoadingText={t("exporting")}
+                    loading={exporting}
+                    loadingText={t("exporting")}
                     icon="upload"
                     title={t("export")}
                     onPress={onExportPress}
@@ -1989,7 +1981,7 @@ const MainView = () => {
           >
             <Animated.View style={{ opacity: topFilterFade }}>
               <FilterView
-                isDisabled={loadingMore}
+                disabled={loadingMore}
                 filter={filter}
                 options={filterOptions}
                 style={ViewStyles.mb2}
@@ -2030,9 +2022,9 @@ const MainView = () => {
               <Marquee>{t("privacy_policy")}</Marquee>
             </Button>
             <Button
-              isDisabled={refreshing}
-              isLoading={loggingIn}
-              isLoadingText={t("logging_in")}
+              disabled={refreshing}
+              loading={loggingIn}
+              loadingText={t("logging_in")}
               style={ViewStyles.accent}
               textStyle={theme.reverseTextStyle}
               onPress={onLogInContinuePress}
@@ -2043,9 +2035,9 @@ const MainView = () => {
           <Text style={ViewStyles.mb2}>{t("alternative_log_in_notice")}</Text>
           <VStack style={ViewStyles.wf}>
             <Button
-              isDisabled={refreshing}
-              isLoading={loggingIn}
-              isLoadingText={t("logging_in")}
+              disabled={refreshing}
+              loading={loggingIn}
+              loadingText={t("logging_in")}
               style={ViewStyles.accent}
               textStyle={theme.reverseTextStyle}
               onPress={onAlternativeLogInPress}
@@ -2066,9 +2058,9 @@ const MainView = () => {
           <Text style={ViewStyles.mb2}>{t("relog_in_notice")}</Text>
           <VStack style={[ViewStyles.mb4, ViewStyles.wf]}>
             <Button
-              isDisabled={refreshing}
-              isLoading={loggingIn}
-              isLoadingText={t("logging_in")}
+              disabled={refreshing}
+              loading={loggingIn}
+              loadingText={t("logging_in")}
               style={[ViewStyles.mb2, ViewStyles.accent]}
               textStyle={theme.reverseTextStyle}
               onPress={onLogInContinuePress}
@@ -2076,9 +2068,9 @@ const MainView = () => {
               <Marquee style={theme.reverseTextStyle}>{t("relog_in")}</Marquee>
             </Button>
             <Button
-              isDisabled={refreshing}
-              isLoading={loggingIn}
-              isLoadingText={t("logging_in")}
+              disabled={refreshing}
+              loading={loggingIn}
+              loadingText={t("logging_in")}
               style={ViewStyles.accent}
               textStyle={theme.reverseTextStyle}
               onPress={onAlternativeLogInPress}
@@ -2089,9 +2081,9 @@ const MainView = () => {
           <Text style={ViewStyles.mb2}>{t("log_out_notice")}</Text>
           <VStack style={ViewStyles.wf}>
             <Button
-              isDisabled={loggingIn || refreshing || loadingMore || exporting}
-              isLoading={loggingOut}
-              isLoadingText={t("logging_out")}
+              disabled={loggingIn || refreshing || loadingMore || exporting}
+              loading={loggingOut}
+              loadingText={t("logging_out")}
               style={ViewStyles.danger}
               textStyle={theme.reverseTextStyle}
               onPress={onLogOutContinuePress}
@@ -2167,9 +2159,9 @@ const MainView = () => {
               <Marquee>{t("split_results")}</Marquee>
             </Button>
             <Button
-              isDisabled={refreshing && !importing}
-              isLoading={importing}
-              isLoadingText={t("importing")}
+              disabled={refreshing && !importing}
+              loading={importing}
+              loadingText={t("importing")}
               style={ViewStyles.accent}
               textStyle={theme.reverseTextStyle}
               onPress={onImportContinuePress}
@@ -2187,7 +2179,7 @@ const MainView = () => {
               <Text>{t("language_notice")}</Text>
             </VStack>
             <Picker
-              isDisabled={refreshing}
+              disabled={refreshing}
               title={t("change_game_language_language", { language: t(language) })}
               items={[
                 { key: "de-DE", value: t("de-DE") },
@@ -2222,8 +2214,8 @@ const MainView = () => {
               <Text>{t("resource_notice")}</Text>
             </VStack>
             <Button
-              isLoading={clearingCache}
-              isLoadingText={t("clearing_cache")}
+              loading={clearingCache}
+              loadingText={t("clearing_cache")}
               style={[ViewStyles.accent, ViewStyles.mb2]}
               textStyle={theme.reverseTextStyle}
               onPress={onClearCachePress}
@@ -2231,8 +2223,8 @@ const MainView = () => {
               <Marquee style={theme.reverseTextStyle}>{t("clear_cache")}</Marquee>
             </Button>
             <Button
-              isLoading={preloadingResources}
-              isLoadingText={t("preloading_resources")}
+              loading={preloadingResources}
+              loadingText={t("preloading_resources")}
               style={ViewStyles.accent}
               textStyle={theme.reverseTextStyle}
               onPress={onPreloadResourcesPress}
@@ -2343,8 +2335,8 @@ const MainView = () => {
           <Text style={ViewStyles.mb4}>{t("first_aid_notice")}</Text>
           <VStack style={ViewStyles.wf}>
             <Button
-              isLoading={exporting}
-              isLoadingText={t("exporting")}
+              loading={exporting}
+              loadingText={t("exporting")}
               style={[ViewStyles.mb2, ViewStyles.accent]}
               textStyle={theme.reverseTextStyle}
               onPress={onExportPress}

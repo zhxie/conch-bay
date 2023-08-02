@@ -10,9 +10,9 @@ import Text from "./Text";
 interface CoopButtonProps<T> {
   coop?: T;
   color: string;
-  isLoading?: boolean;
-  isFirst?: boolean;
-  isLast?: boolean;
+  loading?: boolean;
+  first?: boolean;
+  last?: boolean;
   tag?: string;
   result?: Result;
   rule: string;
@@ -42,9 +42,9 @@ const CoopButton = <T,>(props: CoopButtonProps<T>) => {
   return (
     <ResultButton
       color={props.color}
-      isLoading={props.isLoading}
-      isFirst={props.isFirst}
-      isLast={props.isLast}
+      loading={props.loading}
+      first={props.first}
+      last={props.last}
       tag={props.tag}
       result={props.result}
       title={props.rule}

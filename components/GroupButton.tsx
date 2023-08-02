@@ -7,8 +7,8 @@ import Text from "./Text";
 
 interface GroupButtonProps<T> {
   group?: T;
-  isFirst?: boolean;
-  isLast?: boolean;
+  first?: boolean;
+  last?: boolean;
   title: string;
   subtitle: string;
   style?: StyleProp<ViewStyle>;
@@ -27,8 +27,8 @@ const GroupButton = <T,>(props: GroupButtonProps<T>) => {
       style={[
         ViewStyles.px3,
         { height: 32 },
-        props.isFirst && ViewStyles.rt2,
-        props.isLast && ViewStyles.rb2,
+        props.first && ViewStyles.rt2,
+        props.last && ViewStyles.rb2,
         props.style,
       ]}
       onPress={onPress}
@@ -37,11 +37,7 @@ const GroupButton = <T,>(props: GroupButtonProps<T>) => {
         flex
         center
         justify
-        style={[
-          ViewStyles.py1,
-          !props.isFirst && ViewStyles.sept,
-          !props.isLast && ViewStyles.sepb,
-        ]}
+        style={[ViewStyles.py1, !props.first && ViewStyles.sept, !props.last && ViewStyles.sepb]}
       >
         <HStack style={ViewStyles.i}>
           <Marquee style={[TextStyles.b, TextStyles.subtle]}>{props.title}</Marquee>

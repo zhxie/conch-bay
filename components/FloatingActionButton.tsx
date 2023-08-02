@@ -3,7 +3,7 @@ import { IconButton } from "./IconButton";
 import { ViewStyles } from "./Styles";
 
 interface FloatingActionButtonProps {
-  isDisabled?: boolean;
+  disabled?: boolean;
   size: number;
   color?: string;
   icon: IconName;
@@ -14,7 +14,7 @@ interface FloatingActionButtonProps {
 const FloatingActionButton = (props: FloatingActionButtonProps) => {
   return (
     <IconButton
-      isDisabled={props.isDisabled}
+      disabled={props.disabled}
       size={props.size}
       color={props.color}
       icon={props.icon}

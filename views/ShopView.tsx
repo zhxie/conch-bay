@@ -102,8 +102,8 @@ const ShopView = (props: ShopViewProps) => {
   const renderItem = (gear: { item: MyGear; index: number }) => (
     <VStack style={ViewStyles.px4}>
       <GearBox
-        isFirst={gear.index === 0}
-        isLast={gear.index === equipments![filter].nodes.length - 1}
+        first={gear.index === 0}
+        last={gear.index === equipments![filter].nodes.length - 1}
         image={getImageCacheSource(gear.item.image.url)}
         brandImage={getImageCacheSource(gear.item.brand.image.url)}
         // TODO: need translation.
@@ -137,8 +137,8 @@ const ShopView = (props: ShopViewProps) => {
               {pickupBrand.brandGears.map((gear, i, gears) => (
                 <GearBox
                   key={gear.id}
-                  isFirst={i === 0}
-                  isLast={i === gears.length - 1}
+                  first={i === 0}
+                  last={i === gears.length - 1}
                   image={getImageCacheSource(gear.gear.image.url)}
                   brandImage={getImageCacheSource(gear.gear.brand.image.url)}
                   name={gear.gear.name}
@@ -157,8 +157,8 @@ const ShopView = (props: ShopViewProps) => {
               {limitedGears.map((gear, i, gears) => (
                 <GearBox
                   key={gear.id}
-                  isFirst={i === 0}
-                  isLast={i === gears.length - 1}
+                  first={i === 0}
+                  last={i === gears.length - 1}
                   image={getImageCacheSource(gear.gear.image.url)}
                   brandImage={getImageCacheSource(gear.gear.brand.image.url)}
                   name={gear.gear.name}
@@ -183,8 +183,8 @@ const ShopView = (props: ShopViewProps) => {
             </Button>
             {props.isEquipmentsAvailable && (
               <Button
-                isLoading={!equipments && displayEquipments}
-                isLoadingText={t("loading_owned_gears")}
+                loading={!equipments && displayEquipments}
+                loadingText={t("loading_owned_gears")}
                 style={ViewStyles.accent}
                 textStyle={theme.reverseTextStyle}
                 onPress={onShowMyGearsPress}

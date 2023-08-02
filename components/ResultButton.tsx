@@ -17,9 +17,9 @@ enum Result {
 
 interface ResultButtonProps {
   color?: string;
-  isLoading?: boolean;
-  isFirst?: boolean;
-  isLast?: boolean;
+  loading?: boolean;
+  first?: boolean;
+  last?: boolean;
   tag?: string;
   image?: ImageSource;
   result?: Result;
@@ -36,12 +36,12 @@ interface ResultButtonProps {
 const ResultButton = (props: ResultButtonProps) => {
   return (
     <Pressable
-      isDisabled={props.isLoading}
+      disabled={props.loading}
       style={[
         ViewStyles.px3,
         { height: 64 },
-        props.isFirst && ViewStyles.rt2,
-        props.isLast && ViewStyles.rb2,
+        props.first && ViewStyles.rt2,
+        props.last && ViewStyles.rb2,
         props.style,
       ]}
       onPress={props.onPress}
@@ -51,8 +51,8 @@ const ResultButton = (props: ResultButtonProps) => {
           <HStack
             style={[
               { width: 16, overflow: "hidden" },
-              props.isFirst && ViewStyles.rt2,
-              props.isLast && ViewStyles.rb2,
+              props.first && ViewStyles.rt2,
+              props.last && ViewStyles.rb2,
             ]}
           >
             <Rectangle width={4} height={64} color={props.tag} />
@@ -62,11 +62,7 @@ const ResultButton = (props: ResultButtonProps) => {
       <HStack
         flex
         center
-        style={[
-          ViewStyles.py2,
-          !props.isFirst && ViewStyles.sept,
-          !props.isLast && ViewStyles.sepb,
-        ]}
+        style={[ViewStyles.py2, !props.first && ViewStyles.sept, !props.last && ViewStyles.sepb]}
       >
         {props.result !== undefined && (
           // HACK: the right margin looks wider than the left one due to optical illusion.

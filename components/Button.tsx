@@ -5,9 +5,9 @@ import { ViewStyles } from "./Styles";
 import Text from "./Text";
 
 interface ButtonProps {
-  isDisabled?: boolean;
-  isLoading?: boolean;
-  isLoadingText?: string;
+  disabled?: boolean;
+  loading?: boolean;
+  loadingText?: string;
   style?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
   onPress?: () => void;
@@ -18,22 +18,22 @@ interface ButtonProps {
 const Button = (props: ButtonProps) => {
   return (
     <Pressable
-      isDisabled={props.isDisabled || props.isLoading}
+      disabled={props.disabled || props.loading}
       style={[ViewStyles.c, ViewStyles.px3, ViewStyles.r1, props.style]}
       onPress={props.onPress}
       onLongPress={props.onLongPress}
     >
-      {props.isLoading && (
+      {props.loading && (
         <Center flex>
           <HStack flex center>
             <ActivityIndicator style={ViewStyles.mr1} />
             <Text numberOfLines={1} style={[ViewStyles.py3, props.textStyle]}>
-              {props.isLoadingText}
+              {props.loadingText}
             </Text>
           </HStack>
         </Center>
       )}
-      {!props.isLoading && (
+      {!props.loading && (
         <Center flex>
           <HStack flex center style={ViewStyles.py3}>
             {props.children}

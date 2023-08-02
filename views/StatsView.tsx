@@ -116,7 +116,7 @@ const StatsModal = (props: StatsModalProps) => {
       {props.header}
       {(!props.hideEmpty || battleStats.count > 0) && (
         <VStack style={ViewStyles.mb2}>
-          <Display isFirst isLast={battleStats.count === 0} title={t("battle")}>
+          <Display first last={battleStats.count === 0} title={t("battle")}>
             <Text numberOfLines={1}>{battleStats.count}</Text>
           </Display>
           {battleStats.count > 0 && (
@@ -157,7 +157,7 @@ const StatsModal = (props: StatsModalProps) => {
                   {formatTotalAndAverage(battleStats.self.death, battleStats.duration / 60)}
                 </Text>
               </Display>
-              <Display isLast={battleStats.stages.length === 0} title={t("special_weapon_uses")}>
+              <Display last={battleStats.stages.length === 0} title={t("special_weapon_uses")}>
                 <Text numberOfLines={1}>
                   {formatTotalAndAverage(battleStats.self.special, battleStats.duration / 60)}
                 </Text>
@@ -192,18 +192,18 @@ const StatsModal = (props: StatsModalProps) => {
                     ))}
                   />
                   <AccordionDisplay
-                    isLast
+                    last
                     title={t("weapon_stats")}
                     subChildren={battleStats.weapons.map((weapon, i, weapons) => (
                       <AccordionDisplay
                         key={weapon.id}
-                        isLast={i === weapons.length - 1}
+                        last={i === weapons.length - 1}
                         level={1}
                         title={t(weapon.id)}
                         subChildren={weapon.rules.map((rule, j, rules) => (
                           <Display
                             key={rule.id}
-                            isLast={i === weapons.length - 1 && j === rules.length - 1}
+                            last={i === weapons.length - 1 && j === rules.length - 1}
                             level={2}
                             title={t(rule.id)}
                           >
@@ -233,7 +233,7 @@ const StatsModal = (props: StatsModalProps) => {
       )}
       {(!props.hideEmpty || coopStats.count > 0) && (
         <VStack style={ViewStyles.mb2}>
-          <Display isFirst isLast={coopStats.count === 0} title={t("salmon_run")}>
+          <Display first last={coopStats.count === 0} title={t("salmon_run")}>
             <Text numberOfLines={1}>{coopStats.count}</Text>
           </Display>
           {coopStats.count > 0 && (
@@ -288,7 +288,7 @@ const StatsModal = (props: StatsModalProps) => {
                   {formatTotalAndAverage(coopStats.self.rescue, coopStats.count - coopStats.deemed)}
                 </Text>
               </Display>
-              <Display isLast={coopStats.waves.length === 0} title={t("be_rescued")}>
+              <Display last={coopStats.waves.length === 0} title={t("be_rescued")}>
                 <Text numberOfLines={1}>
                   {formatTotalAndAverage(
                     coopStats.self.rescued,
@@ -339,13 +339,13 @@ const StatsModal = (props: StatsModalProps) => {
                     ))}
                   />
                   <AccordionDisplay
-                    isLast
+                    last
                     title={t("special_weapon_stats")}
                     subChildren={coopStats.specialWeapons.map(
                       (specialWeapon, i, specialWeapons) => (
                         <Display
                           key={specialWeapon.id}
-                          isLast={i === specialWeapons.length - 1}
+                          last={i === specialWeapons.length - 1}
                           level={1}
                           title={t(specialWeapon.id)}
                         >
@@ -369,7 +369,7 @@ const StatsModal = (props: StatsModalProps) => {
 };
 
 interface StatsViewProps {
-  isDisabled?: boolean;
+  disabled?: boolean;
   onResults: () => Promise<ResultProps[]>;
   style?: StyleProp<ViewStyle>;
 }
@@ -432,8 +432,8 @@ const StatsView = (props: StatsViewProps) => {
   return (
     <Center style={props.style}>
       <ToolButton
-        isDisabled={props.isDisabled}
-        isLoading={loading}
+        disabled={props.disabled}
+        loading={loading}
         icon="bar-chart-2"
         title={t("stats")}
         onPress={onStatsPress}

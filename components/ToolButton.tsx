@@ -6,9 +6,9 @@ import { Color, TextStyles, ViewStyles } from "./Styles";
 import Text from "./Text";
 
 interface ToolButtonProps {
-  isDisabled?: boolean;
-  isLoading?: boolean;
-  isLoadingText?: string;
+  disabled?: boolean;
+  loading?: boolean;
+  loadingText?: string;
   color?: string;
   icon: IconName;
   title: string;
@@ -19,14 +19,14 @@ interface ToolButtonProps {
 const ToolButton = (props: ToolButtonProps) => {
   return (
     <Pressable
-      isDisabled={props.isDisabled || props.isLoading}
+      disabled={props.disabled || props.loading}
       // HACK: make rounded corner at best effort.
       style={[ViewStyles.p3, { borderRadius: 44 }, props.style]}
       onPress={props.onPress}
     >
       <HStack center>
         {(() => {
-          if (props.isLoading) {
+          if (props.loading) {
             return (
               <Center style={{ height: 16 }}>
                 <ActivityIndicator style={ViewStyles.mr1} />
@@ -44,7 +44,7 @@ const ToolButton = (props: ToolButtonProps) => {
           }
         })()}
         <Text numberOfLines={1} style={TextStyles.h3}>
-          {props.isLoading ? props.isLoadingText ?? props.title : props.title}
+          {props.loading ? props.loadingText ?? props.title : props.title}
         </Text>
       </HStack>
     </Pressable>

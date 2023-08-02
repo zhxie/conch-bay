@@ -2,7 +2,7 @@ import { StyleProp, TouchableOpacity, ViewStyle } from "react-native";
 import { ViewStyles, useTheme } from "./Styles";
 
 interface PressableProps {
-  isDisabled?: boolean;
+  disabled?: boolean;
   hitSlop?: number;
   style?: StyleProp<ViewStyle>;
   onPress?: () => void;
@@ -13,11 +13,11 @@ interface PressableProps {
 const Pressable = (props: PressableProps) => {
   const theme = useTheme();
 
-  const disabledStyle = props.isDisabled ? ViewStyles.disabled : undefined;
+  const disabledStyle = props.disabled ? ViewStyles.disabled : undefined;
 
   return (
     <TouchableOpacity
-      disabled={props.isDisabled}
+      disabled={props.disabled}
       hitSlop={props.hitSlop}
       style={[theme.territoryStyle, disabledStyle, props.style]}
       onPress={props.onPress}

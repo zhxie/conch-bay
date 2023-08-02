@@ -32,12 +32,7 @@ const SplatNetView = (props: SplatNetViewProps) => {
 
   return (
     <Center style={props.style}>
-      <ToolButton
-        isLoading={loading}
-        icon="donut"
-        title={t("splatnet_3")}
-        onPress={onWebViewPress}
-      />
+      <ToolButton loading={loading} icon="donut" title={t("splatnet_3")} onPress={onWebViewPress} />
       <FullscreenModal isVisible={webServiceToken.length > 0}>
         <SafeAreaView
           style={{

@@ -19,7 +19,7 @@ import t from "../i18n";
 import { FilterProps, isFilterEqual } from "../utils/database";
 
 interface FilterViewProps {
-  isDisabled: boolean;
+  disabled?: boolean;
   filter?: FilterProps;
   options?: FilterProps;
   onChange: (filter?: FilterProps) => void;
@@ -119,7 +119,7 @@ const FilterView = (props: FilterViewProps) => {
       <HStack center>
         <Center style={[ViewStyles.pl4, ViewStyles.pr2, ViewStyles.sepr]}>
           <IconButton
-            isDisabled={props.isDisabled}
+            disabled={props.disabled}
             // HACK: the default height of filter button is iOS is 33px.
             size={33}
             color={
@@ -136,7 +136,7 @@ const FilterView = (props: FilterViewProps) => {
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <HStack flex center style={[ViewStyles.pl2, ViewStyles.pr4]}>
             <ColorFilterButton
-              isDisabled={props.isDisabled}
+              disabled={props.disabled}
               color={
                 isFilterEqual(props.filter, RegularBattleFilterProps)
                   ? Color.RegularBattle
@@ -149,7 +149,7 @@ const FilterView = (props: FilterViewProps) => {
               }}
             />
             <ColorFilterButton
-              isDisabled={props.isDisabled}
+              disabled={props.disabled}
               color={
                 isFilterEqual(props.filter, AnarchyBattleFilterProps)
                   ? Color.AnarchyBattle
@@ -162,7 +162,7 @@ const FilterView = (props: FilterViewProps) => {
               }}
             />
             <ColorFilterButton
-              isDisabled={props.isDisabled}
+              disabled={props.disabled}
               color={isFilterEqual(props.filter, XBattleFilterProps) ? Color.XBattle : undefined}
               title={t("x_battle")}
               style={ViewStyles.mr2}
@@ -171,7 +171,7 @@ const FilterView = (props: FilterViewProps) => {
               }}
             />
             <ColorFilterButton
-              isDisabled={props.isDisabled}
+              disabled={props.disabled}
               color={
                 isFilterEqual(props.filter, ChallengeFilterProps) ? Color.Challenge : undefined
               }
@@ -182,7 +182,7 @@ const FilterView = (props: FilterViewProps) => {
               }}
             />
             <ColorFilterButton
-              isDisabled={props.isDisabled}
+              disabled={props.disabled}
               color={
                 isFilterEqual(props.filter, PrivateBattleFilterProps)
                   ? Color.PrivateBattle
@@ -195,7 +195,7 @@ const FilterView = (props: FilterViewProps) => {
               }}
             />
             <ColorFilterButton
-              isDisabled={props.isDisabled}
+              disabled={props.disabled}
               color={
                 isFilterEqual(props.filter, SalmonRunFilterProps) ? Color.SalmonRun : undefined
               }
@@ -220,7 +220,7 @@ const FilterView = (props: FilterViewProps) => {
                 {props.options?.modes.map((mode) => (
                   <FilterButton
                     key={mode}
-                    isDisabled={props.isDisabled}
+                    disabled={props.disabled}
                     textColor={props.filter?.modes.includes(mode) ? Color.DarkText : undefined}
                     title={t(mode)}
                     style={[
@@ -243,7 +243,7 @@ const FilterView = (props: FilterViewProps) => {
                 {props.options?.rules.map((rule) => (
                   <FilterButton
                     key={rule}
-                    isDisabled={props.isDisabled}
+                    disabled={props.disabled}
                     textColor={props.filter?.rules.includes(rule) ? Color.DarkText : undefined}
                     title={t(rule)}
                     style={[
@@ -266,7 +266,7 @@ const FilterView = (props: FilterViewProps) => {
                 {props.options?.stages.map((stage) => (
                   <FilterButton
                     key={stage}
-                    isDisabled={props.isDisabled}
+                    disabled={props.disabled}
                     textColor={props.filter?.stages.includes(stage) ? Color.DarkText : undefined}
                     title={t(stage)}
                     style={[
@@ -289,7 +289,7 @@ const FilterView = (props: FilterViewProps) => {
                 {props.options?.weapons.map((weapon) => (
                   <FilterButton
                     key={weapon}
-                    isDisabled={props.isDisabled}
+                    disabled={props.disabled}
                     textColor={props.filter?.weapons.includes(weapon) ? Color.DarkText : undefined}
                     title={t(weapon)}
                     style={[
@@ -307,7 +307,7 @@ const FilterView = (props: FilterViewProps) => {
           )}
           <VStack style={[ViewStyles.wf, ViewStyles.pr2]}>
             <Button
-              isDisabled={props.isDisabled}
+              disabled={props.disabled}
               style={ViewStyles.accent}
               onPress={onClearFilterPress}
             >

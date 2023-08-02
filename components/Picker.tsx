@@ -11,9 +11,9 @@ interface PickerItemProps {
   value: string;
 }
 interface PickerProps {
-  isDisabled?: boolean;
-  isLoading?: boolean;
-  isLoadingText?: string;
+  disabled?: boolean;
+  loading?: boolean;
+  loadingText?: string;
   title: string;
   items: PickerItemProps[];
   header?: React.ReactNode;
@@ -37,9 +37,9 @@ const Picker = (props: PickerProps) => {
 
   return (
     <Button
-      isDisabled={props.isDisabled}
-      isLoading={props.isLoading}
-      isLoadingText={props.isLoadingText}
+      disabled={props.disabled}
+      loading={props.loading}
+      loadingText={props.loadingText}
       style={[ViewStyles.accent, props.style]}
       textStyle={props.textStyle}
       onPress={props.onPress ?? onPress}
@@ -52,7 +52,7 @@ const Picker = (props: PickerProps) => {
           {props.items.map((item, i, items) => (
             <Button
               key={item.key}
-              isDisabled={props.isDisabled}
+              disabled={props.disabled}
               style={[
                 ViewStyles.accent,
                 i !== 0 && ViewStyles.rt0,

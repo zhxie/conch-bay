@@ -534,8 +534,8 @@ const ResultView = (props: ResultViewProps) => {
         <VStack flex style={ViewStyles.px4}>
           <BattleButton
             battle={(result.item as GroupAndResultProps).battle}
-            isFirst={false}
-            isLast={
+            first={false}
+            last={
               groupsAndResults!.length > result.index + 1 &&
               groupsAndResults![result.index + 1].group !== undefined
             }
@@ -582,8 +582,8 @@ const ResultView = (props: ResultViewProps) => {
         <VStack flex style={ViewStyles.px4}>
           <CoopButton
             coop={(result.item as GroupAndResultProps).coop}
-            isFirst={false}
-            isLast={
+            first={false}
+            last={
               groupsAndResults!.length > result.index + 1 &&
               groupsAndResults![result.index + 1].group !== undefined
             }
@@ -634,8 +634,8 @@ const ResultView = (props: ResultViewProps) => {
       <VStack flex style={ViewStyles.px4}>
         <GroupButton
           group={(result.item as GroupAndResultProps).group}
-          isFirst={true}
-          isLast={false}
+          first={true}
+          last={false}
           title={t(mode)}
           subtitle={period}
           onPress={onGroupPress}
@@ -675,8 +675,8 @@ const ResultView = (props: ResultViewProps) => {
             {new Array(placeholder).fill(0).map((_, i) => (
               <BattleButton
                 key={i}
-                isLoading={true}
-                isFirst={i === 0}
+                loading={true}
+                first={i === 0}
                 color={Color.MiddleTerritory}
                 rule=""
                 stage=""
@@ -763,8 +763,8 @@ const ResultView = (props: ResultViewProps) => {
                     {team.players.map((player: VsPlayer, i: number, players: VsPlayer[]) => (
                       <BattlePlayerButton
                         key={i}
-                        isFirst={i === 0}
-                        isLast={i === players.length - 1}
+                        first={i === 0}
+                        last={i === players.length - 1}
                         team={getColor(team.color)}
                         self={player.isMyself}
                         name={formatName(player.name, player.species, player.isMyself)}
@@ -791,8 +791,8 @@ const ResultView = (props: ResultViewProps) => {
                 ))}
                 <VStack style={ViewStyles.mb2}>
                   <AccordionDisplay
-                    isFirst
-                    isLast
+                    first
+                    last
                     title={t("details")}
                     subChildren={
                       <VStack>
@@ -897,7 +897,7 @@ const ResultView = (props: ResultViewProps) => {
                             </HStack>
                           </Display>
                         ))}
-                        <Display isLast level={1} title={t("played_time")}>
+                        <Display last level={1} title={t("played_time")}>
                           <Text numberOfLines={1}>
                             {formatPlayedTime(result.battle.vsHistoryDetail!.playedTime)}
                             <Text numberOfLines={1} style={TextStyles.h6}>
@@ -957,8 +957,8 @@ const ResultView = (props: ResultViewProps) => {
                         // TODO: show brands with its favorite.
                         <GearBox
                           key={i}
-                          isFirst={i === 0}
-                          isLast={i === gears.length - 1}
+                          first={i === 0}
+                          last={i === gears.length - 1}
                           image={getImageCacheSource(gear.originalImage.url)}
                           brandImage={getImageCacheSource(gear.brand.image.url)}
                           // TODO: need translation.
@@ -982,7 +982,7 @@ const ResultView = (props: ResultViewProps) => {
             </TitledList>
             {i !== undefined && (
               <PureIconButton
-                isDisabled={i === 0}
+                disabled={i === 0}
                 size={24}
                 icon="chevron-left"
                 hitSlop={8}
@@ -992,7 +992,7 @@ const ResultView = (props: ResultViewProps) => {
             )}
             {i !== undefined && (
               <PureIconButton
-                isDisabled={i === (results?.length ?? 1) - 1}
+                disabled={i === (results?.length ?? 1) - 1}
                 size={24}
                 icon="chevron-right"
                 hitSlop={8}
@@ -1112,8 +1112,8 @@ const ResultView = (props: ResultViewProps) => {
                     ].map((memberResult, i, memberResults) => (
                       <CoopPlayerButton
                         key={i}
-                        isFirst={i === 0}
-                        isLast={i === memberResults.length - 1}
+                        first={i === 0}
+                        last={i === memberResults.length - 1}
                         name={formatName(
                           memberResult.player.name,
                           memberResult.player.species,
@@ -1143,8 +1143,8 @@ const ResultView = (props: ResultViewProps) => {
                 </VStack>
                 <VStack style={[ViewStyles.mb2, ViewStyles.px4]}>
                   <AccordionDisplay
-                    isFirst
-                    isLast
+                    first
+                    last
                     title={t("details")}
                     subChildren={
                       <VStack>
@@ -1243,7 +1243,7 @@ const ResultView = (props: ResultViewProps) => {
                             </Display>
                           </VStack>
                         )}
-                        <Display isLast level={1} title={t("played_time")}>
+                        <Display last level={1} title={t("played_time")}>
                           <Text numberOfLines={1}>
                             {formatPlayedTime(result.coop.coopHistoryDetail!.playedTime)}
                           </Text>
@@ -1312,7 +1312,7 @@ const ResultView = (props: ResultViewProps) => {
             </TitledList>
             {i !== undefined && (
               <PureIconButton
-                isDisabled={i === 0}
+                disabled={i === 0}
                 size={24}
                 icon="chevron-left"
                 hitSlop={8}
@@ -1322,7 +1322,7 @@ const ResultView = (props: ResultViewProps) => {
             )}
             {i !== undefined && (
               <PureIconButton
-                isDisabled={i === (results?.length ?? 1) - 1}
+                disabled={i === (results?.length ?? 1) - 1}
                 size={24}
                 icon="chevron-right"
                 hitSlop={8}
