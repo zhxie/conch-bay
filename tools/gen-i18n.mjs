@@ -151,9 +151,6 @@ getAll(
                                               language["CommonMsg/Gear/GearBrandName"][brand];
                                             map[id] = name;
                                           }
-                                          locale.file.write(
-                                            JSON.stringify(map, undefined, 2) + "\n"
-                                          );
                                           for (const head of heads) {
                                             const image = createHash("sha256")
                                               .update(head["__RowId"])
@@ -184,6 +181,9 @@ getAll(
                                               ];
                                             map[image] = name;
                                           }
+                                          locale.file.write(
+                                            JSON.stringify(map, undefined, 2) + "\n"
+                                          );
                                         }
                                       );
                                     }
