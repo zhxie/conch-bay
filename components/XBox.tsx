@@ -7,7 +7,7 @@ import Text from "./Text";
 
 interface XBoxProps {
   name: string;
-  power?: number;
+  power?: string;
   style?: StyleProp<ViewStyle>;
 }
 

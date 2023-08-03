@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { StyleProp, ViewStyle } from "react-native";
 import { BadgeButton, Center, Color, HStack, Modal, ViewStyles, XBox } from "../components";
 import t from "../i18n";
+import { roundPower } from "../utils/ui";
 
 interface XViewProps {
   splatZones: number;
@@ -19,6 +20,13 @@ const XView = (props: XViewProps) => {
     [props.splatZones, props.towerControl, props.rainmaker, props.clamBlitz]
   );
 
+  const formatPower = (power: number) => {
+    if (power > 0) {
+      return roundPower(power);
+    }
+    return undefined;
+  };
+
   const onXPress = () => {
     setX(true);
   };
@@ -33,14 +41,14 @@ const XView = (props: XViewProps) => {
         <HStack center justify style={ViewStyles.mb2}>
           <XBox
             name={t("splat_zones")}
-            power={props.splatZones || undefined}
+            power={formatPower(props.splatZones)}
             style={ViewStyles.mr2}
           />
-          <XBox name={t("tower_control")} power={props.towerControl || undefined} />
+          <XBox name={t("tower_control")} power={formatPower(props.towerControl)} />
         </HStack>
         <HStack center justify>
-          <XBox name={t("rainmaker")} power={props.rainmaker || undefined} style={ViewStyles.mr2} />
-          <XBox name={t("clam_blitz")} power={props.clamBlitz || undefined} />
+          <XBox name={t("rainmaker")} power={formatPower(props.rainmaker)} style={ViewStyles.mr2} />
+          <XBox name={t("clam_blitz")} power={formatPower(props.clamBlitz)} />
         </HStack>
       </Modal>
     </Center>
