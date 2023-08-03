@@ -69,7 +69,7 @@ getAll(
     const specialWeapons = {};
     const images = {};
     for (const weapon of json) {
-      if (weapon["__RowId"].endsWith("_Coop")) {
+      if (weapon["Type"] === "Coop") {
         const id = Buffer.from(`SpecialWeapon-${weapon["Id"]}`).toString("base64");
         const image = createHash("sha256")
           .update(weapon["__RowId"].replace("_Coop", ""))
