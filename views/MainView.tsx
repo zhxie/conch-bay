@@ -214,6 +214,7 @@ const MainView = () => {
   const [filter, setFilter] = useState<Database.FilterProps>();
   const filterRef = useRef<Database.FilterProps>();
   const [filterOptions, setFilterOptions] = useState<Database.FilterProps>();
+  const [stats, setStats] = useState<ResultProps[]>();
 
   const fade = useRef(new Animated.Value(0)).current;
   const blurOnTopFade = useRef(new Animated.Value(0)).current;
@@ -293,6 +294,9 @@ const MainView = () => {
       loadResults(20);
     }
   }, [filter]);
+  useEffect(() => {
+    setStats(undefined);
+  }, [filter, filtered]);
   useEffect(() => {
     if (autoRefresh) {
       activateKeepAwakeAsync();
@@ -1177,6 +1181,9 @@ const MainView = () => {
     await loadResults(num);
   };
   const onStatsPress = async () => {
+    if (stats) {
+      return stats;
+    }
     setCounting(true);
     const results: ResultProps[] = [];
     for (const group of groups ?? []) {
@@ -1218,8 +1225,10 @@ const MainView = () => {
       }
       batch += 1;
     }
+    const newStats = results.concat(details);
+    setStats(newStats);
     setCounting(false);
-    return results.concat(details);
+    return newStats;
   };
   const onGetWebServiceToken = async () => {
     // Update versions.
