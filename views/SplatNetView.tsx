@@ -13,19 +13,24 @@ interface SplatNetViewProps {
 
 const SplatNetView = (props: SplatNetViewProps) => {
   const [loading, setLoading] = useState(false);
+  const [webView, setWebView] = useState(false);
   const [webServiceToken, setWebServiceToken] = useState("");
 
   const onWebViewPress = async () => {
     setLoading(true);
     const webServiceToken = await props.onGetWebServiceToken();
+    setWebView(true);
     setWebServiceToken(webServiceToken);
     setLoading(false);
   };
+  const onModalHide = () => {
+    setWebServiceToken("");
+  };
   const onMessage = (event: WebViewMessageEvent) => {
     if (event.nativeEvent.data === "close") {
-      setWebServiceToken("");
+      setWebView(false);
     } else if (event.nativeEvent.data === "error") {
-      setWebServiceToken("");
+      setWebView(false);
       Linking.openURL(`com.nintendo.znca://znca/game/4834290508791808?p=${props.path ?? "/"}`);
     }
   };
@@ -33,7 +38,7 @@ const SplatNetView = (props: SplatNetViewProps) => {
   return (
     <Center style={props.style}>
       <ToolButton loading={loading} icon="donut" title={t("splatnet_3")} onPress={onWebViewPress} />
-      <FullscreenModal isVisible={webServiceToken.length > 0}>
+      <FullscreenModal isVisible={webView} onModalHide={onModalHide}>
         <SafeAreaView
           style={{
             height: "100%",
