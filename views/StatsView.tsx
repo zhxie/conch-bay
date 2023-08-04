@@ -32,7 +32,6 @@ interface StatsModalProps {
   isVisible: boolean;
   onClose: () => void;
   onModalHide?: () => void;
-  header?: React.ReactNode;
   children?: React.ReactNode;
 }
 
@@ -113,7 +112,7 @@ const StatsModal = (props: StatsModalProps) => {
       onModalHide={props.onModalHide}
       style={ViewStyles.modal2d}
     >
-      {props.header}
+      {props.children}
       {(!props.hideEmpty || battleStats.count > 0) && (
         <VStack style={ViewStyles.mb2}>
           <Display first last={battleStats.count === 0} title={t("battle")}>
@@ -360,7 +359,6 @@ const StatsModal = (props: StatsModalProps) => {
           )}
         </VStack>
       )}
-      {props.children}
       <VStack center>
         <Marquee>{t("stats_notice")}</Marquee>
       </VStack>
@@ -443,16 +441,15 @@ const StatsView = (props: StatsViewProps) => {
         isVisible={stats}
         onClose={onStatsClose}
         onModalHide={onModalHide}
-        header={
-          <VStack style={ViewStyles.mb2}>
-            <SegmentedControl
-              values={[t("all"), t("day"), t("week"), t("month"), t("season")]}
-              selectedIndex={group}
-              onChange={onGroupChange}
-            />
-          </VStack>
-        }
-      />
+      >
+        <VStack style={ViewStyles.mb2}>
+          <SegmentedControl
+            values={[t("all"), t("day"), t("week"), t("month"), t("season")]}
+            selectedIndex={group}
+            onChange={onGroupChange}
+          />
+        </VStack>
+      </StatsModal>
     </Center>
   );
 };

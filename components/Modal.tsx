@@ -27,6 +27,7 @@ const ModalBase = (props: ModalBaseProps) => {
       isVisible={props.isVisible}
       backdropOpacity={0.5}
       onBackdropPress={props.onClose}
+      onBackButtonPress={props.onClose}
       useNativeDriverForBackdrop
       useNativeDriver
       hideModalContentWhileAnimating

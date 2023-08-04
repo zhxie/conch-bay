@@ -42,6 +42,7 @@ const ShopView = (props: ShopViewProps) => {
   const theme = useTheme();
 
   const [displayShop, setDisplayShop] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [equipments, setEquipments] = useState<MyOutfitCommonDataEquipmentsResult>();
   const [displayEquipments, setDisplayEquipments] = useState(false);
   const [filter, setFilter] = useState<GearType>(GearType.HeadGears);
@@ -84,13 +85,13 @@ const ShopView = (props: ShopViewProps) => {
     Linking.openURL("com.nintendo.znca://znca/game/4834290508791808?p=/gesotown");
   };
   const onShowMyGearsPress = async () => {
-    setDisplayEquipments(true);
+    setLoading(true);
     const equipments = await props.onRefresh();
     if (equipments) {
       setEquipments(equipments);
-    } else {
-      setDisplayEquipments(false);
+      setDisplayEquipments(true);
     }
+    setLoading(false);
   };
   const onDisplayMyGearsClose = () => {
     setDisplayEquipments(false);
@@ -188,7 +189,7 @@ const ShopView = (props: ShopViewProps) => {
             </Button>
             {props.isEquipmentsAvailable && (
               <Button
-                loading={!equipments && displayEquipments}
+                loading={loading}
                 loadingText={t("loading_owned_gears")}
                 style={ViewStyles.accent}
                 textStyle={theme.reverseTextStyle}
@@ -200,7 +201,7 @@ const ShopView = (props: ShopViewProps) => {
           </VStack>
         </TitledList>
         <FlashModal
-          isVisible={!!equipments && displayEquipments}
+          isVisible={displayEquipments}
           data={equipments?.[filter].nodes ?? []}
           keyExtractor={(gear) => gear.name}
           renderItem={renderItem}

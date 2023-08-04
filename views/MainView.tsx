@@ -1268,7 +1268,9 @@ const MainView = () => {
     setImport(true);
   };
   const onImportClose = () => {
-    setImport(false);
+    if (!importing) {
+      setImport(false);
+    }
   };
   const onConvertS3sOutputsPress = () => {
     WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay#import-data-from-s3s");
@@ -1487,7 +1489,7 @@ const MainView = () => {
     setSupport(true);
   };
   const onSupportClose = () => {
-    if (!loggingIn && !clearingCache && !preloadingResources) {
+    if (!clearingCache && !preloadingResources) {
       setSupport(false);
     }
   };
