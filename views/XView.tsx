@@ -36,7 +36,7 @@ const XView = (props: XViewProps) => {
 
   return (
     <Center style={props.style}>
-      <BadgeButton color={Color.XBattle} title={`${maxPower}`} onPress={onXPress} />
+      <BadgeButton color={Color.XBattle} title={formatPower(maxPower) ?? ""} onPress={onXPress} />
       <Modal isVisible={x} onClose={onXClose} style={[ViewStyles.modal1d, ViewStyles.px4]}>
         <HStack center justify style={ViewStyles.mb2}>
           <XBox
