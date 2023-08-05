@@ -194,7 +194,7 @@ const ja = {
   rescued: "たすけた",
   be_rescued: "たすけてもらった",
   wave_stats: "WAVEのきろく",
-  special_weapon_stats: "スペシャルウェポンのきろく",
+  supplied_special_weapons: "支給スペシャルウェポン",
   stats_notice: "カッコ内の数字はバトルでは1分あたり、サーモンランでは各バイトのアベレージです。",
   // Trend.
   trends: "トレンド",

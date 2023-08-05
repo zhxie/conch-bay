@@ -194,7 +194,7 @@ const en = {
   rescued: "Rescued",
   be_rescued: "Be Rescued",
   wave_stats: "Wave Stats",
-  special_weapon_stats: "Special Weapon Stats",
+  supplied_special_weapons: "Supplied Special Weapons",
   stats_notice:
     "The number in parentheses is over 1-minute average in battles and over each shift average in Salmon Run.",
   // Trends.

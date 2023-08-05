@@ -189,7 +189,7 @@ const zhHans = {
   rescued: "救援",
   be_rescued: "被救助",
   wave_stats: "WAVE记录",
-  special_weapon_stats: "特殊武器记录",
+  supplied_special_weapons: "发放特殊武器",
   stats_notice: "括号内的数字对战为每分钟，鲑鱼跑为每场打工的平均值。",
   // Trend.
   trends: "趋势",

@@ -330,7 +330,7 @@ const StatsModal = (props: StatsModalProps) => {
                     ))}
                   />
                   <AccordionDisplay
-                    title={t("weapon_stats")}
+                    title={t("supplied_weapons")}
                     subChildren={coopStats.weapons.map((weapon) => (
                       <Display key={weapon.id} level={1} title={t(weapon.id)}>
                         <Text numberOfLines={1}>{weapon.count}</Text>
@@ -339,7 +339,7 @@ const StatsModal = (props: StatsModalProps) => {
                   />
                   <AccordionDisplay
                     last
-                    title={t("special_weapon_stats")}
+                    title={t("supplied_special_weapons")}
                     subChildren={coopStats.specialWeapons.map(
                       (specialWeapon, i, specialWeapons) => (
                         <Display
