@@ -56,9 +56,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
   const theme = useTheme();
 
   const [display, setDisplay] = useState<DisplayProps>();
-  const [displaySplatfest, setDisplaySplatfest] = useState(false);
   const [displaySchedules, setDisplaySchedules] = useState(false);
-  const [displayShifts, setDisplayShifts] = useState(false);
 
   const getMatchSetting = (schedule: VsSchedule, index?: number) => {
     const regularMatchSetting = schedule["regularMatchSetting"];
@@ -248,7 +246,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
       color: Color.AccentColor,
       splatfest: currentSplatfest,
     });
-    setDisplaySplatfest(true);
+    setDisplaySchedules(true);
   };
   const onRegularSchedulePress = () => {
     setDisplay({
@@ -298,7 +296,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
       color: Color.BigRun,
       shifts: bigRunShifts,
     });
-    setDisplayShifts(true);
+    setDisplaySchedules(true);
   };
   const onEggstraWorkShiftPress = () => {
     setDisplay({
@@ -306,7 +304,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
       color: Color.EggstraWork,
       shifts: eggstraWorkShifts,
     });
-    setDisplayShifts(true);
+    setDisplaySchedules(true);
   };
   const onRegularShiftPress = () => {
     setDisplay({
@@ -314,16 +312,10 @@ const ScheduleView = (props: ScheduleViewProps) => {
       color: Color.SalmonRun,
       shifts: regularShifts,
     });
-    setDisplayShifts(true);
+    setDisplaySchedules(true);
   };
   const onDisplaySchedulesClose = () => {
     setDisplaySchedules(false);
-  };
-  const onDisplaySplatfestClose = () => {
-    setDisplaySplatfest(false);
-  };
-  const onDisplayShiftsClose = () => {
-    setDisplayShifts(false);
   };
 
   return (
@@ -479,14 +471,6 @@ const ScheduleView = (props: ScheduleViewProps) => {
                   ))}
               </VStack>
             ))}
-        </TitledList>
-      </Modal>
-      <Modal
-        isVisible={displaySplatfest}
-        onClose={onDisplaySplatfestClose}
-        style={ViewStyles.modal2d}
-      >
-        <TitledList color={display?.color} title={display?.title}>
           {display?.splatfest && (
             <ScheduleBox
               rule={t("VnNSdWxlLTU=")}
@@ -494,10 +478,6 @@ const ScheduleView = (props: ScheduleViewProps) => {
               stages={[formatStage(display.splatfest.tricolorStage)]}
             />
           )}
-        </TitledList>
-      </Modal>
-      <Modal isVisible={displayShifts} onClose={onDisplayShiftsClose} style={ViewStyles.modal2d}>
-        <TitledList color={display?.color} title={display?.title}>
           {display?.shifts &&
             display.shifts
               .filter((shift) => shift.setting)
