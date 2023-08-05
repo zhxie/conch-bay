@@ -77,7 +77,7 @@ const ShopView = (props: ShopViewProps) => {
     setDisplayShop(true);
   };
   const onDisplayShopClose = () => {
-    if (!displayEquipments) {
+    if (!loading) {
       setDisplayShop(false);
     }
   };
