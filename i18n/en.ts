@@ -168,6 +168,8 @@ const en = {
   show_player_names: "Show Player Names",
   show_raw_data: "Show Raw Data",
   open_in_nintendo_switch_online: "Open in Nintendo Switch Online",
+  self: "Self",
+  team: "Team",
   // Stats.
   stats: "Stats",
   all: "All",

@@ -140,6 +140,13 @@ export const getVsSelfPlayer = (battle: VsHistoryDetailResult) => {
   return battle.vsHistoryDetail!.myTeam.players.find((player) => player.isMyself)!;
 };
 
+export const rationalize = (n: number) => {
+  if (Number.isNaN(n) || !Number.isFinite(n)) {
+    return 0;
+  }
+  return n;
+};
+
 export const countBattles = (battles: VsHistoryDetailResult[]) => {
   const result = {
     count: 0,

@@ -168,6 +168,8 @@ const ja = {
   show_player_names: "プレイヤー名を表示",
   show_raw_data: "生データを表示",
   open_in_nintendo_switch_online: "Nintendo Switch Onlineでチェック",
+  self: "自分",
+  team: "チーム",
   // Stats.
   stats: "統計",
   all: "すべて",

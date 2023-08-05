@@ -1,3 +1,6 @@
+import SegmentedControl, {
+  NativeSegmentedControlIOSChangeEvent,
+} from "@react-native-segmented-control/segmented-control";
 import { FlashList, ListRenderItemInfo } from "@shopify/flash-list";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
@@ -129,6 +132,7 @@ const ResultView = (props: ResultViewProps) => {
   const willDisplayNext = useRef<number>();
   const [hidePlayerNames, setHidePlayerNames] = useState(false);
   const [displayGroup, setDisplayGroup] = useState(false);
+  const [dimension, setDimension] = useState(0);
 
   const results = useMemo(() => {
     if (!props.groups) {
@@ -521,6 +525,9 @@ const ResultView = (props: ResultViewProps) => {
   };
   const onDisplayGroupClose = () => {
     setDisplayGroup(false);
+  };
+  const onDimensionChange = (event: NativeSyntheticEvent<NativeSegmentedControlIOSChangeEvent>) => {
+    setDimension(event.nativeEvent.selectedSegmentIndex);
   };
 
   const onBattlePress = useCallback((battle: VsHistoryDetailResult) => {
@@ -1354,10 +1361,18 @@ const ResultView = (props: ResultViewProps) => {
       </Modal>
       <StatsModal
         results={group}
+        dimension={dimension}
         hideEmpty
         isVisible={displayGroup}
         onClose={onDisplayGroupClose}
-      />
+      >
+        <SegmentedControl
+          values={[t("self"), t("team")]}
+          selectedIndex={dimension}
+          onChange={onDimensionChange}
+          style={ViewStyles.mb2}
+        />
+      </StatsModal>
     </VStack>
   );
 };

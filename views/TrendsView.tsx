@@ -31,7 +31,7 @@ import {
 } from "../components";
 import t from "../i18n";
 import { CoopHistoryDetailResult, VsHistoryDetailResult } from "../models/types";
-import { burnColor, countBattles, countCoops } from "../utils/ui";
+import { burnColor, countBattles, countCoops, rationalize } from "../utils/ui";
 import { ResultProps } from "./ResultView";
 
 dayjs.extend(quarterOfYear);
@@ -163,12 +163,6 @@ const TrendsView = (props: TrendViewProps) => {
   );
   const coopStats = useMemo(() => coopGroups.map((group) => countCoops(group)), [coopGroups]);
 
-  const rationalize = (n: number) => {
-    if (Number.isNaN(n) || !Number.isFinite(n)) {
-      return 0;
-    }
-    return n;
-  };
   const getBattleData = (dimension: BattleDimension) => {
     switch (dimension) {
       case "VICTORY":

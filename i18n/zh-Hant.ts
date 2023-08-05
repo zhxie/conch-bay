@@ -163,6 +163,8 @@ const zhHant = {
   show_player_names: "顯示玩家名稱",
   show_raw_data: "顯示原始數據",
   open_in_nintendo_switch_online: "在Nintendo Switch Online中查看",
+  self: "自己",
+  team: "團隊",
   // Stats.
   stats: "統計",
   all: "全部",
