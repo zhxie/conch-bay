@@ -1,3 +1,4 @@
+import { ColorValue } from "react-native";
 import { IconName } from "./Icon";
 import { IconButton } from "./IconButton";
 import { ViewStyles } from "./Styles";
@@ -5,7 +6,7 @@ import { ViewStyles } from "./Styles";
 interface FloatingActionButtonProps {
   disabled?: boolean;
   size: number;
-  color?: string;
+  color?: ColorValue;
   icon: IconName;
   spin?: boolean;
   onPress?: () => void;

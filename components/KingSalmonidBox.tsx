@@ -1,4 +1,4 @@
-import { StyleProp, ViewStyle } from "react-native";
+import { ColorValue, StyleProp, ViewStyle } from "react-native";
 import Marquee from "./Marquee";
 import { Circle } from "./Shape";
 import { HStack, VStack } from "./Stack";
@@ -6,7 +6,7 @@ import { Color, TextStyles, ViewStyles, useTheme } from "./Styles";
 import Text from "./Text";
 
 interface KingSalmonidBoxProps {
-  color?: string;
+  color?: ColorValue;
   name: string;
   bronzeScale: number;
   silverScale: number;

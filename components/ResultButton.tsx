@@ -1,4 +1,4 @@
-import { StyleProp, StyleSheet, ViewStyle } from "react-native";
+import { ColorValue, StyleProp, StyleSheet, ViewStyle } from "react-native";
 import { Badge } from "./Badge";
 import Icon, { IconName } from "./Icon";
 import Image, { ImageSource } from "./Image";
@@ -16,11 +16,12 @@ enum Result {
 }
 
 interface ResultButtonProps {
+  // TODO: use dynamic color instead.
   color?: string;
   loading?: boolean;
   first?: boolean;
   last?: boolean;
-  tag?: string;
+  tag?: ColorValue;
   image?: ImageSource;
   result?: Result;
   icon?: IconName;

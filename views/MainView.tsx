@@ -1889,7 +1889,10 @@ const MainView = () => {
                       animated
                       progress={progress / progressTotal}
                       color={Color.AccentColor}
-                      unfilledColor={theme.territoryColor}
+                      // TODO: use dynamic color instead.
+                      unfilledColor={
+                        theme.colorScheme === "light" ? Color.LightTerritory : Color.DarkTerritory
+                      }
                       borderColor={Color.AccentColor}
                       width={64}
                       borderRadius={2}

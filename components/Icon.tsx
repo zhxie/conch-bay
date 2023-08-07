@@ -1,5 +1,5 @@
 import createIconSet from "@expo/vector-icons/createIconSet";
-import { StyleProp, ViewStyle } from "react-native";
+import { ColorValue, StyleProp, ViewStyle } from "react-native";
 import { Lucide } from "../assets/fonts/Lucide";
 import glyphMap from "../assets/fonts/Lucide.json";
 
@@ -8,7 +8,7 @@ const LucideIcon = createIconSet(glyphMap, "Lucide", "../assets/fonts/Lucide.ttf
 interface IconProps {
   name: Lucide;
   size: number;
-  color?: string;
+  color?: ColorValue;
   style?: StyleProp<ViewStyle>;
 }
 

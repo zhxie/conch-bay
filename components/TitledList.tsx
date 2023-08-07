@@ -1,3 +1,4 @@
+import { ColorValue } from "react-native";
 import Marquee from "./Marquee";
 import { Circle } from "./Shape";
 import { Center, HStack, VStack } from "./Stack";
@@ -5,7 +6,7 @@ import { TextStyles, ViewStyles } from "./Styles";
 import Text from "./Text";
 
 interface TitledListProps {
-  color?: string;
+  color?: ColorValue;
   title?: string;
   subtitle?: string;
   children?: React.ReactNode;

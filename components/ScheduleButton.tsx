@@ -1,4 +1,4 @@
-import { StyleProp, ViewStyle } from "react-native";
+import { ColorValue, StyleProp, ViewStyle } from "react-native";
 import Marquee from "./Marquee";
 import Pressable from "./Pressable";
 import { Circle } from "./Shape";
@@ -8,7 +8,7 @@ import { Color, TextStyles, ViewStyles } from "./Styles";
 interface ScheduleButtonProps {
   rule: string;
   stages: string[];
-  color?: string;
+  color?: ColorValue;
   style?: StyleProp<ViewStyle>;
   onPress?: () => void;
 }

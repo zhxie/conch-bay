@@ -1,4 +1,4 @@
-import { StyleProp, StyleSheet, ViewStyle } from "react-native";
+import { ColorValue, StyleProp, StyleSheet, ViewStyle } from "react-native";
 import Pressable from "./Pressable";
 import { Circle } from "./Shape";
 import { HStack } from "./Stack";
@@ -7,7 +7,7 @@ import Text from "./Text";
 
 interface FilterButtonProps {
   disabled?: boolean;
-  textColor?: string;
+  textColor?: ColorValue;
   title: string;
   style?: StyleProp<ViewStyle>;
   onPress?: () => void;
@@ -33,7 +33,7 @@ const FilterButton = (props: FilterButtonProps) => {
 
 interface ColorFilterButtonProps {
   disabled?: boolean;
-  color?: string;
+  color?: ColorValue;
   title: string;
   style?: StyleProp<ViewStyle>;
   onPress?: () => void;

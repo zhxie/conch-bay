@@ -1,10 +1,13 @@
-import { StyleProp, View, ViewStyle } from "react-native";
+import { ColorValue, StyleProp, View, ViewStyle } from "react-native";
 
-interface CircleProps {
-  size: number;
-  color?: string;
-  outline?: string;
+interface ShapeProps {
+  color?: ColorValue;
   style?: StyleProp<ViewStyle>;
+}
+
+interface CircleProps extends ShapeProps {
+  size: number;
+  outline?: ColorValue;
 }
 
 const Circle = (props: CircleProps) => {
@@ -25,11 +28,9 @@ const Circle = (props: CircleProps) => {
   );
 };
 
-interface RectangleProps {
+interface RectangleProps extends ShapeProps {
   width: number;
   height: number;
-  color?: string;
-  style?: StyleProp<ViewStyle>;
 }
 
 const Rectangle = (props: RectangleProps) => {

@@ -1,5 +1,6 @@
 import { createContext, useContext, useState } from "react";
 import {
+  ColorValue,
   Dimensions,
   LayoutChangeEvent,
   Platform,
@@ -16,7 +17,7 @@ import Text from "./Text";
 const SplashtagContext = createContext({ splatfont: false });
 
 interface SplashtagProps {
-  color: string;
+  color: ColorValue;
   name: string;
   nameId: string;
   title: string;

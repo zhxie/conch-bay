@@ -1,4 +1,4 @@
-import { StyleProp, ViewStyle } from "react-native";
+import { ColorValue, StyleProp, ViewStyle } from "react-native";
 import { genericMemo } from "../utils/memo";
 import Icon from "./Icon";
 import ResultButton, { Result } from "./ResultButton";
@@ -13,7 +13,7 @@ interface CoopButtonProps<T> {
   loading?: boolean;
   first?: boolean;
   last?: boolean;
-  tag?: string;
+  tag?: ColorValue;
   result?: Result;
   rule: string;
   stage: string;

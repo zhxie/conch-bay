@@ -1,4 +1,4 @@
-import { StyleSheet, useColorScheme } from "react-native";
+import { DynamicColorIOS, Platform, StyleSheet, useColorScheme } from "react-native";
 
 export enum Color {
   // UI.
@@ -34,12 +34,6 @@ export enum Color {
 }
 
 export const TextStyles = StyleSheet.create({
-  light: {
-    color: Color.LightText,
-  },
-  dark: {
-    color: Color.DarkText,
-  },
   subtle: {
     color: Color.MiddleTerritory,
   },
@@ -92,18 +86,6 @@ export const TextStyles = StyleSheet.create({
 export const ViewStyles = StyleSheet.create({
   transparent: {
     backgroundColor: "transparent",
-  },
-  light: {
-    backgroundColor: Color.LightBackground,
-  },
-  dark: {
-    backgroundColor: Color.DarkBackground,
-  },
-  lightTerritory: {
-    backgroundColor: Color.LightTerritory,
-  },
-  darkTerritory: {
-    backgroundColor: Color.DarkTerritory,
   },
   accent: {
     backgroundColor: Color.AccentColor,
@@ -405,18 +387,27 @@ export const ViewStyles = StyleSheet.create({
 export const useTheme = () => {
   const colorScheme = useColorScheme();
 
-  const textColor = colorScheme === "light" ? Color.LightText : Color.DarkText;
-  const backgroundColor = colorScheme === "light" ? Color.LightBackground : Color.DarkBackground;
-  const territoryColor = colorScheme === "light" ? Color.LightTerritory : Color.DarkTerritory;
-  const textStyle = colorScheme === "light" ? TextStyles.light : TextStyles.dark;
-  const reverseTextStyle = colorScheme === "light" ? TextStyles.dark : TextStyles.light;
-  const backgroundStyle = colorScheme === "light" ? ViewStyles.light : ViewStyles.dark;
-  const territoryStyle =
-    colorScheme === "light" ? ViewStyles.lightTerritory : ViewStyles.darkTerritory;
+  const dynamicColor = (light: string, dark: string) => {
+    return Platform.OS === "ios"
+      ? DynamicColorIOS({ light, dark })
+      : colorScheme === "light"
+      ? light
+      : dark;
+  };
+
+  const textColor = dynamicColor(Color.LightText, Color.DarkText);
+  const reverseTextColor = dynamicColor(Color.DarkText, Color.LightText);
+  const backgroundColor = dynamicColor(Color.LightBackground, Color.DarkBackground);
+  const territoryColor = dynamicColor(Color.LightTerritory, Color.DarkTerritory);
+  const textStyle = { color: textColor };
+  const reverseTextStyle = { color: reverseTextColor };
+  const backgroundStyle = { backgroundColor };
+  const territoryStyle = { backgroundColor: territoryColor };
 
   return {
     colorScheme,
     textColor,
+    reverseTextColor,
     backgroundColor,
     territoryColor,
     textStyle,

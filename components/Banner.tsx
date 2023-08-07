@@ -33,7 +33,13 @@ const useBanner = () => {
     showBannerInner({
       contentView: (
         <Text
-          style={[ViewStyles.px4, ViewStyles.py2, TextStyles.h2, TextStyles.c, TextStyles.dark]}
+          style={[
+            ViewStyles.px4,
+            ViewStyles.py2,
+            TextStyles.h2,
+            TextStyles.c,
+            { color: Color.DarkText },
+          ]}
         >
           {content}
         </Text>

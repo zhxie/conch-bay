@@ -1,4 +1,4 @@
-import { ActivityIndicator, StyleProp, ViewStyle } from "react-native";
+import { ActivityIndicator, ColorValue, StyleProp, ViewStyle } from "react-native";
 import Icon, { IconName } from "./Icon";
 import Pressable from "./Pressable";
 import { Center, HStack } from "./Stack";
@@ -9,7 +9,7 @@ interface ToolButtonProps {
   disabled?: boolean;
   loading?: boolean;
   loadingText?: string;
-  color?: string;
+  color?: ColorValue;
   icon: IconName;
   title: string;
   style?: StyleProp<ViewStyle>;

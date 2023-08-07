@@ -1,4 +1,4 @@
-import { StyleProp, StyleSheet, ViewStyle } from "react-native";
+import { ColorValue, StyleProp, StyleSheet, ViewStyle } from "react-native";
 import Image, { ImageSource } from "./Image";
 import Marquee from "./Marquee";
 import { HStack, VStack } from "./Stack";
@@ -11,7 +11,7 @@ interface StageProps {
 }
 interface WeaponProps {
   image: ImageSource;
-  tintColor?: string;
+  tintColor?: ColorValue;
 }
 interface ScheduleBoxProps {
   rule: string;

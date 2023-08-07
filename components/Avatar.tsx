@@ -1,12 +1,12 @@
-import { ImageStyle, StyleProp, ViewStyle } from "react-native";
+import { ColorValue, ImageStyle, StyleProp, ViewStyle } from "react-native";
 import Image, { ImageSource } from "./Image";
 import { Circle } from "./Shape";
 import { Center } from "./Stack";
 import { useTheme } from "./Styles";
 
 interface BadgeProps {
-  color?: string;
-  outline?: string;
+  color?: ColorValue;
+  outline?: ColorValue;
 }
 interface AvatarProps {
   size: number;

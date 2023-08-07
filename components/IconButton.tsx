@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { Animated, Easing, StyleProp, ViewStyle } from "react-native";
+import { Animated, ColorValue, Easing, StyleProp, ViewStyle } from "react-native";
 import Icon, { IconName } from "./Icon";
 import Pressable from "./Pressable";
 import { Center } from "./Stack";
@@ -8,7 +8,7 @@ import { Color } from "./Styles";
 interface IconButtonProps {
   disabled?: boolean;
   size: number;
-  color?: string;
+  color?: ColorValue;
   icon: IconName;
   spin?: boolean;
   hitSlop?: number;

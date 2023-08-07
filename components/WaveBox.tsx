@@ -1,4 +1,4 @@
-import { StyleProp, ViewStyle } from "react-native";
+import { ColorValue, StyleProp, ViewStyle } from "react-native";
 import Image, { ImageSource } from "./Image";
 import Marquee from "./Marquee";
 import { Circle } from "./Shape";
@@ -7,7 +7,7 @@ import { Color, TextStyles, ViewStyles, useTheme } from "./Styles";
 import Text from "./Text";
 
 interface WaveBoxProps {
-  color?: string;
+  color?: ColorValue;
   isKingSalmonid?: boolean;
   waterLevel: string;
   eventWave: string;

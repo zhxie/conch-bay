@@ -11,6 +11,7 @@ import { Color, TextStyles, useTheme } from "./Styles";
 
 interface ChartData {
   data: number[];
+  // TODO: use dynamic color instead.
   color: string;
   max?: number;
   relative?: boolean;
@@ -19,6 +20,7 @@ interface ChartData {
 
 interface LineProps {
   data: number[];
+  // TODO: use dynamic color instead.
   color: string;
   dash?: boolean;
 }
@@ -51,7 +53,8 @@ const AreaLine = (props: LineProps) => {
               width: 6,
               height: 6,
               rx: 6,
-              color: theme.territoryColor,
+              // TODO: use dynamic color instead.
+              color: theme.colorScheme === "light" ? Color.LightTerritory : Color.DarkTerritory,
               border: {
                 width: 2,
                 color: props.color,
@@ -82,7 +85,8 @@ const ScatterLine = (props: LineProps) => {
               width: 6,
               height: 6,
               rx: 6,
-              color: theme.territoryColor,
+              // TODO: use dynamic color instead.
+              color: theme.colorScheme === "light" ? Color.LightTerritory : Color.DarkTerritory,
               border: {
                 width: 2,
                 color: props.color,

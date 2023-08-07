@@ -5,6 +5,7 @@ import { TextStyles, ViewStyles, useTheme } from "./Styles";
 import Text from "./Text";
 
 interface BadgeProps {
+  // TODO: use dynamic color instead.
   color: string;
   title: string;
   size?: "large" | "small";

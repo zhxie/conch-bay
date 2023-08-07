@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleProp, ViewStyle } from "react-native";
+import { ColorValue, StyleProp, ViewStyle } from "react-native";
 import { genericMemo } from "../utils/memo";
 import ResultButton, { Result } from "./ResultButton";
 import { Circle } from "./Shape";
@@ -13,7 +13,7 @@ interface BattleButtonProps<T> {
   loading?: boolean;
   first?: boolean;
   last?: boolean;
-  tag?: string;
+  tag?: ColorValue;
   result?: Result;
   rule: string;
   dragon?: string;
