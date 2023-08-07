@@ -1,18 +1,15 @@
 import * as Font from "expo-font";
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
-import { useColorScheme } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ToastBannerProvider, ToastBannerPresenter } from "react-native-toast-banner";
-import { SplashtagContext, ViewStyles } from "./components";
+import { SplashtagContext, useTheme } from "./components";
 import "./i18n";
 import { ok } from "./utils/promise";
 import { MainView } from "./views";
 
 const App = () => {
-  const colorScheme = useColorScheme();
-  const statusBarStyle = colorScheme === "light" ? "dark" : "light";
-  const backgroundStyle = colorScheme === "light" ? ViewStyles.light : ViewStyles.dark;
+  const theme = useTheme();
 
   const [ready, setReady] = useState(false);
   const [splatfont, setSplatfont] = useState(false);
@@ -37,10 +34,10 @@ const App = () => {
   });
 
   return (
-    <SafeAreaProvider style={backgroundStyle}>
+    <SafeAreaProvider style={theme.backgroundStyle}>
       <ToastBannerProvider>
         <SplashtagContext.Provider value={{ splatfont }}>
-          <StatusBar style={statusBarStyle} />
+          <StatusBar style={theme.colorScheme === "light" ? "dark" : "light"} />
           {ready && <MainView />}
           <ToastBannerPresenter />
         </SplashtagContext.Provider>
