@@ -19,8 +19,10 @@ const SplatNetView = (props: SplatNetViewProps) => {
   const onWebViewPress = async () => {
     setLoading(true);
     const webServiceToken = await props.onGetWebServiceToken();
-    setWebView(true);
-    setWebServiceToken(webServiceToken);
+    if (webServiceToken.length > 0) {
+      setWebView(true);
+      setWebServiceToken(webServiceToken);
+    }
     setLoading(false);
   };
   const onModalHide = () => {
