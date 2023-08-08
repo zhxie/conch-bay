@@ -5,7 +5,6 @@ import { Center, FullscreenModal, ToolButton } from "../components";
 import t from "../i18n";
 
 interface SplatNetViewProps {
-  path?: string;
   lang: string;
   style?: StyleProp<ViewStyle>;
   onGetWebServiceToken: () => Promise<string>;
@@ -33,13 +32,19 @@ const SplatNetView = (props: SplatNetViewProps) => {
       setWebView(false);
     } else if (event.nativeEvent.data === "error") {
       setWebView(false);
-      Linking.openURL(`com.nintendo.znca://znca/game/4834290508791808?p=${props.path ?? "/"}`);
+      Linking.openURL("com.nintendo.znca://znca/game/4834290508791808");
     }
   };
 
   return (
     <Center style={props.style}>
       <ToolButton loading={loading} icon="donut" title={t("splatnet_3")} onPress={onWebViewPress} />
+      {loading && (
+        <WebView
+          source={{ uri: `https://api.lp1.av5ja.srv.nintendo.net/?lang=${props.lang}` }}
+          style={{ width: 0, height: 0 }}
+        />
+      )}
       <FullscreenModal isVisible={webView} onModalHide={onModalHide}>
         <SafeAreaView
           style={{
@@ -54,9 +59,7 @@ const SplatNetView = (props: SplatNetViewProps) => {
             // TODO: audit injected scripts and third-party cookies usage.
             <WebView
               source={{
-                uri: `https://api.lp1.av5ja.srv.nintendo.net${props.path ?? "/"}?lang=${
-                  props.lang
-                }`,
+                uri: `https://api.lp1.av5ja.srv.nintendo.net/?lang=${props.lang}`,
                 headers: {
                   Cookie: `_gtoken=${webServiceToken}`,
                   "X-Web-View-Ver": "4.0.0-d5178440",
