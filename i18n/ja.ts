@@ -122,6 +122,7 @@ const ja = {
   headgear: "アタマ",
   clothes: "フク",
   shoes: "クツ",
+  shop_notice: "ギアはホームページ下のイカリング3から注文できます。",
   // Friend.
   playing: "試合中",
   working: "バイト中",

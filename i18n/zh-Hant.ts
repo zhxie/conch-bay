@@ -117,6 +117,7 @@ const zhHant = {
   headgear: "頭部裝備",
   clothes: "服裝",
   shoes: "鞋子",
+  shop_notice: "您可以通過主頁下方的魷魚圈3預訂裝備。",
   // Friend.
   playing: "比賽中",
   working: "打工中",

@@ -117,6 +117,7 @@ const zhHans = {
   headgear: "头部装备",
   clothes: "服装",
   shoes: "鞋子",
+  shop_notice: "您可以通过主页下方的鱿鱼圈3预订装备。",
   // Friend.
   playing: "比赛中",
   working: "打工中",

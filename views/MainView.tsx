@@ -1931,8 +1931,7 @@ const MainView = () => {
                 {shop && (
                   <ShopView
                     shop={shop}
-                    isEquipmentsAvailable={!!sessionToken}
-                    onRefresh={onEquipmentsRefresh}
+                    onRefresh={sessionToken.length > 0 ? onEquipmentsRefresh : undefined}
                   />
                 )}
               </ScheduleView>

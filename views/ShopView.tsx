@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Linking, StyleProp, ViewStyle } from "react-native";
+import { StyleProp, ViewStyle } from "react-native";
 import {
   Button,
   Color,
@@ -7,9 +7,11 @@ import {
   FlashModal,
   GearBox,
   HStack,
+  Icon,
   Marquee,
   Modal,
   ScheduleButton,
+  TextStyles,
   TitledList,
   VStack,
   ViewStyles,
@@ -33,9 +35,8 @@ enum GearType {
 
 interface ShopViewProps {
   shop: Shop;
-  isEquipmentsAvailable: boolean;
   style?: StyleProp<ViewStyle>;
-  onRefresh: () => Promise<MyOutfitCommonDataEquipmentsResult | undefined>;
+  onRefresh?: () => Promise<MyOutfitCommonDataEquipmentsResult | undefined>;
 }
 
 const ShopView = (props: ShopViewProps) => {
@@ -81,12 +82,9 @@ const ShopView = (props: ShopViewProps) => {
       setDisplayShop(false);
     }
   };
-  const onOrderInNintendoSwitchOnlinePress = () => {
-    Linking.openURL("com.nintendo.znca://znca/game/4834290508791808?p=/gesotown");
-  };
   const onShowMyGearsPress = async () => {
     setLoading(true);
-    const equipments = await props.onRefresh();
+    const equipments = await props.onRefresh!();
     if (equipments) {
       setEquipments(equipments);
       setDisplayEquipments(true);
@@ -139,7 +137,7 @@ const ShopView = (props: ShopViewProps) => {
       <Modal isVisible={displayShop} onClose={onDisplayShopClose} style={ViewStyles.modal2d}>
         <TitledList color={theme.textColor} title={t("gesotown")}>
           {pickupBrand && (
-            <VStack center style={ViewStyles.mb2}>
+            <VStack center style={(limitedGears.length > 0 || !!props.onRefresh) && ViewStyles.mb2}>
               {pickupBrand.brandGears.map((gear, i, gears) => (
                 <GearBox
                   key={gear.id}
@@ -159,7 +157,7 @@ const ShopView = (props: ShopViewProps) => {
             </VStack>
           )}
           {limitedGears.length > 0 && (
-            <VStack center style={ViewStyles.mb2}>
+            <VStack center style={!!props.onRefresh && ViewStyles.mb2}>
               {limitedGears.map((gear, i, gears) => (
                 <GearBox
                   key={gear.id}
@@ -178,27 +176,25 @@ const ShopView = (props: ShopViewProps) => {
               ))}
             </VStack>
           )}
-          <VStack style={ViewStyles.wf}>
-            <Button
-              style={[props.isEquipmentsAvailable && ViewStyles.mb2, ViewStyles.accent]}
-              onPress={onOrderInNintendoSwitchOnlinePress}
-            >
-              <Marquee style={theme.reverseTextStyle}>
-                {t("order_in_nintendo_switch_online")}
-              </Marquee>
-            </Button>
-            {props.isEquipmentsAvailable && (
+          {!!props.onRefresh && (
+            <VStack style={ViewStyles.wf}>
               <Button
                 loading={loading}
                 loadingText={t("loading_owned_gears")}
-                style={ViewStyles.accent}
+                style={[ViewStyles.mb2, ViewStyles.accent]}
                 textStyle={theme.reverseTextStyle}
                 onPress={onShowMyGearsPress}
               >
                 <Marquee style={theme.reverseTextStyle}>{t("show_owned_gears")}</Marquee>
               </Button>
-            )}
-          </VStack>
+              <HStack style={ViewStyles.c}>
+                <Icon name="info" size={14} color={Color.MiddleTerritory} style={ViewStyles.mr1} />
+                <HStack style={ViewStyles.i}>
+                  <Marquee style={TextStyles.subtle}>{t("shop_notice")}</Marquee>
+                </HStack>
+              </HStack>
+            </VStack>
+          )}
         </TitledList>
         <FlashModal
           isVisible={displayEquipments}

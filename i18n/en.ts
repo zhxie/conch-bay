@@ -121,6 +121,7 @@ const en = {
   headgear: "Headgear",
   clothes: "Clothes",
   shoes: "Shoes",
+  shop_notice: "You can order gear through the SplatNet 3 below the homepage.",
   // Friend.
   playing: "Playing",
   working: "Working",
