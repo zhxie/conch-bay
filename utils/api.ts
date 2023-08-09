@@ -1,4 +1,5 @@
 import axios from "axios";
+import * as Application from "expo-application";
 import * as Crypto from "expo-crypto";
 import {
   BankaraBattleHistoriesResult,
@@ -32,6 +33,16 @@ import { getParam, parameterize } from "./url";
 const AXIOS_TIMEOUT = 10000;
 const AXIOS_TOKEN_TIMEOUT = 15000;
 
+const userAgent = () => {
+  const segments = Application.applicationId!.split(".");
+  const components = segments[segments.length - 1].split("_");
+  const ua = components
+    .map((component) => component[0].toUpperCase() + component.slice(1))
+    .join("");
+  return `${ua}/${Application.nativeApplicationVersion}`;
+};
+const USER_AGENT = userAgent();
+
 export const fetchLatestVersion = async () => {
   const res = await axios.get("https://api.github.com/repos/zhxie/conch-bay/releases", {
     timeout: AXIOS_TIMEOUT,
@@ -40,17 +51,23 @@ export const fetchLatestVersion = async () => {
 };
 
 export const fetchSchedules = async () => {
-  const res = await fetch("https://splatoon3.ink/data/schedules.json");
+  const res = await fetch("https://splatoon3.ink/data/schedules.json", {
+    headers: { "User-Agent": USER_AGENT },
+  });
   const json = await res.json();
   return (json as SchedulesQuery).data;
 };
 export const fetchShop = async () => {
-  const res = await fetch("https://splatoon3.ink/data/gear.json");
+  const res = await fetch("https://splatoon3.ink/data/gear.json", {
+    headers: { "User-Agent": USER_AGENT },
+  });
   const json = await res.json();
   return (json as ShopQuery).data;
 };
 export const fetchSplatfests = async () => {
-  const res = await fetch("https://splatoon3.ink/data/festivals.json");
+  const res = await fetch("https://splatoon3.ink/data/festivals.json", {
+    headers: { "User-Agent": USER_AGENT },
+  });
   const json = await res.json();
   return (json as FestivalsQuery).US.data;
 };
@@ -85,7 +102,7 @@ const callIminkFApi = async (step: number, idToken: string, naId: string, coralU
     body["coral_user_id"] = coralUserId;
   }
   const res = await axios.post("https://api.imink.app/f", body, {
-    headers: { "Content-Type": "application/json; charset=utf-8" },
+    headers: { "Content-Type": "application/json; charset=utf-8", "User-Agent": USER_AGENT },
     timeout: AXIOS_TOKEN_TIMEOUT,
   });
   return res.data as { f: string; request_id: string; timestamp: string };
@@ -107,6 +124,7 @@ const callNxapiZncaApi = async (
   const res = await axios.post("https://nxapi-znca-api.fancy.org.uk/api/znca/f", body, {
     headers: {
       "Content-Type": "application/json; charset=utf-8",
+      "User-Agent": USER_AGENT,
       "X-znca-Platform": "Android",
       "X-znca-Version": NSO_VERSION,
     },
