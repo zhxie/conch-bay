@@ -694,7 +694,7 @@ const MainView = () => {
     setProgressTotal(0);
     let n = -1;
     let throwable = 0;
-    let error: Error | undefined = undefined;
+    let error: Error | undefined;
     const [battleFail, coopFail] = await Promise.all([
       Promise.all([
         fetchLatestBattleHistories(bulletToken),
@@ -1322,7 +1322,7 @@ const MainView = () => {
       const newCoops = result["coops"].filter((_, i: number) => !coopExisted[i]);
       const skip = n - (newBattles.length + newCoops.length);
       let fail = 0;
-      let error: Error | undefined = undefined;
+      let error: Error | undefined;
       for (const battle of newBattles) {
         const result = await Database.addBattle(battle)
           .then(() => {

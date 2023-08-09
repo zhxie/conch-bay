@@ -208,8 +208,12 @@ export const getWebServiceToken = async (sessionToken: string) => {
       requestId = json["request_id"];
       timestamp = json["timestamp"];
       if (!f || !requestId || !timestamp) {
+        f = "";
+        requestId = "";
+        timestamp = "";
         throw new Error(`/f: ${JSON.stringify(json)}`);
       }
+      break;
     } catch (e) {
       // Throw the first error which would be an error using imink f API.
       if (error === undefined) {
@@ -260,8 +264,12 @@ export const getWebServiceToken = async (sessionToken: string) => {
       requestId2 = json["request_id"];
       timestamp2 = json["timestamp"];
       if (!f2 || !requestId2 || !timestamp2) {
+        f2 = "";
+        requestId2 = "";
+        timestamp2 = "";
         throw new Error(`/f: ${JSON.stringify(json)}`);
       }
+      break;
     } catch (e) {
       // Throw the first error which would be an error using imink f API.
       if (error === undefined) {
