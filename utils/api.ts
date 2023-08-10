@@ -1,5 +1,5 @@
 import axios from "axios";
-import * as Application from "expo-application";
+import Constants from "expo-constants";
 import * as Crypto from "expo-crypto";
 import {
   BankaraBattleHistoriesResult,
@@ -32,16 +32,7 @@ import { getParam, parameterize } from "./url";
 
 const AXIOS_TIMEOUT = 10000;
 const AXIOS_TOKEN_TIMEOUT = 15000;
-
-const userAgent = () => {
-  const segments = Application.applicationId!.split(".");
-  const components = segments[segments.length - 1].split("_");
-  const ua = components
-    .map((component) => component[0].toUpperCase() + component.slice(1))
-    .join("");
-  return `${ua}/${Application.nativeApplicationVersion}`;
-};
-const USER_AGENT = userAgent();
+const USER_AGENT = `ConchBay/${Constants.expoConfig!.version!}`;
 
 export const fetchLatestVersion = async () => {
   const res = await axios.get("https://api.github.com/repos/zhxie/conch-bay/releases", {
