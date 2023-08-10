@@ -1413,7 +1413,7 @@ const MainView = () => {
         if (coops.endsWith(",")) {
           coops = coops.substring(0, coops.length - 1);
         }
-        await FileSystem.writeAsStringAsync(uri, `{"battles":[${battles}],"coop":[${coops}]}`, {
+        await FileSystem.writeAsStringAsync(uri, `{"battles":[${battles}],"coops":[${coops}]}`, {
           encoding: FileSystem.EncodingType.UTF8,
         });
       } else {
