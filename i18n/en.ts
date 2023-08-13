@@ -55,15 +55,6 @@ const en = {
   show_more_notice: "Long press on Show more to show results for a specified period.",
   splatnet: "SplatNet",
   splatnet_3: "SplatNet 3",
-  import: "Import",
-  importing: "Importing",
-  import_notice:
-    "Conch Bay supports importing results exported by Conch Bay, and you can also convert results exported by other 3rd party apps to formats supported by Conch Bay and import them.",
-  convert_s3s_outputs: "Convert s3s Outputs",
-  convert_stat_ink_salmon_run_json: "Convert stat.ink Salmon Run JSON",
-  convert_ikawidget3_ikax3: "Convert ikawidget3 IKAX3",
-  convert_salmdroidnw_backup: "Convert salmdroidNW Backup",
-  "convert_salmonia3+_backup": "Convert Salmonia3+ Backup",
   export: "Export",
   exporting: "Exporting",
   disclaimer:
@@ -207,6 +198,19 @@ const en = {
   trends_notice:
     "The number is over 1-minute average in battles and over each shift average in Salmon Run.",
   trends_notice2: "Long press on tags to show team's average.",
+  // Import.
+  import: "Import",
+  importing: "Importing",
+  import_notice:
+    "Conch Bay supports importing results exported by Conch Bay, and you can also convert results exported by other 3rd party apps to formats supported by Conch Bay and import them. Besides, you can contact us for assistance through Support at the bottom of the homepage.",
+  convert_s3s_outputs: "Convert s3s Outputs",
+  convert_stat_ink_salmon_run_json: "Convert stat.ink Salmon Run JSON",
+  convert_ikawidget3_ikax3: "Convert ikawidget3 IKAX3",
+  convert_salmdroidnw_backup: "Convert salmdroidNW Backup",
+  "convert_salmonia3+_backup": "Convert Salmonia3+ Backup",
+  split_and_import_notice:
+    "Conch Bay requires a lot of memory to import records. If Conch Bay cannot import records, you can split and import them. Please note, splitting and importing takes several minutes to tens of minutes. Besides, you can contact us for assistance through Support at the bottom of the homepage.",
+  split_and_import: "Split and Import",
   // Modes.
   battle: "Battle",
   regular_battle: "Regular Battle",

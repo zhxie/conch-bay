@@ -56,15 +56,6 @@ const ja = {
   show_more_notice: "もっと見るを長押しして、指定期間のリザルトを表示します。",
   splatnet: "イカリング",
   splatnet_3: "イカリング3",
-  import: "インポート",
-  importing: "インポート中",
-  import_notice:
-    "ホラガイベイはホラガイベイによってエクスポートされたリザルトのインポートをサポートしており、他のサードパーティアプリによってエクスポートされたリザルトをホラガイベイでサポートされている形式に変換してインポートすることもできます。",
-  convert_s3s_outputs: "s3sによってエクスポートされたリザルトを変換",
-  convert_stat_ink_salmon_run_json: "stat.inkサーモンランJSONを変換",
-  convert_ikawidget3_ikax3: "ikawidget3 IKAX3を変換",
-  convert_salmdroidnw_backup: "salmdroidNWバックアップを変換",
-  "convert_salmonia3+_backup": "Salmonia3+バックアップを変換",
   export: "エクスポート",
   exporting: "エクスポート中",
   disclaimer:
@@ -206,6 +197,19 @@ const ja = {
   golden_eggs_collected_including_assisted: "集めた金イクラ (含助攻)",
   trends_notice: "数字はバトルでは1分あたり、サーモンランでは各バイトのアベレージです。",
   trends_notice2: "タグを長押しして、チームのアベレージが表示されます。",
+  // Import.
+  import: "インポート",
+  importing: "インポート中",
+  import_notice:
+    "ホラガイベイはホラガイベイによってエクスポートされたリザルトのインポートをサポートしており、他のサードパーティアプリによってエクスポートされたリザルトをホラガイベイでサポートされている形式に変換してインポートすることもできます。また、ホームページ下のサポートからもお問い合わせいただけます。",
+  convert_s3s_outputs: "s3sによってエクスポートされたリザルトを変換",
+  convert_stat_ink_salmon_run_json: "stat.inkサーモンランJSONを変換",
+  convert_ikawidget3_ikax3: "ikawidget3 IKAX3を変換",
+  convert_salmdroidnw_backup: "salmdroidNWバックアップを変換",
+  "convert_salmonia3+_backup": "Salmonia3+バックアップを変換",
+  split_and_import_notice:
+    "ホラガイベイはリザルトをインポートするために大量のメモリを必要とします。ホラガイベイがリザルトをインポートできない場合は、リザルトを分割してインポートできます。分割してインポートするには数分から数十分かかりますのでご注意ください。また、ホームページ下のサポートからもお問い合わせいただけます。",
+  split_and_import: "分割してインポート",
   // Modes.
   battle: "バトル",
   regular_battle: "レギュラーマッチ",

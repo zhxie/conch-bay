@@ -4,7 +4,6 @@ import * as Application from "expo-application";
 import { BlurView } from "expo-blur";
 import * as Clipboard from "expo-clipboard";
 import Constants, { AppOwnership } from "expo-constants";
-import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
 import { Image } from "expo-image";
 import { activateKeepAwakeAsync, deactivateKeepAwake } from "expo-keep-awake";
@@ -96,13 +95,7 @@ import {
   registerBackgroundTask,
   unregisterBackgroundTask,
 } from "../utils/background";
-import {
-  IMPORT_READ_SIZE,
-  ImportStreamParser,
-  decode64,
-  decode64String,
-  encode64String,
-} from "../utils/codec";
+import { decode64String, encode64String } from "../utils/codec";
 import * as Database from "../utils/database";
 import { ok } from "../utils/promise";
 import {
@@ -117,6 +110,7 @@ import {
 import CatalogView from "./CatalogView";
 import FilterView from "./FilterView";
 import FriendView from "./FriendView";
+import ImportView from "./ImportView";
 import ResultView, { GroupProps, ResultProps } from "./ResultView";
 import ScheduleView from "./ScheduleView";
 import ShopView from "./ShopView";
@@ -158,8 +152,6 @@ const MainView = () => {
   const [progressTotal, setProgressTotal] = useState(0);
   const [loadingMore, setLoadingMore] = useState(false);
   const [counting, setCounting] = useState(false);
-  const [import_, setImport] = useState(false);
-  const [importing, setImporting] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [support, setSupport] = useState(false);
   const [clearingCache, setClearingCache] = useState(false);
@@ -303,9 +295,9 @@ const MainView = () => {
   }, [filter, filtered]);
   useEffect(() => {
     if (autoRefresh) {
-      activateKeepAwakeAsync();
+      activateKeepAwakeAsync("refresh");
     } else {
-      deactivateKeepAwake();
+      deactivateKeepAwake("refresh");
     }
   }, [autoRefresh]);
   useEffect(() => {
@@ -1268,138 +1260,63 @@ const MainView = () => {
     }
     return "";
   };
-  const onImportPress = () => {
-    setImport(true);
+  const onImportBegin = () => {
+    setRefreshing(true);
   };
-  const onImportClose = () => {
-    if (!importing) {
-      setImport(false);
-    }
-  };
-  const onConvertS3sOutputsPress = () => {
-    WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay#import-data-from-s3s");
-  };
-  const onConvertStatInkSalmonRunJsonPress = () => {
-    WebBrowser.openBrowserAsync(
-      "https://github.com/zhxie/conch-bay#import-salmon-run-data-from-statink"
+  const onImportResults = async (
+    battles: VsHistoryDetailResult[],
+    coops: CoopHistoryDetailResult[]
+  ) => {
+    const n = battles.length + coops.length;
+    const battleExisted = await Promise.all(
+      battles.map((battle: VsHistoryDetailResult) => Database.isExist(battle.vsHistoryDetail!.id))
     );
-  };
-  const onConvertIkawidget3Ikax3Press = () => {
-    WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay#import-data-from-ikawidget3");
-  };
-  const onConvertSalmroidnwBackupPress = () => {
-    WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay#import-data-from-salmdroidnw");
-  };
-  const onConvertSalmonia3PlusBackupPress = () => {
-    WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay#import-data-from-salmonia3");
-  };
-  const onImportContinuePress = async () => {
-    setImporting(true);
-    let uri = "";
-    let success = false;
-    try {
-      const doc = await DocumentPicker.getDocumentAsync({ copyToCacheDirectory: true });
-      if (doc.canceled) {
-        setImporting(false);
-        return;
-      }
-      uri = doc.assets[0].uri;
-
-      setRefreshing(true);
-      const parser = new ImportStreamParser();
-      let n = 0,
-        skip = 0,
-        fail = 0;
-      let error: Error | undefined = undefined;
-      let batch = 0;
-      while (true) {
-        const encoded = await FileSystem.readAsStringAsync(uri, {
-          encoding: "base64",
-          length: IMPORT_READ_SIZE,
-          position: IMPORT_READ_SIZE * batch,
+    const coopExisted = await Promise.all(
+      coops.map((coop: CoopHistoryDetailResult) => Database.isExist(coop.coopHistoryDetail!.id))
+    );
+    const newBattles = battles.filter((_, i: number) => !battleExisted[i]);
+    const newCoops = coops.filter((_, i: number) => !coopExisted[i]);
+    const skip = n - newBattles.length - newCoops.length;
+    let error: Error | undefined;
+    let fail = 0;
+    for (const battle of newBattles) {
+      const result = await Database.addBattle(battle)
+        .then(() => {
+          return true;
+        })
+        .catch((e) => {
+          if (!error) {
+            error = e;
+          }
+          return false;
         });
-        const text = decode64(encoded);
-        const result = parser.parse(text);
-        const current = result["battles"].length + result["coops"].length;
-        n += current;
-        const battleExisted = await Promise.all(
-          result["battles"].map((battle: VsHistoryDetailResult) =>
-            Database.isExist(battle.vsHistoryDetail!.id)
-          )
-        );
-        const coopExisted = await Promise.all(
-          result["coops"].map((coop: CoopHistoryDetailResult) =>
-            Database.isExist(coop.coopHistoryDetail!.id)
-          )
-        );
-        const newBattles = result["battles"].filter((_, i: number) => !battleExisted[i]);
-        const newCoops = result["coops"].filter((_, i: number) => !coopExisted[i]);
-        skip += current - (newBattles.length + newCoops.length);
-        for (const battle of newBattles) {
-          const result = await Database.addBattle(battle)
-            .then(() => {
-              return true;
-            })
-            .catch((e) => {
-              if (!error) {
-                error = e;
-              }
-              return false;
-            });
-          if (!result) {
-            fail++;
-          }
-        }
-        for (const coop of newCoops) {
-          const result = await Database.addCoop(coop)
-            .then(() => {
-              return true;
-            })
-            .catch((e) => {
-              if (!error) {
-                error = e;
-              }
-              return false;
-            });
-          if (!result) {
-            fail++;
-          }
-        }
-
-        if (text.length < IMPORT_READ_SIZE) {
-          break;
-        }
-        batch += 1;
+      if (!result) {
+        fail++;
       }
-      if (fail > 0 && skip > 0) {
-        showBanner(
-          BannerLevel.Warn,
-          t("loaded_n_results_skip_skipped_fail_failed", { n, skip, fail, error })
-        );
-      } else if (fail > 0) {
-        showBanner(BannerLevel.Warn, t("loaded_n_results_fail_failed", { n, fail, error }));
-      } else if (skip > 0) {
-        showBanner(BannerLevel.Success, t("loaded_n_results_skip_skipped", { n, skip }));
-      } else {
-        showBanner(BannerLevel.Success, t("loaded_n_results", { n }));
-      }
-
-      // Query stored latest results if updated.
-      if (n - fail - skip > 0) {
-        await loadResults(20);
-      }
-      success = true;
-    } catch (e) {
-      showBanner(BannerLevel.Error, e);
     }
-
-    // Clean up.
-    await FileSystem.deleteAsync(uri, { idempotent: true });
+    for (const coop of newCoops) {
+      const result = await Database.addCoop(coop)
+        .then(() => {
+          return true;
+        })
+        .catch((e) => {
+          if (!error) {
+            error = e;
+          }
+          return false;
+        });
+      if (!result) {
+        fail++;
+      }
+    }
+    return { skip, fail, error };
+  };
+  const onImportComplete = async (n: number) => {
+    // Query stored latest results if updated.
+    if (n > 0) {
+      await loadResults(20);
+    }
     setRefreshing(false);
-    setImporting(false);
-    if (success) {
-      setImport(false);
-    }
   };
   const onExportPress = async () => {
     setExporting(true);
@@ -2035,11 +1952,12 @@ const MainView = () => {
                       onGetWebServiceToken={onGetWebServiceToken}
                     />
                   )}
-                  <ToolButton
-                    icon="download"
-                    title={t("import")}
+                  <ImportView
+                    disabled={refreshing}
+                    onBegin={onImportBegin}
+                    onResults={onImportResults}
+                    onComplete={onImportComplete}
                     style={ViewStyles.mr2}
-                    onPress={onImportPress}
                   />
                   <ToolButton
                     loading={exporting}
@@ -2212,70 +2130,6 @@ const MainView = () => {
             </Button>
           </DialogSection>
         </CustomDialog>
-      </Modal>
-      <Modal isVisible={import_} onClose={onImportClose} style={ViewStyles.modal1d}>
-        <Dialog icon="download" text={t("import_notice")}>
-          <Button
-            style={[
-              ViewStyles.mb2,
-              { borderColor: Color.AccentColor, borderWidth: 1.5 },
-              theme.backgroundStyle,
-            ]}
-            onPress={onConvertS3sOutputsPress}
-          >
-            <Marquee>{t("convert_s3s_outputs")}</Marquee>
-          </Button>
-          <Button
-            style={[
-              ViewStyles.mb2,
-              { borderColor: Color.AccentColor, borderWidth: 1.5 },
-              theme.backgroundStyle,
-            ]}
-            onPress={onConvertStatInkSalmonRunJsonPress}
-          >
-            <Marquee>{t("convert_stat_ink_salmon_run_json")}</Marquee>
-          </Button>
-          <Button
-            style={[
-              ViewStyles.mb2,
-              { borderColor: Color.AccentColor, borderWidth: 1.5 },
-              theme.backgroundStyle,
-            ]}
-            onPress={onConvertIkawidget3Ikax3Press}
-          >
-            <Marquee>{t("convert_ikawidget3_ikax3")}</Marquee>
-          </Button>
-          <Button
-            style={[
-              ViewStyles.mb2,
-              { borderColor: Color.AccentColor, borderWidth: 1.5 },
-              theme.backgroundStyle,
-            ]}
-            onPress={onConvertSalmroidnwBackupPress}
-          >
-            <Marquee>{t("convert_salmdroidnw_backup")}</Marquee>
-          </Button>
-          <Button
-            style={[
-              ViewStyles.mb2,
-              { borderColor: Color.AccentColor, borderWidth: 1.5 },
-              theme.backgroundStyle,
-            ]}
-            onPress={onConvertSalmonia3PlusBackupPress}
-          >
-            <Marquee>{t("convert_salmonia3+_backup")}</Marquee>
-          </Button>
-          <Button
-            disabled={refreshing && !importing}
-            loading={importing}
-            loadingText={t("importing")}
-            style={ViewStyles.accent}
-            textStyle={theme.reverseTextStyle}
-            onPress={onImportContinuePress}
-          >
-            <Marquee style={theme.reverseTextStyle}>{t("import")}</Marquee>
-          </Button>
-        </Dialog>
       </Modal>
       <Modal isVisible={support} onClose={onSupportClose} style={ViewStyles.modal1d}>
         <CustomDialog icon="help-circle">

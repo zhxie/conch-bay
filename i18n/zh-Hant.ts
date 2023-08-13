@@ -55,15 +55,6 @@ const zhHant = {
   show_more_notice: "長按顯示更多以顯示指定時間段內的記錄。",
   splatnet: "魷魚圈",
   splatnet_3: "魷魚圈3",
-  import: "匯入",
-  importing: "匯入中",
-  import_notice:
-    "法螺灣支持匯入由法螺灣匯出的記錄，您也可以將其它第三方App匯出的記錄轉換至法螺灣支援的格式並匯入。",
-  convert_s3s_outputs: "轉換s3s匯出的記錄",
-  convert_stat_ink_salmon_run_json: "轉換stat.ink鮭魚跑JSON",
-  convert_ikawidget3_ikax3: "轉換ikawidget3 IKAX3",
-  convert_salmdroidnw_backup: "轉換salmdroidNW備份",
-  "convert_salmonia3+_backup": "轉換Salmonia3+備份",
   export: "匯出",
   exporting: "匯出中",
   disclaimer: "本應用是使用魷魚圈3的資訊的非官方應用，與任天堂有限公司無關。",
@@ -200,6 +191,19 @@ const zhHant = {
   golden_eggs_collected_including_assisted: "收集的金鮭魚卵 (含助攻)",
   trends_notice: "對戰為每分鐘，鮭魚跑為每次打工的平均值。",
   trends_notice2: "長按標籤以顯示團隊平均值。",
+  // Import.
+  import: "匯入",
+  importing: "匯入中",
+  import_notice:
+    "法螺灣支持匯入由法螺灣匯出的記錄，您也可以將其它第三方App匯出的記錄轉換至法螺灣支援的格式並匯入。此外，您還可以通過主頁下方的支持聯繫我們以獲得幫助。",
+  convert_s3s_outputs: "轉換s3s匯出的記錄",
+  convert_stat_ink_salmon_run_json: "轉換stat.ink鮭魚跑JSON",
+  convert_ikawidget3_ikax3: "轉換ikawidget3 IKAX3",
+  convert_salmdroidnw_backup: "轉換salmdroidNW備份",
+  "convert_salmonia3+_backup": "轉換Salmonia3+備份",
+  split_and_import_notice:
+    "法螺灣需要佔用大量的內存以匯入記錄。如果法螺灣無法匯入記錄，您可以分割記錄並匯入。請注意，分割並匯入需要數分鐘到數十分鐘的時間。此外，您還可以通過主頁下方的支持聯繫我們以獲得幫助。",
+  split_and_import: "分割並匯入",
   // Modes.
   battle: "對戰",
   regular_battle: "一般比賽",
