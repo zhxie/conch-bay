@@ -29,7 +29,7 @@
     "expo": "^49.0.6",
     "expo-background-fetch": "~11.3.0",
     "expo-blur": "~12.4.1",
-    "expo-clipboard": "~4.3.0",
+    "expo-clipboard": "~4.3.1",
     "expo-crypto": "~12.4.1",
     "expo-device": "~5.4.0",
     "expo-document-picker": "~11.5.4",
