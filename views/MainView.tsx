@@ -36,6 +36,9 @@ import {
   Button,
   Center,
   Color,
+  CustomDialog,
+  Dialog,
+  DialogSection,
   FloatingActionButton,
   HStack,
   Icon,
@@ -2120,15 +2123,8 @@ const MainView = () => {
         )}
       </Animated.View>
       <Modal isVisible={logIn} onClose={onLogInClose} style={ViewStyles.modal1d}>
-        <VStack center>
-          <Icon
-            name="alert-circle"
-            size={48}
-            color={Color.MiddleTerritory}
-            style={ViewStyles.mb4}
-          />
-          <Text style={ViewStyles.mb2}>{t("log_in_notice")}</Text>
-          <VStack style={[ViewStyles.mb4, ViewStyles.wf]}>
+        <CustomDialog icon="alert-circle">
+          <DialogSection text={t("log_in_notice")} style={ViewStyles.mb4}>
             <Button
               style={[
                 ViewStyles.mb2,
@@ -2149,9 +2145,8 @@ const MainView = () => {
             >
               <Marquee style={theme.reverseTextStyle}>{t("log_in_continue")}</Marquee>
             </Button>
-          </VStack>
-          <Text style={ViewStyles.mb2}>{t("alternative_log_in_notice")}</Text>
-          <VStack style={ViewStyles.wf}>
+          </DialogSection>
+          <DialogSection text={t("alternative_log_in_notice")}>
             <Button
               disabled={refreshing}
               loading={loggingIn}
@@ -2162,19 +2157,12 @@ const MainView = () => {
             >
               <Marquee style={theme.reverseTextStyle}>{t("log_in_with_session_token")}</Marquee>
             </Button>
-          </VStack>
-        </VStack>
+          </DialogSection>
+        </CustomDialog>
       </Modal>
       <Modal isVisible={logOut} onClose={onLogOutClose} style={ViewStyles.modal1d}>
-        <VStack center>
-          <Icon
-            name="alert-circle"
-            size={48}
-            color={Color.MiddleTerritory}
-            style={ViewStyles.mb4}
-          />
-          <Text style={ViewStyles.mb2}>{t("relog_in_notice")}</Text>
-          <VStack style={[ViewStyles.mb4, ViewStyles.wf]}>
+        <CustomDialog icon="alert-circle">
+          <DialogSection text={t("relog_in_notice")} style={ViewStyles.mb4}>
             <Button
               disabled={refreshing}
               loading={loggingIn}
@@ -2195,9 +2183,8 @@ const MainView = () => {
             >
               <Marquee style={theme.reverseTextStyle}>{t("relog_in_with_session_token")}</Marquee>
             </Button>
-          </VStack>
-          <Text style={ViewStyles.mb2}>{t("log_out_notice")}</Text>
-          <VStack style={ViewStyles.wf}>
+          </DialogSection>
+          <DialogSection text={t("log_out_notice")}>
             <Button
               disabled={loggingIn || refreshing || loadingMore || exporting}
               loading={loggingOut}
@@ -2208,94 +2195,86 @@ const MainView = () => {
             >
               <Marquee style={theme.reverseTextStyle}>{t("log_out_continue")}</Marquee>
             </Button>
-          </VStack>
-        </VStack>
+          </DialogSection>
+        </CustomDialog>
       </Modal>
       <Modal isVisible={import_} onClose={onImportClose} style={ViewStyles.modal1d}>
-        <VStack center>
-          <Icon name="download" size={48} color={Color.MiddleTerritory} style={ViewStyles.mb4} />
-          <Text style={ViewStyles.mb4}>{t("import_notice")}</Text>
-          <VStack style={ViewStyles.wf}>
-            <Button
-              style={[
-                ViewStyles.mb2,
-                { borderColor: Color.AccentColor, borderWidth: 1.5 },
-                theme.backgroundStyle,
-              ]}
-              onPress={onConvertS3sOutputsPress}
-            >
-              <Marquee>{t("convert_s3s_outputs")}</Marquee>
-            </Button>
-            <Button
-              style={[
-                ViewStyles.mb2,
-                { borderColor: Color.AccentColor, borderWidth: 1.5 },
-                theme.backgroundStyle,
-              ]}
-              onPress={onConvertStatInkSalmonRunJsonPress}
-            >
-              <Marquee>{t("convert_stat_ink_salmon_run_json")}</Marquee>
-            </Button>
-            <Button
-              style={[
-                ViewStyles.mb2,
-                { borderColor: Color.AccentColor, borderWidth: 1.5 },
-                theme.backgroundStyle,
-              ]}
-              onPress={onConvertIkawidget3Ikax3Press}
-            >
-              <Marquee>{t("convert_ikawidget3_ikax3")}</Marquee>
-            </Button>
-            <Button
-              style={[
-                ViewStyles.mb2,
-                { borderColor: Color.AccentColor, borderWidth: 1.5 },
-                theme.backgroundStyle,
-              ]}
-              onPress={onConvertSalmroidnwBackupPress}
-            >
-              <Marquee>{t("convert_salmdroidnw_backup")}</Marquee>
-            </Button>
-            <Button
-              style={[
-                ViewStyles.mb2,
-                { borderColor: Color.AccentColor, borderWidth: 1.5 },
-                theme.backgroundStyle,
-              ]}
-              onPress={onConvertSalmonia3PlusBackupPress}
-            >
-              <Marquee>{t("convert_salmonia3+_backup")}</Marquee>
-            </Button>
-            <Button
-              style={[
-                ViewStyles.mb2,
-                { borderColor: Color.AccentColor, borderWidth: 1.5 },
-                theme.backgroundStyle,
-              ]}
-              onPress={onSplitResultsPress}
-            >
-              <Marquee>{t("split_results")}</Marquee>
-            </Button>
-            <Button
-              disabled={refreshing && !importing}
-              loading={importing}
-              loadingText={t("importing")}
-              style={ViewStyles.accent}
-              textStyle={theme.reverseTextStyle}
-              onPress={onImportContinuePress}
-            >
-              <Marquee style={theme.reverseTextStyle}>{t("import")}</Marquee>
-            </Button>
-          </VStack>
-        </VStack>
+        <Dialog icon="download" text={t("import_notice")}>
+          <Button
+            style={[
+              ViewStyles.mb2,
+              { borderColor: Color.AccentColor, borderWidth: 1.5 },
+              theme.backgroundStyle,
+            ]}
+            onPress={onConvertS3sOutputsPress}
+          >
+            <Marquee>{t("convert_s3s_outputs")}</Marquee>
+          </Button>
+          <Button
+            style={[
+              ViewStyles.mb2,
+              { borderColor: Color.AccentColor, borderWidth: 1.5 },
+              theme.backgroundStyle,
+            ]}
+            onPress={onConvertStatInkSalmonRunJsonPress}
+          >
+            <Marquee>{t("convert_stat_ink_salmon_run_json")}</Marquee>
+          </Button>
+          <Button
+            style={[
+              ViewStyles.mb2,
+              { borderColor: Color.AccentColor, borderWidth: 1.5 },
+              theme.backgroundStyle,
+            ]}
+            onPress={onConvertIkawidget3Ikax3Press}
+          >
+            <Marquee>{t("convert_ikawidget3_ikax3")}</Marquee>
+          </Button>
+          <Button
+            style={[
+              ViewStyles.mb2,
+              { borderColor: Color.AccentColor, borderWidth: 1.5 },
+              theme.backgroundStyle,
+            ]}
+            onPress={onConvertSalmroidnwBackupPress}
+          >
+            <Marquee>{t("convert_salmdroidnw_backup")}</Marquee>
+          </Button>
+          <Button
+            style={[
+              ViewStyles.mb2,
+              { borderColor: Color.AccentColor, borderWidth: 1.5 },
+              theme.backgroundStyle,
+            ]}
+            onPress={onConvertSalmonia3PlusBackupPress}
+          >
+            <Marquee>{t("convert_salmonia3+_backup")}</Marquee>
+          </Button>
+          <Button
+            style={[
+              ViewStyles.mb2,
+              { borderColor: Color.AccentColor, borderWidth: 1.5 },
+              theme.backgroundStyle,
+            ]}
+            onPress={onSplitResultsPress}
+          >
+            <Marquee>{t("split_results")}</Marquee>
+          </Button>
+          <Button
+            disabled={refreshing && !importing}
+            loading={importing}
+            loadingText={t("importing")}
+            style={ViewStyles.accent}
+            textStyle={theme.reverseTextStyle}
+            onPress={onImportContinuePress}
+          >
+            <Marquee style={theme.reverseTextStyle}>{t("import")}</Marquee>
+          </Button>
+        </Dialog>
       </Modal>
       <Modal isVisible={support} onClose={onSupportClose} style={ViewStyles.modal1d}>
-        <VStack center>
-          <Icon name="help-circle" size={48} color={Color.MiddleTerritory} style={ViewStyles.mb4} />
-          <VStack style={[ViewStyles.mb4, ViewStyles.wf]}>
-            <VStack center style={ViewStyles.mb2}>
-              <Text>{t("language_notice")}</Text>
-            </VStack>
+        <CustomDialog icon="help-circle">
+          <DialogSection text={t("language_notice")} style={ViewStyles.mb4}>
             <Picker
               disabled={refreshing}
               title={t("change_game_language_language", { language: t(language) })}
@@ -2326,11 +2305,8 @@ const MainView = () => {
                 {t("change_display_language_language", { language: t(t("lang")) })}
               </Marquee>
             </Button>
-          </VStack>
-          <VStack style={[ViewStyles.mb4, ViewStyles.wf]}>
-            <VStack center style={ViewStyles.mb2}>
-              <Text>{t("resource_notice")}</Text>
-            </VStack>
+          </DialogSection>
+          <DialogSection text={t("resource_notice")} style={ViewStyles.mb4}>
             <Button
               loading={clearingCache}
               loadingText={t("clearing_cache")}
@@ -2349,23 +2325,20 @@ const MainView = () => {
             >
               <Marquee style={theme.reverseTextStyle}>{t("preload_resources")}</Marquee>
             </Button>
-          </VStack>
-          <VStack style={[sessionToken.length > 0 && ViewStyles.mb4, ViewStyles.wf]}>
-            <VStack center style={ViewStyles.mb2}>
-              <Text>{t("feedback_notice")}</Text>
-            </VStack>
+          </DialogSection>
+          <DialogSection
+            text={t("feedback_notice")}
+            style={sessionToken.length > 0 && ViewStyles.mb4}
+          >
             <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onCreateAGithubIssuePress}>
               <Marquee style={theme.reverseTextStyle}>{t("create_a_github_issue")}</Marquee>
             </Button>
             <Button style={ViewStyles.accent} onPress={onSendAMailPress}>
               <Marquee style={theme.reverseTextStyle}>{t("send_a_mail")}</Marquee>
             </Button>
-          </VStack>
+          </DialogSection>
           {sessionToken.length > 0 && (
-            <VStack style={ViewStyles.wf}>
-              <VStack center style={ViewStyles.mb2}>
-                <Text>{t("debug_notice")}</Text>
-              </VStack>
+            <DialogSection text={t("debug_notice")}>
               <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onCopySessionTokenPress}>
                 <Marquee style={theme.reverseTextStyle}>{t("copy_session_token")}</Marquee>
               </Button>
@@ -2381,9 +2354,9 @@ const MainView = () => {
               <Button style={ViewStyles.accent} onPress={onExportDatabasePress}>
                 <Marquee style={theme.reverseTextStyle}>{t("export_database")}</Marquee>
               </Button>
-            </VStack>
+            </DialogSection>
           )}
-        </VStack>
+        </CustomDialog>
       </Modal>
       <Modal
         isVisible={acknowledgments}
@@ -2448,39 +2421,31 @@ const MainView = () => {
         </VStack>
       </Modal>
       <Modal isVisible={firstAid} style={ViewStyles.modal1d}>
-        <VStack center>
-          <Icon name="life-buoy" size={48} color={Color.MiddleTerritory} style={ViewStyles.mb4} />
-          <Text style={ViewStyles.mb4}>{t("first_aid_notice")}</Text>
-          <VStack style={ViewStyles.wf}>
-            <Button
-              loading={exporting}
-              loadingText={t("exporting")}
-              style={[ViewStyles.mb2, ViewStyles.accent]}
-              textStyle={theme.reverseTextStyle}
-              onPress={onExportPress}
-            >
-              <Marquee style={theme.reverseTextStyle}>{t("export_results")}</Marquee>
-            </Button>
-            <Button style={ViewStyles.accent} onPress={onExportDatabasePress}>
-              <Marquee style={theme.reverseTextStyle}>{t("export_database")}</Marquee>
-            </Button>
-          </VStack>
-        </VStack>
+        <Dialog icon="life-buoy" text={t("first_aid_notice")}>
+          <Button
+            loading={exporting}
+            loadingText={t("exporting")}
+            style={[ViewStyles.mb2, ViewStyles.accent]}
+            textStyle={theme.reverseTextStyle}
+            onPress={onExportPress}
+          >
+            <Marquee style={theme.reverseTextStyle}>{t("export_results")}</Marquee>
+          </Button>
+          <Button style={ViewStyles.accent} onPress={onExportDatabasePress}>
+            <Marquee style={theme.reverseTextStyle}>{t("export_database")}</Marquee>
+          </Button>
+        </Dialog>
       </Modal>
       <Modal
         isVisible={backgroundRefresh}
         onClose={onBackgroundRefreshClose}
         style={ViewStyles.modal1d}
       >
-        <VStack center>
-          <Icon name="bell-dot" size={48} color={Color.MiddleTerritory} style={ViewStyles.mb4} />
-          <Text style={ViewStyles.mb4}>{t("background_refresh_notice")}</Text>
-          <VStack style={ViewStyles.wf}>
-            <Button style={ViewStyles.accent} onPress={onBackgroundRefreshContinue}>
-              <Marquee style={theme.reverseTextStyle}>{t("ok")}</Marquee>
-            </Button>
-          </VStack>
-        </VStack>
+        <Dialog icon="bell-dot" text={t("background_refresh_notice")}>
+          <Button style={ViewStyles.accent} onPress={onBackgroundRefreshContinue}>
+            <Marquee style={theme.reverseTextStyle}>{t("ok")}</Marquee>
+          </Button>
+        </Dialog>
       </Modal>
     </VStack>
   );
