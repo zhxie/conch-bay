@@ -1,9 +1,5 @@
 import { toByteArray as decode64, fromByteArray as encode64 } from "base64-js";
 import { Buffer } from "buffer";
-import dayjs from "dayjs";
-import customParseFormat from "dayjs/plugin/customParseFormat";
-
-dayjs.extend(customParseFormat);
 
 export { toByteArray as decode64, fromByteArray as encode64 } from "base64-js";
 

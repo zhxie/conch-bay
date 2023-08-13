@@ -1,7 +1,5 @@
 import { useAppState } from "@react-native-community/hooks";
 import dayjs from "dayjs";
-import quarterOfYear from "dayjs/plugin/quarterOfYear";
-import utc from "dayjs/plugin/utc";
 import * as Application from "expo-application";
 import { BlurView } from "expo-blur";
 import * as Clipboard from "expo-clipboard";
@@ -120,9 +118,6 @@ import SplatNetView from "./SplatNetView";
 import StatsView from "./StatsView";
 import TrendsView from "./TrendsView";
 import XView from "./XView";
-
-dayjs.extend(quarterOfYear);
-dayjs.extend(utc);
 
 enum TimeRange {
   CurrentBattleSchedule = "current_battle_schedule",

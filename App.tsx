@@ -1,3 +1,7 @@
+import dayjs from "dayjs";
+import duration from "dayjs/plugin/duration";
+import quarterOfYear from "dayjs/plugin/quarterOfYear";
+import utc from "dayjs/plugin/utc";
 import * as Font from "expo-font";
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
@@ -7,6 +11,10 @@ import { SplashtagContext, useTheme } from "./components";
 import "./i18n";
 import { ok } from "./utils/promise";
 import { MainView } from "./views";
+
+dayjs.extend(duration);
+dayjs.extend(quarterOfYear);
+dayjs.extend(utc);
 
 const App = () => {
   const theme = useTheme();

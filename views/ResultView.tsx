@@ -3,7 +3,6 @@ import SegmentedControl, {
 } from "@react-native-segmented-control/segmented-control";
 import { FlashList, ListRenderItemInfo } from "@shopify/flash-list";
 import dayjs from "dayjs";
-import duration from "dayjs/plugin/duration";
 import * as Clipboard from "expo-clipboard";
 import { useCallback, useMemo, useRef, useState } from "react";
 import {
@@ -83,8 +82,6 @@ import {
   getImageHash,
 } from "../utils/ui";
 import { StatsModal } from "./StatsView";
-
-dayjs.extend(duration);
 
 export interface ResultProps {
   battle?: VsHistoryDetailResult;

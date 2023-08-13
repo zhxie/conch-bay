@@ -2,8 +2,6 @@ import SegmentedControl, {
   NativeSegmentedControlIOSChangeEvent,
 } from "@react-native-segmented-control/segmented-control";
 import dayjs from "dayjs";
-import quarterOfYear from "dayjs/plugin/quarterOfYear";
-import utc from "dayjs/plugin/utc";
 import { useMemo, useState } from "react";
 import { NativeSyntheticEvent, StyleProp, ViewStyle } from "react-native";
 import {
@@ -22,9 +20,6 @@ import t from "../i18n";
 import { CoopHistoryDetailResult, VsHistoryDetailResult } from "../models/types";
 import { countBattles, countCoops, roundPower } from "../utils/ui";
 import { ResultProps } from "./ResultView";
-
-dayjs.extend(quarterOfYear);
-dayjs.extend(utc);
 
 interface StatsModalProps {
   results?: ResultProps[];

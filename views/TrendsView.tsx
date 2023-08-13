@@ -2,8 +2,6 @@ import SegmentedControl, {
   NativeSegmentedControlIOSChangeEvent,
 } from "@react-native-segmented-control/segmented-control";
 import dayjs from "dayjs";
-import quarterOfYear from "dayjs/plugin/quarterOfYear";
-import utc from "dayjs/plugin/utc";
 import { useMemo, useState } from "react";
 import {
   LayoutChangeEvent,
@@ -33,9 +31,6 @@ import t from "../i18n";
 import { CoopHistoryDetailResult, VsHistoryDetailResult } from "../models/types";
 import { burnColor, countBattles, countCoops, rationalize } from "../utils/ui";
 import { ResultProps } from "./ResultView";
-
-dayjs.extend(quarterOfYear);
-dayjs.extend(utc);
 
 interface TrendViewProps {
   disabled?: boolean;
