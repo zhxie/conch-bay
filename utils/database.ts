@@ -9,7 +9,7 @@ let db: SQLite.SQLiteDatabase | undefined = undefined;
 
 export const BATCH_SIZE = Math.floor((Device.totalMemory! / 1024 / 1024 / 1024) * 150);
 
-export const open = async () => {
+export const open = async (onUpgrade?: () => void) => {
   if (db) {
     return;
   }
@@ -25,6 +25,9 @@ export const open = async () => {
   // Upgrade database.
   const record = await exec("PRAGMA user_version", [], true);
   let version = record.rows[0]["user_version"] as number;
+  if (version < 2) {
+    onUpgrade?.();
+  }
   if (version < 1) {
     await beginTransaction();
     try {
@@ -116,6 +119,7 @@ export const open = async () => {
 
   return db;
 };
+export const upgrade = async () => {};
 export const close = () => {
   db!.closeAsync();
 };

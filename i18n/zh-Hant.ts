@@ -7,6 +7,7 @@ const zhHant = {
   // API.
   lang: "zh-TW",
   // UI.
+  upgrading_database: "升級資料庫中",
   log_in: "登錄",
   log_in_notice:
     "法螺灣需要獲取令牌以訪問魷魚圈3。該過程涉及向非任天堂的imink或nxapi發送含有最少的非身份資訊的安全請求。這些資訊不會被記錄或存儲，請參閱私隱政策以獲取更多資訊。",

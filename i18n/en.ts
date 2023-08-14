@@ -7,6 +7,7 @@ const en = {
   // API.
   lang: "en-US",
   // UI.
+  upgrading_database: "Upgrading database",
   log_in: "Log In",
   log_in_notice:
     "Conch Bay requires acquiring tokens to access SplatNet 3. The process involves making a secure request to non-Nintendo imink or nxapi with minimal, non-identifying information. This information will not be logged or stored, please see the privacy policy for more information.",
