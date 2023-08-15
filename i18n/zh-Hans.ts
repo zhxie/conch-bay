@@ -78,6 +78,8 @@ const zhHans = {
   create_a_github_issue: "创建GitHub Issue",
   send_a_mail: "发送邮件",
   debug_notice: "以下信息仅用于调试。请不要与他人分享。",
+  diagnose_network: "诊断网络",
+  diagnosing_network: "诊断网络中",
   copy_session_token: "复制会话令牌",
   copy_web_service_token: "复制Web服务令牌",
   copy_bullet_token: "复制Bullet令牌",

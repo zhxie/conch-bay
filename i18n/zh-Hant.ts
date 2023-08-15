@@ -78,6 +78,8 @@ const zhHant = {
   create_a_github_issue: "創建GitHub Issue",
   send_a_mail: "發送郵件",
   debug_notice: "以下資訊僅用於調試。請不要與他人分享。",
+  diagnose_network: "診斷網路",
+  diagnosing_network: "診斷網路中",
   copy_session_token: "複製會話令牌",
   copy_web_service_token: "複製Web服務令牌",
   copy_bullet_token: "複製Bullet令牌",

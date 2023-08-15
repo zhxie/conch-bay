@@ -1,4 +1,5 @@
 import { useAppState } from "@react-native-community/hooks";
+import { AxiosError } from "axios";
 import dayjs from "dayjs";
 import * as Application from "expo-application";
 import { BlurView } from "expo-blur";
@@ -88,6 +89,7 @@ import {
   getWebServiceToken,
   updateNsoVersion,
   updateSplatnetVersion,
+  getCurrentVersions,
 } from "../utils/api";
 import { useAsyncStorage, useBooleanAsyncStorage } from "../utils/async-storage";
 import {
@@ -155,6 +157,7 @@ const MainView = () => {
   const [support, setSupport] = useState(false);
   const [clearingCache, setClearingCache] = useState(false);
   const [preloadingResources, setPreloadingResources] = useState(false);
+  const [diagnosingNetwork, setDiagnosingNetwork] = useState(false);
   const [acknowledgments, setAcknowledgments] = useState(false);
   const [firstAid, setFirstAid] = useState(false);
   const [backgroundRefresh, setBackgroundRefresh] = useState(false);
@@ -1413,7 +1416,7 @@ const MainView = () => {
     setSupport(true);
   };
   const onSupportClose = () => {
-    if (!clearingCache && !preloadingResources) {
+    if (!clearingCache && !preloadingResources && !diagnosingNetwork) {
       setSupport(false);
     }
   };
@@ -1694,6 +1697,51 @@ const MainView = () => {
     } else {
       Linking.openURL("mailto:conch-bay@outlook.com");
     }
+  };
+  const onDiagnoseNetworkPress = async () => {
+    setDiagnosingNetwork(true);
+    const versions = getCurrentVersions();
+    const result = {
+      NSO_VERSION: versions.NSO_VERSION,
+      SPLATNET_VERSION: versions.SPLATNET_VERSION,
+      sessionToken: sessionToken,
+      webServiceToken: webServiceToken,
+      language: language,
+      tests: {
+        bulletToken: {},
+        webServiceToken: {},
+      },
+    };
+
+    // Diagnose bullet token.
+    try {
+      const bulletToken = await getBulletToken(webServiceToken, language);
+      result.tests.bulletToken["bulletToken"] = bulletToken;
+    } catch (e) {
+      if (e instanceof AxiosError) {
+        result.tests.bulletToken["error"] = e.toJSON();
+      } else if (e instanceof Error) {
+        result.tests.bulletToken["error"] = e.message;
+      }
+    }
+
+    // Diagnose web service token.
+    try {
+      const webServiceToken = await getWebServiceToken(sessionToken);
+      result.tests.webServiceToken["webServiceToken"] = webServiceToken;
+      const bulletToken = await getBulletToken(webServiceToken.webServiceToken, language);
+      result.tests.webServiceToken["bulletToken"] = bulletToken;
+    } catch (e) {
+      if (e instanceof AxiosError) {
+        result.tests.webServiceToken["error"] = e.toJSON();
+      } else if (e instanceof Error) {
+        result.tests.webServiceToken["error"] = e.message;
+      }
+    }
+
+    await Clipboard.setStringAsync(JSON.stringify(result));
+    showBanner(BannerLevel.Info, t("copied_to_clipboard"));
+    setDiagnosingNetwork(false);
   };
   const onCopySessionTokenPress = async () => {
     if (sessionToken.length > 0) {
@@ -2174,10 +2222,7 @@ const MainView = () => {
               <Marquee style={theme.reverseTextStyle}>{t("preload_resources")}</Marquee>
             </Button>
           </DialogSection>
-          <DialogSection
-            text={t("feedback_notice")}
-            style={sessionToken.length > 0 && ViewStyles.mb4}
-          >
+          <DialogSection text={t("feedback_notice")} style={ViewStyles.mb4}>
             <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onCreateAGithubIssuePress}>
               <Marquee style={theme.reverseTextStyle}>{t("create_a_github_issue")}</Marquee>
             </Button>
@@ -2185,25 +2230,42 @@ const MainView = () => {
               <Marquee style={theme.reverseTextStyle}>{t("send_a_mail")}</Marquee>
             </Button>
           </DialogSection>
-          {sessionToken.length > 0 && (
-            <DialogSection text={t("debug_notice")}>
-              <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onCopySessionTokenPress}>
-                <Marquee style={theme.reverseTextStyle}>{t("copy_session_token")}</Marquee>
-              </Button>
-              <Button
-                style={[ViewStyles.mb2, ViewStyles.accent]}
-                onPress={onCopyWebServiceTokenPress}
-              >
-                <Marquee style={theme.reverseTextStyle}>{t("copy_web_service_token")}</Marquee>
-              </Button>
-              <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onCopyBulletTokenPress}>
-                <Marquee style={theme.reverseTextStyle}>{t("copy_bullet_token")}</Marquee>
-              </Button>
-              <Button style={ViewStyles.accent} onPress={onExportDatabasePress}>
-                <Marquee style={theme.reverseTextStyle}>{t("export_database")}</Marquee>
-              </Button>
-            </DialogSection>
-          )}
+          <DialogSection text={t("debug_notice")}>
+            <Button
+              loading={diagnosingNetwork}
+              loadingText={t("diagnosing_network")}
+              style={[sessionToken.length > 0 && ViewStyles.mb2, ViewStyles.accent]}
+              textStyle={theme.reverseTextStyle}
+              onPress={onDiagnoseNetworkPress}
+            >
+              <Marquee style={theme.reverseTextStyle}>{t("diagnose_network")}</Marquee>
+            </Button>
+            {sessionToken.length > 0 && (
+              <VStack>
+                <Button
+                  style={[ViewStyles.mb2, ViewStyles.accent]}
+                  onPress={onCopySessionTokenPress}
+                >
+                  <Marquee style={theme.reverseTextStyle}>{t("copy_session_token")}</Marquee>
+                </Button>
+                <Button
+                  style={[ViewStyles.mb2, ViewStyles.accent]}
+                  onPress={onCopyWebServiceTokenPress}
+                >
+                  <Marquee style={theme.reverseTextStyle}>{t("copy_web_service_token")}</Marquee>
+                </Button>
+                <Button
+                  style={[ViewStyles.mb2, ViewStyles.accent]}
+                  onPress={onCopyBulletTokenPress}
+                >
+                  <Marquee style={theme.reverseTextStyle}>{t("copy_bullet_token")}</Marquee>
+                </Button>
+                <Button style={ViewStyles.accent} onPress={onExportDatabasePress}>
+                  <Marquee style={theme.reverseTextStyle}>{t("export_database")}</Marquee>
+                </Button>
+              </VStack>
+            )}
+          </DialogSection>
         </CustomDialog>
       </Modal>
       <Modal

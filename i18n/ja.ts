@@ -81,6 +81,8 @@ const ja = {
   create_a_github_issue: "GitHub Issueを作成",
   send_a_mail: "メールを送る",
   debug_notice: "次の情報はデバッグ専用です。他の人と共有しないでください。",
+  diagnose_network: "ネットワークを診断",
+  diagnosing_network: "ネットワークを診断中",
   copy_session_token: "セッショントークンをコピー",
   copy_web_service_token: "Webサービストークンをコピー",
   copy_bullet_token: "ブレットトークンをコピー",

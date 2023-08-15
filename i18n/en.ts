@@ -80,6 +80,8 @@ const en = {
   create_a_github_issue: "Create a GitHub Issue",
   send_a_mail: "Send a mail",
   debug_notice: "The following information is for debugging only. Please do NOT share with others.",
+  diagnose_network: "Diagnose Network",
+  diagnosing_network: "Diagnosing Network",
   copy_session_token: "Copy Session Token",
   copy_web_service_token: "Copy Web Service Token",
   copy_bullet_token: "Copy Bullet Token",
