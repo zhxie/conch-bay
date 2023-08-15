@@ -28,13 +28,12 @@ import {
   useTheme,
 } from "../components";
 import t from "../i18n";
-import { CoopHistoryDetailResult, VsHistoryDetailResult } from "../models/types";
-import { burnColor, countBattles, countCoops, rationalize } from "../utils/ui";
-import { ResultProps } from "./ResultView";
+import { BattleStats, CoopStats, StatsProps, addBattleStats, addCoopStats } from "../utils/stats";
+import { burnColor, rationalize } from "../utils/ui";
 
 interface TrendViewProps {
   disabled?: boolean;
-  onResults: () => Promise<ResultProps[]>;
+  onStats: () => Promise<StatsProps[]>;
   style?: StyleProp<ViewStyle>;
 }
 
@@ -72,18 +71,14 @@ const TrendsView = (props: TrendViewProps) => {
   const theme = useTheme();
 
   const [point, setPoint] = useState(20);
-  const [results, setResults] = useState<ResultProps[]>();
+  const [stats, setStats] = useState<StatsProps[]>();
   const [loading, setLoading] = useState(false);
   const [trends, setTrends] = useState(false);
   const [group, setGroup] = useState(0);
   const [battleDimensions, setBattleDimensions] = useState<BattleDimension[]>(["VICTORY"]);
   const [coopDimensions, setCoopDimensions] = useState<CoopDimension[]>(["CLEAR"]);
 
-  const split = <T extends VsHistoryDetailResult | CoopHistoryDetailResult>(
-    arr: T[],
-    count: number,
-    group: number
-  ) => {
+  const split = <T extends BattleStats | CoopStats>(arr: T[], count: number, group: number) => {
     const result: T[][] = [];
     if (group === 0) {
       for (let i = 0; i < count && i < arr.length - 1; i++) {
@@ -121,17 +116,7 @@ const TrendsView = (props: TrendViewProps) => {
       for (let i = 0; i < stops.length; i++) {
         const begin = stops[i];
         const end = i === 0 ? Number.POSITIVE_INFINITY : stops[i - 1];
-        result.push(
-          arr.filter((r) => {
-            const playedTime = (
-              r["vsHistoryDetail"]
-                ? r["vsHistoryDetail"]["playedTime"]
-                : r["coopHistoryDetail"]["playedTime"]
-            ) as string;
-            const time = new Date(playedTime).valueOf();
-            return time >= begin && time < end;
-          })
-        );
+        result.push(arr.filter((r) => r.time >= begin && r.time < end));
       }
       result.reverse();
     }
@@ -139,64 +124,64 @@ const TrendsView = (props: TrendViewProps) => {
   };
 
   const battles = useMemo(
-    () => results?.filter((result) => result.battle).map((result) => result.battle!),
-    [results]
+    () => stats?.filter((result) => result.battle).map((result) => result.battle!),
+    [stats]
   );
   const battleGroups = useMemo(
     () => (battles ? split(battles, point, group) : []),
     [battles, group]
   );
   const coops = useMemo(
-    () => results?.filter((result) => result.coop).map((result) => result.coop!),
-    [results]
+    () => stats?.filter((result) => result.coop).map((result) => result.coop!),
+    [stats]
   );
   const coopGroups = useMemo(() => (coops ? split(coops, point, group) : []), [coops, group]);
 
-  const battleStats = useMemo(
-    () => battleGroups.map((group) => countBattles(group)),
+  const battlesStats = useMemo(
+    () => battleGroups.map((group) => addBattleStats(...group)),
     [battleGroups]
   );
-  const coopStats = useMemo(() => coopGroups.map((group) => countCoops(group)), [coopGroups]);
+  const coopsStats = useMemo(() => coopGroups.map((group) => addCoopStats(...group)), [coopGroups]);
 
   const getBattleData = (dimension: BattleDimension) => {
     switch (dimension) {
       case "VICTORY":
         return {
-          data: battleStats.map((stat) => rationalize((stat.win * 100) / stat.count)),
+          data: battlesStats.map((stat) => rationalize((stat.win * 100) / stat.count)),
           color: Color.AccentColor,
           max: 100,
           relative: true,
         };
       case "POWER":
         return {
-          data: battleStats.map((stat) => rationalize(stat.power.total / stat.power.count)),
+          data: battlesStats.map((stat) => rationalize(stat.power.total / stat.power.count)),
           color: Color.AnarchyBattle,
         };
       case "TURF_INKED":
         return {
-          data: battleStats.map((stat) => rationalize(stat.self.turf / (stat.duration / 60))),
+          data: battlesStats.map((stat) => rationalize(stat.self.turf / (stat.duration / 60))),
           color: Color.AccentColor,
         };
       case "TURF_INKED_TEAM_AVERAGE":
         return {
-          data: battleStats.map((stat) =>
-            rationalize(stat.team.turf / ((stat.team.member * stat.duration) / 60))
+          data: battlesStats.map((stat) =>
+            rationalize(stat.team.turf / ((stat.teamMember * stat.duration) / 60))
           ),
           color: burnColor(Color.AccentColor),
           dash: true,
         };
       case "SPLATTED":
         return {
-          data: battleStats.map((stat) =>
+          data: battlesStats.map((stat) =>
             rationalize((stat.self.kill - stat.self.assist) / (stat.duration / 60))
           ),
           color: Color.KillAndRescue,
         };
       case "SPLATTED_TEAM_AVERAGE":
         return {
-          data: battleStats.map((stat) =>
+          data: battlesStats.map((stat) =>
             rationalize(
-              (stat.team.kill - stat.team.assist) / ((stat.team.member * stat.duration) / 60)
+              (stat.team.kill - stat.team.assist) / ((stat.teamMember * stat.duration) / 60)
             )
           ),
           color: burnColor(Color.KillAndRescue),
@@ -204,39 +189,39 @@ const TrendsView = (props: TrendViewProps) => {
         };
       case "SPLATTED_INCLUDING_ASSISTED":
         return {
-          data: battleStats.map((stat) => rationalize(stat.self.kill / (stat.duration / 60))),
+          data: battlesStats.map((stat) => rationalize(stat.self.kill / (stat.duration / 60))),
           color: Color.KillAndRescue,
         };
       case "SPLATTED_INCLUDING_ASSISTED_TEAM_AVERAGE":
         return {
-          data: battleStats.map((stat) =>
-            rationalize(stat.team.kill / ((stat.team.member * stat.duration) / 60))
+          data: battlesStats.map((stat) =>
+            rationalize(stat.team.kill / ((stat.teamMember * stat.duration) / 60))
           ),
           color: burnColor(Color.KillAndRescue),
           dash: true,
         };
       case "BE_SPLATTED":
         return {
-          data: battleStats.map((stat) => rationalize(stat.self.death / (stat.duration / 60))),
+          data: battlesStats.map((stat) => rationalize(stat.self.death / (stat.duration / 60))),
           color: Color.Death,
         };
       case "BE_SPLATTED_TEAM_AVERAGE":
         return {
-          data: battleStats.map((stat) =>
-            rationalize(stat.team.death / ((stat.team.member * stat.duration) / 60))
+          data: battlesStats.map((stat) =>
+            rationalize(stat.team.death / ((stat.teamMember * stat.duration) / 60))
           ),
           color: burnColor(Color.Death),
           dash: true,
         };
       case "SPECIAL_WEAPON_USES":
         return {
-          data: battleStats.map((stat) => rationalize(stat.self.special / (stat.duration / 60))),
+          data: battlesStats.map((stat) => rationalize(stat.self.special / (stat.duration / 60))),
           color: Color.Special,
         };
       case "SPECIAL_WEAPON_USES_TEAM_AVERAGE":
         return {
-          data: battleStats.map((stat) =>
-            rationalize(stat.team.special / ((stat.team.member * stat.duration) / 60))
+          data: battlesStats.map((stat) =>
+            rationalize(stat.team.special / ((stat.teamMember * stat.duration) / 60))
           ),
           color: burnColor(Color.Special),
           dash: true,
@@ -247,92 +232,98 @@ const TrendsView = (props: TrendViewProps) => {
     switch (dimension) {
       case "CLEAR":
         return {
-          data: coopStats.map((stat) => rationalize((stat.clear * 100) / stat.count)),
+          data: coopsStats.map((stat) => rationalize((stat.clear * 100) / stat.count)),
           color: Color.AccentColor,
           max: 100,
           relative: true,
         };
       case "WAVES_CLEARED":
         return {
-          data: coopStats.map((stat) => rationalize(stat.wave / (stat.count - stat.deemed))),
+          data: coopsStats.map((stat) => rationalize(stat.wave / (stat.count - stat.exempt))),
           color: Color.SalmonRun,
         };
       case "HAZARD_LEVEL":
         return {
-          data: coopStats.map((stat) =>
-            rationalize((stat.hazardLevel * 100) / (stat.count - stat.deemed))
+          data: coopsStats.map((stat) =>
+            rationalize((stat.hazardLevel * 100) / (stat.count - stat.exempt))
           ),
           color: Color.BigRun,
         };
       case "BOSS_SALMONIDS_DEFEATED":
         return {
-          data: coopStats.map((stat) => rationalize(stat.self.defeat / (stat.count - stat.deemed))),
+          data: coopsStats.map((stat) =>
+            rationalize(stat.self.defeat / (stat.count - stat.exempt))
+          ),
           color: Color.KillAndRescue,
         };
       case "BOSS_SALMONIDS_DEFEATED_TEAM_AVERAGE":
         return {
-          data: coopStats.map((stat) => rationalize(stat.team.defeat / stat.team.member)),
+          data: coopsStats.map((stat) => rationalize(stat.team.defeat / stat.member)),
           color: burnColor(Color.KillAndRescue),
           dash: true,
         };
       case "GOLDEN_EGGS_COLLECTED":
         return {
-          data: coopStats.map((stat) => rationalize(stat.self.golden / (stat.count - stat.deemed))),
+          data: coopsStats.map((stat) =>
+            rationalize(stat.self.golden / (stat.count - stat.exempt))
+          ),
           color: Color.GoldenEgg,
         };
       case "GOLDEN_EGGS_COLLECTED_TEAM_AVERAGE":
         return {
-          data: coopStats.map((stat) => rationalize(stat.team.golden / stat.team.member)),
+          data: coopsStats.map((stat) => rationalize(stat.team.golden / stat.member)),
           color: burnColor(Color.GoldenEgg),
           dash: true,
         };
       case "GOLDEN_EGGS_COLLECTED_INCLUDING_ASSISTED":
         return {
-          data: coopStats.map((stat) =>
-            rationalize((stat.self.golden + stat.self.assist) / (stat.count - stat.deemed))
+          data: coopsStats.map((stat) =>
+            rationalize((stat.self.golden + stat.self.assist) / (stat.count - stat.exempt))
           ),
           color: Color.GoldenEgg,
         };
       case "GOLDEN_EGGS_COLLECTED_INCLUDING_ASSISTED_TEAM_AVERAGE":
         return {
-          data: coopStats.map((stat) =>
-            rationalize((stat.team.golden + stat.team.assist) / stat.team.member)
+          data: coopsStats.map((stat) =>
+            rationalize((stat.team.golden + stat.team.assist) / stat.member)
           ),
           color: burnColor(Color.GoldenEgg),
           dash: true,
         };
       case "POWER_EGGS_COLLECTED":
         return {
-          data: coopStats.map((stat) => rationalize(stat.self.power / (stat.count - stat.deemed))),
+          data: coopsStats.map((stat) => rationalize(stat.self.power / (stat.count - stat.exempt))),
           color: Color.PowerEgg,
         };
       case "POWER_EGGS_COLLECTED_TEAM_AVERAGE":
         return {
-          data: coopStats.map((stat) => rationalize(stat.team.power / stat.team.member)),
+          data: coopsStats.map((stat) => rationalize(stat.team.power / stat.member)),
           color: burnColor(Color.PowerEgg),
           dash: true,
         };
       case "RESCUED":
         return {
-          data: coopStats.map((stat) => rationalize(stat.self.rescue / (stat.count - stat.deemed))),
+          data: coopsStats.map((stat) =>
+            rationalize(stat.self.rescue / (stat.count - stat.exempt))
+          ),
           color: Color.KillAndRescue,
         };
       case "RESCUED_TEAM_AVERAGE":
         return {
-          data: coopStats.map((stat) => rationalize(stat.team.rescue / stat.team.member)),
+          data: coopsStats.map((stat) => rationalize(stat.team.rescue / stat.member)),
           color: burnColor(Color.KillAndRescue),
           dash: true,
         };
       case "BE_RESCUED":
         return {
-          data: coopStats.map((stat) =>
-            rationalize(stat.self.rescued / (stat.count - stat.deemed))
+          data: coopsStats.map((stat) =>
+            rationalize(stat.self.rescued / (stat.count - stat.exempt))
           ),
           color: Color.Death,
         };
       case "BE_RESCUED_TEAM_AVERAGE":
         return {
-          data: coopStats.map((stat) => rationalize(stat.team.rescued / stat.team.member)),
+          data: coopsStats.map((stat) => rationalize(stat.team.rescued / stat.member)),
           color: burnColor(Color.Death),
           dash: true,
         };
@@ -341,8 +332,8 @@ const TrendsView = (props: TrendViewProps) => {
 
   const onTrendsPress = async () => {
     setLoading(true);
-    const results = await props.onResults();
-    setResults(results);
+    const results = await props.onStats();
+    setStats(results);
     setTrends(true);
     setLoading(false);
   };
@@ -350,7 +341,7 @@ const TrendsView = (props: TrendViewProps) => {
     setTrends(false);
   };
   const onModalHide = () => {
-    setResults(undefined);
+    setStats(undefined);
   };
   const onLayout = (event: LayoutChangeEvent) => {
     setPoint(Math.max(Math.round(event.nativeEvent.layout.width / 20), 20));

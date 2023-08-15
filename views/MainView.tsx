@@ -98,14 +98,13 @@ import {
 import { decode64String, encode64String } from "../utils/codec";
 import * as Database from "../utils/database";
 import { ok } from "../utils/promise";
+import { StatsProps, countBattle, countCoop } from "../utils/stats";
 import {
   convertStageImageUrl,
   getImageCacheKey,
   getImageHash,
   getUserIconCacheSource,
   isImageExpired,
-  trimBattle,
-  trimCoop,
 } from "../utils/ui";
 import CatalogView from "./CatalogView";
 import FilterView from "./FilterView";
@@ -210,7 +209,7 @@ const MainView = () => {
   const [filter, setFilter] = useState<Database.FilterProps>();
   const filterRef = useRef<Database.FilterProps>();
   const [filterOptions, setFilterOptions] = useState<Database.FilterProps>();
-  const [stats, setStats] = useState<ResultProps[]>();
+  const [stats, setStats] = useState<StatsProps[]>();
 
   const fade = useRef(new Animated.Value(0)).current;
   const blurOnTopFade = useRef(new Animated.Value(0)).current;
@@ -1183,23 +1182,14 @@ const MainView = () => {
       return stats;
     }
     setCounting(true);
-    const results: ResultProps[] = [];
+    const results: StatsProps[] = [];
     for (const group of groups ?? []) {
       if (group.battles) {
-        results.push(
-          ...group.battles.map((battle) => ({
-            battle,
-          }))
-        );
+        results.push(...group.battles.map((battle) => ({ battle: countBattle(battle) })));
       } else {
-        results.push(
-          ...group.coops!.map((coop) => ({
-            coop,
-          }))
-        );
+        results.push(...group.coops!.map((coop) => ({ coop: countCoop(coop) })));
       }
     }
-    const details: ResultProps[] = [];
     let batch = 0;
     while (true) {
       const records = await Database.query(
@@ -1210,12 +1200,10 @@ const MainView = () => {
       for (const record of records) {
         if (record.mode === "salmon_run") {
           const coop = JSON.parse(record.detail) as CoopHistoryDetailResult;
-          trimCoop(coop);
-          details.push({ coop });
+          results.push({ coop: countCoop(coop) });
         } else {
           const battle = JSON.parse(record.detail) as VsHistoryDetailResult;
-          trimBattle(battle);
-          details.push({ battle });
+          results.push({ battle: countBattle(battle) });
         }
       }
       if (records.length < Database.BATCH_SIZE) {
@@ -1223,10 +1211,9 @@ const MainView = () => {
       }
       batch += 1;
     }
-    const newStats = results.concat(details);
-    setStats(newStats);
+    setStats(results);
     setCounting(false);
-    return newStats;
+    return results;
   };
   const onGetWebServiceToken = async () => {
     // Update versions.
@@ -1945,8 +1932,8 @@ const MainView = () => {
                 style={[ViewStyles.mb4, ViewStyles.wf]}
               >
                 <HStack flex center style={ViewStyles.px4}>
-                  <StatsView disabled={counting} onResults={onStatsPress} style={ViewStyles.mr2} />
-                  <TrendsView disabled={counting} onResults={onStatsPress} style={ViewStyles.mr2} />
+                  <StatsView disabled={counting} onStats={onStatsPress} style={ViewStyles.mr2} />
+                  <TrendsView disabled={counting} onStats={onStatsPress} style={ViewStyles.mr2} />
                   {sessionToken.length > 0 && (
                     <SplatNetView
                       lang={language}

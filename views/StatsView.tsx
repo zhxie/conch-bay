@@ -17,12 +17,11 @@ import {
   ViewStyles,
 } from "../components";
 import t from "../i18n";
-import { CoopHistoryDetailResult, VsHistoryDetailResult } from "../models/types";
-import { countBattles, countCoops, roundPower } from "../utils/ui";
-import { ResultProps } from "./ResultView";
+import { BattleStats, CoopStats, StatsProps, addBattleStats, addCoopStats } from "../utils/stats";
+import { roundPower } from "../utils/ui";
 
 interface StatsModalProps {
-  results?: ResultProps[];
+  stats?: StatsProps[];
   dimension?: number;
   hideEmpty?: boolean;
   isVisible: boolean;
@@ -32,43 +31,42 @@ interface StatsModalProps {
 }
 
 const StatsModal = (props: StatsModalProps) => {
-  const battleStats = useMemo(
+  const battlesStats = useMemo(
     () =>
-      countBattles(
-        (props.results?.map((result) => result.battle).filter((battle) => battle) ??
-          []) as VsHistoryDetailResult[]
+      addBattleStats(
+        ...((props.stats?.map((result) => result.battle).filter((battle) => battle) ??
+          []) as BattleStats[])
       ),
-    [props.results]
+    [props.stats]
   );
-  const coopStats = useMemo(
+  const coopsStats = useMemo(
     () =>
-      countCoops(
-        (props.results?.map((result) => result.coop).filter((coop) => coop) ??
-          []) as CoopHistoryDetailResult[]
+      addCoopStats(
+        ...((props.stats?.map((result) => result.coop).filter((coop) => coop) ?? []) as CoopStats[])
       ),
-    [props.results]
+    [props.stats]
   );
 
   const battleDimension = useMemo(() => {
     switch (props.dimension || 0) {
       case 0:
-        return battleStats.self;
+        return battlesStats.self;
       case 1:
-        return battleStats.team;
+        return battlesStats.team;
       default:
         throw new Error(`unexpected dimension ${props.dimension}`);
     }
-  }, [battleStats, props.dimension]);
+  }, [battlesStats, props.dimension]);
   const coopDimension = useMemo(() => {
     switch (props.dimension || 0) {
       case 0:
-        return coopStats.self;
+        return coopsStats.self;
       case 1:
-        return coopStats.team;
+        return coopsStats.team;
       default:
         throw new Error(`unexpected dimension ${props.dimension}`);
     }
-  }, [coopStats, props.dimension]);
+  }, [coopsStats, props.dimension]);
 
   const formatPower = (total: number, max: number, count: number) => {
     return `${roundPower(max)} (${roundPower(total / count)})`;
@@ -130,33 +128,33 @@ const StatsModal = (props: StatsModalProps) => {
       style={ViewStyles.modal2d}
     >
       {props.children}
-      {(!props.hideEmpty || battleStats.count > 0) && (
+      {(!props.hideEmpty || battlesStats.count > 0) && (
         <VStack style={ViewStyles.mb2}>
-          <Display first last={battleStats.count === 0} title={t("battle")}>
-            <Text numberOfLines={1}>{battleStats.count}</Text>
+          <Display first last={battlesStats.count === 0} title={t("battle")}>
+            <Text numberOfLines={1}>{battlesStats.count}</Text>
           </Display>
-          {battleStats.count > 0 && (
+          {battlesStats.count > 0 && (
             <VStack>
               <Display title={t("victory")}>
-                <Text numberOfLines={1}>{battleStats.win}</Text>
+                <Text numberOfLines={1}>{battlesStats.win}</Text>
               </Display>
               <Display title={t("defeat")}>
-                <Text numberOfLines={1}>{battleStats.lose}</Text>
+                <Text numberOfLines={1}>{battlesStats.lose}</Text>
               </Display>
-              {battleStats.power.count > 0 && (
+              {battlesStats.power.count > 0 && (
                 <Display title={t("power")}>
                   <Text numberOfLines={1}>
                     {formatPower(
-                      battleStats.power.total,
-                      battleStats.power.max,
-                      battleStats.power.count
+                      battlesStats.power.total,
+                      battlesStats.power.max,
+                      battlesStats.power.count
                     )}
                   </Text>
                 </Display>
               )}
               <Display title={t("turf_inked")}>
                 <Text numberOfLines={1}>
-                  {formatTotalAndAverage(battleDimension.turf, battleStats.duration / 60)}
+                  {formatTotalAndAverage(battleDimension.turf, battlesStats.duration / 60)}
                 </Text>
               </Display>
               <Display title={t("splatted")}>
@@ -164,25 +162,25 @@ const StatsModal = (props: StatsModalProps) => {
                   {formatTotalAndAverageKillAndAssist(
                     battleDimension.kill,
                     battleDimension.assist,
-                    battleStats.duration / 60
+                    battlesStats.duration / 60
                   )}
                 </Text>
               </Display>
               <Display title={t("be_splatted")}>
                 <Text numberOfLines={1}>
-                  {formatTotalAndAverage(battleDimension.death, battleStats.duration / 60)}
+                  {formatTotalAndAverage(battleDimension.death, battlesStats.duration / 60)}
                 </Text>
               </Display>
-              <Display last={battleStats.stages.length === 0} title={t("special_weapon_uses")}>
+              <Display last={battlesStats.stages.length === 0} title={t("special_weapon_uses")}>
                 <Text numberOfLines={1}>
-                  {formatTotalAndAverage(battleDimension.special, battleStats.duration / 60)}
+                  {formatTotalAndAverage(battleDimension.special, battlesStats.duration / 60)}
                 </Text>
               </Display>
-              {battleStats.stages.length > 0 && (
+              {battlesStats.stages.length > 0 && (
                 <VStack>
                   <AccordionDisplay
                     title={t("stage_stats")}
-                    subChildren={battleStats.stages.map((stage) => (
+                    subChildren={battlesStats.stages.map((stage) => (
                       <AccordionDisplay
                         key={stage.id}
                         level={1}
@@ -190,7 +188,7 @@ const StatsModal = (props: StatsModalProps) => {
                         subChildren={stage.rules.map((rule) => (
                           <Display key={rule.id} level={2} title={t(rule.id)}>
                             <Text numberOfLines={1}>
-                              {formatWinRateAndTotal(rule.win, rule.win + rule.lose)}
+                              {formatWinRateAndTotal(rule.win, rule.count)}
                             </Text>
                           </Display>
                         ))}
@@ -198,10 +196,7 @@ const StatsModal = (props: StatsModalProps) => {
                         <Text numberOfLines={1}>
                           {formatWinRateAndTotal(
                             stage.rules.reduce((prev, current) => prev + current.win, 0),
-                            stage.rules.reduce(
-                              (prev, current) => prev + current.win + current.lose,
-                              0
-                            )
+                            stage.rules.reduce((prev, current) => prev + current.count, 0)
                           )}
                         </Text>
                       </AccordionDisplay>
@@ -210,7 +205,7 @@ const StatsModal = (props: StatsModalProps) => {
                   <AccordionDisplay
                     last
                     title={t("weapon_stats")}
-                    subChildren={battleStats.weapons.map((weapon, i, weapons) => (
+                    subChildren={battlesStats.weapons.map((weapon, i, weapons) => (
                       <AccordionDisplay
                         key={weapon.id}
                         last={i === weapons.length - 1}
@@ -224,7 +219,7 @@ const StatsModal = (props: StatsModalProps) => {
                             title={t(rule.id)}
                           >
                             <Text numberOfLines={1}>
-                              {formatWinRateAndTotal(rule.win, rule.win + rule.lose)}
+                              {formatWinRateAndTotal(rule.win, rule.count)}
                             </Text>
                           </Display>
                         ))}
@@ -232,10 +227,7 @@ const StatsModal = (props: StatsModalProps) => {
                         <Text numberOfLines={1}>
                           {formatWinRateAndTotal(
                             weapon.rules.reduce((prev, current) => prev + current.win, 0),
-                            weapon.rules.reduce(
-                              (prev, current) => prev + current.win + current.lose,
-                              0
-                            )
+                            weapon.rules.reduce((prev, current) => prev + current.count, 0)
                           )}
                         </Text>
                       </AccordionDisplay>
@@ -247,27 +239,27 @@ const StatsModal = (props: StatsModalProps) => {
           )}
         </VStack>
       )}
-      {(!props.hideEmpty || coopStats.count > 0) && (
+      {(!props.hideEmpty || coopsStats.count > 0) && (
         <VStack style={ViewStyles.mb2}>
-          <Display first last={coopStats.count === 0} title={t("salmon_run")}>
-            <Text numberOfLines={1}>{coopStats.count}</Text>
+          <Display first last={coopsStats.count === 0} title={t("salmon_run")}>
+            <Text numberOfLines={1}>{coopsStats.count}</Text>
           </Display>
-          {coopStats.count > 0 && (
+          {coopsStats.count > 0 && (
             <VStack>
               <Display title={t("clear")}>
-                <Text numberOfLines={1}>{coopStats.clear}</Text>
+                <Text numberOfLines={1}>{coopsStats.clear}</Text>
               </Display>
               <Display title={t("failure")}>
-                <Text numberOfLines={1}>{coopStats.count - coopStats.clear}</Text>
+                <Text numberOfLines={1}>{coopsStats.count - coopsStats.clear}</Text>
               </Display>
               <Display title={t("waves_cleared")}>
                 <Text numberOfLines={1}>
-                  {formatTotalAndAverage(coopStats.wave, coopStats.count - coopStats.deemed)}
+                  {formatTotalAndAverage(coopsStats.wave, coopsStats.count - coopsStats.exempt)}
                 </Text>
               </Display>
               <AccordionDisplay
                 title={t("boss_salmonids_defeated")}
-                subChildren={coopStats.bosses.map((boss) => (
+                subChildren={coopsStats.bosses.map((boss) => (
                   <Display key={boss.id} level={1} title={t(boss.id)}>
                     <Text numberOfLines={1}>
                       {(() => {
@@ -285,46 +277,57 @@ const StatsModal = (props: StatsModalProps) => {
                 ))}
               >
                 <Text numberOfLines={1}>
-                  {formatTotalAndAverage(coopDimension.defeat, coopStats.count - coopStats.deemed)}
+                  {formatTotalAndAverage(
+                    coopDimension.defeat,
+                    coopsStats.count - coopsStats.exempt
+                  )}
                 </Text>
               </AccordionDisplay>
               <AccordionDisplay
                 title={t("king_salmonids_defeated")}
-                subChildren={coopStats.kings.map((king) => (
+                subChildren={coopsStats.kings.map((king) => (
                   <Display key={king.id} level={1} title={t(king.id)}>
                     <Text numberOfLines={1}>{king.defeat}</Text>
                   </Display>
                 ))}
               >
-                <Text numberOfLines={1}>{coopStats.king}</Text>
+                <Text numberOfLines={1}>
+                  {coopsStats.kings.reduce((prev, current) => prev + current.defeat, 0)}
+                </Text>
               </AccordionDisplay>
               <Display title={t("golden_eggs_collected")}>
                 {formatTotalAndAverageGoldenEggs(
                   coopDimension.golden,
                   coopDimension.assist,
-                  coopStats.count - coopStats.deemed
+                  coopsStats.count - coopsStats.exempt
                 )}
               </Display>
               <Display title={t("power_eggs_collected")}>
                 <Text numberOfLines={1}>
-                  {formatTotalAndAverage(coopDimension.power, coopStats.count - coopStats.deemed)}
+                  {formatTotalAndAverage(coopDimension.power, coopsStats.count - coopsStats.exempt)}
                 </Text>
               </Display>
               <Display title={t("rescued")}>
                 <Text numberOfLines={1}>
-                  {formatTotalAndAverage(coopDimension.rescue, coopStats.count - coopStats.deemed)}
+                  {formatTotalAndAverage(
+                    coopDimension.rescue,
+                    coopsStats.count - coopsStats.exempt
+                  )}
                 </Text>
               </Display>
-              <Display last={coopStats.waves.length === 0} title={t("be_rescued")}>
+              <Display last={coopsStats.waves.length === 0} title={t("be_rescued")}>
                 <Text numberOfLines={1}>
-                  {formatTotalAndAverage(coopDimension.rescued, coopStats.count - coopStats.deemed)}
+                  {formatTotalAndAverage(
+                    coopDimension.rescued,
+                    coopsStats.count - coopsStats.exempt
+                  )}
                 </Text>
               </Display>
-              {coopStats.waves.length > 0 && (
+              {coopsStats.waves.length > 0 && (
                 <VStack>
                   <AccordionDisplay
                     title={t("wave_stats")}
-                    subChildren={coopStats.waves.map((wave) => (
+                    subChildren={coopsStats.waves.map((wave) => (
                       <AccordionDisplay
                         key={wave.id}
                         level={1}
@@ -348,7 +351,7 @@ const StatsModal = (props: StatsModalProps) => {
                   />
                   <AccordionDisplay
                     title={t("stage_stats")}
-                    subChildren={coopStats.stages.map((stage) => (
+                    subChildren={coopsStats.stages.map((stage) => (
                       <Display key={stage.id} level={1} title={t(stage.id)}>
                         <Text numberOfLines={1}>{stage.count}</Text>
                       </Display>
@@ -356,7 +359,7 @@ const StatsModal = (props: StatsModalProps) => {
                   />
                   <AccordionDisplay
                     title={t("supplied_weapons")}
-                    subChildren={coopStats.weapons.map((weapon) => (
+                    subChildren={coopsStats.weapons.map((weapon) => (
                       <Display key={weapon.id} level={1} title={t(weapon.id)}>
                         <Text numberOfLines={1}>{weapon.count}</Text>
                       </Display>
@@ -365,7 +368,7 @@ const StatsModal = (props: StatsModalProps) => {
                   <AccordionDisplay
                     last
                     title={t("supplied_special_weapons")}
-                    subChildren={coopStats.specialWeapons.map(
+                    subChildren={coopsStats.specialWeapons.map(
                       (specialWeapon, i, specialWeapons) => (
                         <Display
                           key={specialWeapon.id}
@@ -393,14 +396,14 @@ const StatsModal = (props: StatsModalProps) => {
 
 interface StatsViewProps {
   disabled?: boolean;
-  onResults: () => Promise<ResultProps[]>;
+  onStats: () => Promise<StatsProps[]>;
   style?: StyleProp<ViewStyle>;
 }
 
 const StatsView = (props: StatsViewProps) => {
-  const [results, setResults] = useState<ResultProps[]>();
+  const [stats, setStats] = useState<StatsProps[]>();
   const [loading, setLoading] = useState(false);
-  const [stats, setStats] = useState(false);
+  const [displayStats, setDisplayStats] = useState(false);
   const [group, setGroup] = useState(0);
 
   const beginTime = useMemo(() => {
@@ -421,32 +424,32 @@ const StatsView = (props: StatsViewProps) => {
   }, [group]);
 
   const filtered = useMemo(() => {
-    if (!results) {
+    if (!stats) {
       return undefined;
     }
-    return results.filter((result) => {
+    return stats.filter((result) => {
       if (beginTime === 0) {
         return true;
       }
       if (result.battle) {
-        return new Date(result.battle.vsHistoryDetail!.playedTime).valueOf() >= beginTime;
+        return result.battle.time >= beginTime;
       }
-      return new Date(result.coop!.coopHistoryDetail!.playedTime).valueOf() >= beginTime;
+      return result.coop!.time >= beginTime;
     });
-  }, [results, beginTime]);
+  }, [stats, beginTime]);
 
   const onStatsPress = async () => {
     setLoading(true);
-    const results = await props.onResults();
-    setResults(results);
-    setStats(true);
+    const results = await props.onStats();
+    setStats(results);
+    setDisplayStats(true);
     setLoading(false);
   };
   const onStatsClose = () => {
-    setStats(false);
+    setDisplayStats(false);
   };
   const onModalHide = () => {
-    setResults(undefined);
+    setStats(undefined);
   };
   const onGroupChange = (event: NativeSyntheticEvent<NativeSegmentedControlIOSChangeEvent>) => {
     setGroup(event.nativeEvent.selectedSegmentIndex);
@@ -462,8 +465,8 @@ const StatsView = (props: StatsViewProps) => {
         onPress={onStatsPress}
       />
       <StatsModal
-        results={filtered}
-        isVisible={stats}
+        stats={filtered}
+        isVisible={displayStats}
         onClose={onStatsClose}
         onModalHide={onModalHide}
       >

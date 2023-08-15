@@ -70,6 +70,7 @@ import {
   VsPlayer,
   VsTeam,
 } from "../models/types";
+import { countBattle, countCoop } from "../utils/stats";
 import {
   getCoopRuleColor,
   getImageCacheSource,
@@ -160,6 +161,18 @@ const ResultView = (props: ResultViewProps) => {
     }
     return results;
   }, [props.groups]);
+  const stats = useMemo(() => {
+    if (!group) {
+      return undefined;
+    }
+    return group.map((result) => {
+      if (result.battle) {
+        return { battle: countBattle(result.battle) };
+      }
+      return { coop: countCoop(result.coop!) };
+    });
+  }, [group]);
+
   const findIndex = () => {
     const id = result?.battle?.vsHistoryDetail?.id || result?.coop?.coopHistoryDetail?.id;
     if (id) {
@@ -1357,7 +1370,7 @@ const ResultView = (props: ResultViewProps) => {
         )}
       </Modal>
       <StatsModal
-        results={group}
+        stats={stats}
         dimension={dimension}
         hideEmpty
         isVisible={displayGroup}
