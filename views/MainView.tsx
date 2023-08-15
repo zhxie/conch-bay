@@ -1203,7 +1203,7 @@ const MainView = () => {
     let batch = 0;
     while (true) {
       const records = await Database.query(
-        Database.BATCH_SIZE * batch,
+        count + Database.BATCH_SIZE * batch,
         Database.BATCH_SIZE,
         filter
       );
