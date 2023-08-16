@@ -6,6 +6,21 @@ Conch Bay is a cross-platform schedule and battle statistic client for Splatoon 
 
 You may also test the latest app within [TestFlight](https://testflight.apple.com/join/JzrEy6eY) on iOS, or download unsigned APK directly in [Actions](https://github.com/zhxie/conch-bay/actions/workflows/build.yaml).
 
+## Build
+
+You can run Conch Bay with limited features with [Expo Go](https://expo.dev/client) or build a native app with the following commands.
+
+To build Conch Bay, you have to install `node`, `yarn`, `expo-cli`, `eas-cli` and OS-related build tools. In addition, if you want to build a deployable app, you should sign packages with valid certificates.
+
+```sh
+yarn
+
+# Run with Expo Go.
+yarn start
+# Build a native app.
+eas build --local --platform <ios|android> --profile <production|internal|development|preview>
+```
+
 ## FAQs
 
 ### Import data from s3s
