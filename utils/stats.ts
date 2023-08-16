@@ -1,4 +1,4 @@
-import specialWeaponList from "../models/specialWeaponsCoop.json";
+import coopSpecialWeaponList from "../models/coopSpecialWeapons.json";
 import {
   CoopHistoryDetailResult,
   CoopMemberResult,
@@ -509,7 +509,7 @@ export const countCoop = (coop: CoopHistoryDetailResult): CoopStats => {
       (weapon) => weaponList[getImageHash(weapon.image.url)]
     ),
     specialWeapon: coop.coopHistoryDetail!.myResult.specialWeapon
-      ? specialWeaponList[coop.coopHistoryDetail!.myResult.specialWeapon.image.url]
+      ? coopSpecialWeaponList[coop.coopHistoryDetail!.myResult.specialWeapon.image.url]
       : undefined,
   };
 };
