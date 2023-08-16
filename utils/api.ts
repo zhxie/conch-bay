@@ -1,5 +1,5 @@
 import axios from "axios";
-import Constants from "expo-constants";
+import Constants, { AppOwnership } from "expo-constants";
 import * as Crypto from "expo-crypto";
 import {
   BankaraBattleHistoriesResult,
@@ -324,6 +324,12 @@ export const getWebServiceToken = async (sessionToken: string) => {
   return { webServiceToken, country, language };
 };
 export const getBulletToken = async (webServiceToken: string, language?: string) => {
+  if (Constants.appOwnership !== AppOwnership.Expo) {
+    // HACK: dynamic import the library.
+    const Cookies = await import("@react-native-cookies/cookies");
+    await Cookies.default.clearAll();
+    await Cookies.default.flush();
+  }
   const res = await axios.post(
     "https://api.lp1.av5ja.srv.nintendo.net/api/bullet_tokens",
     undefined,
