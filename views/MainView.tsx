@@ -100,7 +100,7 @@ import {
 import { decode64String, encode64String } from "../utils/codec";
 import * as Database from "../utils/database";
 import { ok } from "../utils/promise";
-import { StatsProps, countBattle, countCoop } from "../utils/stats";
+import { StatsProps } from "../utils/stats";
 import {
   convertStageImageUrl,
   getImageCacheKey,
@@ -446,7 +446,7 @@ const MainView = () => {
     const details: ResultProps[] = [];
     let read = 0;
     while (read < limit) {
-      const records = await Database.query(
+      const records = await Database.queryDetail(
         offset + read,
         Math.min(Database.BATCH_SIZE, limit - read),
         filterRef.current
@@ -529,9 +529,9 @@ const MainView = () => {
     setLoadingMore(false);
   };
   const updatePlayedTime = async () => {
-    const records = await Database.query(0, 1);
-    if (records.length > 0) {
-      const lastPlayedTime = records[0].time.toString();
+    const time = await Database.queryLatestTime();
+    if (time !== undefined) {
+      const lastPlayedTime = time.toString();
       if (playedTime !== lastPlayedTime) {
         await setPlayedTime(lastPlayedTime);
         return true;
@@ -1185,34 +1185,14 @@ const MainView = () => {
       return stats;
     }
     setCounting(true);
+    const records = await Database.queryStats(filter);
     const results: StatsProps[] = [];
-    for (const group of groups ?? []) {
-      if (group.battles) {
-        results.push(...group.battles.map((battle) => ({ battle: countBattle(battle) })));
+    for (const record of records) {
+      if (record.mode === "salmon_run") {
+        results.push({ coop: JSON.parse(record.stats) });
       } else {
-        results.push(...group.coops!.map((coop) => ({ coop: countCoop(coop) })));
+        results.push({ battle: JSON.parse(record.stats) });
       }
-    }
-    let batch = 0;
-    while (true) {
-      const records = await Database.query(
-        count + Database.BATCH_SIZE * batch,
-        Database.BATCH_SIZE,
-        filter
-      );
-      for (const record of records) {
-        if (record.mode === "salmon_run") {
-          const coop = JSON.parse(record.detail) as CoopHistoryDetailResult;
-          results.push({ coop: countCoop(coop) });
-        } else {
-          const battle = JSON.parse(record.detail) as VsHistoryDetailResult;
-          results.push({ battle: countBattle(battle) });
-        }
-      }
-      if (records.length < Database.BATCH_SIZE) {
-        break;
-      }
-      batch += 1;
     }
     setStats(results);
     setCounting(false);
@@ -1320,7 +1300,10 @@ const MainView = () => {
         let coops = "";
         let batch = 0;
         while (true) {
-          const records = await Database.query(Database.BATCH_SIZE * batch, Database.BATCH_SIZE);
+          const records = await Database.queryDetail(
+            Database.BATCH_SIZE * batch,
+            Database.BATCH_SIZE
+          );
           for (const record of records) {
             if (record.mode === "salmon_run") {
               coops += `${record.detail},`;
@@ -1354,12 +1337,16 @@ const MainView = () => {
           let batch = 0;
           while (true) {
             let result = "";
-            const records = await Database.query(Database.BATCH_SIZE * batch, Database.BATCH_SIZE, {
-              modes: battleModes,
-              rules: [],
-              stages: [],
-              weapons: [],
-            });
+            const records = await Database.queryDetail(
+              Database.BATCH_SIZE * batch,
+              Database.BATCH_SIZE,
+              {
+                modes: battleModes,
+                rules: [],
+                stages: [],
+                weapons: [],
+              }
+            );
             for (let i = 0; i < records.length; i++) {
               if (batch === 0 && i === 0) {
                 result += `${records[i].detail}`;
@@ -1378,12 +1365,16 @@ const MainView = () => {
         let batch = 0;
         while (true) {
           let result = "";
-          const records = await Database.query(Database.BATCH_SIZE * batch, Database.BATCH_SIZE, {
-            modes: ["salmon_run"],
-            rules: [],
-            stages: [],
-            weapons: [],
-          });
+          const records = await Database.queryDetail(
+            Database.BATCH_SIZE * batch,
+            Database.BATCH_SIZE,
+            {
+              modes: ["salmon_run"],
+              rules: [],
+              stages: [],
+              weapons: [],
+            }
+          );
           for (let i = 0; i < records.length; i++) {
             if (batch === 0 && i === 0) {
               result += `${records[i].detail}`;
@@ -1442,7 +1433,10 @@ const MainView = () => {
       const resources = new Map<string, string>();
       let batch = 0;
       while (true) {
-        const records = await Database.query(Database.BATCH_SIZE * batch, Database.BATCH_SIZE);
+        const records = await Database.queryDetail(
+          Database.BATCH_SIZE * batch,
+          Database.BATCH_SIZE
+        );
         for (const record of records) {
           if (record.mode === "salmon_run") {
             const coop = JSON.parse(record.detail) as CoopHistoryDetailResult;

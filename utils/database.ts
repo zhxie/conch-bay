@@ -3,6 +3,7 @@ import * as SQLite from "expo-sqlite";
 import { CoopHistoryDetailResult, VsHistoryDetailResult } from "../models/types";
 import weapons from "../models/weapons.json";
 import { decode64Index } from "./codec";
+import { countBattle, countCoop } from "./stats";
 import { getImageHash, getVsSelfPlayer } from "./ui";
 
 let db: SQLite.SQLiteDatabase | undefined = undefined;
@@ -25,7 +26,7 @@ export const open = async (onUpgrade?: () => void) => {
   // Upgrade database.
   const record = await exec("PRAGMA user_version", [], true);
   let version = record.rows[0]["user_version"] as number;
-  if (version < 2) {
+  if (version < 3) {
     onUpgrade?.();
   }
   if (version < 1) {
@@ -34,7 +35,7 @@ export const open = async (onUpgrade?: () => void) => {
       await exec('ALTER TABLE result ADD COLUMN stage TEXT NOT NULL DEFAULT ""', [], false);
       let batch = 0;
       while (true) {
-        const records = await query(batch * BATCH_SIZE, BATCH_SIZE);
+        const records = await queryDetail(batch * BATCH_SIZE, BATCH_SIZE);
         await Promise.all(
           records.map((record) => {
             if (record.mode === "salmon_run") {
@@ -113,7 +114,43 @@ export const open = async (onUpgrade?: () => void) => {
     }
     version = 2;
   }
-  if (version != 2) {
+  if (version < 3) {
+    await beginTransaction();
+    try {
+      await exec('ALTER TABLE result ADD COLUMN stats TEXT NOT NULL DEFAULT ""', [], false);
+      let batch = 0;
+      while (true) {
+        const records = await queryDetail(batch * BATCH_SIZE, BATCH_SIZE);
+        await Promise.all(
+          records.map((record) => {
+            if (record.mode === "salmon_run") {
+              return exec(
+                "UPDATE result SET stats = ? WHERE id = ?",
+                [JSON.stringify(countCoop(JSON.parse(record.detail))), record.id],
+                false
+              );
+            }
+            return exec(
+              "UPDATE result SET stats = ? WHERE id = ?",
+              [JSON.stringify(countBattle(JSON.parse(record.detail))), record.id],
+              false
+            );
+          })
+        );
+        if (records.length < BATCH_SIZE) {
+          break;
+        }
+        batch += 1;
+      }
+      await exec("PRAGMA user_version=3", [], false);
+      await commit();
+    } catch (e) {
+      await rollback();
+      throw e;
+    }
+    version = 3;
+  }
+  if (version != 3) {
     throw new Error(`unexpected database version ${version}`);
   }
 
@@ -219,24 +256,38 @@ const convertFilter = (filter?: FilterProps, from?: number) => {
   return `WHERE ${condition}`;
 };
 
-export const query = async (offset: number, limit: number, filter?: FilterProps) => {
+export const queryDetail = async (offset: number, limit: number, filter?: FilterProps) => {
   let condition: string = "";
   if (filter) {
     condition = convertFilter(filter);
   }
-  const sql = `SELECT * FROM result ${condition} ORDER BY time DESC LIMIT ${limit} OFFSET ${offset}`;
+  const sql = `SELECT id, mode, detail FROM result ${condition} ORDER BY time DESC LIMIT ${limit} OFFSET ${offset}`;
   const record = await exec(sql, [], true);
   const result = record.rows.map((row) => ({
     id: row["id"],
-    time: row["time"],
     mode: row["mode"],
-    rule: row["rule"],
-    weapon: row["weapon"],
-    players: row["players"].split(","),
     detail: row["detail"],
-    stage: row["stage"],
   }));
   return result;
+};
+export const queryStats = async (filter?: FilterProps) => {
+  let condition: string = "";
+  if (filter) {
+    condition = convertFilter(filter);
+  }
+  const sql = `SELECT id, mode, stats FROM result ${condition} ORDER BY time DESC`;
+  const record = await exec(sql, [], true);
+  const result = record.rows.map((row) => ({
+    id: row["id"],
+    mode: row["mode"],
+    stats: row["stats"],
+  }));
+  return result;
+};
+export const queryLatestTime = async () => {
+  const sql = `SELECT time FROM result ORDER BY time DESC LIMIT 1`;
+  const record = await exec(sql, [], true);
+  return record.rows[0]?.time;
 };
 export const queryFilterOptions = async () => {
   const modeSql = "SELECT DISTINCT mode FROM result";
@@ -346,11 +397,12 @@ export const add = async (
   weapon: string,
   players: string[],
   detail: string,
-  stage: string
+  stage: string,
+  stats: string
 ) => {
   await exec(
-    "INSERT INTO result VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-    [id, time, mode, rule, weapon, players.join(","), detail, stage],
+    "INSERT INTO result VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+    [id, time, mode, rule, weapon, players.join(","), detail, stage, stats],
     false
   );
 };
@@ -371,7 +423,8 @@ export const addBattle = (battle: VsHistoryDetailResult) => {
           .flat()
       ),
     JSON.stringify(battle),
-    battle.vsHistoryDetail!.vsStage.id
+    battle.vsHistoryDetail!.vsStage.id,
+    JSON.stringify(countBattle(battle))
   );
 };
 export const addCoop = (coop: CoopHistoryDetailResult) => {
@@ -387,7 +440,8 @@ export const addCoop = (coop: CoopHistoryDetailResult) => {
       .coopHistoryDetail!.memberResults.map((memberResult) => memberResult.player.id)
       .concat(coop.coopHistoryDetail!.myResult.player.id),
     JSON.stringify(coop),
-    coop.coopHistoryDetail!.coopStage.id
+    coop.coopHistoryDetail!.coopStage.id,
+    JSON.stringify(countCoop(coop))
   );
 };
 export const remove = async (id: string) => {
