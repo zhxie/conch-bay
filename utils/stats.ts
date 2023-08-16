@@ -506,10 +506,12 @@ export const countCoop = (coop: CoopHistoryDetailResult): CoopStats => {
     waves,
     stage: coop.coopHistoryDetail!.coopStage.id,
     weapons: coop.coopHistoryDetail!.myResult.weapons.map(
-      (weapon) => weaponList[getImageHash(weapon.image.url)]
+      (weapon) => weaponList.images[getImageHash(weapon.image.url)]
     ),
     specialWeapon: coop.coopHistoryDetail!.myResult.specialWeapon
-      ? coopSpecialWeaponList[coop.coopHistoryDetail!.myResult.specialWeapon.image.url]
+      ? coopSpecialWeaponList.images[
+          getImageHash(coop.coopHistoryDetail!.myResult.specialWeapon.image.url)
+        ]
       : undefined,
   };
 };
@@ -545,7 +547,7 @@ export const addCoopStats = (...coops: CoopStats[]): CoopsStats => {
   for (const coop of coops) {
     count += 1;
     exempt += coop.exempt ? 1 : 0;
-    if (!exempt) {
+    if (!coop.exempt) {
       clear += coop.clear ? 1 : 0;
       wave += coop.wave;
       hazardLevel += coop.hazardLevel;
