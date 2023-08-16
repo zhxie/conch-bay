@@ -240,9 +240,11 @@ const MainView = () => {
     if (sessionTokenReady && webServiceTokenReady && bulletTokenReady && languageReady) {
       (async () => {
         try {
-          await Database.open(() => {
+          const upgrade = await Database.open();
+          if (upgrade) {
             showBanner(BannerLevel.Info, t("upgrading_database"));
-          });
+            await Database.upgrade();
+          }
           await loadResults(20);
           setReady(true);
         } catch (e) {

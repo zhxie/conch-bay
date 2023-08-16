@@ -8,11 +8,12 @@ import { getImageHash, getVsSelfPlayer } from "./ui";
 
 let db: SQLite.SQLiteDatabase | undefined = undefined;
 
+const VERSION = 3;
 export const BATCH_SIZE = Math.floor((Device.totalMemory! / 1024 / 1024 / 1024) * 150);
 
-export const open = async (onUpgrade?: () => void) => {
+export const open = async () => {
   if (db) {
-    return;
+    return false;
   }
   db = SQLite.openDatabase("conch-bay.db");
 
@@ -23,12 +24,21 @@ export const open = async (onUpgrade?: () => void) => {
     false
   );
 
-  // Upgrade database.
+  // Check database version.
+  const record = await exec("PRAGMA user_version", [], true);
+  const version = record.rows[0]["user_version"] as number;
+  if (version < 3) {
+    return true;
+  }
+  if (version > VERSION) {
+    throw new Error(`unexpected database version ${version}`);
+  }
+
+  return false;
+};
+export const upgrade = async () => {
   const record = await exec("PRAGMA user_version", [], true);
   let version = record.rows[0]["user_version"] as number;
-  if (version < 3) {
-    onUpgrade?.();
-  }
   if (version < 1) {
     await beginTransaction();
     try {
@@ -150,13 +160,7 @@ export const open = async (onUpgrade?: () => void) => {
     }
     version = 3;
   }
-  if (version != 3) {
-    throw new Error(`unexpected database version ${version}`);
-  }
-
-  return db;
 };
-export const upgrade = async () => {};
 export const close = () => {
   db!.closeAsync();
 };
