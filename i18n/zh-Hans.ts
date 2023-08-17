@@ -203,8 +203,9 @@ const zhHans = {
   convert_s3s_outputs: "转换s3s导出的记录",
   convert_stat_ink_salmon_run_json: "转换stat.ink鲑鱼跑JSON",
   convert_ikawidget3_ikax3: "转换ikawidget3 IKAX3",
-  convert_salmdroidnw_backup: "转换salmdroidNW备份",
+  import_salmdroidnw_backup: "导入salmdroidNW备份",
   "convert_salmonia3+_backup": "转换Salmonia3+备份",
+  import_salmdroidnw_backup_notice: "请在salmdroidNW中备份，解压缩，并导入名为1的文件。",
   split_and_import_notice:
     "法螺湾需要占用大量的内存以导入记录。如果法螺湾无法导入记录，您可以分割记录并导入。请注意，分割并导入需要数分钟到数十分钟的时间。此外，您还可以通过主页下方的支持联系我们以获得帮助。",
   split_and_import: "分割并导入",

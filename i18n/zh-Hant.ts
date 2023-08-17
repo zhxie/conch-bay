@@ -203,8 +203,9 @@ const zhHant = {
   convert_s3s_outputs: "轉換s3s匯出的記錄",
   convert_stat_ink_salmon_run_json: "轉換stat.ink鮭魚跑JSON",
   convert_ikawidget3_ikax3: "轉換ikawidget3 IKAX3",
-  convert_salmdroidnw_backup: "轉換salmdroidNW備份",
+  import_salmdroidnw_backup: "匯入salmdroidNW備份",
   "convert_salmonia3+_backup": "轉換Salmonia3+備份",
+  import_salmdroidnw_backup_notice: "請在salmdroidNW中備份，解壓縮，並匯入名為1的檔案。",
   split_and_import_notice:
     "法螺灣需要佔用大量的內存以匯入記錄。如果法螺灣無法匯入記錄，您可以分割記錄並匯入。請注意，分割並匯入需要數分鐘到數十分鐘的時間。此外，您還可以通過主頁下方的支持聯繫我們以獲得幫助。",
   split_and_import: "分割並匯入",

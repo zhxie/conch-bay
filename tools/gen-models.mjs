@@ -31,15 +31,19 @@ const getWeaponMap = async () => {
   const json = await res.json();
   const weapons = {};
   const images = {};
+  const coopRareWeapons = [];
   for (const weapon of json) {
     if (weapon["Type"] === "Versus" || (weapon["Type"] === "Coop" && weapon["IsCoopRare"])) {
       const id = Buffer.from(`Weapon-${weapon["Id"]}`).toString("base64");
       const image = createHash("sha256").update(weapon["__RowId"]).digest("hex");
       weapons[id] = image;
       images[image] = id;
+      if (weapon["IsCoopRare"]) {
+        coopRareWeapons.push(id);
+      }
     }
   }
-  return { weapons, images };
+  return { weapons, images, coopRareWeapons };
 };
 const getCoopSpecialWeaponMap = async () => {
   const res = await fetch(

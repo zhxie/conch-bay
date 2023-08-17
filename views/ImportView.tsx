@@ -19,8 +19,11 @@ import {
   useTheme,
 } from "../components";
 import t from "../i18n";
+import coopSpecialWeaponList from "../models/coopSpecialWeapons.json";
 import { CoopHistoryDetailResult, VsHistoryDetailResult } from "../models/types";
+import weaponList from "../models/weapons.json";
 import { decode64 } from "../utils/codec";
+import { getImageHash } from "../utils/ui";
 
 const IMPORT_READ_SIZE = Math.floor((Device.totalMemory! / 1024) * 15);
 
@@ -179,6 +182,7 @@ const ImportView = (props: ImportViewProps) => {
   const showBanner = useBanner();
 
   const [import_, setImport] = useState(false);
+  const [salmdroidnw, setSalmdroidnw] = useState(false);
   const [uri, setUri] = useState("");
   const [importing, setImporting] = useState(false);
 
@@ -267,6 +271,15 @@ const ImportView = (props: ImportViewProps) => {
     }
   };
 
+  const formatSalmdroidnwImageUrl = (image: any, path: string, useSplatoon3ink?: boolean) => {
+    const file = image["url"];
+    if (useSplatoon3ink) {
+      image["url"] = `https://splatoon3.ink/assets/splatnet/v1/${path}/${file}`;
+    } else {
+      image["url"] = `https://api.lp1.av5ja.srv.nintendo.net/resources/prod/v1/${path}/${file}`;
+    }
+  };
+
   const onImportPress = () => {
     setImport(true);
   };
@@ -286,8 +299,105 @@ const ImportView = (props: ImportViewProps) => {
   const onConvertIkawidget3Ikax3Press = () => {
     WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay#import-data-from-ikawidget3");
   };
-  const onConvertSalmdroidnwBackupPress = () => {
-    WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay#import-data-from-salmdroidnw");
+  const onImportSalmdroidnwBackupPress = () => {
+    setSalmdroidnw(true);
+  };
+  const onImportSalmdroidnwBackupClose = () => {
+    setSalmdroidnw(false);
+  };
+  const onImportSalmdroidnwBackupContinuePress = async () => {
+    setImporting(true);
+    let uri = "";
+    let imported = 0;
+    try {
+      const doc = await DocumentPicker.getDocumentAsync({ copyToCacheDirectory: true });
+      if (doc.canceled) {
+        setImporting(false);
+        return;
+      }
+      uri = doc.assets[0].uri;
+
+      setSalmdroidnw(false);
+      props.onBegin();
+      const coops: CoopHistoryDetailResult[] = [];
+      const data = JSON.parse(await FileSystem.readAsStringAsync(uri));
+      const results = JSON.parse(data["results"]);
+      const n = results.length;
+      showBanner(BannerLevel.Info, t("loading_n_results", { n }));
+      for (const result of results) {
+        const coop = {
+          coopHistoryDetail: JSON.parse(result["coopHistory"]),
+        } as CoopHistoryDetailResult;
+
+        for (const memberResult of [
+          coop.coopHistoryDetail!.myResult,
+          ...coop.coopHistoryDetail!.memberResults,
+        ]) {
+          for (const badge of memberResult.player.nameplate!.badges) {
+            if (badge) {
+              formatSalmdroidnwImageUrl(badge.image, "badge_img");
+            }
+          }
+          formatSalmdroidnwImageUrl(memberResult.player.nameplate!.background.image, "npl_img");
+          formatSalmdroidnwImageUrl(memberResult.player.uniform.image, "coop_skin_img");
+          for (const weapon of memberResult.weapons) {
+            let useSplatoon3ink = true;
+            const id = weaponList.images[getImageHash(weapon.image.url)];
+            if (weaponList.coopRareWeapons.find((w) => w === id)) {
+              useSplatoon3ink = false;
+            }
+            formatSalmdroidnwImageUrl(weapon.image, "weapon_illust", useSplatoon3ink);
+          }
+          if (memberResult.specialWeapon) {
+            if (!coopSpecialWeaponList.images[getImageHash(memberResult.specialWeapon.image.url)]) {
+              formatSalmdroidnwImageUrl(memberResult.specialWeapon.image, "ui_img", true);
+            } else {
+              formatSalmdroidnwImageUrl(memberResult.specialWeapon.image, "special_img/blue");
+            }
+          }
+        }
+        if (coop.coopHistoryDetail!.bossResult) {
+          formatSalmdroidnwImageUrl(
+            coop.coopHistoryDetail!.bossResult.boss.image,
+            "coop_enemy_img"
+          );
+        }
+        for (const enemyResult of coop.coopHistoryDetail!.enemyResults) {
+          formatSalmdroidnwImageUrl(enemyResult.enemy.image, "coop_enemy_img");
+        }
+        for (const waveResult of coop.coopHistoryDetail!.waveResults) {
+          for (const specialWeapon of waveResult.specialWeapons) {
+            formatSalmdroidnwImageUrl(specialWeapon.image, "special_img/blue");
+          }
+        }
+        formatSalmdroidnwImageUrl(
+          coop.coopHistoryDetail!.coopStage.image,
+          "stage_img/icon/high_resolution",
+          true
+        );
+        for (const weapon of coop.coopHistoryDetail!.weapons) {
+          if (!weaponList.images[getImageHash(weapon.image.url)]) {
+            formatSalmdroidnwImageUrl(weapon.image, "ui_img", true);
+          } else {
+            formatSalmdroidnwImageUrl(weapon.image, "weapon_illust", true);
+          }
+        }
+        coops.push(coop);
+      }
+      const { skip, fail, error } = await props.onResults([], coops);
+      showResultBanner(n, skip, fail, error);
+      imported = n - fail - skip;
+    } catch (e) {
+      showBanner(BannerLevel.Error, e);
+    }
+
+    // Clean up.
+    await FileSystem.deleteAsync(uri, { idempotent: true });
+    props.onComplete(imported);
+    setImporting(false);
+    if (imported >= 0) {
+      setImport(false);
+    }
   };
   const onConvertSalmonia3PlusBackupPress = () => {
     WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay#import-data-from-salmonia3");
@@ -367,14 +477,14 @@ const ImportView = (props: ImportViewProps) => {
             <Marquee>{t("convert_ikawidget3_ikax3")}</Marquee>
           </Button>
           <Button
-            style={[
-              ViewStyles.mb2,
-              { borderColor: Color.AccentColor, borderWidth: 1.5 },
-              theme.backgroundStyle,
-            ]}
-            onPress={onConvertSalmdroidnwBackupPress}
+            disabled={props.disabled && !importing}
+            loading={importing}
+            loadingText={t("importing")}
+            style={[ViewStyles.mb2, ViewStyles.accent]}
+            textStyle={theme.reverseTextStyle}
+            onPress={onImportSalmdroidnwBackupPress}
           >
-            <Marquee>{t("convert_salmdroidnw_backup")}</Marquee>
+            <Marquee style={theme.reverseTextStyle}>{t("import_salmdroidnw_backup")}</Marquee>
           </Button>
           <Button
             style={[
@@ -397,6 +507,22 @@ const ImportView = (props: ImportViewProps) => {
             <Marquee style={theme.reverseTextStyle}>{t("import")}</Marquee>
           </Button>
         </Dialog>
+        <Modal
+          isVisible={salmdroidnw}
+          onClose={onImportSalmdroidnwBackupClose}
+          style={ViewStyles.modal1d}
+        >
+          <Dialog icon="info" text={t("import_salmdroidnw_backup_notice")}>
+            <Button
+              disabled={importing}
+              style={ViewStyles.accent}
+              textStyle={theme.reverseTextStyle}
+              onPress={onImportSalmdroidnwBackupContinuePress}
+            >
+              <Marquee style={theme.reverseTextStyle}>{t("import")}</Marquee>
+            </Button>
+          </Dialog>
+        </Modal>
         <Modal isVisible={uri.length > 0} style={ViewStyles.modal1d}>
           <Dialog icon="alert-circle" text={t("split_and_import_notice")}>
             <Button

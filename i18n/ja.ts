@@ -209,8 +209,10 @@ const ja = {
   convert_s3s_outputs: "s3sによってエクスポートされたリザルトを変換",
   convert_stat_ink_salmon_run_json: "stat.inkサーモンランJSONを変換",
   convert_ikawidget3_ikax3: "ikawidget3 IKAX3を変換",
-  convert_salmdroidnw_backup: "salmdroidNWバックアップを変換",
+  import_salmdroidnw_backup: "salmdroidNWバックアップをインポート",
   "convert_salmonia3+_backup": "Salmonia3+バックアップを変換",
+  import_salmdroidnw_backup_notice:
+    "salmdroidNWにバックアップして解凍し、1という名前のファイルをインポートしてください。",
   split_and_import_notice:
     "ホラガイベイはリザルトをインポートするために大量のメモリを必要とします。ホラガイベイがリザルトをインポートできない場合は、リザルトを分割してインポートできます。分割してインポートするには数分から数十分かかりますのでご注意ください。また、ホームページ下のサポートからもお問い合わせいただけます。",
   split_and_import: "分割してインポート",
