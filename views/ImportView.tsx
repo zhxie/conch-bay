@@ -2,7 +2,6 @@ import { Buffer } from "buffer";
 import * as Device from "expo-device";
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
-import { activateKeepAwakeAsync, deactivateKeepAwake } from "expo-keep-awake";
 import * as WebBrowser from "expo-web-browser";
 import { useState } from "react";
 import { StyleProp, ViewStyle } from "react-native";
@@ -183,6 +182,21 @@ const ImportView = (props: ImportViewProps) => {
   const [uri, setUri] = useState("");
   const [importing, setImporting] = useState(false);
 
+  const showResultBanner = (n: number, skip: number, fail: number, error?: Error) => {
+    if (fail > 0 && skip > 0) {
+      showBanner(
+        BannerLevel.Warn,
+        t("loaded_n_results_skip_skipped_fail_failed", { n, skip, fail, error })
+      );
+    } else if (fail > 0) {
+      showBanner(BannerLevel.Warn, t("loaded_n_results_fail_failed", { n, fail, error }));
+    } else if (skip > 0) {
+      showBanner(BannerLevel.Success, t("loaded_n_results_skip_skipped", { n, skip }));
+    } else {
+      showBanner(BannerLevel.Success, t("loaded_n_results", { n }));
+    }
+  };
+
   const importDirectly = async (uri: string) => {
     let imported = 0;
     try {
@@ -191,18 +205,7 @@ const ImportView = (props: ImportViewProps) => {
       const n = results["battles"].length + results["coops"].length;
       showBanner(BannerLevel.Info, t("loading_n_results", { n }));
       const { skip, fail, error } = await props.onResults(results["battles"], results["coops"]);
-      if (fail > 0 && skip > 0) {
-        showBanner(
-          BannerLevel.Warn,
-          t("loaded_n_results_skip_skipped_fail_failed", { n, skip, fail, error })
-        );
-      } else if (fail > 0) {
-        showBanner(BannerLevel.Warn, t("loaded_n_results_fail_failed", { n, fail, error }));
-      } else if (skip > 0) {
-        showBanner(BannerLevel.Success, t("loaded_n_results_skip_skipped", { n, skip }));
-      } else {
-        showBanner(BannerLevel.Success, t("loaded_n_results", { n }));
-      }
+      showResultBanner(n, skip, fail, error);
       imported = n - fail - skip;
     } catch (e) {
       showBanner(BannerLevel.Error, e);
@@ -218,7 +221,6 @@ const ImportView = (props: ImportViewProps) => {
     }
   };
   const splitAndImport = async (uri: string) => {
-    activateKeepAwakeAsync("import");
     let imported = 0;
     try {
       props.onBegin();
@@ -249,18 +251,7 @@ const ImportView = (props: ImportViewProps) => {
         }
         batch += 1;
       }
-      if (fail > 0 && skip > 0) {
-        showBanner(
-          BannerLevel.Warn,
-          t("loaded_n_results_skip_skipped_fail_failed", { n, skip, fail, error })
-        );
-      } else if (fail > 0) {
-        showBanner(BannerLevel.Warn, t("loaded_n_results_fail_failed", { n, fail, error }));
-      } else if (skip > 0) {
-        showBanner(BannerLevel.Success, t("loaded_n_results_skip_skipped", { n, skip }));
-      } else {
-        showBanner(BannerLevel.Success, t("loaded_n_results", { n }));
-      }
+      showResultBanner(n, skip, fail, error);
       imported = n - skip - fail;
     } catch (e) {
       showBanner(BannerLevel.Error, e);
@@ -274,7 +265,6 @@ const ImportView = (props: ImportViewProps) => {
     if (imported >= 0) {
       setImport(false);
     }
-    deactivateKeepAwake("import");
   };
 
   const onImportPress = () => {
@@ -296,7 +286,7 @@ const ImportView = (props: ImportViewProps) => {
   const onConvertIkawidget3Ikax3Press = () => {
     WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay#import-data-from-ikawidget3");
   };
-  const onConvertSalmroidnwBackupPress = () => {
+  const onConvertSalmdroidnwBackupPress = () => {
     WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay#import-data-from-salmdroidnw");
   };
   const onConvertSalmonia3PlusBackupPress = () => {
@@ -382,7 +372,7 @@ const ImportView = (props: ImportViewProps) => {
               { borderColor: Color.AccentColor, borderWidth: 1.5 },
               theme.backgroundStyle,
             ]}
-            onPress={onConvertSalmroidnwBackupPress}
+            onPress={onConvertSalmdroidnwBackupPress}
           >
             <Marquee>{t("convert_salmdroidnw_backup")}</Marquee>
           </Button>

@@ -1236,6 +1236,7 @@ const MainView = () => {
   };
   const onImportBegin = () => {
     setRefreshing(true);
+    activateKeepAwakeAsync("import");
   };
   const onImportResults = async (
     battles: VsHistoryDetailResult[],
@@ -1290,6 +1291,7 @@ const MainView = () => {
     if (n > 0) {
       await loadResults(20);
     }
+    deactivateKeepAwake("import");
     setRefreshing(false);
   };
   const onExportPress = async () => {

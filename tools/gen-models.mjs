@@ -32,10 +32,12 @@ const getWeaponMap = async () => {
   const weapons = {};
   const images = {};
   for (const weapon of json) {
-    const id = Buffer.from(`Weapon-${weapon["Id"]}`).toString("base64");
-    const image = createHash("sha256").update(weapon["__RowId"]).digest("hex");
-    weapons[id] = image;
-    images[image] = id;
+    if (weapon["Type"] === "Versus" || (weapon["Type"] === "Coop" && weapon["IsCoopRare"])) {
+      const id = Buffer.from(`Weapon-${weapon["Id"]}`).toString("base64");
+      const image = createHash("sha256").update(weapon["__RowId"]).digest("hex");
+      weapons[id] = image;
+      images[image] = id;
+    }
   }
   return { weapons, images };
 };
@@ -59,11 +61,12 @@ const getCoopSpecialWeaponMap = async () => {
   return { specialWeapons, images };
 };
 
-const nso_version = await getNsoVersion();
-const splatnet_version = await getSplatnetVersion();
+const [nso_version, splatnet_version] = await Promise.all([getNsoVersion(), getSplatnetVersion()]);
 writeOut("models/versions.json", { NSO_VERSION: nso_version, SPLATNET_VERSION: splatnet_version });
 
-const weaponMap = await getWeaponMap();
+const [weaponMap, coopSpecialWeaponMap] = await Promise.all([
+  getWeaponMap(),
+  getCoopSpecialWeaponMap(),
+]);
 writeOut("models/weapons.json", weaponMap);
-const coopSpecialWeaponMap = await getCoopSpecialWeaponMap();
 writeOut("models/coopSpecialWeapons.json", coopSpecialWeaponMap);
