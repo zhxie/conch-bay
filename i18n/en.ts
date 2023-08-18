@@ -211,9 +211,11 @@ const en = {
   convert_stat_ink_salmon_run_json: "Convert stat.ink Salmon Run JSON",
   convert_ikawidget3_ikax3: "Convert ikawidget3 IKAX3",
   import_salmdroidnw_backup: "Import salmdroidNW Backup",
-  "convert_salmonia3+_backup": "Convert Salmonia3+ Backup",
+  "import_salmonia3+_backup": "Import Salmonia3+ Backup",
   import_salmdroidnw_backup_notice:
     "Please backup in salmdroidNW, extract it and import the file named 1.",
+  "import_salmonia3+_backup_notice":
+    "Please backup as JSON in Salmonia3+ and import it. Please note, some information may be missing since the Salmonia3+ backup does not contain all the information of results.",
   split_and_import_notice:
     "Conch Bay requires a lot of memory to import records. If Conch Bay cannot import records, you can split and import them. Please note, splitting and importing takes several minutes to tens of minutes. Besides, you can contact us for assistance through Support at the bottom of the homepage.",
   split_and_import: "Split and Import",

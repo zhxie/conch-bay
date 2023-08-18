@@ -1,4 +1,5 @@
 import { Buffer } from "buffer";
+import dayjs from "dayjs";
 import * as Device from "expo-device";
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
@@ -19,10 +20,15 @@ import {
   useTheme,
 } from "../components";
 import t from "../i18n";
+import backgroundList from "../models/backgrounds.json";
+import badgeList from "../models/badges.json";
 import coopSpecialWeaponList from "../models/coopSpecialWeapons.json";
+import coopStageList from "../models/coopStages.json";
+import salmonidList from "../models/salmonids.json";
 import { CoopHistoryDetailResult, VsHistoryDetailResult } from "../models/types";
 import weaponList from "../models/weapons.json";
-import { decode64 } from "../utils/codec";
+import workSuitList from "../models/workSuits.json";
+import { decode64, encode64String } from "../utils/codec";
 import { getImageHash } from "../utils/ui";
 
 const IMPORT_READ_SIZE = Math.floor((Device.totalMemory! / 1024) * 15);
@@ -160,6 +166,12 @@ class ImportStreamParser {
   };
 }
 
+const SALMONIA3_PLUS_SALMONID_MAP = [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17, 20];
+const SALMONIA3_PLUS_UNKNOWN_MAP = {
+  "-1": "473fffb2442075078d8bb7125744905abdeae651b6a5b7453ae295582e45f7d1",
+  "-2": "9d7272733ae2f2282938da17d69f13419a935eef42239132a02fcf37d8678f10",
+};
+
 interface ImportResult {
   skip: number;
   fail: number;
@@ -183,6 +195,7 @@ const ImportView = (props: ImportViewProps) => {
 
   const [import_, setImport] = useState(false);
   const [salmdroidnw, setSalmdroidnw] = useState(false);
+  const [salmonia3Plus, setSalmonia3Plus] = useState(false);
   const [uri, setUri] = useState("");
   const [importing, setImporting] = useState(false);
 
@@ -279,6 +292,50 @@ const ImportView = (props: ImportViewProps) => {
       image["url"] = `https://api.lp1.av5ja.srv.nintendo.net/resources/prod/v1/${path}/${file}`;
     }
   };
+  const formatSalmonia3PlusId = (
+    path: string,
+    nplnUserId: string,
+    playedTime: string,
+    uuid: string,
+    suffix?: string
+  ) => {
+    const timeStr = dayjs(playedTime).format("YYYYMMDDTHHmmss");
+    return encode64String(`${path}-u-${nplnUserId}:${timeStr}_${uuid.toLowerCase()}${suffix}`);
+  };
+  const formatSalmonia3Object = (
+    path: string,
+    id: number,
+    name: boolean,
+    image?: {
+      images: Record<string, string>;
+      path: string;
+      useSplatoon3ink?: boolean;
+    },
+    ignoreId?: boolean
+  ) => {
+    const encoded = encode64String(`${path}-${id}`);
+    const obj: any = {};
+    if (!ignoreId) {
+      obj["id"] = encoded;
+    }
+    if (name) {
+      obj["name"] = t(encoded);
+    }
+    if (image) {
+      let url: string;
+      if (id < 0) {
+        url = `https://splatoon3.ink/assets/splatnet/v1/ui_img/${SALMONIA3_PLUS_UNKNOWN_MAP[id]}_0.png`;
+      } else {
+        if (image.useSplatoon3ink) {
+          url = `https://splatoon3.ink/assets/splatnet/v1/${image.path}/${image.images[encoded]}_0.png`;
+        } else {
+          url = `https://api.lp1.av5ja.srv.nintendo.net/resources/prod/v1/${image.path}/${image.images[encoded]}_0.png`;
+        }
+      }
+      obj["image"] = { url };
+    }
+    return obj;
+  };
 
   const onImportPress = () => {
     setImport(true);
@@ -328,7 +385,6 @@ const ImportView = (props: ImportViewProps) => {
         const coop = {
           coopHistoryDetail: JSON.parse(result["coopHistory"]),
         } as CoopHistoryDetailResult;
-
         for (const memberResult of [
           coop.coopHistoryDetail!.myResult,
           ...coop.coopHistoryDetail!.memberResults,
@@ -399,8 +455,249 @@ const ImportView = (props: ImportViewProps) => {
       setImport(false);
     }
   };
-  const onConvertSalmonia3PlusBackupPress = () => {
-    WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay#import-data-from-salmonia3");
+  const onImportSalmonia3PlusBackupPress = () => {
+    setSalmonia3Plus(true);
+  };
+  const onImportSalmonia3PlusBackupClose = () => {
+    setSalmonia3Plus(false);
+  };
+  const onImportSalmonia3PlusBackupContinuePress = async () => {
+    setImporting(true);
+    let uri = "";
+    let imported = 0;
+    try {
+      const doc = await DocumentPicker.getDocumentAsync({ copyToCacheDirectory: true });
+      if (doc.canceled) {
+        setImporting(false);
+        return;
+      }
+      uri = doc.assets[0].uri;
+
+      setSalmonia3Plus(false);
+      props.onBegin();
+      const coops: CoopHistoryDetailResult[] = [];
+      const data = JSON.parse(await FileSystem.readAsStringAsync(uri));
+      const n = data["schedules"].reduce((prev, current) => prev + current["results"].length, 0);
+      showBanner(BannerLevel.Info, t("loading_n_results", { n }));
+      for (const schedule of data["schedules"]) {
+        for (const result of schedule["results"]) {
+          const memberResults = result["players"].map((player) => {
+            const background = formatSalmonia3Object(
+              "NameplateBackground",
+              player["background"],
+              false,
+              {
+                images: backgroundList.backgrounds,
+                path: "npl_img",
+              }
+            );
+            return {
+              player: {
+                __isPlayer: "CoopPlayer",
+                byname: player["byname"],
+                name: player["name"],
+                nameId: player["name_id"],
+                nameplate: {
+                  badges: player["badges"].map((badge) => {
+                    if (!badge) {
+                      return null;
+                    }
+                    return formatSalmonia3Object("Badge", badge, false, {
+                      images: badgeList.badges,
+                      path: "badge_img",
+                    });
+                  }),
+                  background: {
+                    ...background,
+                    textColor: {
+                      a: player["text_color"][3],
+                      b: player["text_color"][2],
+                      g: player["text_color"][1],
+                      r: player["text_color"][0],
+                    },
+                  },
+                },
+                uniform: formatSalmonia3Object("CoopUniform", player["uniform"], true, {
+                  images: workSuitList.workSuits,
+                  path: "coop_skin_img",
+                }),
+                id: formatSalmonia3PlusId(
+                  "CoopPlayer",
+                  result["npln_user_id"],
+                  result["play_time"],
+                  result["uuid"],
+                  `u-${player["npln_user_id"]}`
+                ),
+                species: player["species"],
+              },
+              weapons: player["weapon_list"].map((weapon) => {
+                return formatSalmonia3Object(
+                  "Weapon",
+                  weapon,
+                  true,
+                  {
+                    images: weaponList.weapons,
+                    path: "weapon_illust",
+                    useSplatoon3ink: !!weaponList.coopRareWeapons.find(
+                      (w) => w === encode64String(`Weapon-${weapon}`)
+                    ),
+                  },
+                  true
+                );
+              }),
+              specialWeapon:
+                player["special_id"] !== null
+                  ? {
+                      ...formatSalmonia3Object(
+                        "SpecialWeapon",
+                        player["special_id"],
+                        true,
+                        {
+                          images: coopSpecialWeaponList.specialWeapons,
+                          path: "special_img/blue",
+                        },
+                        true
+                      ),
+                      weaponId: player["special_id"],
+                    }
+                  : null,
+              defeatEnemyCount: player["boss_kill_counts_total"],
+              deliverCount: player["ikura_num"],
+              goldenAssistCount: player["golden_ikura_assist_num"],
+              goldenDeliverCount: player["golden_ikura_num"],
+              rescueCount: player["help_count"],
+              rescuedCount: player["dead_count"],
+            };
+          });
+          coops.push({
+            coopHistoryDetail: {
+              __typename: "CoopHistoryDetail",
+              id: formatSalmonia3PlusId(
+                "CoopHistoryDetail",
+                result["npln_user_id"],
+                result["play_time"],
+                result["uuid"]
+              ),
+              afterGrade:
+                result["grade_id"] !== null
+                  ? formatSalmonia3Object("CoopGrade", result["grade_id"], true)
+                  : null,
+              myResult: memberResults[0],
+              memberResults: memberResults.slice(1),
+              bossResult:
+                result["boss_id"] !== null
+                  ? {
+                      boss: formatSalmonia3Object("CoopEnemy", result["boss_id"], true, {
+                        images: salmonidList.salmonids,
+                        path: "coop_enemy_img",
+                      }),
+                      hasDefeatBoss: result["is_boss_defeated"],
+                    }
+                  : null,
+              enemyResults: result["boss_counts"]
+                .map((count, i) => {
+                  if (count === 0) {
+                    return undefined;
+                  }
+                  return {
+                    defeatCount: result["players"][0]["boss_kill_counts"][i],
+                    teamDefeatCount: result["boss_kill_counts"][i],
+                    popCount: count,
+                    enemy: formatSalmonia3Object(
+                      "CoopEnemy",
+                      SALMONIA3_PLUS_SALMONID_MAP[i],
+                      true,
+                      {
+                        images: salmonidList.salmonids,
+                        path: "coop_enemy_img",
+                      }
+                    ),
+                  };
+                })
+                .filter((enemyResult) => enemyResult),
+              waveResults: result["waves"].map((wave, i) => {
+                // HACK: for simplicity only.
+                const specialWeapons: any[] = [];
+                for (const player of result["players"]) {
+                  for (let j = 0; j < player["special_counts"][i]; j++) {
+                    specialWeapons.push(
+                      formatSalmonia3Object("SpecialWeapon", player["special_id"], true, {
+                        images: coopSpecialWeaponList.specialWeapons,
+                        path: "special_img/blue",
+                      })
+                    );
+                  }
+                }
+                return {
+                  waveNumber: wave["id"],
+                  waterLevel: wave["water_level"],
+                  eventWave:
+                    wave["event_type"] !== 0
+                      ? formatSalmonia3Object("CoopEventWave", wave["event_type"], true)
+                      : null,
+                  deliverNorm: wave["quota_num"],
+                  goldenPopCount: wave["golden_ikura_pop_num"],
+                  teamDeliverCount: wave["golden_ikura_num"],
+                  specialWeapons,
+                };
+              }),
+              resultWave: result["failure_wave"] ?? 0,
+              playedTime: result["play_time"],
+              rule: schedule["mode"] === "LIMITED" ? "TEAM_CONTEST" : schedule["mode"],
+              coopStage: formatSalmonia3Object("CoopStage", schedule["stage_id"], true, {
+                images: coopStageList.coopStages,
+                path: "stage_img/icon/high_resolution",
+                useSplatoon3ink: true,
+              }),
+              dangerRate: result["danger_rate"],
+              scenarioCode: result["scenario_code"],
+              smellMeter: result["smell_meter"],
+              weapons: schedule["weapon_list"].map((weapon) =>
+                formatSalmonia3Object(
+                  "Weapon",
+                  weapon,
+                  true,
+                  {
+                    images: weaponList.weapons,
+                    path: "weapon_illust",
+                    useSplatoon3ink: true,
+                  },
+                  true
+                )
+              ),
+              afterGradePoint: result["grade_point"],
+              scale:
+                result["scale"][0] !== null
+                  ? {
+                      gold: result["scale"][2],
+                      silver: result["scale"][1],
+                      bronze: result["scale"][0],
+                    }
+                  : null,
+              jobPoint: result["kuma_point"],
+              jobScore: result["job_score"],
+              jobRate: result["job_rate"],
+              jobBonus: result["job_bonus"],
+              nextHistoryDetail: null,
+              previousHistoryDetail: null,
+            },
+          });
+        }
+      }
+      const { skip, fail, error } = await props.onResults([], coops);
+      showResultBanner(n, skip, fail, error);
+      imported = n - fail - skip;
+    } catch (e) {
+      showBanner(BannerLevel.Error, e);
+    }
+
+    // Clean up.
+    await FileSystem.deleteAsync(uri, { idempotent: true });
+    props.onComplete(imported);
+    setImporting(false);
+    if (imported >= 0) {
+      setImport(false);
+    }
   };
   const onImportContinuePress = async () => {
     setImporting(true);
@@ -487,14 +784,14 @@ const ImportView = (props: ImportViewProps) => {
             <Marquee style={theme.reverseTextStyle}>{t("import_salmdroidnw_backup")}</Marquee>
           </Button>
           <Button
-            style={[
-              ViewStyles.mb2,
-              { borderColor: Color.AccentColor, borderWidth: 1.5 },
-              theme.backgroundStyle,
-            ]}
-            onPress={onConvertSalmonia3PlusBackupPress}
+            disabled={props.disabled && !importing}
+            loading={importing}
+            loadingText={t("importing")}
+            style={[ViewStyles.mb2, ViewStyles.accent]}
+            textStyle={theme.reverseTextStyle}
+            onPress={onImportSalmonia3PlusBackupPress}
           >
-            <Marquee>{t("convert_salmonia3+_backup")}</Marquee>
+            <Marquee style={theme.reverseTextStyle}>{t("import_salmonia3+_backup")}</Marquee>
           </Button>
           <Button
             disabled={props.disabled && !importing}
@@ -518,6 +815,22 @@ const ImportView = (props: ImportViewProps) => {
               style={ViewStyles.accent}
               textStyle={theme.reverseTextStyle}
               onPress={onImportSalmdroidnwBackupContinuePress}
+            >
+              <Marquee style={theme.reverseTextStyle}>{t("import")}</Marquee>
+            </Button>
+          </Dialog>
+        </Modal>
+        <Modal
+          isVisible={salmonia3Plus}
+          onClose={onImportSalmonia3PlusBackupClose}
+          style={ViewStyles.modal1d}
+        >
+          <Dialog icon="info" text={t("import_salmonia3+_backup_notice")}>
+            <Button
+              disabled={importing}
+              style={ViewStyles.accent}
+              textStyle={theme.reverseTextStyle}
+              onPress={onImportSalmonia3PlusBackupContinuePress}
             >
               <Marquee style={theme.reverseTextStyle}>{t("import")}</Marquee>
             </Button>
