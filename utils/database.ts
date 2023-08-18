@@ -27,7 +27,7 @@ export const open = async () => {
   // Check database version.
   const record = await exec("PRAGMA user_version", [], true);
   const version = record.rows[0]["user_version"] as number;
-  if (version < 3) {
+  if (version < VERSION) {
     return true;
   }
   if (version > VERSION) {
@@ -38,7 +38,7 @@ export const open = async () => {
 };
 export const upgrade = async () => {
   const record = await exec("PRAGMA user_version", [], true);
-  let version = record.rows[0]["user_version"] as number;
+  const version = record.rows[0]["user_version"] as number;
   if (version < 1) {
     await beginTransaction();
     try {
@@ -80,7 +80,6 @@ export const upgrade = async () => {
       await rollback();
       throw e;
     }
-    version = 1;
   }
   if (version < 2) {
     await beginTransaction();
@@ -122,7 +121,6 @@ export const upgrade = async () => {
       await rollback();
       throw e;
     }
-    version = 2;
   }
   if (version < 3) {
     await beginTransaction();
@@ -158,7 +156,6 @@ export const upgrade = async () => {
       await rollback();
       throw e;
     }
-    version = 3;
   }
 };
 export const close = () => {

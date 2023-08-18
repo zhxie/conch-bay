@@ -300,6 +300,11 @@ const MainView = () => {
     setStats(undefined);
   }, [filter, filtered]);
   useEffect(() => {
+    if (!progressTotal) {
+      setProgress(0);
+    }
+  }, [progressTotal]);
+  useEffect(() => {
     if (autoRefresh) {
       activateKeepAwakeAsync("refresh");
     } else {
@@ -317,7 +322,6 @@ const MainView = () => {
           } catch (e) {
             await refresh();
           }
-          setProgressTotal(0);
           setRefreshing(false);
         }, 10000);
       }
@@ -687,13 +691,10 @@ const MainView = () => {
     } catch (e) {
       showBanner(BannerLevel.Error, e);
     }
-    setProgressTotal(0);
     setRefreshing(false);
   };
   const refreshResults = async (bulletToken: string, latestOnly: boolean) => {
     // Fetch results.
-    setProgress(0);
-    setProgressTotal(0);
     let n = -1;
     let throwable = 0;
     let error: Error | undefined;
@@ -916,6 +917,7 @@ const MainView = () => {
           return 0;
         }),
     ]);
+    setProgressTotal(0);
 
     if (n > 0) {
       const fail = battleFail + coopFail;
