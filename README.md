@@ -41,7 +41,7 @@ python3 tools/convert_stat_ink_salmon_run_json.py <PATH_TO_EXTRACTED_STAT_INK_SA
 
 ### Import data from ikawidget3
 
-Run the following command to extract and convert data from a ikawidget3 database IKAX3 into `conch-bay-import.json`. You can then import it into Conch Bay. You have to agree with [Couchbase Enterprise](https://www.couchbase.com/ESLA01162020) License](https://www.couchbase.com/ESLA01162020) before converting.
+Run the following command to extract and convert data from a ikawidget3 database IKAX3 into `conch-bay-import.json`. You can then import it into Conch Bay.
 
 ```sh
 python3 tools/convert_ikax3.py <PATH_TO_IKAX3>
