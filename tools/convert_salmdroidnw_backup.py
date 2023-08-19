@@ -2,7 +2,8 @@ from hashlib import sha256
 import json
 import requests
 import sys
-
+import tempfile
+import zipfile
 
 VERSION = "410"
 RANDOM_IMAGE = [
@@ -57,13 +58,17 @@ def warmup():
 def main():
     if len(sys.argv) <= 1:
         print(
-            f'Please specify the directory of salmdroidNW backup with "python3 {sys.argv[0]} <PATH>".'
+            f'Please specify the salmdroidNW backup with "python3 {sys.argv[0]} <PATH>".'
         )
         return
     warmup()
 
+    dir = tempfile.mkdtemp()
+    with zipfile.ZipFile(sys.argv[1], "r") as f:
+        f.extractall(dir)
+
     coops = []
-    with open(f"{sys.argv[1]}/1", encoding="utf-8") as f:
+    with open(f"{dir}/1", encoding="utf-8") as f:
         data = json.loads(f.read())
         results = json.loads(data["results"])
         for result in results:
