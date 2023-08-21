@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ActivityIndicator, Linking, SafeAreaView, StyleProp, ViewStyle } from "react-native";
+import { ActivityIndicator, SafeAreaView, StyleProp, ViewStyle } from "react-native";
 import { WebView, WebViewMessageEvent } from "react-native-webview";
 import { Center, FullscreenModal, ToolButton } from "../components";
 import t from "../i18n";
@@ -30,9 +30,6 @@ const SplatNetView = (props: SplatNetViewProps) => {
   const onMessage = (event: WebViewMessageEvent) => {
     if (event.nativeEvent.data === "close") {
       setWebView(false);
-    } else if (event.nativeEvent.data === "error") {
-      setWebView(false);
-      Linking.openURL("com.nintendo.znca://znca/game/4834290508791808");
     }
   };
 
@@ -56,29 +53,17 @@ const SplatNetView = (props: SplatNetViewProps) => {
           }}
         >
           {webServiceToken.length > 0 && (
-            // TODO: audit injected scripts and third-party cookies usage.
             <WebView
               source={{
                 uri: `https://api.lp1.av5ja.srv.nintendo.net/?lang=${props.lang}`,
-                headers: {
-                  Cookie: `_gtoken=${webServiceToken}`,
-                  "X-Web-View-Ver": "4.0.0-d5178440",
-                },
               }}
               injectedJavaScript={`
-                document.cookie = "_gtoken=${webServiceToken}";
                 window.closeWebView = function() {
                   window.ReactNativeWebView.postMessage("close");
                 };
-                setInterval(function() {
-                  if (document.querySelector('[class*="ErrorPage_ErrorPage"]')) {
-                    window.ReactNativeWebView.postMessage("error");
-                  }
-                }, 1000);
-                true;
-              `}
-              injectedJavaScriptBeforeContentLoaded={`
-                document.cookie = "_gtoken=${webServiceToken}";
+                window.requestGameWebToken = function() {
+                  Promise.resolve().then(() => window.onGameWebTokenReceive?.call(null, "${webServiceToken}"));
+                };
                 true;
               `}
               onMessage={onMessage}
