@@ -202,9 +202,11 @@ const zhHans = {
     "法螺湾支持导入由法螺湾导出的记录，您也可以将其它第三方App导出的记录转换至法螺湾支持的格式并导入。此外，您还可以通过主页下方的支持联系我们以获得帮助。",
   convert_s3s_outputs: "转换s3s导出的记录",
   convert_stat_ink_salmon_run_json: "转换stat.ink鲑鱼跑JSON",
-  convert_ikawidget3_ikax3: "转换ikawidget3 IKAX3",
+  import_ikawidget3_ikax3: "导入ikawidget3 IKAX3",
   import_salmdroidnw_backup: "导入salmdroidNW备份",
   "import_salmonia3+_backup": "导入Salmonia3+备份",
+  import_ikawidget3_ikax3_notice:
+    "请在ikawidget3中导出，以ZIP格式解压缩，并分别导入各项文件夹中名为db.sqlite3的文件。请注意，由于IKAX3包含加密数据，部分信息可能有误。",
   import_salmdroidnw_backup_notice: "请在salmdroidNW中备份，解压缩，并导入名为1的文件。",
   "import_salmonia3+_backup_notice":
     "请在Salmonia3+中备份为JSON并导入。请注意，由于Salmonia3+备份并未包含记录的所有信息，部分信息可能缺失。",

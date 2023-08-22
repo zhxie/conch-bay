@@ -1,5 +1,6 @@
 import { Buffer } from "buffer";
 import dayjs from "dayjs";
+import Constants, { AppOwnership } from "expo-constants";
 import * as Device from "expo-device";
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
@@ -29,6 +30,7 @@ import { CoopHistoryDetailResult, VsHistoryDetailResult } from "../models/types"
 import weaponList from "../models/weapons.json";
 import workSuitList from "../models/workSuits.json";
 import { decode64, encode64String } from "../utils/codec";
+import * as Database from "../utils/database";
 import { getImageHash } from "../utils/ui";
 
 const IMPORT_READ_SIZE = Math.floor((Device.totalMemory! / 1024) * 15);
@@ -166,6 +168,137 @@ class ImportStreamParser {
   };
 }
 
+const parseFleece = (bytes: number[], sharedKeys?: string[], index?: number, wide?: boolean) => {
+  if (index === undefined) {
+    index = bytes.length - 2;
+  }
+
+  if (bytes[index] < 0b10000) {
+    // Small integer [0000iiii iiiiiiii].
+    const symbol = (bytes[index] & 0b1000) >> 3 ? true : false;
+    const comp = ((bytes[index] & 0b111) << 8) + bytes[index + 1];
+    if (symbol) {
+      return -((comp ^ 0b111_11111111) + 1);
+    }
+    return comp;
+  } else if (bytes[index] < 0b100000) {
+    // Long integer [0001uccc iiiiiiii...].
+    const unsigned = (bytes[index] & 0b1000) >> 3 ? true : false;
+    const count = (bytes[index] & 0b111) + 1;
+    let value = 0;
+    for (let i = 0; i < count; i++) {
+      if (!unsigned && i === count - 1) {
+        const symbol = (bytes[index + 1 + i] & 10000000) >> 7 ? true : false;
+        value += (bytes[index + 1 + i] & 0b1111111) << (8 * i);
+        if (symbol) {
+          throw new Error("long integer with symbol set is not supported");
+        }
+      } else {
+        value += bytes[index + 1 + i] << (8 * i);
+      }
+    }
+    return value;
+  } else if (bytes[index] < 0b110000) {
+    // Floating point [0010s--- --------...].
+    const single = (bytes[index] & 0b1000) >> 3 ? false : true;
+    if (single) {
+      const buffer = new ArrayBuffer(4);
+      const view = new DataView(buffer);
+      for (let j = 0; j < 4; j++) {
+        view.setUint8(j, bytes[index + 2 + j]);
+      }
+      return view.getFloat32(0, true);
+    } else {
+      const buffer = new ArrayBuffer(8);
+      const view = new DataView(buffer);
+      for (let j = 0; j < 8; j++) {
+        view.setUint8(j, bytes[index + 2 + j]);
+      }
+      return view.getFloat64(0, true);
+    }
+  } else if (bytes[index] < 0b1000000) {
+    // Special [0011ss-- --------].
+    const sign = (bytes[index] & 0b1100) >> 2;
+    switch (sign) {
+      case 0:
+        return null;
+      case 1:
+        return false;
+      case 2:
+        return true;
+      case 3:
+        return undefined;
+    }
+  } else if (bytes[index] < 0b1010000) {
+    // String [0100cccc ssssssss...].
+    const count = bytes[index] & 0b1111;
+    if (count === 0b1111) {
+      let varlen = 0;
+      let count = 0;
+      while (true) {
+        const end = (bytes[index + 1 + varlen] & 0b10000000) >> 7 === 0;
+        count += (bytes[index + 1 + varlen] & 0b1111111) << (7 * varlen);
+        varlen += 1;
+        if (end) {
+          break;
+        }
+      }
+      return Buffer.from(bytes.slice(index + 1 + varlen, index + 1 + varlen + count)).toString();
+    }
+    return Buffer.from(bytes.slice(index + 1, index + 1 + count)).toString();
+  } else if (bytes[index] < 0b1100000) {
+    // Binary data [0101cccc dddddddd...].
+    throw new Error("binary data are not supported");
+  } else if (bytes[index] < 0b1110000) {
+    // Array [0110wccc cccccccc...].
+    const wide = (bytes[index] & 0b1000) >> 3 === 1;
+    const count = ((bytes[index] & 0b111) << 8) + bytes[index + 1];
+    if (count == 0b111_11111111) {
+      throw new Error("array with varlen is not supported");
+    }
+    const values: any[] = [];
+    for (let i = 0; i < count; i++) {
+      values.push(parseFleece(bytes, sharedKeys, index + 2 + (wide ? 4 : 2) * i, wide));
+    }
+    return values;
+  } else if (bytes[index] < 0b10000000) {
+    // Dictionary [0111wccc cccccccc...].
+    const wide = (bytes[index] & 0b1000) >> 3 === 1;
+    const count = ((bytes[index] & 0b111) << 8) + bytes[index + 1];
+    if (count == 0b111_11111111) {
+      throw new Error("dictionary with varlen is not supported");
+    }
+    const values = {};
+    for (let i = 0; i < count; i++) {
+      let key = parseFleece(bytes, sharedKeys, index + 2 + (wide ? 8 : 4) * i, wide);
+      if (typeof key === "number") {
+        key = sharedKeys![key];
+      }
+      values[key] = parseFleece(
+        bytes,
+        sharedKeys,
+        index + 2 + (wide ? 8 : 4) * i + (wide ? 4 : 2),
+        wide
+      );
+    }
+    return values;
+  } else {
+    // Pointer [1ooooooo oooooooo].
+    let offset: number;
+    if (wide) {
+      offset =
+        2 *
+        (((bytes[index] & 0b1111111) << 24) +
+          (bytes[index + 1] << 16) +
+          (bytes[index + 2] << 8) +
+          bytes[index + 3]);
+    } else {
+      offset = 2 * (((bytes[index] & 0b1111111) << 8) + bytes[index + 1]);
+    }
+    return parseFleece(bytes, sharedKeys, index - offset, true);
+  }
+};
+
 const SALMONIA3_PLUS_SALMONID_MAP = [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17, 20];
 const SALMONIA3_PLUS_UNKNOWN_MAP = {
   "-1": "473fffb2442075078d8bb7125744905abdeae651b6a5b7453ae295582e45f7d1",
@@ -194,6 +327,7 @@ const ImportView = (props: ImportViewProps) => {
   const showBanner = useBanner();
 
   const [import_, setImport] = useState(false);
+  const [ikawidget3, setIkawidget3] = useState(false);
   const [salmdroidnw, setSalmdroidnw] = useState(false);
   const [salmonia3Plus, setSalmonia3Plus] = useState(false);
   const [uri, setUri] = useState("");
@@ -353,8 +487,86 @@ const ImportView = (props: ImportViewProps) => {
       "https://github.com/zhxie/conch-bay#import-salmon-run-data-from-statink"
     );
   };
-  const onConvertIkawidget3Ikax3Press = () => {
-    WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay#import-data-from-ikawidget3");
+  const onImportIkawidget3Ikax3Press = () => {
+    setIkawidget3(true);
+  };
+  const onImportIkawidget3Ikax3Close = () => {
+    setIkawidget3(false);
+  };
+  const onImportIkawidget3Ikax3ContinuePress = async () => {
+    setImporting(true);
+    const uri = `${FileSystem.documentDirectory!}ikawidget3.db`;
+    let imported = 0;
+    try {
+      const doc = await DocumentPicker.getDocumentAsync({ copyToCacheDirectory: true });
+      if (doc.canceled) {
+        setImporting(false);
+        return;
+      }
+      await FileSystem.copyAsync({
+        from: doc.assets[0].uri,
+        to: uri,
+      });
+
+      setIkawidget3(false);
+      props.onBegin();
+      const battles: VsHistoryDetailResult[] = [];
+      const coops: CoopHistoryDetailResult[] = [];
+      const SQLite = await import("react-native-quick-sqlite");
+      const db = SQLite.open({ name: "ikawidget3.db" });
+      const info = await db.executeAsync("SELECT body FROM kv_info WHERE `key` = ?", [
+        "SharedKeys",
+      ]);
+      const sharedKeys = parseFleece(info.rows!.item(0)["body"]);
+      const count = await db.executeAsync("SELECT COUNT(1) FROM kv_default");
+      const n = count.rows!.item(0)["COUNT(1)"];
+      showBanner(BannerLevel.Info, t("loading_n_results", { n }));
+      let batch = 0;
+      let skip = 0,
+        fail = 0;
+      let error: Error | undefined;
+      while (true) {
+        const record = await db.executeAsync(
+          `SELECT body FROM kv_default LIMIT ${Database.BATCH_SIZE} OFFSET ${
+            Database.BATCH_SIZE * batch
+          }`
+        );
+        const results = record.rows!._array;
+        for (const row of results) {
+          const result = parseFleece(row["body"], sharedKeys);
+          if (result["__typename"] === "VsHistoryDetail") {
+            battles.push({ vsHistoryDetail: result });
+          } else if (result["__typename"] === "CoopHistoryDetail") {
+            coops.push({ coopHistoryDetail: result });
+          } else {
+            throw new Error(`unexpected type name ${result["__typename"]}`);
+          }
+        }
+        const result = await props.onResults(battles, coops);
+        skip += result.skip;
+        fail += result.fail;
+        if (!error) {
+          error = result.error;
+        }
+        if (results.length < Database.BATCH_SIZE) {
+          break;
+        }
+        batch += 1;
+      }
+      showResultBanner(n, skip, fail, error);
+      imported = n - fail - skip;
+    } catch (e) {
+      showBanner(BannerLevel.Error, e);
+    }
+
+    // Clean up.
+    await Promise.all([
+      FileSystem.deleteAsync(uri, { idempotent: true }),
+      FileSystem.deleteAsync(`${uri}-shm`, { idempotent: true }),
+      FileSystem.deleteAsync(`${uri}-wal`, { idempotent: true }),
+    ]);
+    props.onComplete(imported);
+    setImporting(false);
   };
   const onImportSalmdroidnwBackupPress = () => {
     setSalmdroidnw(true);
@@ -764,14 +976,16 @@ const ImportView = (props: ImportViewProps) => {
             <Marquee>{t("convert_stat_ink_salmon_run_json")}</Marquee>
           </Button>
           <Button
-            style={[
-              ViewStyles.mb2,
-              { borderColor: Color.AccentColor, borderWidth: 1.5 },
-              theme.backgroundStyle,
-            ]}
-            onPress={onConvertIkawidget3Ikax3Press}
+            disabled={
+              Constants.appOwnership === AppOwnership.Expo || (props.disabled && !importing)
+            }
+            loading={importing}
+            loadingText={t("importing")}
+            style={[ViewStyles.mb2, ViewStyles.accent]}
+            textStyle={theme.reverseTextStyle}
+            onPress={onImportIkawidget3Ikax3Press}
           >
-            <Marquee>{t("convert_ikawidget3_ikax3")}</Marquee>
+            <Marquee style={theme.reverseTextStyle}>{t("import_ikawidget3_ikax3")}</Marquee>
           </Button>
           <Button
             disabled={props.disabled && !importing}
@@ -804,6 +1018,22 @@ const ImportView = (props: ImportViewProps) => {
             <Marquee style={theme.reverseTextStyle}>{t("import")}</Marquee>
           </Button>
         </Dialog>
+        <Modal
+          isVisible={ikawidget3}
+          onClose={onImportIkawidget3Ikax3Close}
+          style={ViewStyles.modal1d}
+        >
+          <Dialog icon="info" text={t("import_ikawidget3_ikax3_notice")}>
+            <Button
+              disabled={Constants.appOwnership === AppOwnership.Expo || importing}
+              style={ViewStyles.accent}
+              textStyle={theme.reverseTextStyle}
+              onPress={onImportIkawidget3Ikax3ContinuePress}
+            >
+              <Marquee style={theme.reverseTextStyle}>{t("import")}</Marquee>
+            </Button>
+          </Dialog>
+        </Modal>
         <Modal
           isVisible={salmdroidnw}
           onClose={onImportSalmdroidnwBackupClose}

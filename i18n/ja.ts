@@ -208,9 +208,11 @@ const ja = {
     "ホラガイベイはホラガイベイによってエクスポートされたリザルトのインポートをサポートしており、他のサードパーティアプリによってエクスポートされたリザルトをホラガイベイでサポートされている形式に変換してインポートすることもできます。また、ホームページ下のサポートからもお問い合わせいただけます。",
   convert_s3s_outputs: "s3sによってエクスポートされたリザルトを変換",
   convert_stat_ink_salmon_run_json: "stat.inkサーモンランJSONを変換",
-  convert_ikawidget3_ikax3: "ikawidget3 IKAX3を変換",
+  import_ikawidget3_ikax3: "ikawidget3 IKAX3をインポート",
   import_salmdroidnw_backup: "salmdroidNWバックアップをインポート",
   "import_salmonia3+_backup": "Salmonia3+バックアップをインポート",
+  import_ikawidget3_ikax3_notice:
+    "ikawidget3に書き出してZIP形式で解凍し、db.sqlite3という名前のファイルを各フォルダにインポートしてください。IKAX3には暗号化されたデータが含まれているため、一部の情報が間違っている可能性があることに注意してください。",
   import_salmdroidnw_backup_notice:
     "salmdroidNWにバックアップして解凍し、1という名前のファイルをインポートしてください。",
   "import_salmonia3+_backup_notice":

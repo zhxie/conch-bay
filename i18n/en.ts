@@ -209,9 +209,11 @@ const en = {
     "Conch Bay supports importing results exported by Conch Bay, and you can also convert results exported by other 3rd party apps to formats supported by Conch Bay and import them. Besides, you can contact us for assistance through Support at the bottom of the homepage.",
   convert_s3s_outputs: "Convert s3s Outputs",
   convert_stat_ink_salmon_run_json: "Convert stat.ink Salmon Run JSON",
-  convert_ikawidget3_ikax3: "Convert ikawidget3 IKAX3",
+  import_ikawidget3_ikax3: "Import ikawidget3 IKAX3",
   import_salmdroidnw_backup: "Import salmdroidNW Backup",
   "import_salmonia3+_backup": "Import Salmonia3+ Backup",
+  import_ikawidget3_ikax3_notice:
+    "Please export in ikawidget3, extract it in ZIP format and import the file named db.sqlite3 in each folder. Please note, some information may be wrong since IKAX3 contains encrypted data.",
   import_salmdroidnw_backup_notice:
     "Please backup in salmdroidNW, extract it and import the file named 1.",
   "import_salmonia3+_backup_notice":
