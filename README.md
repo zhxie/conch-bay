@@ -57,7 +57,7 @@ python3 tools/convert_salmdroidnw_backup.py <PATH_TO_SALMDROIDNW_BACKUP>
 
 ### Import data from Salmonia3+
 
-Run the following command to extract and convert data from a Salmonia3+ backup into `conch-bay-import.json`. You can then import it into Conch Bay.
+Run the following command to extract and convert data from a Salmonia3+ backup into `conch-bay-import.json`. You can then import it into Conch Bay. Notice that some information may be wrong since IKAX3 contains encrypted data.
 
 ```sh
 python3 tools/convert_salmonia3+_backup.py <PATH_TO_SALMONIA3+_PLAIN_JSON_BACKUP>
