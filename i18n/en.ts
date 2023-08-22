@@ -149,6 +149,7 @@ const en = {
   splatfest_power: "Splatfest Power",
   played_time: "Played Time",
   medals_earned: "Medals Earned",
+  boss_salmonids: "Boss Salmonids",
   hazard_level: "Hazard Level",
   supplied_weapons: "Supplied Weapons",
   job_title: "Job Title",
@@ -257,16 +258,6 @@ const en = {
   // Stages and coop stages.
   VnNTdGFnZS0tOTk5: "",
   "Q29vcFN0YWdlLS05OTk=": "",
-  // Grades.
-  "Q29vcEdyYWRlLTA=": "Apprentice",
-  "Q29vcEdyYWRlLTE=": "Part-Timer",
-  "Q29vcEdyYWRlLTI=": "Go-Getter",
-  "Q29vcEdyYWRlLTM=": "Overachiever",
-  "Q29vcEdyYWRlLTQ=": "Profreshional Part-Timer",
-  "Q29vcEdyYWRlLTU=": "Profreshional +1",
-  "Q29vcEdyYWRlLTY=": "Profreshional +2",
-  "Q29vcEdyYWRlLTc=": "Profreshional +3",
-  "Q29vcEdyYWRlLTg=": "Eggsecutive VP",
   // Waves.
   wave_n: "Wave %{n}",
   xtrawave: "XTRAWAVE",
@@ -283,25 +274,6 @@ const en = {
   Q29vcEV2ZW50V2F2ZS02: "Cohock Charge",
   Q29vcEV2ZW50V2F2ZS03: "Giant Tornado",
   Q29vcEV2ZW50V2F2ZS04: "Mudmouth Eruptions",
-  // Boss Salmonids.
-  boss_salmonids: "Boss Salmonids",
-  "Q29vcEVuZW15LTQ=": "Steelhead",
-  "Q29vcEVuZW15LTU=": "Flyfish",
-  "Q29vcEVuZW15LTY=": "Scrapper",
-  "Q29vcEVuZW15LTc=": "Steel Eel",
-  "Q29vcEVuZW15LTg=": "Stinger",
-  "Q29vcEVuZW15LTk=": "Maws",
-  Q29vcEVuZW15LTEw: "Drizzler",
-  Q29vcEVuZW15LTEx: "Fish Stick",
-  Q29vcEVuZW15LTEy: "Flipper-Flopper",
-  Q29vcEVuZW15LTEz: "Big Shot",
-  Q29vcEVuZW15LTE0: "Slammin' Lid",
-  Q29vcEVuZW15LTE1: "Goldie",
-  Q29vcEVuZW15LTE3: "Griller",
-  Q29vcEVuZW15LTIw: "Mudmouth",
-  // King Salmonids.
-  Q29vcEVuZW15LTIz: "Cohozuna",
-  Q29vcEVuZW15LTI0: "Horrorboros",
 };
 
 export default en;

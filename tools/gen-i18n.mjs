@@ -115,25 +115,7 @@ const getCoopSpecialWeaponLocales = async (languages) => {
   }
   return maps;
 };
-const getWorkSuitLocales = async (languages) => {
-  const res = await fetch(
-    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${VERSION}/CoopSkinInfo.json`
-  );
-  const json = await res.json();
-  const maps = [];
-  for (let i = 0; i < languages.length; i++) {
-    maps.push({});
-  }
-  for (const workSuit of json) {
-    const id = Buffer.from(`CoopUniform-${workSuit["Id"]}`).toString("base64");
-    for (let i = 0; i < languages.length; i++) {
-      const name = languages[i]["CommonMsg/Coop/CoopSkinName"][workSuit["__RowId"]];
-      maps[i][id] = name;
-    }
-  }
-  return maps;
-};
-const getBrandLocales = async (languages) => {
+const getBrandLocales = (languages) => {
   const maps = [];
   for (let i = 0; i < languages.length; i++) {
     maps.push({});
@@ -204,6 +186,80 @@ const getShoesLocales = async (languages) => {
   }
   return maps;
 };
+const getGradeLocales = (languages) => {
+  const maps = [];
+  for (let i = 0; i < languages.length; i++) {
+    maps.push({});
+  }
+  for (let i = 0; i < languages.length; i++) {
+    for (const grade of Object.keys(languages[i]["CommonMsg/Coop/CoopGrade"])) {
+      if (grade.match(/Grade_\d\d/)) {
+        const id = Buffer.from(
+          `CoopGrade-${Number.parseInt(grade.replace("Grade_", ""))}`
+        ).toString("base64");
+        const name = languages[i]["CommonMsg/Coop/CoopGrade"][grade];
+        maps[i][id] = name;
+      }
+    }
+  }
+  return maps;
+};
+const getSalmonidLocales = async (languages) => {
+  const map = {
+    SakelienBomber: 4,
+    SakelienCupTwins: 5,
+    SakelienShield: 6,
+    SakelienSnake: 7,
+    SakelienTower: 8,
+    Sakediver: 9,
+    Sakerocket: 10,
+    SakePillar: 11,
+    SakeDolphin: 12,
+    SakeArtillery: 13,
+    SakeSaucer: 14,
+    SakelienGolden: 15,
+    Sakedozer: 17,
+    SakeBigMouth: 20,
+    SakelienGiant: 23,
+    SakeRope: 24,
+  };
+  const res = await fetch(
+    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${VERSION}/CoopEnemyInfo.json`
+  );
+  const json = await res.json();
+  const maps = [];
+  for (let i = 0; i < languages.length; i++) {
+    maps.push({});
+  }
+  for (const salmonid of json) {
+    if (map[salmonid["Type"]]) {
+      const id = Buffer.from(`CoopEnemy-${map[salmonid["Type"]]}`).toString("base64");
+      for (let i = 0; i < languages.length; i++) {
+        const name = languages[i]["CommonMsg/Coop/CoopEnemy"][salmonid["Type"]];
+        maps[i][id] = name;
+      }
+    }
+  }
+  return maps;
+};
+const getWorkSuitLocales = async (languages) => {
+  const res = await fetch(
+    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${VERSION}/CoopSkinInfo.json`
+  );
+  const json = await res.json();
+  const maps = [];
+  for (let i = 0; i < languages.length; i++) {
+    maps.push({});
+  }
+  for (const workSuit of json) {
+    const id = Buffer.from(`CoopUniform-${workSuit["Id"]}`).toString("base64");
+    for (let i = 0; i < languages.length; i++) {
+      const name = languages[i]["CommonMsg/Coop/CoopSkinName"][workSuit["__RowId"]];
+      maps[i][id] = name;
+    }
+  }
+  return maps;
+};
 
 const languages = await Promise.all([
   getLanguage("USen"),
@@ -217,22 +273,26 @@ const [
   coopStageLocales,
   weaponLocales,
   coopSpecialWeaponLocales,
-  workSuitLocales,
   brandLocales,
   headgearLocales,
   clothesLocales,
   shoesLocales,
+  gradeLocales,
+  salmonidLocales,
+  workSuitLocales,
 ] = await Promise.all([
   getChallengeLocales(languages),
   getStageLocales(languages),
   getCoopStageLocales(languages),
   getWeaponLocales(languages),
   getCoopSpecialWeaponLocales(languages),
-  getWorkSuitLocales(languages),
   getBrandLocales(languages),
   getHeadgearLocales(languages),
   getClothesLocales(languages),
   getShoesLocales(languages),
+  getGradeLocales(languages),
+  getSalmonidLocales(languages),
+  getWorkSuitLocales(languages),
 ]);
 const paths = ["i18n/en.json", "i18n/ja.json", "i18n/zh-Hans.json", "i18n/zh-Hant.json"];
 for (let i = 0; i < paths.length; i++) {
@@ -242,11 +302,13 @@ for (let i = 0; i < paths.length; i++) {
     ...coopStageLocales[i],
     ...weaponLocales[i],
     ...coopSpecialWeaponLocales[i],
-    ...workSuitLocales[i],
     ...brandLocales[i],
     ...headgearLocales[i],
     ...clothesLocales[i],
     ...shoesLocales[i],
+    ...gradeLocales[i],
+    ...salmonidLocales[i],
+    ...workSuitLocales[i],
   };
   writeOut(paths[i], locale);
 }

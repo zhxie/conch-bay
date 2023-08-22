@@ -144,6 +144,7 @@ const zhHant = {
   splatfest_power: "祭典戰力",
   played_time: "遊戲時間",
   medals_earned: "獲得的表揚",
+  boss_salmonids: "巨大鮭魚",
   hazard_level: "危險度",
   supplied_weapons: "派發武器",
   job_title: "打工稱號",
@@ -250,16 +251,6 @@ const zhHant = {
   // Stages and coop stages.
   VnNTdGFnZS0tOTk5: "",
   "Q29vcFN0YWdlLS05OTk=": "",
-  // Grades.
-  "Q29vcEdyYWRlLTA=": "新手",
-  "Q29vcEdyYWRlLTE=": "半吊子",
-  "Q29vcEdyYWRlLTI=": "獨當一面",
-  "Q29vcEdyYWRlLTM=": "熟練",
-  "Q29vcEdyYWRlLTQ=": "達人",
-  "Q29vcEdyYWRlLTU=": "達人+1",
-  "Q29vcEdyYWRlLTY=": "達人+2",
-  "Q29vcEdyYWRlLTc=": "達人+3",
-  "Q29vcEdyYWRlLTg=": "傳說",
   // Waves.
   wave_n: "WAVE %{n}",
   xtrawave: "EX-WAVE",
@@ -276,25 +267,6 @@ const zhHant = {
   Q29vcEV2ZW50V2F2ZS02: "大胖魚大量出現",
   Q29vcEV2ZW50V2F2ZS03: "巨型龍捲風",
   Q29vcEV2ZW50V2F2ZS04: "泥鮭魚噴發",
-  // Boss Salmonids.
-  boss_salmonids: "巨大鮭魚",
-  "Q29vcEVuZW15LTQ=": "炸彈魚",
-  "Q29vcEVuZW15LTU=": "墊肩飛魚",
-  "Q29vcEVuZW15LTY=": "鐵板魚",
-  "Q29vcEVuZW15LTc=": "蛇魚",
-  "Q29vcEVuZW15LTg=": "高塔魚",
-  "Q29vcEVuZW15LTk=": "鼴鼠魚",
-  Q29vcEVuZW15LTEw: "蝙蝠魚",
-  Q29vcEVuZW15LTEx: "柱魚",
-  Q29vcEVuZW15LTEy: "潛水魚",
-  Q29vcEVuZW15LTEz: "鐵球魚",
-  Q29vcEVuZW15LTE0: "鍋蓋魚",
-  Q29vcEVuZW15LTE1: "金鮭魚",
-  Q29vcEVuZW15LTE3: "烤架鱼",
-  Q29vcEVuZW15LTIw: "泥鮭魚",
-  // King Salmonids.
-  Q29vcEVuZW15LTIz: "橫綱",
-  Q29vcEVuZW15LTI0: "辰龍",
 };
 
 export default zhHant;

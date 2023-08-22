@@ -149,6 +149,7 @@ const ja = {
   splatfest_power: "フェスパワー",
   played_time: "遊んだ日時",
   medals_earned: "ゲットした表彰",
+  boss_salmonids: "オオモノシャケ",
   hazard_level: "キケン度",
   supplied_weapons: "支給ブキ",
   job_title: "バイト称号",
@@ -256,16 +257,6 @@ const ja = {
   // Stages and coop stages.
   VnNTdGFnZS0tOTk5: "",
   "Q29vcFN0YWdlLS05OTk=": "",
-  // Grades.
-  "Q29vcEdyYWRlLTA=": "かけだし",
-  "Q29vcEdyYWRlLTE=": "はんにんまえ",
-  "Q29vcEdyYWRlLTI=": "いちにんまえ	",
-  "Q29vcEdyYWRlLTM=": "じゅくれん	",
-  "Q29vcEdyYWRlLTQ=": "たつじん",
-  "Q29vcEdyYWRlLTU=": "たつじん+1",
-  "Q29vcEdyYWRlLTY=": "たつじん+2",
-  "Q29vcEdyYWRlLTc=": "たつじん+3",
-  "Q29vcEdyYWRlLTg=": "でんせつ",
   // Waves.
   wave_n: "WAVE %{n}",
   xtrawave: "EX-WAVE",
@@ -282,25 +273,6 @@ const ja = {
   Q29vcEV2ZW50V2F2ZS02: "ドスコイ大量発生",
   Q29vcEV2ZW50V2F2ZS03: "巨大タツマキ",
   Q29vcEV2ZW50V2F2ZS04: "ドロシャケ噴出",
-  // Boss Salmonids.
-  boss_salmonids: "オオモノシャケ",
-  "Q29vcEVuZW15LTQ=": "バクダン",
-  "Q29vcEVuZW15LTU=": "カタパッド",
-  "Q29vcEVuZW15LTY=": "テッパン",
-  "Q29vcEVuZW15LTc=": "ヘビ",
-  "Q29vcEVuZW15LTg=": "タワー",
-  "Q29vcEVuZW15LTk=": "モグラ",
-  Q29vcEVuZW15LTEw: "コウモリ",
-  Q29vcEVuZW15LTEx: "ハシラ",
-  Q29vcEVuZW15LTEy: "ダイバー",
-  Q29vcEVuZW15LTEz: "テッキュウ",
-  Q29vcEVuZW15LTE0: "ナベブタ",
-  Q29vcEVuZW15LTE1: "キンシャケ",
-  Q29vcEVuZW15LTE3: "グリル",
-  Q29vcEVuZW15LTIw: "ドロシャケ",
-  // King Salmonids.
-  Q29vcEVuZW15LTIz: "ヨコヅナ",
-  Q29vcEVuZW15LTI0: "タツ",
 };
 
 export default ja;
