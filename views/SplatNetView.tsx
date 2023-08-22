@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { ActivityIndicator, SafeAreaView, StyleProp, ViewStyle } from "react-native";
+import { ActivityIndicator, StyleProp, ViewStyle } from "react-native";
+import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 import { WebView, WebViewMessageEvent } from "react-native-webview";
 import { Center, FullscreenModal, ToolButton } from "../components";
 import t from "../i18n";
@@ -43,21 +44,29 @@ const SplatNetView = (props: SplatNetViewProps) => {
         />
       )}
       <FullscreenModal isVisible={webView} onModalHide={onModalHide}>
-        <SafeAreaView
+        <SafeAreaProvider
           style={{
             height: "100%",
             width: "100%",
             position: "absolute",
             bottom: 0,
-            backgroundColor: "black",
           }}
         >
-          {webServiceToken.length > 0 && (
-            <WebView
-              source={{
-                uri: `https://api.lp1.av5ja.srv.nintendo.net/?lang=${props.lang}`,
-              }}
-              injectedJavaScript={`
+          <SafeAreaView
+            style={{
+              height: "100%",
+              width: "100%",
+              position: "absolute",
+              bottom: 0,
+              backgroundColor: "black",
+            }}
+          >
+            {webServiceToken.length > 0 && (
+              <WebView
+                source={{
+                  uri: `https://api.lp1.av5ja.srv.nintendo.net/?lang=${props.lang}`,
+                }}
+                injectedJavaScript={`
                 window.closeWebView = function() {
                   window.ReactNativeWebView.postMessage("close");
                 };
@@ -66,18 +75,19 @@ const SplatNetView = (props: SplatNetViewProps) => {
                 };
                 true;
               `}
-              onMessage={onMessage}
-              renderLoading={() => (
-                <Center style={[{ width: "100%", height: "100%", backgroundColor: "#292e35" }]}>
-                  <ActivityIndicator />
-                </Center>
-              )}
-              startInLoadingState
-              thirdPartyCookiesEnabled
-              style={{ backgroundColor: "#292e35" }}
-            />
-          )}
-        </SafeAreaView>
+                onMessage={onMessage}
+                renderLoading={() => (
+                  <Center style={[{ width: "100%", height: "100%", backgroundColor: "#292e35" }]}>
+                    <ActivityIndicator />
+                  </Center>
+                )}
+                startInLoadingState
+                thirdPartyCookiesEnabled
+                style={{ backgroundColor: "#292e35" }}
+              />
+            )}
+          </SafeAreaView>
+        </SafeAreaProvider>
       </FullscreenModal>
     </Center>
   );
