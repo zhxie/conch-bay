@@ -7,7 +7,6 @@ const en = {
   // API.
   lang: "en-US",
   // UI.
-  upgrading_database: "Upgrading database",
   log_in: "Log In",
   log_in_notice:
     "Conch Bay requires acquiring tokens to access SplatNet 3. The process involves making a secure request to non-Nintendo imink or nxapi with minimal, non-identifying information. This information will not be logged or stored, please see the privacy policy for more information.",
@@ -21,6 +20,7 @@ const en = {
     "After logging out, you will be not able to load results, friends and catalog, display owned gears and access SplatNet 3. Results stored in Conch Bay will not be removed.",
   log_out_continue: "Log Out",
   logging_out: "Logging out",
+  upgrading_database: "Upgrading database",
   failed_to_check_update: "Failed to check Conch Bay update",
   reacquiring_tokens: "Reacquiring tokens",
   failed_to_acquire_web_service_token: "Failed to acquire web service token (%{error})",
@@ -217,7 +217,7 @@ const en = {
   import_salmdroidnw_backup_notice:
     "Please backup in salmdroidNW, extract it and import the file named 1.",
   "import_salmonia3+_backup_notice":
-    "Please backup as JSON in Salmonia3+ and import it. Please note, some information may be missing since the Salmonia3+ backup does not contain all the information of results.",
+    "Please backup as JSON in Salmonia3+ and import it. Please note, some information may be missing since the Salmonia3+ backup does not contain all the data of results.",
   split_and_import_notice:
     "Conch Bay requires a lot of memory to import records. If Conch Bay cannot import records, you can split and import them. Please note, splitting and importing takes several minutes to tens of minutes. Besides, you can contact us for assistance through Support at the bottom of the homepage.",
   split_and_import: "Split and Import",

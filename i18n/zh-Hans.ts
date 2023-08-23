@@ -7,7 +7,6 @@ const zhHans = {
   // API.
   lang: "zh-CN",
   // UI.
-  upgrading_database: "升级数据库中",
   log_in: "登录",
   log_in_notice:
     "法螺湾需要获取令牌以访问鱿鱼圈3。该过程涉及向非任天堂的imink或nxapi发送含有最少的非身份信息的安全请求。这些信息不会被记录或存储，请参阅隐私政策以获取更多信息。",
@@ -21,6 +20,7 @@ const zhHans = {
     "登出后，您将无法加载记录、好友与目录，显示持有的装备与访问鱿鱼圈3。法螺湾已存储的记录不会被清除。",
   log_out_continue: "登出",
   logging_out: "登出中",
+  upgrading_database: "升级数据库中",
   failed_to_check_update: "未能检查法螺湾更新 (%{error})",
   reacquiring_tokens: "重新获取令牌中",
   failed_to_acquire_web_service_token: "未能获取Web服务令牌 (%{error})",
@@ -209,7 +209,7 @@ const zhHans = {
     "请在ikawidget3中导出，以ZIP格式解压缩，并分别导入各项文件夹中名为db.sqlite3的文件。请注意，由于IKAX3包含加密数据，部分信息可能有误。",
   import_salmdroidnw_backup_notice: "请在salmdroidNW中备份，解压缩，并导入名为1的文件。",
   "import_salmonia3+_backup_notice":
-    "请在Salmonia3+中备份为JSON并导入。请注意，由于Salmonia3+备份并未包含记录的所有信息，部分信息可能缺失。",
+    "请在Salmonia3+中备份为JSON并导入。请注意，由于Salmonia3+备份并未包含记录的所有数据，部分信息可能缺失。",
   split_and_import_notice:
     "法螺湾需要占用大量的内存以导入记录。如果法螺湾无法导入记录，您可以分割记录并导入。请注意，分割并导入需要数分钟到数十分钟的时间。此外，您还可以通过主页下方的支持联系我们以获得帮助。",
   split_and_import: "分割并导入",
