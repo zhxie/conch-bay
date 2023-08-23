@@ -13,7 +13,7 @@ export const BATCH_SIZE = Math.floor((Device.totalMemory! / 1024 / 1024 / 1024) 
 
 export const open = async () => {
   if (db) {
-    return false;
+    return 0;
   }
   db = SQLite.openDatabase("conch-bay.db");
 
@@ -28,13 +28,13 @@ export const open = async () => {
   const record = await exec("PRAGMA user_version", [], true);
   const version = record.rows[0]["user_version"] as number;
   if (version < VERSION) {
-    return true;
+    return await count();
   }
   if (version > VERSION) {
     throw new Error(`unexpected database version ${version}`);
   }
 
-  return false;
+  return undefined;
 };
 export const upgrade = async () => {
   const record = await exec("PRAGMA user_version", [], true);

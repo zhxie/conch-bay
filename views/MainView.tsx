@@ -241,8 +241,10 @@ const MainView = () => {
       (async () => {
         try {
           const upgrade = await Database.open();
-          if (upgrade) {
-            showBanner(BannerLevel.Info, t("upgrading_database"));
+          if (upgrade !== undefined) {
+            if (upgrade > 0) {
+              showBanner(BannerLevel.Info, t("upgrading_database"));
+            }
             await Database.upgrade();
           }
           await loadResults(20);

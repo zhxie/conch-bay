@@ -51,7 +51,7 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
     // Refresh results.
     const language = (await AsyncStorage.getItem("language")) || t("lang");
     const upgrade = await Database.open();
-    if (upgrade) {
+    if (upgrade !== undefined) {
       return BackgroundFetch.BackgroundFetchResult.NoData;
     }
     const [battle, coop] = await Promise.all([
