@@ -190,13 +190,14 @@ export const addBattleStats = (...battles: BattleStats[]): BattlesStats => {
       powerTotal += battle.power;
       powerMax = Math.max(powerMax, battle.power);
     }
-    if (!battle.exempt) {
-      duration += battle.duration;
-      self = addBattlePlayerStats(self, battle.self);
-      (teamMember += battle.teamMember), (team = addBattlePlayerStats(team, battle.team));
-      allMember += battle.allMember;
-      all = addBattlePlayerStats(all, battle.all);
+    if (battle.exempt) {
+      continue;
     }
+    duration += battle.duration;
+    self = addBattlePlayerStats(self, battle.self);
+    (teamMember += battle.teamMember), (team = addBattlePlayerStats(team, battle.team));
+    allMember += battle.allMember;
+    all = addBattlePlayerStats(all, battle.all);
     if (!stageMap.has(battle.stage)) {
       stageMap.set(battle.stage, new Map());
     }
@@ -547,60 +548,61 @@ export const addCoopStats = (...coops: CoopStats[]): CoopsStats => {
   for (const coop of coops) {
     count += 1;
     exempt += coop.exempt ? 1 : 0;
-    if (!coop.exempt) {
-      clear += coop.clear ? 1 : 0;
-      wave += coop.wave;
-      hazardLevel += coop.hazardLevel;
-      self = addCoopPlayerStats(self, coop.self);
-      member += coop.member;
-      team = addCoopPlayerStats(team, coop.team);
-      for (const boss of coop.bosses) {
-        if (!bossMap.has(boss.id)) {
-          bossMap.set(boss.id, { appear: 0, defeat: 0, defeatTeam: 0 });
-        }
-        const currentBoss = bossMap.get(boss.id)!;
-        currentBoss.appear += boss.appear;
-        currentBoss.defeat += boss.defeat;
-        currentBoss.defeatTeam += boss.defeatTeam;
+    if (coop.exempt) {
+      continue;
+    }
+    clear += coop.clear ? 1 : 0;
+    wave += coop.wave;
+    hazardLevel += coop.hazardLevel;
+    self = addCoopPlayerStats(self, coop.self);
+    member += coop.member;
+    team = addCoopPlayerStats(team, coop.team);
+    for (const boss of coop.bosses) {
+      if (!bossMap.has(boss.id)) {
+        bossMap.set(boss.id, { appear: 0, defeat: 0, defeatTeam: 0 });
       }
-      if (coop.king) {
-        if (!kingMap.has(coop.king.id)) {
-          kingMap.set(coop.king.id, { appear: 0, defeat: 0 });
-        }
-        const king = kingMap.get(coop.king.id)!;
-        king.appear += 1;
-        king.defeat += coop.king.defeat ? 1 : 0;
+      const currentBoss = bossMap.get(boss.id)!;
+      currentBoss.appear += boss.appear;
+      currentBoss.defeat += boss.defeat;
+      currentBoss.defeatTeam += boss.defeatTeam;
+    }
+    if (coop.king) {
+      if (!kingMap.has(coop.king.id)) {
+        kingMap.set(coop.king.id, { appear: 0, defeat: 0 });
       }
-      for (const wave of coop.waves) {
-        if (!waveMap.has(wave.id)) {
-          waveMap.set(wave.id, new Map());
-        }
-        const currentWave = waveMap.get(wave.id)!;
-        for (const level of wave.levels) {
-          if (!currentWave.has(level.id)) {
-            currentWave.set(level.id, { appear: 0, clear: 0 });
-          }
-          const currentLevel = currentWave.get(level.id)!;
-          currentLevel.appear += level.appear;
-          currentLevel.clear += level.clear;
-        }
+      const king = kingMap.get(coop.king.id)!;
+      king.appear += 1;
+      king.defeat += coop.king.defeat ? 1 : 0;
+    }
+    for (const wave of coop.waves) {
+      if (!waveMap.has(wave.id)) {
+        waveMap.set(wave.id, new Map());
       }
-      if (!stageMap.has(coop.stage)) {
-        stageMap.set(coop.stage, 0);
-      }
-      stageMap.set(coop.stage, stageMap.get(coop.stage)! + 1);
-      for (const weapon of coop.weapons) {
-        if (!weaponMap.has(weapon)) {
-          weaponMap.set(weapon, 0);
+      const currentWave = waveMap.get(wave.id)!;
+      for (const level of wave.levels) {
+        if (!currentWave.has(level.id)) {
+          currentWave.set(level.id, { appear: 0, clear: 0 });
         }
-        weaponMap.set(weapon, weaponMap.get(weapon)! + 1);
+        const currentLevel = currentWave.get(level.id)!;
+        currentLevel.appear += level.appear;
+        currentLevel.clear += level.clear;
       }
-      if (coop.specialWeapon) {
-        if (!specialWeaponMap.has(coop.specialWeapon)) {
-          specialWeaponMap.set(coop.specialWeapon, 0);
-        }
-        specialWeaponMap.set(coop.specialWeapon, specialWeaponMap.get(coop.specialWeapon)! + 1);
+    }
+    if (!stageMap.has(coop.stage)) {
+      stageMap.set(coop.stage, 0);
+    }
+    stageMap.set(coop.stage, stageMap.get(coop.stage)! + 1);
+    for (const weapon of coop.weapons) {
+      if (!weaponMap.has(weapon)) {
+        weaponMap.set(weapon, 0);
       }
+      weaponMap.set(weapon, weaponMap.get(weapon)! + 1);
+    }
+    if (coop.specialWeapon) {
+      if (!specialWeaponMap.has(coop.specialWeapon)) {
+        specialWeaponMap.set(coop.specialWeapon, 0);
+      }
+      specialWeaponMap.set(coop.specialWeapon, specialWeaponMap.get(coop.specialWeapon)! + 1);
     }
   }
   const kings = Array.from(kingMap, (king) => ({
