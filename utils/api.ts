@@ -67,12 +67,15 @@ let NSO_VERSION = versions.NSO_VERSION;
 let SPLATNET_VERSION = versions.SPLATNET_VERSION;
 
 export const updateNsoVersion = async () => {
-  // TODO: use Google Play version instead since f API is built upon Android apps.
-  const res = await axios.get("https://itunes.apple.com/lookup?id=1234806557", {
-    timeout: AXIOS_TIMEOUT,
-  });
+  // HACK: use jsDelivr to avoid any network issues in China Mainland.
+  const res = await axios.get(
+    "https://cdn.jsdelivr.net/gh/nintendoapis/nintendo-app-versions/data/coral-google-play.json",
+    {
+      timeout: AXIOS_TIMEOUT,
+    }
+  );
 
-  NSO_VERSION = res.data["results"][0]["version"];
+  NSO_VERSION = res.data["version"];
 };
 export const updateSplatnetVersion = async () => {
   // HACK: use jsDelivr to avoid any network issues in China Mainland.
