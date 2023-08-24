@@ -1,3 +1,26 @@
+# Update query to 4.0.0-22ddb0fd and type definitions.
+diff --git a/node_modules/splatnet3-types/dist/graphql.d.ts b/node_modules/splatnet3-types/dist/graphql.d.ts
+index 0cc4e29..4c12a7b 100644
+--- a/node_modules/splatnet3-types/dist/graphql.d.ts
++++ b/node_modules/splatnet3-types/dist/graphql.d.ts
+@@ -20,7 +20,7 @@ export declare enum RequestId {
+     ShareMyOutfitQuery = "3ba5572efce5bebbd859fc2d269d223c",
+     BankaraBattleHistoriesQuery = "0438ea6978ae8bd77c5d1250f4f84803",
+     BankaraBattleHistoriesRefetchQuery = "92b56403c0d9b1e63566ec98fef52eb3",
+-    EventBattleHistoriesQuery = "9744fcf676441873c7c8a51285b6aa4d",
++    EventBattleHistoriesQuery = "e7bbaf1fa255305d607351da434b2d0f",
+     EventBattleHistoriesRefetchQuery = "8083b0c7f34a4bd0ef4a06ff86fc3e18",
+     LatestBattleHistoriesQuery = "0d90c7576f1916469b2ae69f64292c02",
+     LatestBattleHistoriesRefetchQuery = "6b74405ca9b43ee77eb8c327c3c1a317",
+@@ -40,7 +40,7 @@ export declare enum RequestId {
+     CheckinQuery = "5d0d1b45ebf4e324d0dae017d9df06d2",
+     CoopHistoryDetailQuery = "379f0d9b78b531be53044bcac031b34b",
+     CoopHistoryDetailRefetchQuery = "d3188df2fd4436870936b109675e2849",
+-    CoopHistoryQuery = "91b917becd2fa415890f5b47e15ffb15",
++    CoopHistoryQuery = "01fb9793ad92f91892ea713410173260",
+     RefetchableCoopHistory_CoopResultQuery = "50be9b694c7c6b99b7a383e494ec5258",
+     CoopRecordBigRunRecordContainerPaginationQuery = "2b83817b6e88b202d25939fe04658d33",
+     CoopRecordQuery = "b2f05c682ed2aeb669a86a3265ceb713",
 diff --git a/node_modules/splatnet3-types/dist/splatnet3.d.ts b/node_modules/splatnet3-types/dist/splatnet3.d.ts
 index 596fd7f..08320d8 100644
 --- a/node_modules/splatnet3-types/dist/splatnet3.d.ts
