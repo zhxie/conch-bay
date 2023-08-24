@@ -16,6 +16,60 @@ const getLanguage = async (language) => {
   const json = (await res).json();
   return json;
 };
+const getModeLocales = async (languages) => {
+  const map = {
+    Regular: 1,
+    Bankara: 2,
+    XMatch: 3,
+    League: 4,
+    Private: 5,
+    FestRegular: 6,
+    FestChallenge: 7,
+    FestTriColor: 8,
+    BankaraOpen: 51,
+  };
+  const maps = [];
+  for (let i = 0; i < languages.length; i++) {
+    maps.push({});
+  }
+  for (let i = 0; i < languages.length; i++) {
+    for (const mode of Object.keys(languages[i]["CommonMsg/MatchMode"])) {
+      if (map[mode] !== undefined) {
+        const id = Buffer.from(`VsMode-${map[mode]}`).toString("base64");
+        const name = languages[i]["CommonMsg/MatchMode"][mode]
+          .replace(/\[.*?\]/g, "")
+          .replace("（", " (")
+          .replace("）", ")");
+        maps[i][id] = name;
+      }
+    }
+  }
+  return maps;
+};
+const genRuleLocales = async (languages) => {
+  const map = {
+    Pnt: 0,
+    Var: 1,
+    Vlf: 2,
+    Vgl: 3,
+    Vcl: 4,
+    Tcl: 5,
+  };
+  const maps = [];
+  for (let i = 0; i < languages.length; i++) {
+    maps.push({});
+  }
+  for (let i = 0; i < languages.length; i++) {
+    for (const rule of Object.keys(languages[i]["CommonMsg/VS/VSRuleName"])) {
+      if (map[rule] !== undefined) {
+        const id = Buffer.from(`VsRule-${map[rule]}`).toString("base64");
+        const name = languages[i]["CommonMsg/VS/VSRuleName"][rule];
+        maps[i][id] = name;
+      }
+    }
+  }
+  return maps;
+};
 const getChallengeLocales = async (languages) => {
   const res = await fetch(
     `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${VERSION}/LeagueTypeInfo.json`
@@ -204,6 +258,36 @@ const getGradeLocales = (languages) => {
   }
   return maps;
 };
+const getEventLocales = async (languages) => {
+  const map = {
+    EventRush: 1,
+    EventGeyser: 2,
+    EventDozer: 3,
+    EventHakobiya: 4,
+    EventFog: 5,
+    EventMissile: 6,
+    EventRelay: 7,
+    EventTamaire: 8,
+  };
+  const res = await fetch(
+    `https://raw.githubusercontent.com/Leanny/splat3/main/data/parameter/${VERSION}/misc/spl__CoopLevelsConfig.spl__CoopLevelsConfig.json`
+  );
+  const json = await res.json();
+  const maps = [];
+  for (let i = 0; i < languages.length; i++) {
+    maps.push({});
+  }
+  for (const event of Object.keys(json["Levels"][0])) {
+    if (map[event]) {
+      const id = Buffer.from(`CoopEventWave-${map[event]}`).toString("base64");
+      for (let i = 0; i < languages.length; i++) {
+        const name = languages[i]["CommonMsg/Glossary"][`CoopEvent_${event.replace("Event", "")}`];
+        maps[i][id] = name;
+      }
+    }
+  }
+  return maps;
+};
 const getSalmonidLocales = async (languages) => {
   const map = {
     SakelienBomber: 4,
@@ -268,6 +352,8 @@ const languages = await Promise.all([
   getLanguage("TWzh"),
 ]);
 const [
+  modeLocales,
+  ruleLocales,
   challengeLocales,
   stageLocales,
   coopStageLocales,
@@ -278,9 +364,12 @@ const [
   clothesLocales,
   shoesLocales,
   gradeLocales,
+  eventLocales,
   salmonidLocales,
   workSuitLocales,
 ] = await Promise.all([
+  getModeLocales(languages),
+  genRuleLocales(languages),
   getChallengeLocales(languages),
   getStageLocales(languages),
   getCoopStageLocales(languages),
@@ -291,12 +380,15 @@ const [
   getClothesLocales(languages),
   getShoesLocales(languages),
   getGradeLocales(languages),
+  getEventLocales(languages),
   getSalmonidLocales(languages),
   getWorkSuitLocales(languages),
 ]);
 const paths = ["i18n/en.json", "i18n/ja.json", "i18n/zh-Hans.json", "i18n/zh-Hant.json"];
 for (let i = 0; i < paths.length; i++) {
   const locale = {
+    ...modeLocales[i],
+    ...ruleLocales[i],
     ...challengeLocales[i],
     ...stageLocales[i],
     ...coopStageLocales[i],
@@ -307,6 +399,7 @@ for (let i = 0; i < paths.length; i++) {
     ...clothesLocales[i],
     ...shoesLocales[i],
     ...gradeLocales[i],
+    ...eventLocales[i],
     ...salmonidLocales[i],
     ...workSuitLocales[i],
   };
