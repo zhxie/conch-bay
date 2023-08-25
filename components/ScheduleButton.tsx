@@ -6,6 +6,7 @@ import { HStack, VStack } from "./Stack";
 import { Color, TextStyles, ViewStyles } from "./Styles";
 
 interface ScheduleButtonProps {
+  disabled?: boolean;
   rule: string;
   stages: string[];
   color?: string;
@@ -16,7 +17,7 @@ interface ScheduleButtonProps {
 const ScheduleButton = (props: ScheduleButtonProps) => {
   return (
     <Pressable
-      disabled={props.rule.length === 0}
+      disabled={props.disabled}
       style={[ViewStyles.r2, ViewStyles.p2, { width: 160, height: 80 }, props.style]}
       onPress={props.onPress}
     >

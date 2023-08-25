@@ -238,9 +238,6 @@ const zhHans = {
   REGULAR: "鲑鱼跑",
   BIG_RUN: "大型跑",
   TEAM_CONTEST: "团队打工竞赛",
-  // Stages and coop stages.
-  VnNTdGFnZS0tOTk5: "",
-  "Q29vcFN0YWdlLS05OTk=": "",
   // Waves.
   wave_n: "WAVE %{n}",
   xtrawave: "EX-WAVE",
@@ -248,6 +245,10 @@ const zhHans = {
   low_tide: "干潮",
   normal: "普通",
   high_tide: "满潮",
+  // Escaped.
+  VnNTdGFnZS0tOTk5: "",
+  "Q29vcFN0YWdlLS05OTk=": "",
+  "TGVhZ3VlTWF0Y2hFdmVudC1Ob3RGb3VuZA==": "",
 };
 
 export default zhHans;

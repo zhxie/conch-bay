@@ -22,7 +22,10 @@ i18n.enableFallback = true;
 i18n.defaultLocale = "en";
 i18n.locale = Localization.getLocales()[0].languageTag;
 
-const t = (f: Scope, options?: TranslateOptions) => {
+const t = (f: Scope | null | undefined, options?: TranslateOptions) => {
+  if (!f) {
+    return "";
+  }
   if (options) {
     const { defaultValue, ...rest } = options;
 
@@ -31,7 +34,10 @@ const t = (f: Scope, options?: TranslateOptions) => {
   return i18n.t(f, { defaultValue: f });
 };
 
-const td = (f: ScopeWithDefaultValue) => {
+const td = (f: ScopeWithDefaultValue | null | undefined) => {
+  if (!f) {
+    return "";
+  }
   return i18n.t(f.id, { defaultValue: f.name });
 };
 

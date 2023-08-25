@@ -246,9 +246,6 @@ const en = {
   REGULAR: "Salmon Run",
   BIG_RUN: "Big Run",
   TEAM_CONTEST: "Eggstra Work",
-  // Stages and coop stages.
-  VnNTdGFnZS0tOTk5: "",
-  "Q29vcFN0YWdlLS05OTk=": "",
   // Waves.
   wave_n: "Wave %{n}",
   xtrawave: "XTRAWAVE",
@@ -256,6 +253,10 @@ const en = {
   low_tide: "Low Tide",
   normal: "Normal",
   high_tide: "High Tide",
+  // Escaped.
+  VnNTdGFnZS0tOTk5: "",
+  "Q29vcFN0YWdlLS05OTk=": "",
+  "TGVhZ3VlTWF0Y2hFdmVudC1Ob3RGb3VuZA==": "",
 };
 
 export default en;

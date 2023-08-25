@@ -331,6 +331,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
             .map((_, i) => (
               <ScheduleButton
                 key={i}
+                disabled
                 rule=""
                 stages={[]}
                 style={props.children || i !== 9 ? ViewStyles.mr2 : undefined}
