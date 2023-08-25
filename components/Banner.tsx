@@ -27,15 +27,12 @@ const useBanner = () => {
         backgroundColor = Color.Death;
         break;
     }
-    if (content instanceof Error) {
-      content = content.message;
-    }
     showBannerInner({
       contentView: (
         <Text
           style={[ViewStyles.px4, ViewStyles.py2, TextStyles.h2, TextStyles.c, TextStyles.dark]}
         >
-          {content}
+          {content.toString()}
         </Text>
       ),
       backgroundColor,

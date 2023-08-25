@@ -1723,7 +1723,7 @@ const MainView = () => {
       if (e instanceof AxiosError) {
         result.tests.bulletToken["error"] = e.toJSON();
       } else if (e instanceof Error) {
-        result.tests.bulletToken["error"] = e.message;
+        result.tests.bulletToken["error"] = e.toString();
       }
     }
 
@@ -1737,7 +1737,7 @@ const MainView = () => {
       if (e instanceof AxiosError) {
         result.tests.webServiceToken["error"] = e.toJSON();
       } else if (e instanceof Error) {
-        result.tests.webServiceToken["error"] = e.message;
+        result.tests.webServiceToken["error"] = e.toString();
       }
     }
 

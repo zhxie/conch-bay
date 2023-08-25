@@ -63,7 +63,7 @@ const ErrorView = (props: ErrorViewProps) => {
         >
           {t("sorry_notice")}
         </Text>
-        <Text style={ViewStyles.mb4}>{props.error.message}</Text>
+        <Text style={ViewStyles.mb4}>{props.error.toString()}</Text>
         <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onCreateAGithubIssuePress}>
           <Marquee style={theme.reverseTextStyle}>{t("create_a_github_issue")}</Marquee>
         </Button>
