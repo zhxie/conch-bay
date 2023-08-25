@@ -10,7 +10,6 @@ import Text from "./Text";
 interface BattleButtonProps<T> {
   battle?: T;
   color: string;
-  loading?: boolean;
   first?: boolean;
   last?: boolean;
   tag?: string;
@@ -46,7 +45,6 @@ const BattleButton = <T,>(props: BattleButtonProps<T>) => {
   return (
     <ResultButton
       color={props.color}
-      loading={props.loading}
       first={props.first}
       last={props.last}
       tag={props.tag}

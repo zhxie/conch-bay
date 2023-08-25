@@ -40,6 +40,7 @@ import {
   PureIconButton,
   Rectangle,
   Result,
+  ResultButton,
   Splashtag,
   Text,
   TextStyles,
@@ -706,14 +707,13 @@ const ResultView = (props: ResultViewProps) => {
         ListEmptyComponent={
           <VStack flex style={ViewStyles.px4}>
             {new Array(placeholder).fill(0).map((_, i) => (
-              <BattleButton
+              <ResultButton
                 key={i}
-                loading={true}
+                disabled
                 first={i === 0}
                 color={Color.MiddleTerritory}
-                rule=""
-                stage=""
-                weapon=""
+                title=""
+                subtitle=""
               />
             ))}
           </VStack>

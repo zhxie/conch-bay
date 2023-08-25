@@ -100,7 +100,7 @@ const zhHans = {
   ok: "OK",
   failed_to_enable_background_refresh: "未能启用后台刷新 (%{error})",
   new_results: "新记录",
-  loaded_n_results_in_the_background: "法螺湾已在后台加载%{n}项记录，请打开App以确认。",
+  loaded_n_results_in_the_background: "法螺湾已在后台加载%{n}项记录，请打开应用以确认。",
   // Shop.
   gesotown: "鱿鱼须商城",
   order_in_nintendo_switch_online: "在Nintendo Switch Online中预订",
@@ -199,7 +199,7 @@ const zhHans = {
   import: "导入",
   importing: "导入中",
   import_notice:
-    "法螺湾支持导入由法螺湾导出的记录，您也可以将其它第三方App导出的记录转换至法螺湾支持的格式并导入。此外，您还可以通过主页下方的支持联系我们以获得帮助。",
+    "法螺湾支持导入由法螺湾导出的记录，您也可以将其它第三方应用导出的记录转换至法螺湾支持的格式并导入。",
   convert_s3s_outputs: "转换s3s导出的记录",
   convert_stat_ink_salmon_run_json: "转换stat.ink鲑鱼跑JSON",
   import_ikawidget3_ikax3: "导入ikawidget3 IKAX3",

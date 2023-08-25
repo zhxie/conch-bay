@@ -206,7 +206,7 @@ const en = {
   import: "Import",
   importing: "Importing",
   import_notice:
-    "Conch Bay supports importing results exported by Conch Bay, and you can also convert results exported by other 3rd party apps to formats supported by Conch Bay and import them. Besides, you can contact us for assistance through Support at the bottom of the homepage.",
+    "Conch Bay supports importing results exported by Conch Bay, and you can also convert results exported by other 3rd party apps to formats supported by Conch Bay and import them.",
   convert_s3s_outputs: "Convert s3s Outputs",
   convert_stat_ink_salmon_run_json: "Convert stat.ink Salmon Run JSON",
   import_ikawidget3_ikax3: "Import ikawidget3 IKAX3",

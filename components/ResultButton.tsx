@@ -17,7 +17,7 @@ enum Result {
 
 interface ResultButtonProps {
   color?: string;
-  loading?: boolean;
+  disabled?: boolean;
   first?: boolean;
   last?: boolean;
   tag?: string;
@@ -36,7 +36,7 @@ interface ResultButtonProps {
 const ResultButton = (props: ResultButtonProps) => {
   return (
     <Pressable
-      disabled={props.loading}
+      disabled={props.disabled}
       style={[
         ViewStyles.px3,
         { height: 64 },

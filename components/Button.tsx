@@ -34,8 +34,8 @@ const Button = (props: ButtonProps) => {
         </Center>
       )}
       {!props.loading && (
-        <Center flex>
-          <HStack flex center style={ViewStyles.py3}>
+        <Center>
+          <HStack center style={ViewStyles.py3}>
             {props.children}
           </HStack>
         </Center>

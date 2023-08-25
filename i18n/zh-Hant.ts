@@ -100,7 +100,7 @@ const zhHant = {
   ok: "OK",
   failed_to_enable_background_refresh: "未能啟用背景重新整理 (%{error})",
   new_results: "新記錄",
-  loaded_n_results_in_the_background: "法螺灣已在背景載入%{n}項記錄，請打開App以確認。",
+  loaded_n_results_in_the_background: "法螺灣已在背景載入%{n}項記錄，請打開應用以確認。",
   // Shop.
   gesotown: "魷魚鬚商城",
   order_in_nintendo_switch_online: "在Nintendo Switch Online中預訂",
@@ -199,7 +199,7 @@ const zhHant = {
   import: "匯入",
   importing: "匯入中",
   import_notice:
-    "法螺灣支持匯入由法螺灣匯出的記錄，您也可以將其它第三方App匯出的記錄轉換至法螺灣支援的格式並匯入。此外，您還可以通過主頁下方的支持聯繫我們以獲得幫助。",
+    "法螺灣支持匯入由法螺灣匯出的記錄，您也可以將其它第三方應用匯出的記錄轉換至法螺灣支援的格式並匯入。",
   convert_s3s_outputs: "轉換s3s匯出的記錄",
   convert_stat_ink_salmon_run_json: "轉換stat.ink鮭魚跑JSON",
   import_ikawidget3_ikax3: "匯入ikawidget3 IKAX3",
