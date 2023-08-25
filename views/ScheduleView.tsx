@@ -125,9 +125,9 @@ const ScheduleView = (props: ScheduleViewProps) => {
   );
   const challenges = useMemo(
     () =>
-      props.schedules?.eventSchedules.nodes.filter(
-        (node) => !isScheduleExpired(node.timePeriods[node.timePeriods.length - 1])
-      ),
+      props.schedules?.eventSchedules.nodes
+        .filter((node) => node.timePeriods.length > 0)
+        .filter((node) => !isScheduleExpired(node.timePeriods[node.timePeriods.length - 1])),
     [props.schedules]
   );
   const bigRunShifts = useMemo(
