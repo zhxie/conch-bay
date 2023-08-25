@@ -5,12 +5,13 @@ import utc from "dayjs/plugin/utc";
 import * as Font from "expo-font";
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
+import ErrorBoundary from "react-native-error-boundary";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ToastBannerProvider, ToastBannerPresenter } from "react-native-toast-banner";
 import { SplashtagContext, useTheme } from "./components";
 import "./i18n";
 import { ok } from "./utils/promise";
-import { MainView } from "./views";
+import { ErrorView, MainView } from "./views";
 
 dayjs.extend(duration);
 dayjs.extend(quarterOfYear);
@@ -46,8 +47,10 @@ const App = () => {
       <ToastBannerProvider>
         <SplashtagContext.Provider value={{ splatfont }}>
           <StatusBar style={theme.colorScheme === "light" ? "dark" : "light"} />
-          {ready && <MainView />}
-          <ToastBannerPresenter />
+          <ErrorBoundary FallbackComponent={ErrorView}>
+            {ready && <MainView />}
+            <ToastBannerPresenter />
+          </ErrorBoundary>
         </SplashtagContext.Provider>
       </ToastBannerProvider>
     </SafeAreaProvider>

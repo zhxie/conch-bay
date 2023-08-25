@@ -6,6 +6,10 @@ const zhHans = {
   ...generated,
   // API.
   lang: "zh-CN",
+  // Error.
+  sorry: "抱歉",
+  sorry_notice:
+    "法螺湾遇到了一些问题，请检查应用更新并重新启动应用。如果您持续遇到这一问题，请联系我们。",
   // UI.
   log_in: "登录",
   log_in_notice:

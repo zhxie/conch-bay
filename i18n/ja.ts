@@ -6,6 +6,10 @@ const ja = {
   ...generated,
   // API.
   lang: "ja-JP",
+  // Error.
+  sorry: "ごめんなさい",
+  sorry_notice:
+    "ホラかいベイで問題が発生しました。アプリの更新を確認して、アプリを再起動してください。この問題が引き続き発生する場合は、ご連絡ください。",
   // UI.
   log_in: "ログイン",
   log_in_notice:

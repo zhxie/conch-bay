@@ -6,6 +6,10 @@ const zhHant = {
   ...generated,
   // API.
   lang: "zh-TW",
+  // Error.
+  sorry: "抱歉",
+  sorry_notice:
+    "法螺灣遇到了一些問題，請檢查應用更新並重新啟動應用。如果您持續遇到這一問題，請聯繫我們。",
   // UI.
   log_in: "登錄",
   log_in_notice:

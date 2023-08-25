@@ -6,6 +6,10 @@ const en = {
   ...generated,
   // API.
   lang: "en-US",
+  // Error.
+  sorry: "Sorry",
+  sorry_notice:
+    "Conch Bay have encountered some problems, please check for app updates and restart the app. If you continue to face the problem, please contact us.",
   // UI.
   log_in: "Log In",
   log_in_notice:
