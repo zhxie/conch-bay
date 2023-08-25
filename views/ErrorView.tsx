@@ -40,7 +40,7 @@ const ErrorView = (props: ErrorViewProps) => {
   };
 
   return (
-    <Center style={[ViewStyles.p4, { width: "100%", height: "100%" }]}>
+    <Center style={[ViewStyles.p4, ViewStyles.ff]}>
       <VStack>
         <Text
           style={[

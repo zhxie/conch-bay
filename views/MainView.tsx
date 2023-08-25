@@ -15,6 +15,7 @@ import * as Sharing from "expo-sharing";
 import * as WebBrowser from "expo-web-browser";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
+  ActivityIndicator,
   Animated,
   LayoutChangeEvent,
   Linking,
@@ -143,6 +144,7 @@ const MainView = () => {
   const showBanner = useBanner();
 
   const [ready, setReady] = useState(false);
+  const [upgrade, setUpgrade] = useState(false);
   const [update, setUpdate] = useState(false);
   const [logIn, setLogIn] = useState(false);
   const [loggingIn, setLoggingIn] = useState(false);
@@ -243,9 +245,10 @@ const MainView = () => {
           const upgrade = await Database.open();
           if (upgrade !== undefined) {
             if (upgrade > 0) {
-              showBanner(BannerLevel.Info, t("upgrading_database"));
+              setUpgrade(true);
             }
             await Database.upgrade();
+            setUpgrade(false);
           }
           await loadResults(20);
           setReady(true);
@@ -1822,6 +1825,17 @@ const MainView = () => {
 
   return (
     <VStack flex style={theme.backgroundStyle}>
+      {upgrade && (
+        // TODO: the safe area view may not be in size when start up.
+        <SafeAreaView style={[ViewStyles.ff, { position: "absolute" }]}>
+          <Center style={ViewStyles.ff}>
+            <VStack center>
+              <ActivityIndicator style={ViewStyles.mb2} />
+              <Text>{t("upgrading_database")}</Text>
+            </VStack>
+          </Center>
+        </SafeAreaView>
+      )}
       <Animated.View style={[ViewStyles.f, { opacity: fade }]}>
         {/* HACK: it is a little bit weird concentrating on result list. */}
         <ResultView

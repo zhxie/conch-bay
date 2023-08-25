@@ -156,6 +156,10 @@ export const ViewStyles = StyleSheet.create({
     position: "absolute",
     bottom: 0,
   },
+  ff: {
+    width: "100%",
+    height: "100%",
+  },
   wf: {
     width: "100%",
   },

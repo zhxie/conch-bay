@@ -2,7 +2,7 @@ import { useState } from "react";
 import { ActivityIndicator, StyleProp, ViewStyle } from "react-native";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 import { WebView, WebViewMessageEvent } from "react-native-webview";
-import { Center, FullscreenModal, ToolButton } from "../components";
+import { Center, FullscreenModal, ToolButton, ViewStyles } from "../components";
 import t from "../i18n";
 
 interface SplatNetViewProps {
@@ -45,21 +45,23 @@ const SplatNetView = (props: SplatNetViewProps) => {
       )}
       <FullscreenModal isVisible={webView} onModalHide={onModalHide}>
         <SafeAreaProvider
-          style={{
-            height: "100%",
-            width: "100%",
-            position: "absolute",
-            bottom: 0,
-          }}
-        >
-          <SafeAreaView
-            style={{
-              height: "100%",
-              width: "100%",
+          style={[
+            ViewStyles.ff,
+            {
               position: "absolute",
               bottom: 0,
-              backgroundColor: "black",
-            }}
+            },
+          ]}
+        >
+          <SafeAreaView
+            style={[
+              ViewStyles.ff,
+              {
+                position: "absolute",
+                bottom: 0,
+                backgroundColor: "black",
+              },
+            ]}
           >
             {webServiceToken.length > 0 && (
               <WebView
@@ -77,7 +79,7 @@ const SplatNetView = (props: SplatNetViewProps) => {
               `}
                 onMessage={onMessage}
                 renderLoading={() => (
-                  <Center style={[{ width: "100%", height: "100%", backgroundColor: "#292e35" }]}>
+                  <Center style={[ViewStyles.ff, { backgroundColor: "#292e35" }]}>
                     <ActivityIndicator />
                   </Center>
                 )}
