@@ -6,10 +6,6 @@ const ja = {
   ...generated,
   // API.
   lang: "ja-JP",
-  // Error.
-  sorry: "ごめんなさい",
-  sorry_notice:
-    "ホラかいベイで問題が発生しました。アプリの更新を確認して、アプリを再起動してください。この問題が引き続き発生する場合は、ご連絡ください。",
   // UI.
   log_in: "ログイン",
   log_in_notice:
@@ -107,6 +103,10 @@ const ja = {
   new_results: "新しいリザルト",
   loaded_n_results_in_the_background:
     "ホラガイベイはバックグラウンドで%{n}件のリザルトを読み込みました。アプリを開いてご確認ください。",
+  sorry: "ごめんなさい",
+  sorry_notice:
+    "ホラかいベイで問題が発生しました。アプリの更新を確認して、アプリを再起動してください。この問題が引き続き発生する場合は、ご連絡ください。",
+  export_results: "リザルトをエクスポート",
   // Shop.
   gesotown: "ゲソタウン",
   order_in_nintendo_switch_online: "Nintendo Switch Onlineで注文",

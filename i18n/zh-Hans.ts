@@ -6,10 +6,6 @@ const zhHans = {
   ...generated,
   // API.
   lang: "zh-CN",
-  // Error.
-  sorry: "抱歉",
-  sorry_notice:
-    "法螺湾遇到了一些问题，请检查应用更新并重新启动应用。如果您持续遇到这一问题，请联系我们。",
   // UI.
   log_in: "登录",
   log_in_notice:
@@ -103,6 +99,10 @@ const zhHans = {
   failed_to_enable_background_refresh: "未能启用后台刷新 (%{error})",
   new_results: "新记录",
   loaded_n_results_in_the_background: "法螺湾已在后台加载%{n}项记录，请打开应用以确认。",
+  sorry: "抱歉",
+  sorry_notice:
+    "法螺湾遇到了一些问题，请检查应用更新并重新启动应用。如果您持续遇到这一问题，请联系我们。",
+  export_results: "导出记录",
   // Shop.
   gesotown: "鱿鱼须商城",
   order_in_nintendo_switch_online: "在Nintendo Switch Online中预订",

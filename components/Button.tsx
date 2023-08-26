@@ -24,8 +24,8 @@ const Button = (props: ButtonProps) => {
       onLongPress={props.onLongPress}
     >
       {props.loading && (
-        <Center flex>
-          <HStack flex center>
+        <Center>
+          <HStack center>
             <ActivityIndicator style={ViewStyles.mr1} />
             <Text numberOfLines={1} style={[ViewStyles.py3, props.textStyle]}>
               {props.loadingText}

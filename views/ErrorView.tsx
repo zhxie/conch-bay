@@ -1,7 +1,9 @@
 import * as Application from "expo-application";
+import Constants, { AppOwnership } from "expo-constants";
 import * as FileSystem from "expo-file-system";
 import * as MailComposer from "expo-mail-composer";
 import * as Sharing from "expo-sharing";
+import { useState } from "react";
 import { Linking } from "react-native";
 import {
   Button,
@@ -14,6 +16,7 @@ import {
   useTheme,
 } from "../components";
 import t from "../i18n";
+import * as Database from "../utils/database";
 
 interface ErrorViewProps {
   error: Error;
@@ -21,6 +24,8 @@ interface ErrorViewProps {
 
 const ErrorView = (props: ErrorViewProps) => {
   const theme = useTheme();
+
+  const [exporting, setExporting] = useState(false);
 
   const onCreateAGithubIssuePress = () => {
     Linking.openURL("https://github.com/zhxie/conch-bay/issues/new");
@@ -33,6 +38,114 @@ const ErrorView = (props: ErrorViewProps) => {
     } else {
       Linking.openURL("mailto:conch-bay@outlook.com");
     }
+  };
+  const onExportResultsPress = async () => {
+    setExporting(true);
+    // TODO: reuse export codes.
+    const uri = FileSystem.cacheDirectory + `conch-bay-export.json`;
+    // TODO: better to use switch instead of if to avoid branch addition.
+    if (Constants.appOwnership === AppOwnership.Expo) {
+      let battles = "";
+      let coops = "";
+      let batch = 0;
+      while (true) {
+        const records = await Database.queryDetail(
+          Database.BATCH_SIZE * batch,
+          Database.BATCH_SIZE
+        );
+        for (const record of records) {
+          if (record.mode === "salmon_run") {
+            coops += `${record.detail},`;
+          } else {
+            battles += `${record.detail},`;
+          }
+        }
+        if (records.length < Database.BATCH_SIZE) {
+          break;
+        }
+        batch += 1;
+      }
+
+      if (battles.endsWith(",")) {
+        battles = battles.substring(0, battles.length - 1);
+      }
+      if (coops.endsWith(",")) {
+        coops = coops.substring(0, coops.length - 1);
+      }
+      await FileSystem.writeAsStringAsync(uri, `{"battles":[${battles}],"coops":[${coops}]}`, {
+        encoding: FileSystem.EncodingType.UTF8,
+      });
+    } else {
+      // HACK: dynamic import the library.
+      const FileAccess = await import("react-native-file-access");
+      await FileSystem.writeAsStringAsync(uri, '{"battles":[', {
+        encoding: FileSystem.EncodingType.UTF8,
+      });
+      const filterOptions = await Database.queryFilterOptions();
+      const battleModes = filterOptions.modes.filter((mode) => mode !== "salmon_run");
+      if (battleModes.length > 0) {
+        let batch = 0;
+        while (true) {
+          let result = "";
+          const records = await Database.queryDetail(
+            Database.BATCH_SIZE * batch,
+            Database.BATCH_SIZE,
+            {
+              modes: battleModes,
+              rules: [],
+              stages: [],
+              weapons: [],
+            }
+          );
+          for (let i = 0; i < records.length; i++) {
+            if (batch === 0 && i === 0) {
+              result += `${records[i].detail}`;
+            } else {
+              result += `,${records[i].detail}`;
+            }
+          }
+          await FileAccess.FileSystem.appendFile(uri, result, "utf8");
+          if (records.length < Database.BATCH_SIZE) {
+            break;
+          }
+          batch += 1;
+        }
+      }
+      await FileAccess.FileSystem.appendFile(uri, '],"coops":[', "utf8");
+      let batch = 0;
+      while (true) {
+        let result = "";
+        const records = await Database.queryDetail(
+          Database.BATCH_SIZE * batch,
+          Database.BATCH_SIZE,
+          {
+            modes: ["salmon_run"],
+            rules: [],
+            stages: [],
+            weapons: [],
+          }
+        );
+        for (let i = 0; i < records.length; i++) {
+          if (batch === 0 && i === 0) {
+            result += `${records[i].detail}`;
+          } else {
+            result += `,${records[i].detail}`;
+          }
+        }
+        await FileAccess.FileSystem.appendFile(uri, result, "utf8");
+        if (records.length < Database.BATCH_SIZE) {
+          break;
+        }
+        batch += 1;
+      }
+      await FileAccess.FileSystem.appendFile(uri, "]}", "utf8");
+    }
+
+    await Sharing.shareAsync(uri, { UTI: "public.json" });
+
+    // Clean up.
+    await FileSystem.deleteAsync(uri, { idempotent: true });
+    setExporting(false);
   };
   const onExportDatabasePress = async () => {
     const uri = FileSystem.documentDirectory + "SQLite/conch-bay.db";
@@ -69,6 +182,15 @@ const ErrorView = (props: ErrorViewProps) => {
         </Button>
         <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onSendAMailPress}>
           <Marquee style={theme.reverseTextStyle}>{t("send_a_mail")}</Marquee>
+        </Button>
+        <Button
+          loading={exporting}
+          loadingText={t("exporting")}
+          style={[ViewStyles.mb2, ViewStyles.accent]}
+          textStyle={theme.reverseTextStyle}
+          onPress={onExportResultsPress}
+        >
+          <Marquee style={theme.reverseTextStyle}>{t("export_results")}</Marquee>
         </Button>
         <Button style={[ViewStyles.mb4, ViewStyles.accent]} onPress={onExportDatabasePress}>
           <Marquee style={theme.reverseTextStyle}>{t("export_database")}</Marquee>

@@ -6,10 +6,6 @@ const en = {
   ...generated,
   // API.
   lang: "en-US",
-  // Error.
-  sorry: "Sorry",
-  sorry_notice:
-    "Conch Bay have encountered some problems, please check for app updates and restart the app. If you continue to face the problem, please contact us.",
   // UI.
   log_in: "Log In",
   log_in_notice:
@@ -106,6 +102,10 @@ const en = {
   new_results: "New Results",
   loaded_n_results_in_the_background:
     "Conch Bay has loaded %{n} result(s) in the background, please open the app to check.",
+  sorry: "Sorry",
+  sorry_notice:
+    "Conch Bay has encountered some problems, please check for app updates and restart the app. If you continue to face the problem, please contact us.",
+  export_results: "Export Results",
   // Shop.
   gesotown: "SplatNet Shop",
   order_in_nintendo_switch_online: "Order in Nintendo Switch Online",

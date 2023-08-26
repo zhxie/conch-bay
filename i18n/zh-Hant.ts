@@ -6,10 +6,6 @@ const zhHant = {
   ...generated,
   // API.
   lang: "zh-TW",
-  // Error.
-  sorry: "抱歉",
-  sorry_notice:
-    "法螺灣遇到了一些問題，請檢查應用更新並重新啟動應用。如果您持續遇到這一問題，請聯繫我們。",
   // UI.
   log_in: "登錄",
   log_in_notice:
@@ -103,6 +99,10 @@ const zhHant = {
   failed_to_enable_background_refresh: "未能啟用背景重新整理 (%{error})",
   new_results: "新記錄",
   loaded_n_results_in_the_background: "法螺灣已在背景載入%{n}項記錄，請打開應用以確認。",
+  sorry: "抱歉",
+  sorry_notice:
+    "法螺灣遇到了一些問題，請檢查應用更新並重新啟動應用。如果您持續遇到這一問題，請聯繫我們。",
+  export_results: "匯出記錄",
   // Shop.
   gesotown: "魷魚鬚商城",
   order_in_nintendo_switch_online: "在Nintendo Switch Online中預訂",
