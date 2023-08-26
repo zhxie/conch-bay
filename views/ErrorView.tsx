@@ -34,6 +34,18 @@ const ErrorView = (props: ErrorViewProps) => {
     if (await MailComposer.isAvailableAsync()) {
       MailComposer.composeAsync({
         recipients: ["conch-bay@outlook.com"],
+        subject: t("error_report"),
+        body: `> ${t("error_description")}
+
+
+        > ${t("version")}
+        ${Application.applicationName} ${Application.nativeApplicationVersion} (${
+          Application.nativeBuildVersion
+        })
+
+        > ${t("error_information")}
+        ${props.error.stack}
+        `,
       });
     } else {
       Linking.openURL("mailto:conch-bay@outlook.com");

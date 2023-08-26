@@ -105,6 +105,10 @@ const en = {
   sorry: "Sorry",
   sorry_notice:
     "Conch Bay has encountered some problems, please check for app updates and restart the app. If you continue to face the problem, please contact us.",
+  error_report: "Error report",
+  error_description: "Can you describe what you were doing before you encountered the problem?",
+  version: "Version",
+  error_information: "Error information",
   export_results: "Export Results",
   // Shop.
   gesotown: "SplatNet Shop",

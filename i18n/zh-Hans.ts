@@ -102,6 +102,10 @@ const zhHans = {
   sorry: "抱歉",
   sorry_notice:
     "法螺湾遇到了一些问题，请检查应用更新并重新启动应用。如果您持续遇到这一问题，请联系我们。",
+  error_report: "错误报告",
+  error_description: "您可以描述一下，在遇到这一问题之前，您正在做什么吗？",
+  version: "版本",
+  error_information: "错误信息",
   export_results: "导出记录",
   // Shop.
   gesotown: "鱿鱼须商城",

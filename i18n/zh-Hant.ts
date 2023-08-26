@@ -102,6 +102,10 @@ const zhHant = {
   sorry: "抱歉",
   sorry_notice:
     "法螺灣遇到了一些問題，請檢查應用更新並重新啟動應用。如果您持續遇到這一問題，請聯繫我們。",
+  error_report: "錯誤報告",
+  error_description: "您可以描述一下，在遇到這一問題之前，您正在做什麼嗎？",
+  version: "版本",
+  error_information: "錯誤資訊",
   export_results: "匯出記錄",
   // Shop.
   gesotown: "魷魚鬚商城",
