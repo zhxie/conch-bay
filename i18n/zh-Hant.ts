@@ -88,7 +88,6 @@ const zhHant = {
   copy_web_service_token: "複製Web服務令牌",
   copy_bullet_token: "複製Bullet令牌",
   copied_to_clipboard: "已復製到剪貼板",
-  export_results: "匯出記錄",
   export_database: "匯出資料庫",
   privacy_policy: "私隱政策",
   acknowledgments: "致謝",
@@ -96,7 +95,6 @@ const zhHant = {
   license: "許可",
   oss_licenses: "開源軟體許可",
   source_code_repository: "源代碼庫",
-  first_aid_notice: "資料庫已損壞並無法載入。請匯出記錄並重新安裝法螺灣。",
   auto_refresh_enabled: "已啟用自動刷新",
   auto_refresh_disabled: "已停用自動刷新",
   background_refresh_notice:

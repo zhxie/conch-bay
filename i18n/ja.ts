@@ -91,7 +91,6 @@ const ja = {
   copy_web_service_token: "Webサービストークンをコピー",
   copy_bullet_token: "ブレットトークンをコピー",
   copied_to_clipboard: "クリップボードにコピーされました",
-  export_results: "リザルトをエクスポート",
   export_database: "データーベースをエクスポート",
   privacy_policy: "プライバシーポリシー",
   acknowledgments: "謝辞",
@@ -99,8 +98,6 @@ const ja = {
   license: "ライセンス",
   oss_licenses: "オープンソースソフトウェアライセンス",
   source_code_repository: "ソースコードリポジトリ",
-  first_aid_notice:
-    "データベースが壊れているため、ロードできません。リザルトをエクスポートして、ホラガイベイを再インストールしてください。",
   auto_refresh_enabled: "自動更新が有効になりました",
   auto_refresh_disabled: "自動更新が無効になりました",
   background_refresh_notice:

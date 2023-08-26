@@ -161,8 +161,8 @@ const MainView = () => {
   const [preloadingResources, setPreloadingResources] = useState(false);
   const [diagnosingNetwork, setDiagnosingNetwork] = useState(false);
   const [acknowledgments, setAcknowledgments] = useState(false);
-  const [firstAid, setFirstAid] = useState(false);
   const [backgroundRefresh, setBackgroundRefresh] = useState(false);
+  const [fault, setFault] = useState<Error>();
 
   const [sessionToken, setSessionToken, clearSessionToken, sessionTokenReady] =
     useAsyncStorage("sessionToken");
@@ -253,8 +253,7 @@ const MainView = () => {
           await loadResults(20);
           setReady(true);
         } catch (e) {
-          showBanner(BannerLevel.Error, e);
-          setFirstAid(true);
+          setFault(new Error(`database corrupted: ${(e as Error).message}`));
         }
       })();
     }
@@ -347,6 +346,11 @@ const MainView = () => {
       }
     })();
   }, [ready, appState]);
+  useEffect(() => {
+    if (fault) {
+      throw fault;
+    }
+  }, [fault]);
 
   const canGroup = (current: ResultProps, group: GroupProps) => {
     // Battles with the same mode and in the 2 hours (24 hours for tricolors and unlimited for
@@ -1726,7 +1730,7 @@ const MainView = () => {
       if (e instanceof AxiosError) {
         result.tests.bulletToken["error"] = e.toJSON();
       } else if (e instanceof Error) {
-        result.tests.bulletToken["error"] = e.toString();
+        result.tests.bulletToken["error"] = e.message;
       }
     }
 
@@ -1740,7 +1744,7 @@ const MainView = () => {
       if (e instanceof AxiosError) {
         result.tests.webServiceToken["error"] = e.toJSON();
       } else if (e instanceof Error) {
-        result.tests.webServiceToken["error"] = e.toString();
+        result.tests.webServiceToken["error"] = e.message;
       }
     }
 
@@ -2345,22 +2349,6 @@ const MainView = () => {
             </Text>
           </VStack>
         </VStack>
-      </Modal>
-      <Modal isVisible={firstAid} style={ViewStyles.modal1d}>
-        <Dialog icon="life-buoy" text={t("first_aid_notice")}>
-          <Button
-            loading={exporting}
-            loadingText={t("exporting")}
-            style={[ViewStyles.mb2, ViewStyles.accent]}
-            textStyle={theme.reverseTextStyle}
-            onPress={onExportPress}
-          >
-            <Marquee style={theme.reverseTextStyle}>{t("export_results")}</Marquee>
-          </Button>
-          <Button style={ViewStyles.accent} onPress={onExportDatabasePress}>
-            <Marquee style={theme.reverseTextStyle}>{t("export_database")}</Marquee>
-          </Button>
-        </Dialog>
       </Modal>
       <Modal
         isVisible={backgroundRefresh}

@@ -90,7 +90,6 @@ const en = {
   copy_web_service_token: "Copy Web Service Token",
   copy_bullet_token: "Copy Bullet Token",
   copied_to_clipboard: "Copied to clipboard",
-  export_results: "Export Results",
   export_database: "Export Database",
   privacy_policy: "Privacy Policy",
   acknowledgments: "Acknowledgments",
@@ -98,8 +97,6 @@ const en = {
   license: "License",
   oss_licenses: "Open-Source Softwares Licenses",
   source_code_repository: "Source Code Repository",
-  first_aid_notice:
-    "The database is corrupted and cannot be loaded. Please export results and reinstall Conch Bay.",
   auto_refresh_enabled: "Auto refresh enabled",
   auto_refresh_disabled: "Auto refresh disabled",
   background_refresh_notice:

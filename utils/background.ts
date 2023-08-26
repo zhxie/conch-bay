@@ -37,13 +37,13 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
       }
       const res = await getWebServiceToken(sessionToken).catch((e) => e as Error);
       if (res instanceof Error) {
-        throw new Error(`failed to acquire web service token ${res.toString()}`);
+        throw new Error(`failed to acquire web service token ${res.message}`);
       }
       const newWebServiceToken = res.webServiceToken;
       await AsyncStorage.setItem("webServiceToken", newWebServiceToken);
       const newBulletToken = await getBulletToken(newWebServiceToken).catch((e) => e as Error);
       if (newBulletToken instanceof Error) {
-        throw new Error(`failed to acquire bullet token ${newBulletToken.toString()}`);
+        throw new Error(`failed to acquire bullet token ${newBulletToken.message}`);
       }
       bulletToken = newBulletToken;
     }
@@ -162,10 +162,10 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
       }
     }
     if (battle instanceof Error) {
-      throw new Error(`failed to load battles (${battle.toString()})`);
+      throw new Error(`failed to load battles (${battle.message})`);
     }
     if (coop instanceof Error) {
-      throw new Error(`failed to load coops (${coop.toString()})`);
+      throw new Error(`failed to load coops (${coop.message})`);
     }
     if (total > 0) {
       return BackgroundFetch.BackgroundFetchResult.NewData;

@@ -88,7 +88,6 @@ const zhHans = {
   copy_web_service_token: "复制Web服务令牌",
   copy_bullet_token: "复制Bullet令牌",
   copied_to_clipboard: "已复制到剪贴板",
-  export_results: "导出记录",
   export_database: "导出数据库",
   privacy_policy: "隐私政策",
   acknowledgments: "致谢",
@@ -96,7 +95,6 @@ const zhHans = {
   license: "许可",
   oss_licenses: "开源软件许可",
   source_code_repository: "源代码库",
-  first_aid_notice: "数据库已损坏并无法加载。请导出记录并重新安装法螺湾。",
   auto_refresh_enabled: "已启用自动刷新",
   auto_refresh_disabled: "已停用自动刷新",
   background_refresh_notice:
