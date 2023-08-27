@@ -6,7 +6,6 @@ import dayjs from "dayjs";
 import * as Clipboard from "expo-clipboard";
 import { useCallback, useMemo, useRef, useState } from "react";
 import {
-  Linking,
   NativeScrollEvent,
   NativeSyntheticEvent,
   RefreshControlProps,
@@ -499,21 +498,6 @@ const ResultView = (props: ResultViewProps) => {
     setDisplayBattle(false);
     setDisplayCoop(false);
   };
-  const onOpenInNintendoSwitchOnlinePress = () => {
-    if (result!.battle) {
-      Linking.openURL(
-        `com.nintendo.znca://znca/game/4834290508791808?p=/history/detail/${
-          result!.battle.vsHistoryDetail!.id
-        }`
-      );
-    } else {
-      Linking.openURL(
-        `com.nintendo.znca://znca/game/4834290508791808?p=/coop/${
-          result!.coop!.coopHistoryDetail!.id
-        }`
-      );
-    }
-  };
   const onCopyRawValue = async (value: any) => {
     await Clipboard.setStringAsync(value.toString());
     showBanner(BannerLevel.Info, t("copied_to_clipboard"));
@@ -952,13 +936,8 @@ const ResultView = (props: ResultViewProps) => {
                     {hidePlayerNames ? t("show_player_names") : t("hide_player_names")}
                   </Marquee>
                 </Button>
-                <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onShowRawResultPress}>
+                <Button style={ViewStyles.accent} onPress={onShowRawResultPress}>
                   <Marquee style={theme.reverseTextStyle}>{t("show_raw_data")}</Marquee>
-                </Button>
-                <Button style={ViewStyles.accent} onPress={onOpenInNintendoSwitchOnlinePress}>
-                  <Marquee style={theme.reverseTextStyle}>
-                    {t("open_in_nintendo_switch_online")}
-                  </Marquee>
                 </Button>
               </VStack>
               <Modal
@@ -1297,16 +1276,8 @@ const ResultView = (props: ResultViewProps) => {
                       {hidePlayerNames ? t("show_player_names") : t("hide_player_names")}
                     </Marquee>
                   </Button>
-                  <Button
-                    style={[ViewStyles.mb2, ViewStyles.accent]}
-                    onPress={onShowRawResultPress}
-                  >
+                  <Button style={ViewStyles.accent} onPress={onShowRawResultPress}>
                     <Marquee style={theme.reverseTextStyle}>{t("show_raw_data")}</Marquee>
-                  </Button>
-                  <Button style={ViewStyles.accent} onPress={onOpenInNintendoSwitchOnlinePress}>
-                    <Marquee style={theme.reverseTextStyle}>
-                      {t("open_in_nintendo_switch_online")}
-                    </Marquee>
                   </Button>
                 </VStack>
               </VStack>

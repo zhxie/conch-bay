@@ -113,7 +113,6 @@ const ja = {
   export_results: "リザルトをエクスポート",
   // Shop.
   gesotown: "ゲソタウン",
-  order_in_nintendo_switch_online: "Nintendo Switch Onlineで注文",
   show_owned_gears: "持つギアを表示",
   loading_owned_gears: "持つギアを読み込む中",
   failed_to_load_owned_gears: "持つギアを読み込めません (%{error})",
@@ -167,7 +166,6 @@ const ja = {
   hide_player_names: "プレイヤー名を隠す",
   show_player_names: "プレイヤー名を表示",
   show_raw_data: "生データを表示",
-  open_in_nintendo_switch_online: "Nintendo Switch Onlineでチェック",
   self: "自分",
   team: "チーム",
   // Stats.

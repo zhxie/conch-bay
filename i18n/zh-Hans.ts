@@ -109,7 +109,6 @@ const zhHans = {
   export_results: "导出记录",
   // Shop.
   gesotown: "鱿鱼须商城",
-  order_in_nintendo_switch_online: "在Nintendo Switch Online中预订",
   show_owned_gears: "显示持有的装备",
   loading_owned_gears: "加载持有的装备中",
   failed_to_load_owned_gears: "未能加载持有的装备 (%{error})",
@@ -163,7 +162,6 @@ const zhHans = {
   hide_player_names: "隐藏玩家名称",
   show_player_names: "显示玩家名称",
   show_raw_data: "显示原始数据",
-  open_in_nintendo_switch_online: "在Nintendo Switch Online中查看",
   self: "自己",
   team: "团队",
   // Stats.

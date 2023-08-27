@@ -112,7 +112,6 @@ const en = {
   export_results: "Export Results",
   // Shop.
   gesotown: "SplatNet Shop",
-  order_in_nintendo_switch_online: "Order in Nintendo Switch Online",
   show_owned_gears: "Display Owned Gears",
   loading_owned_gears: "Loading Owned Gears",
   failed_to_load_owned_gears: "Failed to load owned gears (%{error})",
@@ -167,7 +166,6 @@ const en = {
   hide_player_names: "Hide Player Names",
   show_player_names: "Show Player Names",
   show_raw_data: "Show Raw Data",
-  open_in_nintendo_switch_online: "Open in Nintendo Switch Online",
   self: "Self",
   team: "Team",
   // Stats.

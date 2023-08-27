@@ -109,7 +109,6 @@ const zhHant = {
   export_results: "匯出記錄",
   // Shop.
   gesotown: "魷魚鬚商城",
-  order_in_nintendo_switch_online: "在Nintendo Switch Online中預訂",
   show_owned_gears: "顯示持有的裝備",
   loading_owned_gears: "載入持有的裝備中",
   failed_to_load_owned_gears: "未能載入持有的裝備 (%{error})",
@@ -163,7 +162,6 @@ const zhHant = {
   hide_player_names: "隱藏玩家名稱",
   show_player_names: "顯示玩家名稱",
   show_raw_data: "顯示原始數據",
-  open_in_nintendo_switch_online: "在Nintendo Switch Online中查看",
   self: "自己",
   team: "團隊",
   // Stats.
