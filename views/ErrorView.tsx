@@ -103,9 +103,6 @@ const ErrorView = (props: ErrorViewProps) => {
             Database.BATCH_SIZE,
             {
               modes: battleModes,
-              rules: [],
-              stages: [],
-              weapons: [],
             }
           );
           for (let i = 0; i < records.length; i++) {
@@ -131,9 +128,6 @@ const ErrorView = (props: ErrorViewProps) => {
           Database.BATCH_SIZE,
           {
             modes: ["salmon_run"],
-            rules: [],
-            stages: [],
-            weapons: [],
           }
         );
         for (let i = 0; i < records.length; i++) {

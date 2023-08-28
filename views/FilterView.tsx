@@ -27,47 +27,24 @@ interface FilterViewProps {
   style?: StyleProp<ViewStyle>;
 }
 
-const EmptyFilterProps = {
-  modes: [],
-  rules: [],
-  stages: [],
-  weapons: [],
-};
+const EmptyFilterProps = {};
 const RegularBattleFilterProps = {
   modes: ["VnNNb2RlLTE=", "VnNNb2RlLTY=", "VnNNb2RlLTc=", "VnNNb2RlLTg="],
-  rules: [],
-  stages: [],
-  weapons: [],
 };
 const AnarchyBattleFilterProps = {
   modes: ["VnNNb2RlLTI=", "VnNNb2RlLTUx"],
-  rules: [],
-  stages: [],
-  weapons: [],
 };
 const XBattleFilterProps = {
   modes: ["VnNNb2RlLTM="],
-  rules: [],
-  stages: [],
-  weapons: [],
 };
 const ChallengeFilterProps = {
   modes: ["VnNNb2RlLTQ="],
-  rules: [],
-  stages: [],
-  weapons: [],
 };
 const PrivateBattleFilterProps = {
   modes: ["VnNNb2RlLTU="],
-  rules: [],
-  stages: [],
-  weapons: [],
 };
 const SalmonRunFilterProps = {
   modes: ["salmon_run"],
-  rules: [],
-  stages: [],
-  weapons: [],
 };
 
 const FilterView = (props: FilterViewProps) => {
@@ -213,20 +190,20 @@ const FilterView = (props: FilterViewProps) => {
         style={[ViewStyles.modal2d, ViewStyles.pl4, ViewStyles.pr2]}
       >
         <VStack flex>
-          {(props.options?.modes.length ?? 0) > 0 && (
+          {(props.options?.modes?.length ?? 0) > 0 && (
             <VStack flex>
               <Marquee style={[TextStyles.h2, ViewStyles.mb2]}>{t("modes")}</Marquee>
               <HStack style={[ViewStyles.mb2, { flexWrap: "wrap" }]}>
-                {props.options?.modes.map((mode) => (
+                {props.options!.modes!.map((mode) => (
                   <FilterButton
                     key={mode}
                     disabled={props.disabled}
-                    textColor={props.filter?.modes.includes(mode) ? Color.DarkText : undefined}
+                    textColor={props.filter?.modes?.includes(mode) ? Color.DarkText : undefined}
                     title={t(mode)}
                     style={[
                       ViewStyles.mr2,
                       ViewStyles.mb2,
-                      props.filter?.modes.includes(mode) && ViewStyles.accent,
+                      props.filter?.modes?.includes(mode) && ViewStyles.accent,
                     ]}
                     onPress={() => {
                       onOptionPress("modes", mode);
@@ -236,20 +213,20 @@ const FilterView = (props: FilterViewProps) => {
               </HStack>
             </VStack>
           )}
-          {(props.options?.rules.length ?? 0) > 0 && (
+          {(props.options?.rules?.length ?? 0) > 0 && (
             <VStack flex>
               <Marquee style={[TextStyles.h2, ViewStyles.mb2]}>{t("rules")}</Marquee>
               <HStack style={[ViewStyles.mb2, { flexWrap: "wrap" }]}>
-                {props.options?.rules.map((rule) => (
+                {props.options!.rules!.map((rule) => (
                   <FilterButton
                     key={rule}
                     disabled={props.disabled}
-                    textColor={props.filter?.rules.includes(rule) ? Color.DarkText : undefined}
+                    textColor={props.filter?.rules?.includes(rule) ? Color.DarkText : undefined}
                     title={t(rule)}
                     style={[
                       ViewStyles.mr2,
                       ViewStyles.mb2,
-                      props.filter?.rules.includes(rule) && ViewStyles.accent,
+                      props.filter?.rules?.includes(rule) && ViewStyles.accent,
                     ]}
                     onPress={() => {
                       onOptionPress("rules", rule);
@@ -259,20 +236,20 @@ const FilterView = (props: FilterViewProps) => {
               </HStack>
             </VStack>
           )}
-          {(props.options?.stages.length ?? 0) > 0 && (
+          {(props.options?.stages?.length ?? 0) > 0 && (
             <VStack flex>
               <Marquee style={[TextStyles.h2, ViewStyles.mb2]}>{t("stages")}</Marquee>
               <HStack style={[ViewStyles.mb2, { flexWrap: "wrap" }]}>
-                {props.options?.stages.map((stage) => (
+                {props.options!.stages!.map((stage) => (
                   <FilterButton
                     key={stage}
                     disabled={props.disabled}
-                    textColor={props.filter?.stages.includes(stage) ? Color.DarkText : undefined}
+                    textColor={props.filter?.stages?.includes(stage) ? Color.DarkText : undefined}
                     title={t(stage)}
                     style={[
                       ViewStyles.mr2,
                       ViewStyles.mb2,
-                      props.filter?.stages.includes(stage) && ViewStyles.accent,
+                      props.filter?.stages?.includes(stage) && ViewStyles.accent,
                     ]}
                     onPress={() => {
                       onOptionPress("stages", stage);
@@ -282,20 +259,20 @@ const FilterView = (props: FilterViewProps) => {
               </HStack>
             </VStack>
           )}
-          {(props.options?.weapons.length ?? 0) > 0 && (
+          {(props.options?.weapons?.length ?? 0) > 0 && (
             <VStack flex>
               <Marquee style={[TextStyles.h2, ViewStyles.mb2]}>{t("weapons")}</Marquee>
               <HStack style={[ViewStyles.mb2, { flexWrap: "wrap" }]}>
-                {props.options?.weapons.map((weapon) => (
+                {props.options!.weapons!.map((weapon) => (
                   <FilterButton
                     key={weapon}
                     disabled={props.disabled}
-                    textColor={props.filter?.weapons.includes(weapon) ? Color.DarkText : undefined}
+                    textColor={props.filter?.weapons?.includes(weapon) ? Color.DarkText : undefined}
                     title={t(weapon)}
                     style={[
                       ViewStyles.mr2,
                       ViewStyles.mb2,
-                      props.filter?.weapons.includes(weapon) && ViewStyles.accent,
+                      props.filter?.weapons?.includes(weapon) && ViewStyles.accent,
                     ]}
                     onPress={() => {
                       onOptionPress("weapons", weapon);

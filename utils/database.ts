@@ -132,9 +132,6 @@ export const upgrade = async () => {
       while (true) {
         const records = await queryDetail(batch * BATCH_SIZE, BATCH_SIZE, {
           modes: battleModes,
-          rules: [],
-          stages: [],
-          weapons: [],
         });
         await Promise.all(
           records.map((record) =>
@@ -164,9 +161,6 @@ export const upgrade = async () => {
       while (true) {
         const records = await queryDetail(batch * BATCH_SIZE, BATCH_SIZE, {
           modes: ["salmon_run"],
-          rules: [],
-          stages: [],
-          weapons: [],
         });
         await Promise.all(
           records.map((record) =>
@@ -218,10 +212,10 @@ const rollback = async () => {
 
 // TODO: it would be better to have an inverted option.
 export interface FilterProps {
-  modes: string[];
-  rules: string[];
-  stages: string[];
-  weapons: string[];
+  modes?: string[];
+  rules?: string[];
+  stages?: string[];
+  weapons?: string[];
 }
 
 export const isFilterEqual = (a?: FilterProps, b?: FilterProps) => {
@@ -232,11 +226,11 @@ export const isFilterEqual = (a?: FilterProps, b?: FilterProps) => {
     return false;
   }
   for (const group of ["modes", "rules", "stages", "weapons"]) {
-    if (a[group].length !== b[group].length) {
+    if ((a[group] ?? []).length !== (b[group] ?? []).length) {
       return false;
     }
-    for (const item of a[group]) {
-      if (!b[group].includes(item)) {
+    for (const item of a[group] ?? []) {
+      if (!b[group]?.includes(item)) {
         return false;
       }
     }
@@ -247,15 +241,15 @@ export const isFilterEqual = (a?: FilterProps, b?: FilterProps) => {
 const convertFilter = (filter?: FilterProps, from?: number) => {
   const filters: string[] = [];
   if (filter) {
-    if (filter.modes.length > 0) {
-      filters.push(`(${filter.modes.map((mode) => `mode = '${mode}'`).join(" OR ")})`);
+    if ((filter.modes ?? []).length > 0) {
+      filters.push(`(${(filter.modes ?? []).map((mode) => `mode = '${mode}'`).join(" OR ")})`);
     }
-    if (filter.rules.length > 0) {
-      filters.push(`(${filter.rules.map((rule) => `rule = '${rule}'`).join(" OR ")})`);
+    if ((filter.rules ?? []).length > 0) {
+      filters.push(`(${(filter.rules ?? []).map((rule) => `rule = '${rule}'`).join(" OR ")})`);
     }
-    if (filter.weapons.length > 0) {
+    if ((filter.weapons ?? []).length > 0) {
       filters.push(
-        `(${filter.weapons
+        `(${(filter.weapons ?? [])
           .map((weapon) => {
             const image = weapons[weapon];
             if (image) {
@@ -266,9 +260,9 @@ const convertFilter = (filter?: FilterProps, from?: number) => {
           .join(" OR ")})`
       );
     }
-    if (filter.stages.length > 0) {
+    if ((filter.stages ?? []).length > 0) {
       filters.push(
-        `(${filter.stages
+        `(${(filter.stages ?? [])
           .map((stage) => {
             // Includes Big Run stages.
             if (stage === "VnNTdGFnZS0xNg==") {

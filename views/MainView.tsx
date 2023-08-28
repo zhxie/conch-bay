@@ -1375,9 +1375,6 @@ const MainView = () => {
               Database.BATCH_SIZE,
               {
                 modes: battleModes,
-                rules: [],
-                stages: [],
-                weapons: [],
               }
             );
             for (let i = 0; i < records.length; i++) {
@@ -1403,9 +1400,6 @@ const MainView = () => {
             Database.BATCH_SIZE,
             {
               modes: ["salmon_run"],
-              rules: [],
-              stages: [],
-              weapons: [],
             }
           );
           for (let i = 0; i < records.length; i++) {
