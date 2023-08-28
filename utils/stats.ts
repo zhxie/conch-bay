@@ -506,13 +506,11 @@ export const countCoop = (coop: CoopHistoryDetailResult): CoopStats => {
     king,
     waves,
     stage: coop.coopHistoryDetail!.coopStage.id,
-    weapons: coop.coopHistoryDetail!.myResult.weapons.map(
-      (weapon) => weaponList.images[getImageHash(weapon.image.url)]
+    weapons: coop.coopHistoryDetail!.myResult.weapons.map((weapon) =>
+      getImageHash(weapon.image.url)
     ),
     specialWeapon: coop.coopHistoryDetail!.myResult.specialWeapon
-      ? coopSpecialWeaponList.images[
-          getImageHash(coop.coopHistoryDetail!.myResult.specialWeapon.image.url)
-        ]
+      ? getImageHash(coop.coopHistoryDetail!.myResult.specialWeapon.image.url)
       : undefined,
   };
 };
@@ -652,16 +650,55 @@ export const addCoopStats = (...coops: CoopStats[]): CoopsStats => {
   });
   stages.sort((a, b) => decode64Index(a.id) - decode64Index(b.id));
   const weapons = Array.from(weaponMap, (weapon) => ({
-    id: weapon[0],
+    id: weaponList.images[weapon[0]] ?? weapon[0],
     count: weapon[1],
   }));
-  weapons.sort((a, b) => decode64Index(a.id) - decode64Index(b.id));
+  weapons.sort((a, b) => {
+    let aid: number | undefined, bid: number | undefined;
+    try {
+      aid = decode64Index(a.id);
+    } catch {
+      /* empty */
+    }
+    try {
+      bid = decode64Index(b.id);
+    } catch {
+      /* empty */
+    }
+    if (aid === undefined && bid === undefined) {
+      return a.id.localeCompare(b.id);
+    } else if (aid === undefined) {
+      return 1;
+    } else if (bid === undefined) {
+      return -1;
+    }
+    return decode64Index(a.id) - decode64Index(b.id);
+  });
   const specialWeapons = Array.from(specialWeaponMap, (specialWeapon) => ({
-    id: specialWeapon[0],
+    id: coopSpecialWeaponList.images[specialWeapon[0]] ?? specialWeapon[0],
     count: specialWeapon[1],
   }));
-  specialWeapons.sort((a, b) => decode64Index(a.id) - decode64Index(b.id));
-
+  specialWeapons.sort((a, b) => {
+    let aid: number | undefined, bid: number | undefined;
+    try {
+      aid = decode64Index(a.id);
+    } catch {
+      /* empty */
+    }
+    try {
+      bid = decode64Index(b.id);
+    } catch {
+      /* empty */
+    }
+    if (aid === undefined && bid === undefined) {
+      return a.id.localeCompare(b.id);
+    } else if (aid === undefined) {
+      return 1;
+    } else if (bid === undefined) {
+      return -1;
+    }
+    return decode64Index(a.id) - decode64Index(b.id);
+  });
   return {
     count,
     exempt,

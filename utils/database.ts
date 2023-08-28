@@ -8,7 +8,7 @@ import { getImageHash, getVsSelfPlayer } from "./ui";
 
 let db: SQLite.SQLiteDatabase | undefined = undefined;
 
-const VERSION = 3;
+const VERSION = 4;
 export const BATCH_SIZE = Math.floor((Device.totalMemory! / 1024 / 1024 / 1024) * 150);
 
 export const open = async () => {
@@ -127,23 +127,23 @@ export const upgrade = async () => {
     try {
       await exec('ALTER TABLE result ADD COLUMN stats TEXT NOT NULL DEFAULT ""', [], false);
       let batch = 0;
+      const filterOptions = await queryFilterOptions();
+      const battleModes = filterOptions.modes.filter((mode) => mode !== "salmon_run");
       while (true) {
-        const records = await queryDetail(batch * BATCH_SIZE, BATCH_SIZE);
+        const records = await queryDetail(batch * BATCH_SIZE, BATCH_SIZE, {
+          modes: battleModes,
+          rules: [],
+          stages: [],
+          weapons: [],
+        });
         await Promise.all(
-          records.map((record) => {
-            if (record.mode === "salmon_run") {
-              return exec(
-                "UPDATE result SET stats = ? WHERE id = ?",
-                [JSON.stringify(countCoop(JSON.parse(record.detail))), record.id],
-                false
-              );
-            }
-            return exec(
+          records.map((record) =>
+            exec(
               "UPDATE result SET stats = ? WHERE id = ?",
               [JSON.stringify(countBattle(JSON.parse(record.detail))), record.id],
               false
-            );
-          })
+            )
+          )
         );
         if (records.length < BATCH_SIZE) {
           break;
@@ -151,6 +151,38 @@ export const upgrade = async () => {
         batch += 1;
       }
       await exec("PRAGMA user_version=3", [], false);
+      await commit();
+    } catch (e) {
+      await rollback();
+      throw e;
+    }
+  }
+  if (version < 4) {
+    await beginTransaction();
+    try {
+      let batch = 0;
+      while (true) {
+        const records = await queryDetail(batch * BATCH_SIZE, BATCH_SIZE, {
+          modes: ["salmon_run"],
+          rules: [],
+          stages: [],
+          weapons: [],
+        });
+        await Promise.all(
+          records.map((record) =>
+            exec(
+              "UPDATE result SET stats = ? WHERE id = ?",
+              [JSON.stringify(countCoop(JSON.parse(record.detail))), record.id],
+              false
+            )
+          )
+        );
+        if (records.length < BATCH_SIZE) {
+          break;
+        }
+        batch += 1;
+      }
+      await exec("PRAGMA user_version=4", [], false);
       await commit();
     } catch (e) {
       await rollback();
@@ -184,6 +216,7 @@ const rollback = async () => {
   return await exec("rollback", [], false);
 };
 
+// TODO: it would be better to have an inverted option.
 export interface FilterProps {
   modes: string[];
   rules: string[];
