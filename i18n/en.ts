@@ -21,7 +21,6 @@ const en = {
   log_out_continue: "Log Out",
   logging_out: "Logging out",
   upgrading_database: "Upgrading database",
-  failed_to_check_update: "Failed to check Conch Bay update",
   reacquiring_tokens: "Reacquiring tokens",
   failed_to_acquire_web_service_token: "Failed to acquire web service token (%{error})",
   failed_to_acquire_bullet_token: "Failed to acquire bullet token (%{error})",

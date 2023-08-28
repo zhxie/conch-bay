@@ -66,6 +66,7 @@ import {
 } from "../models/types";
 import {
   fetchAnarchyBattleHistories,
+  fetchAppStoreVersion,
   fetchCatalog,
   fetchChallengeHistories,
   fetchCoopHistoryDetail,
@@ -74,9 +75,9 @@ import {
   fetchEquipments,
   fetchFriends,
   fetchLatestBattleHistories,
-  fetchLatestVersion,
   fetchPrivateBattleHistories,
   fetchRegularBattleHistories,
+  fetchReleaseVersion,
   fetchShop,
   fetchSchedules,
   fetchSplatfests,
@@ -86,11 +87,11 @@ import {
   fetchXBattleHistories,
   generateLogIn,
   getBulletToken,
+  getCurrentVersions,
   getSessionToken,
   getWebServiceToken,
   updateNsoVersion,
   updateSplatnetVersion,
-  getCurrentVersions,
 } from "../utils/api";
 import { useAsyncStorage, useBooleanAsyncStorage } from "../utils/async-storage";
 import {
@@ -98,7 +99,7 @@ import {
   registerBackgroundTask,
   unregisterBackgroundTask,
 } from "../utils/background";
-import { decode64String, encode64String } from "../utils/codec";
+import { decode64String, encode64String, parseVersion } from "../utils/codec";
 import * as Database from "../utils/database";
 import { ok } from "../utils/promise";
 import { StatsProps } from "../utils/stats";
@@ -268,20 +269,40 @@ const MainView = () => {
         // HACK: avoid animation racing.
         setTimeout(() => {
           refresh();
-          Platform.OS === "android" &&
-            fetchLatestVersion()
-              .then((version) => {
-                const versionRegex = /(\d+)\.(\d+)\.(\d+)/g;
-                const current = versionRegex.exec(Application.nativeApplicationVersion!);
-                const tagRegex = /v(\d+)\.(\d+)\.(\d+)/g;
-                const latest = tagRegex.exec(version ?? "");
-                if (current!.slice(1) < latest!.slice(1)) {
-                  setUpdate(true);
-                }
-              })
-              .catch((e) => {
-                showBanner(BannerLevel.Warn, t("failed_to_check_conch_bay_update", { error: e }));
-              });
+          let current: number[];
+          if (Constants.appOwnership !== AppOwnership.Expo) {
+            current = parseVersion(Application.nativeApplicationVersion!);
+          } else {
+            current = parseVersion(Constants.expoConfig!.version!);
+          }
+          if (Constants.appOwnership !== AppOwnership.Expo) {
+            switch (Platform.OS) {
+              case "ios":
+                ok(
+                  fetchAppStoreVersion().then((version) => {
+                    const latest = parseVersion(version);
+                    if (latest > current) {
+                      setUpdate(true);
+                    }
+                  })
+                );
+                break;
+              case "android":
+                ok(
+                  fetchReleaseVersion().then((version) => {
+                    const latest = parseVersion(version.replace("v", ""));
+                    if (latest > current) {
+                      setUpdate(true);
+                    }
+                  })
+                );
+                break;
+              case "windows":
+              case "macos":
+              case "web":
+                break;
+            }
+          }
         }, 100);
       });
     }
@@ -289,9 +310,7 @@ const MainView = () => {
   useEffect(() => {
     if (ready) {
       // HACK: avoid animation racing.
-      setTimeout(() => {
-        refresh();
-      }, 100);
+      setTimeout(refresh, 100);
     }
   }, [sessionToken]);
   useEffect(() => {
@@ -1309,7 +1328,6 @@ const MainView = () => {
     setExporting(true);
     const uri = FileSystem.cacheDirectory + `conch-bay-export.json`;
     try {
-      // TODO: better to use switch instead of if to avoid branch addition.
       if (Constants.appOwnership === AppOwnership.Expo) {
         let battles = "";
         let coops = "";
@@ -1416,7 +1434,18 @@ const MainView = () => {
     setExporting(false);
   };
   const onUpdatePress = () => {
-    WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay/releases");
+    switch (Platform.OS) {
+      case "ios":
+        Linking.openURL("https://apps.apple.com/us/app/conch-bay/id1659268579");
+        break;
+      case "android":
+        WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay/releases");
+        break;
+      case "windows":
+      case "macos":
+      case "web":
+        throw new Error(`unexpected OS ${Platform.OS}`);
+    }
   };
   const onSupportPress = () => {
     setSupport(true);

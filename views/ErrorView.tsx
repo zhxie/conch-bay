@@ -55,7 +55,6 @@ const ErrorView = (props: ErrorViewProps) => {
     setExporting(true);
     // TODO: reuse export codes.
     const uri = FileSystem.cacheDirectory + `conch-bay-export.json`;
-    // TODO: better to use switch instead of if to avoid branch addition.
     if (Constants.appOwnership === AppOwnership.Expo) {
       let battles = "";
       let coops = "";

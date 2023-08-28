@@ -21,7 +21,6 @@ const ja = {
   log_out_continue: "ログアウト",
   logging_out: "ログアウト中",
   upgrading_database: "データベースをアップグレード中",
-  failed_to_check_update: "ホラガイベイのアップデートを確認できません",
   reacquiring_tokens: "トークン再取得中",
   failed_to_acquire_web_service_token: "Webサービストークンを取得できません (%{error})",
   failed_to_acquire_bullet_token: "ブレットトークンを取得できません (%{error})",

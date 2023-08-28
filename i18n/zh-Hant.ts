@@ -21,7 +21,6 @@ const zhHant = {
   log_out_continue: "登出",
   logging_out: "登出中",
   upgrading_database: "升級資料庫中",
-  failed_to_check_update: "未能檢查法螺灣更新",
   reacquiring_tokens: "重新獲取令牌中",
   failed_to_acquire_web_service_token: "未能獲取Web服務令牌 (%{error})",
   failed_to_acquire_bullet_token: "未能獲取Bullet令牌 (%{error})",

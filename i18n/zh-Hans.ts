@@ -21,7 +21,6 @@ const zhHans = {
   log_out_continue: "登出",
   logging_out: "登出中",
   upgrading_database: "升级数据库中",
-  failed_to_check_update: "未能检查法螺湾更新 (%{error})",
   reacquiring_tokens: "重新获取令牌中",
   failed_to_acquire_web_service_token: "未能获取Web服务令牌 (%{error})",
   failed_to_acquire_bullet_token: "未能获取Bullet令牌 (%{error})",
