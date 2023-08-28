@@ -20,19 +20,16 @@ dayjs.extend(utc);
 const App = () => {
   const theme = useTheme();
 
-  const [ready, setReady] = useState(false);
+  const [fontsLoaded] = Font.useFonts({
+    Lucide: require("lucide-static/font/lucide.ttf"),
+    MPLUSRounded1cExtraBold: require("@expo-google-fonts/m-plus-rounded-1c/MPLUSRounded1c_800ExtraBold.ttf"),
+  });
+
   const [splatfont, setSplatfont] = useState(false);
 
   useEffect(() => {
     ok(
-      Font.loadAsync({
-        Lucide: require("lucide-static/font/lucide.ttf"),
-        MPLUSRounded1cExtraBold: require("@expo-google-fonts/m-plus-rounded-1c/MPLUSRounded1c_800ExtraBold.ttf"),
-      })
-    ).then(() => {
-      setReady(true);
-    });
-    ok(
+      // HACK: use jsDelivr to avoid any network issue in China Mainland.
       Font.loadAsync({
         Splatfont:
           "https://cdn.jsdelivr.net/gh/frozenpandaman/frozenpandaman.github.io/Splatoon1.otf",
@@ -48,7 +45,7 @@ const App = () => {
         <SplashtagContext.Provider value={{ splatfont }}>
           <StatusBar style={theme.colorScheme === "light" ? "dark" : "light"} />
           <ErrorBoundary FallbackComponent={ErrorView}>
-            {ready && <MainView />}
+            {fontsLoaded && <MainView />}
             <ToastBannerPresenter />
           </ErrorBoundary>
         </SplashtagContext.Provider>

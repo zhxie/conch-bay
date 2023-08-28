@@ -1,7 +1,7 @@
 import * as Convert from "color-convert";
 import { Color } from "../components";
 import { VsMode, VsHistoryDetailResult, VsStage, CoopRule, Gear } from "../models/types";
-import { getAuthorityAndPath } from "./url";
+import { getAuthorityAndPath } from "./codec";
 
 export const getImageExpires = (image: string) => {
   const regex = /Expires=(\d*)&/;

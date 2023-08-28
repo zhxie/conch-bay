@@ -27,8 +27,7 @@ import {
   XBattleHistoriesResult,
 } from "../models/types";
 import versions from "../models/versions.json";
-import { encode64, encode64Url } from "./codec";
-import { getParam, parameterize } from "./url";
+import { encode64, encode64Url, getParam, parameterize } from "./codec";
 
 const AXIOS_TIMEOUT = 10000;
 const AXIOS_TOKEN_TIMEOUT = 15000;
@@ -73,7 +72,7 @@ let NSO_VERSION = versions.NSO_VERSION;
 let SPLATNET_VERSION = versions.SPLATNET_VERSION;
 
 export const updateNsoVersion = async () => {
-  // HACK: use jsDelivr to avoid any network issues in China Mainland.
+  // HACK: use jsDelivr to avoid any network issue in China Mainland.
   const res = await axios.get(
     "https://cdn.jsdelivr.net/gh/nintendoapis/nintendo-app-versions/data/coral-google-play.json",
     {
@@ -84,7 +83,7 @@ export const updateNsoVersion = async () => {
   NSO_VERSION = res.data["version"];
 };
 export const updateSplatnetVersion = async () => {
-  // HACK: use jsDelivr to avoid any network issues in China Mainland.
+  // HACK: use jsDelivr to avoid any network issue in China Mainland.
   const res = await axios.get(
     "https://cdn.jsdelivr.net/gh/nintendoapis/nintendo-app-versions/data/splatnet3-app.json",
     { timeout: AXIOS_TIMEOUT }
