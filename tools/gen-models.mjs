@@ -24,32 +24,6 @@ const getSplatnetVersion = async () => {
   return json["web_app_ver"];
 };
 
-const getBackgroundMap = async () => {
-  const res = await fetch(
-    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${VERSION}/NamePlateBgInfo.json`
-  );
-  const json = await res.json();
-  const backgrounds = {};
-  for (const background of json) {
-    const id = Buffer.from(`NameplateBackground-${background["Id"]}`).toString("base64");
-    const image = createHash("sha256").update(background["__RowId"]).digest("hex");
-    backgrounds[id] = image;
-  }
-  return { backgrounds };
-};
-const getBadgeMap = async () => {
-  const res = await fetch(
-    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${VERSION}/BadgeInfo.json`
-  );
-  const json = await res.json();
-  const badges = {};
-  for (const badge of json) {
-    const id = Buffer.from(`Badge-${badge["Id"]}`).toString("base64");
-    const image = createHash("sha256").update(badge["Name"]).digest("hex");
-    badges[id] = image;
-  }
-  return { badges };
-};
 const getCoopStageMap = async () => {
   const res = await fetch(
     `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${VERSION}/CoopSceneInfo.json`
@@ -103,6 +77,59 @@ const getCoopSpecialWeaponMap = async () => {
   }
   return { specialWeapons, images };
 };
+const getBackgroundMap = async () => {
+  const res = await fetch(
+    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${VERSION}/NamePlateBgInfo.json`
+  );
+  const json = await res.json();
+  const backgrounds = {};
+  for (const background of json) {
+    const id = Buffer.from(`NameplateBackground-${background["Id"]}`).toString("base64");
+    const image = createHash("sha256").update(background["__RowId"]).digest("hex");
+    backgrounds[id] = image;
+  }
+  return { backgrounds };
+};
+const getBadgeMap = async () => {
+  const res = await fetch(
+    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${VERSION}/BadgeInfo.json`
+  );
+  const json = await res.json();
+  const badges = {};
+  for (const badge of json) {
+    const id = Buffer.from(`Badge-${badge["Id"]}`).toString("base64");
+    const image = createHash("sha256").update(badge["Name"]).digest("hex");
+    badges[id] = image;
+  }
+  return { badges };
+};
+const getAwardMap = async () => {
+  const res = await Promise.all([
+    fetch("https://raw.githubusercontent.com/Leanny/splat3/main/data/language/CNzh_unicode.json"),
+    fetch("https://raw.githubusercontent.com/Leanny/splat3/main/data/language/EUde_unicode.json"),
+    fetch("https://raw.githubusercontent.com/Leanny/splat3/main/data/language/EUen_unicode.json"),
+    fetch("https://raw.githubusercontent.com/Leanny/splat3/main/data/language/EUes_unicode.json"),
+    fetch("https://raw.githubusercontent.com/Leanny/splat3/main/data/language/EUfr_unicode.json"),
+    fetch("https://raw.githubusercontent.com/Leanny/splat3/main/data/language/EUit_unicode.json"),
+    fetch("https://raw.githubusercontent.com/Leanny/splat3/main/data/language/EUnl_unicode.json"),
+    fetch("https://raw.githubusercontent.com/Leanny/splat3/main/data/language/EUru_unicode.json"),
+    fetch("https://raw.githubusercontent.com/Leanny/splat3/main/data/language/JPja_unicode.json"),
+    fetch("https://raw.githubusercontent.com/Leanny/splat3/main/data/language/KRko_unicode.json"),
+    fetch("https://raw.githubusercontent.com/Leanny/splat3/main/data/language/TWzh_unicode.json"),
+    fetch("https://raw.githubusercontent.com/Leanny/splat3/main/data/language/USen_unicode.json"),
+    fetch("https://raw.githubusercontent.com/Leanny/splat3/main/data/language/USes_unicode.json"),
+    fetch("https://raw.githubusercontent.com/Leanny/splat3/main/data/language/USfr_unicode.json"),
+  ]);
+  const jsons = await Promise.all(res.map((r) => r.json()));
+  const awards = {};
+  for (const json of jsons) {
+    for (const key of Object.keys(json["CommonMsg/VS/VSAwardName"])) {
+      const id = `Award-${key}`;
+      awards[json["CommonMsg/VS/VSAwardName"][key]] = id;
+    }
+  }
+  return { awards };
+};
 const getSalmonidMap = async () => {
   const map = {
     SakelienBomber: 4,
@@ -154,26 +181,29 @@ const [nso_version, splatnet_version] = await Promise.all([getNsoVersion(), getS
 writeOut("models/versions.json", { NSO_VERSION: nso_version, SPLATNET_VERSION: splatnet_version });
 
 const [
-  backgroundMap,
-  badgeMap,
   coopStageMap,
   weaponMap,
   coopSpecialWeaponMap,
+  backgroundMap,
+  badgeMap,
+  awardMap,
   salmonidMap,
   workSuitMap,
 ] = await Promise.all([
-  getBackgroundMap(),
-  getBadgeMap(),
   getCoopStageMap(),
   getWeaponMap(),
   getCoopSpecialWeaponMap(),
+  getBackgroundMap(),
+  getBadgeMap(),
+  getAwardMap(),
   getSalmonidMap(),
   getWorkSuitMap(),
 ]);
-writeOut("models/backgrounds.json", backgroundMap);
-writeOut("models/badges.json", badgeMap);
 writeOut("models/coopStages.json", coopStageMap);
 writeOut("models/weapons.json", weaponMap);
 writeOut("models/coopSpecialWeapons.json", coopSpecialWeaponMap);
+writeOut("models/backgrounds.json", backgroundMap);
+writeOut("models/badges.json", badgeMap);
+writeOut("models/awards.json", awardMap);
 writeOut("models/salmonids.json", salmonidMap);
 writeOut("models/workSuits.json", workSuitMap);

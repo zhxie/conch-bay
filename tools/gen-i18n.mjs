@@ -16,7 +16,7 @@ const getLanguage = async (language) => {
   const json = (await res).json();
   return json;
 };
-const getModeLocales = async (languages) => {
+const getModeLocales = (languages) => {
   const map = {
     Regular: 1,
     Bankara: 2,
@@ -46,7 +46,7 @@ const getModeLocales = async (languages) => {
   }
   return maps;
 };
-const genRuleLocales = async (languages) => {
+const genRuleLocales = (languages) => {
   const map = {
     Pnt: 0,
     Var: 1,
@@ -240,6 +240,20 @@ const getShoesLocales = async (languages) => {
   }
   return maps;
 };
+const getAwardLocales = (languages) => {
+  const maps = [];
+  for (let i = 0; i < languages.length; i++) {
+    maps.push({});
+  }
+  for (let i = 0; i < languages.length; i++) {
+    for (const award of Object.keys(languages[i]["CommonMsg/VS/VSAwardName"])) {
+      const id = `Award-${award}`;
+      const name = languages[i]["CommonMsg/VS/VSAwardName"][award];
+      maps[i][id] = name;
+    }
+  }
+  return maps;
+};
 const getGradeLocales = (languages) => {
   const maps = [];
   for (let i = 0; i < languages.length; i++) {
@@ -363,6 +377,7 @@ const [
   headgearLocales,
   clothesLocales,
   shoesLocales,
+  awardLocales,
   gradeLocales,
   eventLocales,
   salmonidLocales,
@@ -380,6 +395,7 @@ const [
   getClothesLocales(languages),
   getShoesLocales(languages),
   getGradeLocales(languages),
+  getAwardLocales(languages),
   getEventLocales(languages),
   getSalmonidLocales(languages),
   getWorkSuitLocales(languages),
@@ -398,6 +414,7 @@ for (let i = 0; i < paths.length; i++) {
     ...headgearLocales[i],
     ...clothesLocales[i],
     ...shoesLocales[i],
+    ...awardLocales[i],
     ...gradeLocales[i],
     ...eventLocales[i],
     ...salmonidLocales[i],

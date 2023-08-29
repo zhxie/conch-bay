@@ -52,6 +52,7 @@ import {
   useTheme,
 } from "../components";
 import t, { ScopeWithDefaultValue, td } from "../i18n";
+import awardList from "../models/awards.json";
 import {
   Award,
   AwardRank,
@@ -912,7 +913,11 @@ const ResultView = (props: ResultViewProps) => {
                                 color={formatMedalColor(award)}
                                 style={ViewStyles.mr1}
                               />
-                              <Text numberOfLines={1}>{award.name}</Text>
+                              <Text numberOfLines={1}>
+                                {awardList.awards[award.name]
+                                  ? t(awardList.awards[award.name])
+                                  : award.name}
+                              </Text>
                             </HStack>
                           </Display>
                         ))}
