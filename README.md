@@ -2,7 +2,7 @@
 
 Conch Bay is a cross-platform schedule and battle statistic client for Splatoon 3.
 
-[<img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83&amp;releaseDate=1673308800?h=f4afffb19e486060195b9cc0bf3fd5f9" alt="Download on the App Store">](https://apps.apple.com/us/app/conch-bay/id1659268579) [<img src="assets/download-for-android.svg" alt="Download for Android">](https://github.com/zhxie/conch-bay/releases/download/v1.7.0/conch-bay-1.7.0-android-unsigned.apk)
+[<img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83&amp;releaseDate=1673308800?h=f4afffb19e486060195b9cc0bf3fd5f9" alt="Download on the App Store">](https://apps.apple.com/us/app/conch-bay/id1659268579) [<img src="assets/download-for-android.svg" alt="Download for Android">](https://github.com/zhxie/conch-bay/releases/download/v1.8.2/conch-bay-1.8.2-android-unsigned.apk)
 
 You may also test the latest app within [TestFlight](https://testflight.apple.com/join/JzrEy6eY) on iOS, or download unsigned APK directly in [Actions](https://github.com/zhxie/conch-bay/actions/workflows/build.yaml).
 
