@@ -152,6 +152,7 @@ const ja = {
   splatfest_power: "フェスパワー",
   played_time: "遊んだ日時",
   medals_earned: "ゲットした表彰",
+  title: "%{adjective}%{subject}",
   boss_salmonids: "オオモノシャケ",
   hazard_level: "キケン度",
   supplied_weapons: "支給ブキ",

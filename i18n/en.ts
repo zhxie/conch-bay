@@ -152,6 +152,7 @@ const en = {
   splatfest_power: "Splatfest Power",
   played_time: "Played Time",
   medals_earned: "Medals Earned",
+  title: "%{adjective} %{subject}",
   boss_salmonids: "Boss Salmonids",
   hazard_level: "Hazard Level",
   supplied_weapons: "Supplied Weapons",

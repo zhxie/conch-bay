@@ -148,6 +148,7 @@ const zhHant = {
   splatfest_power: "祭典戰力",
   played_time: "遊戲時間",
   medals_earned: "獲得的表揚",
+  title: "%{adjective}%{subject}",
   boss_salmonids: "巨大鮭魚",
   hazard_level: "危險度",
   supplied_weapons: "派發武器",

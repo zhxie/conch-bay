@@ -8,6 +8,20 @@ const writeOut = (path, obj) => {
   const file = createWriteStream(path, "utf-8");
   file.write(JSON.stringify(obj, undefined, 2) + "\n");
 };
+const buildTrie = (obj) => {
+  const trie = {};
+  for (const key of Object.keys(obj)) {
+    let node = trie;
+    for (const char of key) {
+      if (!node[char]) {
+        node[char] = {};
+      }
+      node = node[char];
+    }
+    node.tag = obj[key];
+  }
+  return trie;
+};
 
 const getNsoVersion = async () => {
   const res = await fetch(
@@ -103,6 +117,46 @@ const getBadgeMap = async () => {
   }
   return { badges };
 };
+const getTitleMap = async () => {
+  // TODO: need titles in languages with declension.
+  const res = await Promise.all([
+    fetch("https://raw.githubusercontent.com/Leanny/splat3/main/data/language/CNzh_unicode.json"),
+    fetch("https://raw.githubusercontent.com/Leanny/splat3/main/data/language/EUen_unicode.json"),
+    fetch("https://raw.githubusercontent.com/Leanny/splat3/main/data/language/JPja_unicode.json"),
+    fetch("https://raw.githubusercontent.com/Leanny/splat3/main/data/language/KRko_unicode.json"),
+    fetch("https://raw.githubusercontent.com/Leanny/splat3/main/data/language/TWzh_unicode.json"),
+    fetch("https://raw.githubusercontent.com/Leanny/splat3/main/data/language/USen_unicode.json"),
+  ]);
+  const jsons = await Promise.all(res.map((r) => r.json()));
+  const titles = [];
+  for (const json of jsons) {
+    const adjectives = {};
+    const subjects = {};
+    for (const key of Object.keys(json["CommonMsg/Byname/BynameAdjective"])) {
+      const id = `TitleAdjective-${key}`;
+      adjectives[json["CommonMsg/Byname/BynameAdjective"][key].replaceAll(/\[.+?\]/g, "")] = id;
+    }
+    const trie = buildTrie(adjectives);
+    for (const key of Object.keys(json["CommonMsg/Byname/BynameSubject"])) {
+      if (key.endsWith("_0")) {
+        const neutralKey = key.replace("_0", "");
+        const altKey = `${neutralKey}_1`;
+        if (json["CommonMsg/Byname/BynameSubject"][altKey].includes("group=0001")) {
+          const id = `TitleSubject-${neutralKey}`;
+          subjects[json["CommonMsg/Byname/BynameSubject"][key].replaceAll(/\[.+?\]/g, "")] = id;
+        } else {
+          const id = `TitleSubject-${key}`;
+          subjects[json["CommonMsg/Byname/BynameSubject"][key].replaceAll(/\[.+?\]/g, "")] = id;
+          const altId = `TitleSubject-${altKey}`;
+          subjects[json["CommonMsg/Byname/BynameSubject"][altKey].replaceAll(/\[.+?\]/g, "")] =
+            altId;
+        }
+      }
+    }
+    titles.push({ adjectives: trie, subjects });
+  }
+  return { titles };
+};
 const getAwardMap = async () => {
   const res = await Promise.all([
     fetch("https://raw.githubusercontent.com/Leanny/splat3/main/data/language/CNzh_unicode.json"),
@@ -186,6 +240,7 @@ const [
   coopSpecialWeaponMap,
   backgroundMap,
   badgeMap,
+  titleMap,
   awardMap,
   salmonidMap,
   workSuitMap,
@@ -195,6 +250,7 @@ const [
   getCoopSpecialWeaponMap(),
   getBackgroundMap(),
   getBadgeMap(),
+  getTitleMap(),
   getAwardMap(),
   getSalmonidMap(),
   getWorkSuitMap(),
@@ -204,6 +260,7 @@ writeOut("models/weapons.json", weaponMap);
 writeOut("models/coopSpecialWeapons.json", coopSpecialWeaponMap);
 writeOut("models/backgrounds.json", backgroundMap);
 writeOut("models/badges.json", badgeMap);
+writeOut("models/titles.json", titleMap);
 writeOut("models/awards.json", awardMap);
 writeOut("models/salmonids.json", salmonidMap);
 writeOut("models/workSuits.json", workSuitMap);

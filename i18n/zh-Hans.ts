@@ -148,6 +148,7 @@ const zhHans = {
   splatfest_power: "祭典战力",
   played_time: "游戏时间",
   medals_earned: "获得的表彰",
+  title: "%{adjective}%{subject}",
   boss_salmonids: "巨大鲑鱼",
   hazard_level: "危险度",
   supplied_weapons: "发放武器",

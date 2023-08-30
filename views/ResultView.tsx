@@ -53,6 +53,7 @@ import {
 } from "../components";
 import t, { ScopeWithDefaultValue, td } from "../i18n";
 import awardList from "../models/awards.json";
+import titleList from "../models/titles.json";
 import {
   Award,
   AwardRank,
@@ -269,6 +270,30 @@ const ResultView = (props: ResultViewProps) => {
       }
     }
     return name;
+  };
+  const formatByname = (byname: string) => {
+    for (const title of titleList.titles) {
+      const tags: { adjective: string; id: string }[] = [];
+      let node = title.adjectives;
+      let current = "";
+      for (const char of byname) {
+        if (!node[char]) {
+          break;
+        }
+        node = node[char];
+        current += char;
+        if (node["tag"]) {
+          tags.push({ adjective: current, id: node["tag"] });
+        }
+      }
+      for (const tag of tags) {
+        const subject = byname.slice(tag.adjective.length).trim();
+        if (title.subjects[subject]) {
+          return t("title", { adjective: t(tag.id), subject: t(title.subjects[subject]) });
+        }
+      }
+    }
+    return byname;
   };
   const formatBadge = (badge: Badge | null) => {
     if (badge) {
@@ -956,8 +981,7 @@ const ResultView = (props: ResultViewProps) => {
                       color={getColor(battlePlayer.nameplate!.background.textColor)}
                       name={battlePlayer.name}
                       nameId={battlePlayer.nameId}
-                      // TODO: need translation.
-                      title={battlePlayer.byname}
+                      title={formatByname(battlePlayer.byname)}
                       banner={getImageCacheSource(battlePlayer.nameplate!.background.image.url)}
                       badges={battlePlayer.nameplate!.badges.map(formatBadge)}
                       style={ViewStyles.mb2}
@@ -1297,8 +1321,7 @@ const ResultView = (props: ResultViewProps) => {
                       color={getColor(coopPlayer.player.nameplate!.background.textColor)}
                       name={coopPlayer.player.name}
                       nameId={coopPlayer.player.nameId}
-                      // TODO: need translation.
-                      title={coopPlayer.player.byname}
+                      title={formatByname(coopPlayer.player.byname)}
                       banner={getImageCacheSource(
                         coopPlayer.player.nameplate!.background.image.url
                       )}

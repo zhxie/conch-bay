@@ -169,6 +169,60 @@ const getCoopSpecialWeaponLocales = async (languages) => {
   }
   return maps;
 };
+const getTitleLocales = (languages) => {
+  // HACK: only support languages without declension.
+  const maps = [];
+  for (let i = 0; i < languages.length; i++) {
+    maps.push({});
+  }
+  for (let i = 0; i < languages.length; i++) {
+    for (const adjective of Object.keys(languages[i]["CommonMsg/Byname/BynameAdjective"])) {
+      const id = `TitleAdjective-${adjective}`;
+      maps[i][id] = languages[i]["CommonMsg/Byname/BynameAdjective"][adjective].replaceAll(
+        /\[.+?\]/g,
+        ""
+      );
+    }
+    for (const subject of Object.keys(languages[i]["CommonMsg/Byname/BynameSubject"])) {
+      if (subject.endsWith("_0")) {
+        const neutralSubject = subject.replace("_0", "");
+        const altSubject = `${neutralSubject}_1`;
+        const neutralId = `TitleSubject-${neutralSubject}`;
+        const id = `TitleSubject-${subject}`;
+        const altId = `TitleSubject-${altSubject}`;
+        if (languages[i]["CommonMsg/Byname/BynameSubject"][altSubject].includes("group=0001")) {
+          maps[i][neutralId] = languages[i]["CommonMsg/Byname/BynameSubject"][subject].replaceAll(
+            /\[.+?\]/g,
+            ""
+          );
+          maps[i][id] = languages[i]["CommonMsg/Byname/BynameSubject"][subject].replaceAll(
+            /\[.+?\]/g,
+            ""
+          );
+          maps[i][altId] = languages[i]["CommonMsg/Byname/BynameSubject"][subject].replaceAll(
+            /\[.+?\]/g,
+            ""
+          );
+        } else {
+          maps[i][neutralId] = `${languages[i]["CommonMsg/Byname/BynameSubject"][
+            subject
+          ].replaceAll(/\[.+?\]/g, "")}/${languages[i]["CommonMsg/Byname/BynameSubject"][
+            altSubject
+          ].replaceAll(/\[.+?\]/g, "")}`;
+          maps[i][id] = languages[i]["CommonMsg/Byname/BynameSubject"][subject].replaceAll(
+            /\[.+?\]/g,
+            ""
+          );
+          maps[i][altId] = languages[i]["CommonMsg/Byname/BynameSubject"][altSubject].replaceAll(
+            /\[.+?\]/g,
+            ""
+          );
+        }
+      }
+    }
+  }
+  return maps;
+};
 const getBrandLocales = (languages) => {
   const maps = [];
   for (let i = 0; i < languages.length; i++) {
@@ -373,6 +427,7 @@ const [
   coopStageLocales,
   weaponLocales,
   coopSpecialWeaponLocales,
+  titleLocales,
   brandLocales,
   headgearLocales,
   clothesLocales,
@@ -390,6 +445,7 @@ const [
   getCoopStageLocales(languages),
   getWeaponLocales(languages),
   getCoopSpecialWeaponLocales(languages),
+  getTitleLocales(languages),
   getBrandLocales(languages),
   getHeadgearLocales(languages),
   getClothesLocales(languages),
@@ -410,6 +466,7 @@ for (let i = 0; i < paths.length; i++) {
     ...coopStageLocales[i],
     ...weaponLocales[i],
     ...coopSpecialWeaponLocales[i],
+    ...titleLocales[i],
     ...brandLocales[i],
     ...headgearLocales[i],
     ...clothesLocales[i],
