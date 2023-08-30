@@ -7426,10 +7426,10 @@ spdx-satisfies@^4.0.0:
     spdx-expression-parse "^3.0.0"
     spdx-ranges "^2.0.0"
 
-splatnet3-types@0.2.20230615193659:
-  version "0.2.20230615193659"
-  resolved "https://registry.yarnpkg.com/splatnet3-types/-/splatnet3-types-0.2.20230615193659.tgz#a988f9d57b54d2edd99ce650e75f46a4d61872b2"
-  integrity sha512-bfa+qj6ZF2aJuSQXEFMel4H/ZFGpNVmk7Pc+heiTcAKV3Et7vqY4mf25qghXImarbedJv78AQIodz7B7+sqmqw==
+splatnet3-types@0.2.20230830134457:
+  version "0.2.20230830134457"
+  resolved "https://registry.yarnpkg.com/splatnet3-types/-/splatnet3-types-0.2.20230830134457.tgz#3a00ed3393c38a65aca40a8c5e43aeb3fad48125"
+  integrity sha512-BlTEpzWe4cbps17oqbFAP56YbHmWXTy2wppeZ5JKUNwAy6U6bNt3DVm2YDyg7Od3VQjm1qEMukKEmznrTjSaPw==
 
 split-on-first@^1.0.0:
   version "1.1.0"
