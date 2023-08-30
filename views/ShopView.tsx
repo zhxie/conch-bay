@@ -7,11 +7,10 @@ import {
   FlashModal,
   GearBox,
   HStack,
-  Icon,
   Marquee,
   Modal,
+  Notice,
   ScheduleButton,
-  TextStyles,
   TitledList,
   VStack,
   ViewStyles,
@@ -187,12 +186,7 @@ const ShopView = (props: ShopViewProps) => {
               >
                 <Marquee style={theme.reverseTextStyle}>{t("show_owned_gears")}</Marquee>
               </Button>
-              <HStack style={ViewStyles.c}>
-                <Icon name="info" size={14} color={Color.MiddleTerritory} style={ViewStyles.mr1} />
-                <HStack style={ViewStyles.i}>
-                  <Marquee style={TextStyles.subtle}>{t("shop_notice")}</Marquee>
-                </HStack>
-              </HStack>
+              <Notice title={t("shop_notice")} />
             </VStack>
           )}
         </TitledList>

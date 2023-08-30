@@ -189,6 +189,7 @@ const zhHans = {
   wave_stats: "WAVE记录",
   supplied_special_weapons: "发放特殊武器",
   stats_notice: "括号内的数字对战为每分钟，鲑鱼跑为每场打工的平均值。",
+  stats_notice2: "在主页点击记录组标题可以显示记录组的统计。",
   // Trend.
   trends: "趋势",
   recent: "近期",

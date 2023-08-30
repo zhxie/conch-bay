@@ -10,6 +10,7 @@ import {
   Display,
   Marquee,
   Modal,
+  Notice,
   Text,
   TextStyles,
   ToolButton,
@@ -28,6 +29,7 @@ interface StatsModalProps {
   onClose: () => void;
   onModalHide?: () => void;
   children?: React.ReactNode;
+  footer?: React.ReactNode;
 }
 
 const StatsModal = (props: StatsModalProps) => {
@@ -387,9 +389,10 @@ const StatsModal = (props: StatsModalProps) => {
           )}
         </VStack>
       )}
-      <VStack center>
+      <VStack center style={!!props.footer && ViewStyles.mb2}>
         <Marquee>{t("stats_notice")}</Marquee>
       </VStack>
+      {props.footer}
     </Modal>
   );
 };
@@ -467,6 +470,7 @@ const StatsView = (props: StatsViewProps) => {
       <StatsModal
         stats={filtered}
         isVisible={displayStats}
+        footer={<Notice title={t("stats_notice2")} />}
         onClose={onStatsClose}
         onModalHide={onModalHide}
       >

@@ -193,6 +193,8 @@ const ja = {
   wave_stats: "WAVEのきろく",
   supplied_special_weapons: "支給スペシャルウェポン",
   stats_notice: "カッコ内の数字はバトルでは1分あたり、サーモンランでは各バイトのアベレージです。",
+  stats_notice2:
+    "ホームページ上のリザルトグループのタイトルを押すと、リザルトグループの統計が表示されます。",
   // Trend.
   trends: "トレンド",
   recent: "最近",

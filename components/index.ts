@@ -23,6 +23,7 @@ export { default as Image } from "./Image";
 export { default as KingSalmonidBox } from "./KingSalmonidBox";
 export { default as Marquee } from "./Marquee";
 export { Modal, FullscreenModal, FlashModal, MasonryFlashModal } from "./Modal";
+export { default as Notice } from "./Notice";
 export { default as Picker } from "./Picker";
 export { default as ResultButton, Result } from "./ResultButton";
 export { default as RewardBox } from "./RewardBox";

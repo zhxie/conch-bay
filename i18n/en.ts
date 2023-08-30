@@ -194,6 +194,8 @@ const en = {
   supplied_special_weapons: "Supplied Special Weapons",
   stats_notice:
     "The number in parentheses is over 1-minute average in battles and over each shift average in Salmon Run.",
+  stats_notice2:
+    "Press on the results group title on the homepage to show statistics of the results group.",
   // Trends.
   trends: "Trends",
   recent: "Recent",

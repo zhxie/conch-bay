@@ -17,11 +17,10 @@ import {
   ColorFilterButton,
   Display,
   HStack,
-  Icon,
   Marquee,
   Modal,
+  Notice,
   Text,
-  TextStyles,
   ToolButton,
   VStack,
   ViewStyles,
@@ -637,12 +636,7 @@ const TrendsView = (props: TrendViewProps) => {
           <Marquee>{t("trends_notice")}</Marquee>
         </VStack>
         {(battleGroups.length > 0 || coopGroups.length > 0) && (
-          <HStack style={ViewStyles.c}>
-            <Icon name="info" size={14} color={Color.MiddleTerritory} style={ViewStyles.mr1} />
-            <HStack style={ViewStyles.i}>
-              <Marquee style={TextStyles.subtle}>{t("trends_notice2")}</Marquee>
-            </HStack>
-          </HStack>
+          <Notice title={t("trends_notice2")} />
         )}
       </Modal>
     </Center>
