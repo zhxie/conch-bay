@@ -13,13 +13,19 @@ interface AvatarButtonProps {
   style?: StyleProp<ViewStyle>;
   imageStyle?: StyleProp<ImageStyle>;
   onPress?: () => void;
+  onLongPress?: () => void;
 }
 
 const AvatarButton = (props: AvatarButtonProps) => {
   const circle = { width: props.size, height: props.size, borderRadius: props.size / 2 };
 
   return (
-    <Pressable disabled={props.disabled} onPress={props.onPress} style={[circle, props.style]}>
+    <Pressable
+      disabled={props.disabled}
+      onPress={props.onPress}
+      onLongPress={props.onLongPress}
+      style={[circle, props.style]}
+    >
       {props.image && (
         <Image
           source={props.image}

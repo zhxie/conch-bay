@@ -1,30 +1,40 @@
 import * as Clipboard from "expo-clipboard";
-import { useState } from "react";
+import { ForwardedRef, forwardRef, useImperativeHandle, useState } from "react";
 import { ActivityIndicator, Share, StyleProp, ViewStyle } from "react-native";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 import { WebView, WebViewMessageEvent } from "react-native-webview";
 import { Center, FullscreenModal, ToolButton, ViewStyles } from "../components";
 import t from "../i18n";
 
+interface SplatNetViewRef {
+  open: () => void;
+}
 interface SplatNetViewProps {
   lang: string;
   style?: StyleProp<ViewStyle>;
   onGetWebServiceToken: () => Promise<string>;
 }
 
-const SplatNetView = (props: SplatNetViewProps) => {
-  const [loading, setLoading] = useState(false);
+const SplatNetView = (props: SplatNetViewProps, ref: ForwardedRef<SplatNetViewRef>) => {
+  useImperativeHandle(
+    ref,
+    () => ({
+      open: onWebViewPress,
+    }),
+    []
+  );
+
   const [webView, setWebView] = useState(false);
   const [webServiceToken, setWebServiceToken] = useState("");
 
   const onWebViewPress = async () => {
-    setLoading(true);
+    setWebView(true);
     const webServiceToken = await props.onGetWebServiceToken();
     if (webServiceToken.length > 0) {
-      setWebView(true);
       setWebServiceToken(webServiceToken);
+    } else {
+      setWebView(false);
     }
-    setLoading(false);
   };
   const onModalHide = () => {
     setWebServiceToken("");
@@ -45,8 +55,8 @@ const SplatNetView = (props: SplatNetViewProps) => {
 
   return (
     <Center style={props.style}>
-      <ToolButton loading={loading} icon="donut" title={t("splatnet_3")} onPress={onWebViewPress} />
-      {loading && (
+      <ToolButton icon="donut" title={t("splatnet_3")} onPress={onWebViewPress} />
+      {webView && webServiceToken.length === 0 && (
         <WebView
           source={{ uri: `https://api.lp1.av5ja.srv.nintendo.net/?lang=${props.lang}` }}
           style={{ width: 0, height: 0 }}
@@ -72,6 +82,11 @@ const SplatNetView = (props: SplatNetViewProps) => {
               },
             ]}
           >
+            {webServiceToken.length === 0 && (
+              <Center style={[ViewStyles.ff, { backgroundColor: "#292e35" }]}>
+                <ActivityIndicator />
+              </Center>
+            )}
             {webServiceToken.length > 0 && (
               <WebView
                 source={{
@@ -113,4 +128,5 @@ const SplatNetView = (props: SplatNetViewProps) => {
   );
 };
 
-export default SplatNetView;
+export { SplatNetViewRef };
+export default forwardRef(SplatNetView);

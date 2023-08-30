@@ -117,7 +117,7 @@ import ImportView from "./ImportView";
 import ResultView, { GroupProps, ResultProps } from "./ResultView";
 import ScheduleView from "./ScheduleView";
 import ShopView from "./ShopView";
-import SplatNetView from "./SplatNetView";
+import SplatNetView, { SplatNetViewRef } from "./SplatNetView";
 import StatsView from "./StatsView";
 import TrendsView from "./TrendsView";
 import XView from "./XView";
@@ -217,6 +217,15 @@ const MainView = () => {
   const [filterOptions, setFilterOptions] = useState<Database.FilterProps>();
   const [stats, setStats] = useState<StatsProps[]>();
 
+  const count = useMemo(() => {
+    let current = 0;
+    for (const group of groups ?? []) {
+      current += (group.battles?.length ?? 0) + (group.coops?.length ?? 0);
+    }
+    return current;
+  }, [groups]);
+  const allResultsShown = count >= filtered;
+
   const fade = useRef(new Animated.Value(0)).current;
   const blurOnTopFade = useRef(new Animated.Value(0)).current;
   const [headerHeight, setHeaderHeight] = useState(0);
@@ -230,14 +239,7 @@ const MainView = () => {
     outputRange: [0, 1],
   });
 
-  const count = useMemo(() => {
-    let current = 0;
-    for (const group of groups ?? []) {
-      current += (group.battles?.length ?? 0) + (group.coops?.length ?? 0);
-    }
-    return current;
-  }, [groups]);
-  const allResultsShown = count >= filtered;
+  const splatNetViewRef = useRef<SplatNetViewRef>(null);
 
   useEffect(() => {
     if (sessionTokenReady && webServiceTokenReady && bulletTokenReady && languageReady) {
@@ -1126,6 +1128,9 @@ const MainView = () => {
       setLoggingOut(false);
     }
   };
+  const onSplatNetPress = () => {
+    splatNetViewRef.current?.open();
+  };
   const onEquipmentsRefresh = async () => {
     try {
       let newBulletToken = "";
@@ -1894,6 +1899,7 @@ const MainView = () => {
                     size={64}
                     image={icon.length > 0 ? getUserIconCacheSource(icon) : undefined}
                     onPress={onLogOutPress}
+                    onLongPress={onSplatNetPress}
                     style={ViewStyles.mb2}
                   />
                   {/* HACK: withdraw 4px margin in the last badge. */}
@@ -2027,6 +2033,7 @@ const MainView = () => {
                   <TrendsView disabled={counting} onStats={onStatsPress} style={ViewStyles.mr2} />
                   {sessionToken.length > 0 && (
                     <SplatNetView
+                      ref={splatNetViewRef}
                       lang={language}
                       style={ViewStyles.mr2}
                       onGetWebServiceToken={onGetWebServiceToken}
