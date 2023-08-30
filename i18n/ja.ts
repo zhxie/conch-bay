@@ -43,8 +43,6 @@ const ja = {
   show_more: "もっと見る",
   loading_more: "もっと読み込む中",
   all_results_showed: "すべてのリザルトが表示されました",
-  current_battle_schedule: "いまのバトルスケジュール",
-  current_salmon_run_schedule: "いまのサーモンランスケジュール",
   n_total_results_showed: "%{n}/%{total}件のリザルトが表示されました",
   n_filtered_total_filtered_results_showed:
     "%{n}/%{filtered} (%{total})件フィルタリングされたリザルトが表示されました",
@@ -53,7 +51,6 @@ const ja = {
   this_month: "今月",
   this_season: "今シーズン",
   all_results: "すべてのリザルト",
-  show_more_notice: "もっと見るを長押しして、指定期間のリザルトを表示します。",
   splatnet: "イカリング",
   splatnet_3: "イカリング3",
   export: "エクスポート",

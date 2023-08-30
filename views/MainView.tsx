@@ -40,7 +40,6 @@ import {
   DialogSection,
   FloatingActionButton,
   HStack,
-  Icon,
   Marquee,
   Modal,
   Picker,
@@ -123,8 +122,6 @@ import TrendsView from "./TrendsView";
 import XView from "./XView";
 
 enum TimeRange {
-  CurrentBattleSchedule = "current_battle_schedule",
-  CurrentSalmonRunSchedule = "current_salmon_run_schedule",
   Today = "today",
   ThisWeek = "this_week",
   ThisMonth = "this_month",
@@ -1176,26 +1173,6 @@ const MainView = () => {
   const onShowMoreSelected = async (key: TimeRange) => {
     let num = 20;
     switch (key) {
-      case TimeRange.CurrentBattleSchedule:
-        num = await Database.count(filter, new Date().valueOf() - (new Date().valueOf() % 7200000));
-        break;
-      case TimeRange.CurrentSalmonRunSchedule:
-        if (schedules) {
-          const current = new Date().valueOf();
-          const shift = [
-            ...schedules.coopGroupingSchedule.regularSchedules.nodes,
-            ...schedules.coopGroupingSchedule.bigRunSchedules.nodes,
-          ].find(
-            (shift) =>
-              current >= new Date(shift.startTime).valueOf() &&
-              current < new Date(shift.endTime).valueOf()
-          );
-          if (shift) {
-            num = await Database.count(filter, new Date(shift.startTime).valueOf());
-            break;
-          }
-        }
-        return;
       case TimeRange.Today:
         num = await Database.count(filter, dayjs().utc().startOf("day").valueOf());
         break;
@@ -1997,31 +1974,12 @@ const MainView = () => {
                       </Marquee>
                     </VStack>
                   }
-                  style={[
-                    count <= 20 && !allResultsShown && ViewStyles.mb2,
-                    ViewStyles.rt0,
-                    ViewStyles.rb2,
-                    { height: 64 },
-                    theme.territoryStyle,
-                  ]}
+                  style={[ViewStyles.rt0, ViewStyles.rb2, { height: 64 }, theme.territoryStyle]}
                   textStyle={[TextStyles.h3, theme.textStyle]}
                   // HACK: forcly cast.
                   onSelected={onShowMoreSelected as (_: string) => void}
                   onPress={onShowMorePress}
                 />
-                {count <= 20 && !allResultsShown && (
-                  <HStack style={ViewStyles.c}>
-                    <Icon
-                      name="info"
-                      size={14}
-                      color={Color.MiddleTerritory}
-                      style={ViewStyles.mr1}
-                    />
-                    <HStack style={ViewStyles.i}>
-                      <Marquee style={TextStyles.subtle}>{t("show_more_notice")}</Marquee>
-                    </HStack>
-                  </HStack>
-                )}
               </VStack>
               <ScrollView
                 horizontal
