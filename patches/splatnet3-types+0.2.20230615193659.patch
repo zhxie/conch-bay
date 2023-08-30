@@ -1,26 +1,247 @@
-# Update query to 4.0.0-22ddb0fd and type definitions.
+# Fix missing null on linked array field, update query to 4.0.0-22ddb0fd and type definitions.
+diff --git a/node_modules/splatnet3-types/dist/enum.d.ts b/node_modules/splatnet3-types/dist/enum.d.ts
+index 5f27131..8a15c28 100644
+--- a/node_modules/splatnet3-types/dist/enum.d.ts
++++ b/node_modules/splatnet3-types/dist/enum.d.ts
+@@ -94,6 +94,10 @@ export declare enum XMatchMeasurementState {
+     COMPLETED = "COMPLETED",
+     INPROGRESS = "INPROGRESS"
+ }
++export declare enum FestMatchMode {
++    CHALLENGE = "CHALLENGE",
++    OPEN = "OPEN"
++}
+ export declare enum AwardRank {
+     GOLD = "GOLD",
+     SILVER = "SILVER"
+diff --git a/node_modules/splatnet3-types/dist/enum.js b/node_modules/splatnet3-types/dist/enum.js
+index 53d0ce9..bea28eb 100644
+--- a/node_modules/splatnet3-types/dist/enum.js
++++ b/node_modules/splatnet3-types/dist/enum.js
+@@ -113,6 +113,11 @@ export var XMatchMeasurementState;
+     XMatchMeasurementState["COMPLETED"] = "COMPLETED";
+     XMatchMeasurementState["INPROGRESS"] = "INPROGRESS";
+ })(XMatchMeasurementState = XMatchMeasurementState || (XMatchMeasurementState = {}));
++export var FestMatchMode;
++(function (FestMatchMode) {
++    FestMatchMode["CHALLENGE"] = "CHALLENGE";
++    FestMatchMode["OPEN"] = "OPEN";
++})(FestMatchMode = FestMatchMode || (FestMatchMode = {}));
+ export var AwardRank;
+ (function (AwardRank) {
+     AwardRank["GOLD"] = "GOLD";
+diff --git a/node_modules/splatnet3-types/dist/generated-type-helpers.d.ts b/node_modules/splatnet3-types/dist/generated-type-helpers.d.ts
+index c448e28..183a6fd 100644
+--- a/node_modules/splatnet3-types/dist/generated-type-helpers.d.ts
++++ b/node_modules/splatnet3-types/dist/generated-type-helpers.d.ts
+@@ -1,4 +1,4 @@
+ import { request_types as OperationFields } from './request-types.js';
+-export declare type LinkedFieldType<ParentType extends {}, TypeName extends string & keyof ParentType, Type, Plural extends boolean> = Plural extends true ? null[] extends ParentType[TypeName] ? (Type | null)[] : Type[] : null extends ParentType[TypeName] ? Type | null : Type;
++export declare type LinkedFieldType<ParentType extends {}, TypeName extends string & keyof ParentType, Type, Plural extends boolean> = Plural extends true ? null[] extends ParentType[TypeName] ? (Type | null)[] : null extends ParentType[TypeName] ? Type[] | null : Type[] : null extends ParentType[TypeName] ? Type | null : Type;
+ export declare type OperationFieldType<ParentTypeName extends string, TypeName extends string, Type> = ParentTypeName extends keyof OperationFields ? TypeName extends keyof OperationFields[ParentTypeName] ? UnknownScalarType extends Type ? OperationFields[ParentTypeName][TypeName] : null extends OperationFields[ParentTypeName][TypeName] ? Type | null : Type : Type : Type;
+ export declare type UnknownScalarType = unknown & (string | number | boolean);
+diff --git a/node_modules/splatnet3-types/dist/generated/queries/d1f062c14f74f758658b2703a5799002.d.ts b/node_modules/splatnet3-types/dist/generated/queries/d1f062c14f74f758658b2703a5799002.d.ts
+index f2a803d..2d5eb6d 100644
+--- a/node_modules/splatnet3-types/dist/generated/queries/d1f062c14f74f758658b2703a5799002.d.ts
++++ b/node_modules/splatnet3-types/dist/generated/queries/d1f062c14f74f758658b2703a5799002.d.ts
+@@ -1,5 +1,5 @@
+ import { LinkedFieldType, OperationFieldType } from '../../generated-type-helpers.js';
+-import { BankaraMatchSetting, Color, CoopGroupingSchedule, CoopSchedule, CoopScheduleConnection, CoopSetting, CoopStage, CoopSupplyWeapon, CurrentPlayer, Fest, FestTeam, Image, LeagueMatchEvent, LeagueMatchSchedule, LeagueMatchScheduleConnection, LeagueMatchSetting, TimePeriod, VsRule, VsSchedule, VsScheduleConnection, VsSetting, VsStage, VsStageConnection, VsStageRecordStats } from '../../types.js';
++import { BankaraMatchSetting, Color, CoopGroupingSchedule, CoopSchedule, CoopScheduleConnection, CoopSetting, CoopStage, CoopSupplyWeapon, CurrentPlayer, Fest, FestMatchSetting, FestTeam, Image, LeagueMatchEvent, LeagueMatchSchedule, LeagueMatchScheduleConnection, LeagueMatchSetting, TimePeriod, VsRule, VsSchedule, VsScheduleConnection, VsSetting, VsStage, VsStageConnection, VsStageRecordStats } from '../../types.js';
+ /**
+  * d1f062c14f74f758658b2703a5799002 StageScheduleQuery
+  *
+@@ -27,12 +27,14 @@ interface StageScheduleQuery_d1f062c {
+                     vsStageId: VsStage['vsStageId'];
+                 }, true>;
+             }) & ({
+-                mode: BankaraMatchSetting['mode'];
++                bankaraMode: BankaraMatchSetting['bankaraMode'];
++            }) & ({
++                festMode: FestMatchSetting['festMode'];
+             }), true>;
+             endTime: VsSchedule['endTime'];
+-            festMatchSetting: LinkedFieldType<VsSchedule, 'festMatchSetting', {
++            festMatchSettings: LinkedFieldType<VsSchedule, 'festMatchSettings', {
+                 __typename: 'FestMatchSetting';
+-            }, false>;
++            }, true>;
+             startTime: VsSchedule['startTime'];
+         }, true>;
+     }>;
+@@ -179,7 +181,9 @@ interface StageScheduleQuery_d1f062c {
+                     rule: VsRule['rule'];
+                 }, false>;
+             }) & ({
+-                mode: BankaraMatchSetting['mode'];
++                bankaraMode: BankaraMatchSetting['bankaraMode'];
++            }) & ({
++                festMode: FestMatchSetting['festMode'];
+             }), false>;
+             timePeriods: LinkedFieldType<LeagueMatchSchedule, 'timePeriods', {
+                 endTime: TimePeriod['endTime'];
+@@ -190,9 +194,7 @@ interface StageScheduleQuery_d1f062c {
+     festSchedules: OperationFieldType<'StageScheduleQuery', 'vsSchedules', {
+         nodes: LinkedFieldType<VsScheduleConnection, 'nodes', {
+             endTime: VsSchedule['endTime'];
+-            festMatchSetting: LinkedFieldType<VsSchedule, 'festMatchSetting', ({
+-                __typename: 'FestMatchSetting';
+-            }) & ({
++            festMatchSettings: LinkedFieldType<VsSchedule, 'festMatchSettings', ({}) & ({
+                 __isVsSetting: 'VsSetting';
+                 vsRule: LinkedFieldType<VsSetting, 'vsRule', {
+                     id: VsRule['id'];
+@@ -208,19 +210,21 @@ interface StageScheduleQuery_d1f062c {
+                     vsStageId: VsStage['vsStageId'];
+                 }, true>;
+             }) & ({
+-                mode: BankaraMatchSetting['mode'];
++                bankaraMode: BankaraMatchSetting['bankaraMode'];
++            }) & ({
++                festMode: FestMatchSetting['festMode'];
+             }) & ({
+                 __typename: 'VsSetting';
+-            }), false>;
++            }), true>;
+             startTime: VsSchedule['startTime'];
+         }, true>;
+     }>;
+     regularSchedules: OperationFieldType<'StageScheduleQuery', 'vsSchedules', {
+         nodes: LinkedFieldType<VsScheduleConnection, 'nodes', {
+             endTime: VsSchedule['endTime'];
+-            festMatchSetting: LinkedFieldType<VsSchedule, 'festMatchSetting', {
++            festMatchSettings: LinkedFieldType<VsSchedule, 'festMatchSettings', {
+                 __typename: 'FestMatchSetting';
+-            }, false>;
++            }, true>;
+             regularMatchSetting: LinkedFieldType<VsSchedule, 'regularMatchSetting', ({}) & ({
+                 __isVsSetting: 'VsSetting';
+                 __typename: 'VsSetting';
+@@ -238,7 +242,9 @@ interface StageScheduleQuery_d1f062c {
+                     vsStageId: VsStage['vsStageId'];
+                 }, true>;
+             }) & ({
+-                mode: BankaraMatchSetting['mode'];
++                bankaraMode: BankaraMatchSetting['bankaraMode'];
++            }) & ({
++                festMode: FestMatchSetting['festMode'];
+             }), false>;
+             startTime: VsSchedule['startTime'];
+         }, true>;
+@@ -262,9 +268,9 @@ interface StageScheduleQuery_d1f062c {
+     xSchedules: OperationFieldType<'StageScheduleQuery', 'vsSchedules', {
+         nodes: LinkedFieldType<VsScheduleConnection, 'nodes', {
+             endTime: VsSchedule['endTime'];
+-            festMatchSetting: LinkedFieldType<VsSchedule, 'festMatchSetting', {
++            festMatchSettings: LinkedFieldType<VsSchedule, 'festMatchSettings', {
+                 __typename: 'FestMatchSetting';
+-            }, false>;
++            }, true>;
+             startTime: VsSchedule['startTime'];
+             xMatchSetting: LinkedFieldType<VsSchedule, 'xMatchSetting', ({}) & ({
+                 __isVsSetting: 'VsSetting';
+@@ -283,7 +289,9 @@ interface StageScheduleQuery_d1f062c {
+                     vsStageId: VsStage['vsStageId'];
+                 }, true>;
+             }) & ({
+-                mode: BankaraMatchSetting['mode'];
++                bankaraMode: BankaraMatchSetting['bankaraMode'];
++            }) & ({
++                festMode: FestMatchSetting['festMode'];
+             }), false>;
+         }, true>;
+     }>;
 diff --git a/node_modules/splatnet3-types/dist/graphql.d.ts b/node_modules/splatnet3-types/dist/graphql.d.ts
-index 0cc4e29..4c12a7b 100644
+index 0cc4e29..0dfe74d 100644
 --- a/node_modules/splatnet3-types/dist/graphql.d.ts
 +++ b/node_modules/splatnet3-types/dist/graphql.d.ts
-@@ -20,7 +20,7 @@ export declare enum RequestId {
+@@ -18,17 +18,17 @@ export declare enum RequestId {
+     ConfigureAnalyticsQuery = "f8ae00773cc412a50dd41a6d9a159ddd",
+     CurrentFestQuery = "c0429fd738d829445e994d3370999764",
      ShareMyOutfitQuery = "3ba5572efce5bebbd859fc2d269d223c",
-     BankaraBattleHistoriesQuery = "0438ea6978ae8bd77c5d1250f4f84803",
+-    BankaraBattleHistoriesQuery = "0438ea6978ae8bd77c5d1250f4f84803",
++    BankaraBattleHistoriesQuery = "9863ea4744730743268e2940396e21b891104ed40e2286789f05100b45a0b0fd",
      BankaraBattleHistoriesRefetchQuery = "92b56403c0d9b1e63566ec98fef52eb3",
 -    EventBattleHistoriesQuery = "9744fcf676441873c7c8a51285b6aa4d",
-+    EventBattleHistoriesQuery = "e7bbaf1fa255305d607351da434b2d0f",
++    EventBattleHistoriesQuery = "e47f9aac5599f75c842335ef0ab8f4c640e8bf2afe588a3b1d4b480ee79198ac",
      EventBattleHistoriesRefetchQuery = "8083b0c7f34a4bd0ef4a06ff86fc3e18",
-     LatestBattleHistoriesQuery = "0d90c7576f1916469b2ae69f64292c02",
+-    LatestBattleHistoriesQuery = "0d90c7576f1916469b2ae69f64292c02",
++    LatestBattleHistoriesQuery = "b24d22fd6cb251c515c2b90044039698aa27bc1fab15801d83014d919cd45780",
      LatestBattleHistoriesRefetchQuery = "6b74405ca9b43ee77eb8c327c3c1a317",
-@@ -40,7 +40,7 @@ export declare enum RequestId {
+-    PrivateBattleHistoriesQuery = "8e5ae78b194264a6c230e262d069bd28",
++    PrivateBattleHistoriesQuery = "fef94f39b9eeac6b2fac4de43bc0442c16a9f2df95f4d367dd8a79d7c5ed5ce7",
+     PrivateBattleHistoriesRefetchQuery = "89bc61012dcf170d9253f406ebebee67",
+-    RegularBattleHistoriesQuery = "3baef04b095ad8975ea679d722bc17de",
++    RegularBattleHistoriesQuery = "2fe6ea7a2de1d6a888b7bd3dbeb6acc8e3246f055ca39b80c4531bbcd0727bba",
+     RegularBattleHistoriesRefetchQuery = "4c95233c8d55e7c8cc23aae06109a2e8",
+-    XBattleHistoriesQuery = "6796e3cd5dc3ebd51864dc709d899fc5",
++    XBattleHistoriesQuery = "eb5996a12705c2e94813a62e05c0dc419aad2811b8d49d53e5732290105559cb",
+     XBattleHistoriesRefetchQuery = "94711fc9f95dd78fc640909f02d09215",
+     BattleHistoryCurrentPlayerQuery = "49dd00428fb8e9b4dde62f585c8de1e0",
+     ChallengeQuery = "8a079214500148bf88a8fce1d7209b90",
+@@ -38,9 +38,9 @@ export declare enum RequestId {
+     JourneyQuery = "bc71fc0264f3f72256724b069f7a4097",
+     JourneyRefetchQuery = "09eee118fa16415d6bc3846bc6e5d8e5",
      CheckinQuery = "5d0d1b45ebf4e324d0dae017d9df06d2",
-     CoopHistoryDetailQuery = "379f0d9b78b531be53044bcac031b34b",
+-    CoopHistoryDetailQuery = "379f0d9b78b531be53044bcac031b34b",
++    CoopHistoryDetailQuery = "824a1e22c4ad4eece7ad94a9a0343ecd76784be4f77d8f6f563c165afc8cf602",
      CoopHistoryDetailRefetchQuery = "d3188df2fd4436870936b109675e2849",
 -    CoopHistoryQuery = "91b917becd2fa415890f5b47e15ffb15",
-+    CoopHistoryQuery = "01fb9793ad92f91892ea713410173260",
++    CoopHistoryQuery = "0f8c33970a425683bb1bdecca50a0ca4fb3c3641c0b2a1237aedfde9c0cb2b8f",
      RefetchableCoopHistory_CoopResultQuery = "50be9b694c7c6b99b7a383e494ec5258",
      CoopRecordBigRunRecordContainerPaginationQuery = "2b83817b6e88b202d25939fe04658d33",
      CoopRecordQuery = "b2f05c682ed2aeb669a86a3265ceb713",
+@@ -53,10 +53,10 @@ export declare enum RequestId {
+     DetailFestRefethQuery = "18c7c465b18de5829347b7a7f1e571a1",
+     DetailFestVotingStatusRefethQuery = "92f51ed1ab462bbf1ab64cad49d36f79",
+     DetailRankingQuery = "cc38f388c51f9930bd7cca966893f1b4",
+-    DetailVotingStatusQuery = "53ee6b6e2acc3859bf42454266d671fc",
++    DetailVotingStatusQuery = "e2aafab18dab26ba1b6d40838c6842201f6480d62f8f3dffecad8dd4c5b102c1",
+     FestRecordQuery = "44c76790b68ca0f3da87f2a3452de986",
+     FestRecordRefetchQuery = "73b9837d0e4dd29bfa2f1a7d7ee0814a",
+-    FriendListQuery = "f0a8ebc384cf5fbac01e8085fbd7c898",
++    FriendListQuery = "ea1297e9bb8e52404f52d89ac821e1d73b726ceef2fd9cc8d6b38ab253428fb3",
+     FriendListRefetchQuery = "aa2c979ad21a1100170ddf6afea3e2db",
+     GesotownQuery = "a43dd44899a09013bcfd29b4b13314ff",
+     GesotownRefetchQuery = "951cab295eafdbeccfc2e718d7a98646",
+@@ -64,12 +64,12 @@ export declare enum RequestId {
+     SaleGearDetailQuery = "6eb1b255b2cf04c08041567148c883ad",
+     HeroHistoryQuery = "fbee1a882371d4e3becec345636d7d1c",
+     HeroHistoryRefetchQuery = "4f9ae2b8f1d209a5f20302111b28f975",
+-    HistoryRecordQuery = "d9246baf077b2a29b5f7aac321810a77",
++    HistoryRecordQuery = "0a62c0152f27c4218cf6c87523377521c2cff76a4ef0373f2da3300079bf0388",
+     HistoryRecordRefetchQuery = "67921048c4af8e2b201a12f13ad0ddae",
+     MyOutfitDetailQuery = "d935d9e9ba7a5b6b5d6ece7f253304fc",
+     MyOutfitsQuery = "81d9a6849467d2aa6b1603ebcedbddbe",
+     MyOutfitsRefetchQuery = "10db4e349f3123c56df14e3adec2ee6f",
+-    MyOutfitCommonDataEquipmentsQuery = "d29cd0c2b5e6bac90dd5b817914832f8",
++    MyOutfitCommonDataEquipmentsQuery = "45a4c343d973864f7bb9e9efac404182be1d48cf2181619505e9b7cd3b56a6e8",
+     MyOutfitCommonDataFilteringConditionQuery = "d02ab22c9dccc440076055c8baa0fa7a",
+     PhotoAlbumQuery = "7e950e4f69a5f50013bba8a8fb6a3807",
+     PhotoAlbumRefetchQuery = "53fb0ad32c13dd9a6e617b1158cc2d41",
+@@ -79,7 +79,7 @@ export declare enum RequestId {
+     StageRecordQuery = "f08a932d533845dde86e674e03bbb7d3",
+     StageRecordsRefetchQuery = "2fb1b3fa2d40c9b5953ea1ae263e54c1",
+     StageScheduleQuery = "d1f062c14f74f758658b2703a5799002",
+-    WeaponRecordQuery = "5f279779e7081f2d14ae1ddca0db2b6e",
++    WeaponRecordQuery = "974fad8a1275b415c3386aa212b07eddc3f6582686e4fef286ec4043cdf17135",
+     WeaponRecordsRefetchQuery = "6961f618fcef440c81509b205465eeec",
+     DetailTabViewWeaponTopsArRefetchQuery = "a6782a0c692e8076656f9b4ab613fd82",
+     DetailTabViewWeaponTopsClRefetchQuery = "8d3c5bb2e82d6eb32a37eefb0e1f8f69",
+@@ -93,11 +93,11 @@ export declare enum RequestId {
+     XRankingDetailRefetchQuery = "fb960404299958248b3c0a2fbb444c35",
+     XRankingQuery = "d771444f2584d938db8d10055599011d",
+     XRankingRefetchQuery = "5149402597bd2531b4eea04692d8bfd5",
+-    CatalogQuery = "ff12098bad4989a813201b00ff22ac4e",
++    CatalogQuery = "40b62e4734f22a6009f1951fc1d03366b14a70833cb96a9a46c0e9b7043c67ef",
+     CatalogRefetchQuery = "60a6592c6ee8e47245020ae0d314d378",
+     HomeQuery = "7dcc64ea27a08e70919893a0d3f70871",
+     VsHistoryDetailPagerRefetchQuery = "994cf141e55213e6923426caf37a1934",
+-    VsHistoryDetailQuery = "9ee0099fbe3d8db2a838a75cf42856dd"
++    VsHistoryDetailQuery = "f893e1ddcfb8a4fd645fd75ced173f18b2750e5cfba41d2669b9814f6ceaec46"
+ }
+ export declare enum CoralWidgetExtensioniOSRequestId {
+     LatestAlbumPhoto = "0a6c7ae9561aa05559ab66f4a8c0399b79c134bba682451e8180b895b92b0698",
 diff --git a/node_modules/splatnet3-types/dist/splatnet3.d.ts b/node_modules/splatnet3-types/dist/splatnet3.d.ts
 index 596fd7f..08320d8 100644
 --- a/node_modules/splatnet3-types/dist/splatnet3.d.ts
@@ -58,9 +279,15 @@ index 20ce97d..1ad9b3e 100644
  };
  declare type CoopSupplyWeapon_splatoon3ink = Pick<CoopSupplyWeapon, 'name' | 'image'> & {
 diff --git a/node_modules/splatnet3-types/dist/types.d.ts b/node_modules/splatnet3-types/dist/types.d.ts
-index b28e28a..d86b289 100644
+index b28e28a..d11b72d 100644
 --- a/node_modules/splatnet3-types/dist/types.d.ts
 +++ b/node_modules/splatnet3-types/dist/types.d.ts
+@@ -1,4 +1,4 @@
+-import { AwardRank, BankaraMatchChallengeState, BankaraMatchMode, CatalogRewardState, ChallengeState, CoopBigRunState, CoopGradePointDiff, CoopMode, CoopRule, CoopTrophy, DragonMatchType, FestDragonCert, FestState, FestTeamRole, FestVoteState, FriendOnlineState, HeroProgressCommentSpeaker, HeroSupplyWeaponCategory, Judgement, JudgementKnockout, LeagueMatchTeamComposition, Species, TricolourRole, XMatchMeasurementState } from './enum.js';
++import { AwardRank, BankaraMatchChallengeState, BankaraMatchMode, CatalogRewardState, ChallengeState, CoopBigRunState, CoopGradePointDiff, CoopMode, CoopRule, CoopTrophy, DragonMatchType, FestDragonCert, FestMatchMode, FestState, FestTeamRole, FestVoteState, FriendOnlineState, HeroProgressCommentSpeaker, HeroSupplyWeaponCategory, Judgement, JudgementKnockout, LeagueMatchTeamComposition, Species, TricolourRole, XMatchMeasurementState } from './enum.js';
+ export interface Connection<T> {
+     nodes: T[];
+     edges: Edge<T>[];
 @@ -95,7 +95,7 @@ export interface PhotoAlbumItem {
      uploadedTime: string;
  }
@@ -90,7 +317,33 @@ index b28e28a..d86b289 100644
  }
  export interface CoopPlayerResult {
      player: CoopPlayer;
-@@ -887,7 +887,7 @@ export interface VsHistorySummary {
+@@ -741,7 +741,7 @@ export interface VsSchedule {
+     bankaraMatchSettings: BankaraMatchSetting[] | null;
+     xMatchSetting: XMatchSetting | null;
+     leagueMatchSetting: LeagueMatchSetting | null;
+-    festMatchSetting: FestMatchSetting | null;
++    festMatchSettings: FestMatchSetting[] | null;
+ }
+ export declare type VsScheduleConnection = Connection<VsSchedule>;
+ export interface VsSetting {
+@@ -757,7 +757,7 @@ export interface BankaraMatchSetting extends VsSetting {
+     __typename: 'BankaraMatchSetting';
+     vsStages: VsStage[];
+     vsRule: VsRule;
+-    mode: BankaraMatchMode | keyof typeof BankaraMatchMode;
++    bankaraMode: BankaraMatchMode | keyof typeof BankaraMatchMode;
+ }
+ export interface XMatchSetting extends VsSetting {
+     __typename: 'XMatchSetting';
+@@ -774,6 +774,7 @@ export interface FestMatchSetting extends VsSetting {
+     __typename: 'FestMatchSetting';
+     vsStages: VsStage[];
+     vsRule: VsRule;
++    festMode: FestMatchMode | keyof typeof FestMatchMode;
+ }
+ export interface CoopGroupingSchedule {
+     bannerImage: Image | null;
+@@ -887,7 +888,7 @@ export interface VsHistorySummary {
      xPowerLf: XPower | null;
  }
  export interface XPower {

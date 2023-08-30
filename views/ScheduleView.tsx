@@ -18,12 +18,14 @@ import {
 } from "../components";
 import t, { td } from "../i18n";
 import {
+  BankaraMatchMode,
   BankaraMatchSetting,
   CoopGroupingSchedule,
   CoopStage,
   CoopSupplyWeapon,
   CurrentFest,
   EventMatchTimePeriod,
+  FestMatchMode,
   FestMatchSetting,
   RegularMatchSetting,
   Schedules,
@@ -46,7 +48,7 @@ interface DisplayProps {
   schedules?: VsSchedule[];
   challenges?: VsEventSchedule[];
   shifts?: CoopGroupingSchedule[];
-  index?: number;
+  mode?: BankaraMatchMode | FestMatchMode;
 }
 
 const ScheduleView = (props: ScheduleViewProps) => {
@@ -58,7 +60,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
   const [display, setDisplay] = useState<DisplayProps>();
   const [displaySchedules, setDisplaySchedules] = useState(false);
 
-  const getMatchSetting = (schedule: VsSchedule, index?: number) => {
+  const getMatchSetting = (schedule: VsSchedule, mode?: BankaraMatchMode | FestMatchMode) => {
     const regularMatchSetting = schedule["regularMatchSetting"];
     if (regularMatchSetting !== undefined) {
       return regularMatchSetting as RegularMatchSetting | null;
@@ -68,13 +70,47 @@ const ScheduleView = (props: ScheduleViewProps) => {
       if (anarchyMatchSettings === null) {
         return null;
       }
-      return (anarchyMatchSettings as BankaraMatchSetting[])[index ?? 0];
+      if (mode) {
+        switch (mode) {
+          case BankaraMatchMode.CHALLENGE:
+          case BankaraMatchMode.OPEN:
+            return (anarchyMatchSettings as BankaraMatchSetting[]).find(
+              // HACK: wait for splatoon3.ink update.
+              (matchSetting) => matchSetting.bankaraMode === mode || matchSetting["mode"] === mode
+            );
+          case FestMatchMode.CHALLENGE:
+          case FestMatchMode.OPEN:
+            throw new Error(`unexpected bankara match mode ${mode}`);
+        }
+      }
+      return (anarchyMatchSettings as BankaraMatchSetting[])[0];
     }
     const xMatchSetting = schedule["xMatchSetting"];
     if (xMatchSetting !== undefined) {
       return xMatchSetting as XMatchSetting | null;
     }
-    return schedule["festMatchSetting"] as FestMatchSetting | null;
+    const splatfestMatchSettings = schedule["festMatchSettings"];
+    // HACK: wait for splatoon3.ink update.
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (splatfestMatchSettings !== undefined) {
+      if (splatfestMatchSettings === null) {
+        return null;
+      }
+      if (mode) {
+        switch (mode) {
+          case BankaraMatchMode.CHALLENGE:
+          case BankaraMatchMode.OPEN:
+            throw new Error(`unexpected fest match mode ${mode}`);
+          case FestMatchMode.CHALLENGE:
+          case FestMatchMode.OPEN:
+            return (schedule["festMatchSettings"] as FestMatchSetting[]).find(
+              (matchSetting) => matchSetting.festMode === mode
+            );
+        }
+      }
+      return (schedule["festMatchSettings"] as FestMatchSetting[])[0];
+    }
+    return undefined;
   };
   const isScheduleExpired = (
     schedule: VsSchedule | EventMatchTimePeriod | CoopGroupingSchedule
@@ -91,10 +127,17 @@ const ScheduleView = (props: ScheduleViewProps) => {
     return timestamp <= now;
   };
 
-  const splatfestSchedules = useMemo(
+  const splatfestOpenSchedules = useMemo(
     () =>
       props.schedules?.festSchedules.nodes
-        .filter((node) => getMatchSetting(node))
+        .filter((node) => getMatchSetting(node, FestMatchMode.OPEN))
+        .filter((node) => !isScheduleExpired(node)),
+    [props.schedules]
+  );
+  const splatfestProSchedules = useMemo(
+    () =>
+      props.schedules?.festSchedules.nodes
+        .filter((node) => getMatchSetting(node, FestMatchMode.CHALLENGE))
         .filter((node) => !isScheduleExpired(node)),
     [props.schedules]
   );
@@ -109,10 +152,17 @@ const ScheduleView = (props: ScheduleViewProps) => {
         .filter((node) => !isScheduleExpired(node)),
     [props.schedules]
   );
-  const anarchySchedules = useMemo(
+  const anarchySeriesSchedules = useMemo(
     () =>
       props.schedules?.bankaraSchedules.nodes
-        .filter((node) => getMatchSetting(node))
+        .filter((node) => getMatchSetting(node, BankaraMatchMode.CHALLENGE))
+        .filter((node) => !isScheduleExpired(node)),
+    [props.schedules]
+  );
+  const anarchyOpenSchedules = useMemo(
+    () =>
+      props.schedules?.bankaraSchedules.nodes
+        .filter((node) => getMatchSetting(node, BankaraMatchMode.OPEN))
         .filter((node) => !isScheduleExpired(node)),
     [props.schedules]
   );
@@ -232,11 +282,21 @@ const ScheduleView = (props: ScheduleViewProps) => {
     };
   };
 
-  const onSplatfestSchedulePress = () => {
+  const onSplatfestOpenSchedulePress = () => {
     setDisplay({
-      title: t("splatfest_battle"),
+      title: t("splatfest_battle_open"),
       color: Color.AccentColor,
-      schedules: splatfestSchedules,
+      schedules: splatfestOpenSchedules,
+      mode: FestMatchMode.OPEN,
+    });
+    setDisplaySchedules(true);
+  };
+  const onSplatfestProSchedulePress = () => {
+    setDisplay({
+      title: t("splatfest_battle_pro"),
+      color: Color.AccentColor,
+      schedules: splatfestProSchedules,
+      mode: FestMatchMode.CHALLENGE,
     });
     setDisplaySchedules(true);
   };
@@ -260,8 +320,8 @@ const ScheduleView = (props: ScheduleViewProps) => {
     setDisplay({
       title: t("anarchy_battle_series"),
       color: Color.AnarchyBattle,
-      schedules: anarchySchedules,
-      index: 0,
+      schedules: anarchySeriesSchedules,
+      mode: BankaraMatchMode.CHALLENGE,
     });
     setDisplaySchedules(true);
   };
@@ -269,8 +329,8 @@ const ScheduleView = (props: ScheduleViewProps) => {
     setDisplay({
       title: t("anarchy_battle_open"),
       color: Color.AnarchyBattle,
-      schedules: anarchySchedules,
-      index: 1,
+      schedules: anarchyOpenSchedules,
+      mode: BankaraMatchMode.OPEN,
     });
     setDisplaySchedules(true);
   };
@@ -337,12 +397,26 @@ const ScheduleView = (props: ScheduleViewProps) => {
                 style={props.children || i !== 9 ? ViewStyles.mr2 : undefined}
               />
             ))}
-        {splatfestSchedules?.[0] && (
+        {splatfestOpenSchedules?.[0] && (
           <ScheduleButton
-            color={isScheduleStarted(splatfestSchedules[0]) ? Color.AccentColor : undefined}
-            rule={td(getMatchSetting(splatfestSchedules[0])!.vsRule)}
-            stages={getMatchSetting(splatfestSchedules[0])!.vsStages.map((stage) => td(stage))}
-            onPress={onSplatfestSchedulePress}
+            color={isScheduleStarted(splatfestOpenSchedules[0]) ? Color.AccentColor : undefined}
+            rule={td(getMatchSetting(splatfestOpenSchedules[0], FestMatchMode.OPEN)!.vsRule)}
+            stages={getMatchSetting(splatfestOpenSchedules[0], FestMatchMode.OPEN)!.vsStages.map(
+              (stage) => td(stage)
+            )}
+            onPress={onSplatfestOpenSchedulePress}
+            style={ViewStyles.mr2}
+          />
+        )}
+        {splatfestProSchedules?.[0] && (
+          <ScheduleButton
+            color={isScheduleStarted(splatfestProSchedules[0]) ? Color.AccentColor : undefined}
+            rule={td(getMatchSetting(splatfestProSchedules[0], FestMatchMode.CHALLENGE)!.vsRule)}
+            stages={getMatchSetting(
+              splatfestProSchedules[0],
+              FestMatchMode.CHALLENGE
+            )!.vsStages.map((stage) => td(stage))}
+            onPress={onSplatfestProSchedulePress}
             style={ViewStyles.mr2}
           />
         )}
@@ -364,20 +438,27 @@ const ScheduleView = (props: ScheduleViewProps) => {
             style={ViewStyles.mr2}
           />
         )}
-        {anarchySchedules?.[0] && (
+        {anarchySeriesSchedules?.[0] && (
           <ScheduleButton
-            color={isScheduleStarted(anarchySchedules[0]) ? Color.AnarchyBattle : undefined}
-            rule={td(getMatchSetting(anarchySchedules[0], 0)!.vsRule)}
-            stages={getMatchSetting(anarchySchedules[0], 0)!.vsStages.map((stage) => td(stage))}
+            color={isScheduleStarted(anarchySeriesSchedules[0]) ? Color.AnarchyBattle : undefined}
+            rule={td(
+              getMatchSetting(anarchySeriesSchedules[0], BankaraMatchMode.CHALLENGE)!.vsRule
+            )}
+            stages={getMatchSetting(
+              anarchySeriesSchedules[0],
+              BankaraMatchMode.CHALLENGE
+            )!.vsStages.map((stage) => td(stage))}
             onPress={onAnarchySeriesSchedulePress}
             style={ViewStyles.mr2}
           />
         )}
-        {anarchySchedules?.[0] && (
+        {anarchyOpenSchedules?.[0] && (
           <ScheduleButton
-            color={isScheduleStarted(anarchySchedules[0]) ? Color.AnarchyBattle : undefined}
-            rule={td(getMatchSetting(anarchySchedules[0], 1)!.vsRule)}
-            stages={getMatchSetting(anarchySchedules[0], 1)!.vsStages.map((stage) => td(stage))}
+            color={isScheduleStarted(anarchyOpenSchedules[0]) ? Color.AnarchyBattle : undefined}
+            rule={td(getMatchSetting(anarchyOpenSchedules[0], BankaraMatchMode.OPEN)!.vsRule)}
+            stages={getMatchSetting(anarchyOpenSchedules[0], BankaraMatchMode.OPEN)!.vsStages.map(
+              (stage) => td(stage)
+            )}
             onPress={onAnarchyOpenSchedulePress}
             style={ViewStyles.mr2}
           />
@@ -437,13 +518,13 @@ const ScheduleView = (props: ScheduleViewProps) => {
         <TitledList color={display?.color} title={display?.title}>
           {display?.schedules &&
             display.schedules
-              .filter((schedule) => getMatchSetting(schedule, display.index))
+              .filter((schedule) => getMatchSetting(schedule, display.mode))
               .map((schedule, i, schedules) => (
                 <ScheduleBox
                   key={i}
-                  rule={td(getMatchSetting(schedule, display.index)!.vsRule)}
+                  rule={td(getMatchSetting(schedule, display.mode)!.vsRule)}
                   time={formatScheduleTimeRange(schedule, false)}
-                  stages={getMatchSetting(schedule, display.index)!.vsStages.map(formatStage)}
+                  stages={getMatchSetting(schedule, display.mode)!.vsStages.map(formatStage)}
                   style={i !== schedules.length - 1 ? ViewStyles.mb2 : undefined}
                 />
               ))}

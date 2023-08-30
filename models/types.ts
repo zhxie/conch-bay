@@ -18,6 +18,7 @@ import { Gear as ShopQuery, Schedules as SchedulesQuery } from "splatnet3-types/
 export {
   AwardRank,
   BankaraBattleHistoriesResult,
+  BankaraMatchMode,
   CatalogResult,
   CoopHistoryDetailVariables,
   CoopHistoryResult,
@@ -27,6 +28,7 @@ export {
   DragonMatchType,
   EventBattleHistoriesResult,
   FestDragonCert,
+  FestMatchMode,
   FriendListResult,
   FriendOnlineState,
   GraphQLSuccessResponse,
@@ -51,8 +53,9 @@ export {
 export type NotNullable<T> = T extends null | undefined ? never : T;
 export type Enum<T extends Record<string, any>> = T | keyof T;
 
-export type BankaraMatchSetting =
-  SchedulesQuery["data"]["bankaraSchedules"]["nodes"][0]["bankaraMatchSettings"][0];
+export type BankaraMatchSetting = NotNullable<
+  SchedulesQuery["data"]["bankaraSchedules"]["nodes"][0]["bankaraMatchSettings"]
+>[0];
 export type CatalogReward = NotNullable<CatalogResult["catalog"]["progress"]>["rewards"][0];
 export type EventMatchSetting = VsEventSchedule["leagueMatchSetting"];
 export type EventMatchTimePeriod = VsEventSchedule["timePeriods"][0];
@@ -62,8 +65,8 @@ export type CoopGroupingSchedule =
   | SchedulesQuery["data"]["coopGroupingSchedule"]["teamContestSchedules"]["nodes"][0];
 export type CurrentFest = NotNullable<SchedulesQuery["data"]["currentFest"]>;
 export type FestMatchSetting = NotNullable<
-  SchedulesQuery["data"]["festSchedules"]["nodes"][0]["festMatchSetting"]
->;
+  SchedulesQuery["data"]["festSchedules"]["nodes"][0]["festMatchSettings"]
+>[0];
 export type PickupBrand = ShopQuery["data"]["gesotown"]["pickupBrand"];
 export type RegularMatchSetting = NotNullable<
   SchedulesQuery["data"]["regularSchedules"]["nodes"][0]["regularMatchSetting"]
