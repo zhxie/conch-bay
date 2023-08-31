@@ -2,7 +2,7 @@ import { Buffer } from "buffer";
 import { createHash } from "crypto";
 import { createWriteStream } from "fs";
 
-const VERSION = "410";
+const VERSION = "500";
 
 const writeOut = (path, obj) => {
   const file = createWriteStream(path, "utf-8");
@@ -178,8 +178,10 @@ const getAwardMap = async () => {
   const awards = {};
   for (const json of jsons) {
     for (const key of Object.keys(json["CommonMsg/VS/VSAwardName"])) {
-      const id = `Award-${key}`;
-      awards[json["CommonMsg/VS/VSAwardName"][key]] = id;
+      if (!key.startsWith("Ref_")) {
+        const id = `Award-${key}`;
+        awards[json["CommonMsg/VS/VSAwardName"][key]] = id;
+      }
     }
   }
   return { awards };

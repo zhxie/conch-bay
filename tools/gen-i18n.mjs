@@ -2,7 +2,7 @@ import { Buffer } from "buffer";
 import { createHash } from "crypto";
 import { createWriteStream } from "fs";
 
-const VERSION = "410";
+const VERSION = "500";
 
 const writeOut = (path, obj) => {
   const file = createWriteStream(path, "utf-8");
@@ -301,9 +301,11 @@ const getAwardLocales = (languages) => {
   }
   for (let i = 0; i < languages.length; i++) {
     for (const award of Object.keys(languages[i]["CommonMsg/VS/VSAwardName"])) {
-      const id = `Award-${award}`;
-      const name = languages[i]["CommonMsg/VS/VSAwardName"][award];
-      maps[i][id] = name;
+      if (!award.startsWith("Ref_")) {
+        const id = `Award-${award}`;
+        const name = languages[i]["CommonMsg/VS/VSAwardName"][award];
+        maps[i][id] = name;
+      }
     }
   }
   return maps;
