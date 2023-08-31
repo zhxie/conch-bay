@@ -272,25 +272,26 @@ const ResultView = (props: ResultViewProps) => {
     return name;
   };
   const formatByname = (byname: string) => {
-    for (const title of titleList.titles) {
-      const tags: { adjective: string; id: string }[] = [];
-      let node = title.adjectives;
-      let current = "";
-      for (const char of byname) {
-        if (!node[char]) {
-          break;
-        }
-        node = node[char];
-        current += char;
-        if (node["tag"]) {
-          tags.push({ adjective: current, id: node["tag"] });
-        }
+    const tags: { adjective: string; id: string; index: number }[] = [];
+    let node = titleList.adjectives;
+    let current = "";
+    for (const char of byname) {
+      if (!node[char]) {
+        break;
       }
-      for (const tag of tags) {
-        const subject = byname.slice(tag.adjective.length).trim();
-        if (title.subjects[subject]) {
-          return t("title", { adjective: t(tag.id), subject: t(title.subjects[subject]) });
-        }
+      node = node[char];
+      current += char;
+      for (const tag of node["tags"] ?? []) {
+        tags.push({ adjective: current, id: tag["id"], index: tag["index"] });
+      }
+    }
+    for (const tag of tags) {
+      const subject = byname.slice(tag.adjective.length).trim();
+      if (titleList.subjects[tag.index][subject]) {
+        return t("title", {
+          adjective: t(tag.id),
+          subject: t(titleList.subjects[tag.index][subject]),
+        });
       }
     }
     return byname;

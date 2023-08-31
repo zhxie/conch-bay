@@ -8,17 +8,20 @@ const writeOut = (path, obj) => {
   const file = createWriteStream(path, "utf-8");
   file.write(JSON.stringify(obj, undefined, 2) + "\n");
 };
-const buildTrie = (obj) => {
+const buildTrie = (array) => {
   const trie = {};
-  for (const key of Object.keys(obj)) {
+  for (const obj of array) {
     let node = trie;
-    for (const char of key) {
+    for (const char of obj["key"]) {
       if (!node[char]) {
         node[char] = {};
       }
       node = node[char];
     }
-    node.tag = obj[key];
+    if (!node.tags) {
+      node.tags = [];
+    }
+    node.tags.push(obj["value"]);
   }
   return trie;
 };
@@ -128,34 +131,39 @@ const getTitleMap = async () => {
     fetch("https://raw.githubusercontent.com/Leanny/splat3/main/data/language/USen_unicode.json"),
   ]);
   const jsons = await Promise.all(res.map((r) => r.json()));
-  const titles = [];
-  for (const json of jsons) {
-    const adjectives = {};
-    const subjects = {};
-    for (const key of Object.keys(json["CommonMsg/Byname/BynameAdjective"])) {
+  const adjectives = [];
+  const subjects = [];
+  for (let i = 0; i < jsons.length; i++) {
+    for (const key of Object.keys(jsons[i]["CommonMsg/Byname/BynameAdjective"])) {
       const id = `TitleAdjective-${key}`;
-      adjectives[json["CommonMsg/Byname/BynameAdjective"][key].replaceAll(/\[.+?\]/g, "")] = id;
+      adjectives.push({
+        key: jsons[i]["CommonMsg/Byname/BynameAdjective"][key].replaceAll(/\[.+?\]/g, ""),
+        value: {
+          id,
+          index: i,
+        },
+      });
     }
-    const trie = buildTrie(adjectives);
-    for (const key of Object.keys(json["CommonMsg/Byname/BynameSubject"])) {
+    const subject = {};
+    for (const key of Object.keys(jsons[i]["CommonMsg/Byname/BynameSubject"])) {
       if (key.endsWith("_0")) {
         const neutralKey = key.replace("_0", "");
         const altKey = `${neutralKey}_1`;
-        if (json["CommonMsg/Byname/BynameSubject"][altKey].includes("group=0001")) {
+        if (jsons[i]["CommonMsg/Byname/BynameSubject"][altKey].includes("group=0001")) {
           const id = `TitleSubject-${neutralKey}`;
-          subjects[json["CommonMsg/Byname/BynameSubject"][key].replaceAll(/\[.+?\]/g, "")] = id;
+          subject[jsons[i]["CommonMsg/Byname/BynameSubject"][key].replaceAll(/\[.+?\]/g, "")] = id;
         } else {
           const id = `TitleSubject-${key}`;
-          subjects[json["CommonMsg/Byname/BynameSubject"][key].replaceAll(/\[.+?\]/g, "")] = id;
+          subject[jsons[i]["CommonMsg/Byname/BynameSubject"][key].replaceAll(/\[.+?\]/g, "")] = id;
           const altId = `TitleSubject-${altKey}`;
-          subjects[json["CommonMsg/Byname/BynameSubject"][altKey].replaceAll(/\[.+?\]/g, "")] =
+          subject[jsons[i]["CommonMsg/Byname/BynameSubject"][altKey].replaceAll(/\[.+?\]/g, "")] =
             altId;
         }
       }
     }
-    titles.push({ adjectives: trie, subjects });
+    subjects.push(subject);
   }
-  return { titles };
+  return { adjectives: buildTrie(adjectives), subjects };
 };
 const getAwardMap = async () => {
   const res = await Promise.all([
