@@ -50,6 +50,11 @@ const SplatNetView = (props: SplatNetViewProps, ref: ForwardedRef<SplatNetViewRe
       Share.share({ url: obj["url"], message: obj["text"] });
     } else if (event.nativeEvent.data.startsWith("copy:")) {
       Clipboard.setStringAsync(event.nativeEvent.data.replace("copy:", ""));
+    } else if (event.nativeEvent.data.startsWith("images:")) {
+      const obj = JSON.parse(event.nativeEvent.data.replace("images:", ""));
+      for (const url of obj["image_urls"]) {
+        Share.share({ url });
+      }
     }
   };
 
@@ -98,13 +103,16 @@ const SplatNetView = (props: SplatNetViewProps, ref: ForwardedRef<SplatNetViewRe
                 };
                 window.invokeNativeShare = function(s) {
                   window.ReactNativeWebView.postMessage("share:" + s);
-                }
+                };
                 window.invokeNativeShareUrl = function(s) {
                   window.ReactNativeWebView.postMessage("url:" + s);
-                }
+                };
                 window.copyToClipboard = function(s) {
                   window.ReactNativeWebView.postMessage("copy:" + s);
-                }
+                };
+                window.downloadImages = function(s) {
+                  window.ReactNativeWebView.postMessage("images:" + s);
+                };
                 window.requestGameWebToken = function() {
                   Promise.resolve().then(() => window.onGameWebTokenReceive?.call(null, "${webServiceToken}"));
                 };
