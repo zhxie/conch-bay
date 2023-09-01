@@ -78,6 +78,7 @@ const CatalogView = (props: CatalogViewProps) => {
         <BadgeButton
           color={Color.AccentColor}
           title={props.catalogLevel}
+          disable={props.catalogLevel === "0"}
           onPress={onCatalogPress}
         />
       )}

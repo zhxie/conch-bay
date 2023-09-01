@@ -31,11 +31,16 @@ const Badge = (props: BadgeProps) => {
 };
 
 interface BadgeButtonProps extends BadgeProps {
+  disable?: boolean;
   onPress: () => void;
 }
 
 const BadgeButton = (props: BadgeButtonProps) => {
   const { onPress, style, ...rest } = props;
+
+  if (props.disable) {
+    return <Badge {...rest} />;
+  }
 
   return (
     <Pressable onPress={onPress} style={[ViewStyles.transparent, style]}>
