@@ -9,7 +9,10 @@ import { getImageHash, getVsSelfPlayer } from "./ui";
 let db: SQLite.SQLiteDatabase | undefined = undefined;
 
 const VERSION = 4;
-export const BATCH_SIZE = Math.floor((Device.totalMemory! / 1024 / 1024 / 1024) * 150);
+// HACK: we take 2GB memory at maximum since Android Java VM may not use all the memory.
+export const BATCH_SIZE = Math.floor(
+  (Math.max(Device.totalMemory!, 2 * 1024 * 1024 * 1024) / 1024 / 1024 / 1024) * 150
+);
 
 export const open = async () => {
   if (db) {
