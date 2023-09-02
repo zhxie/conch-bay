@@ -57,14 +57,24 @@ const CatalogView = (props: CatalogViewProps) => {
           last={reward.index === rewards.length - 2 || reward.index === rewards.length - 1}
           isAccepted={!isAllAccepted && reward.item.state === "ACCEPTED"}
           level={reward.item.level}
-          image={getImageCacheSource(reward.item.item.image.url)}
+          images={[
+            reward.item.item.image?.url,
+            reward.item.item.headGear?.image.url,
+            reward.item.item.clothingGear?.image.url,
+            reward.item.item.shoesGear?.image.url,
+          ]
+            .filter((url) => url)
+            .map((url) => getImageCacheSource(url!))}
           // TODO: need translation.
           name={reward.item.item.name}
-          primaryAbility={
-            reward.item.item.primaryGearPower
-              ? getImageCacheSource(reward.item.item.primaryGearPower.image.url)
-              : undefined
-          }
+          primaryAbilities={[
+            reward.item.item.primaryGearPower?.image.url,
+            reward.item.item.headGear?.primaryGearPower.image.url,
+            reward.item.item.clothingGear?.primaryGearPower.image.url,
+            reward.item.item.shoesGear?.primaryGearPower.image.url,
+          ]
+            .filter((url) => url)
+            .map((url) => getImageCacheSource(url!))}
           recyclingKey={reward.item.item.id}
         />
       </VStack>

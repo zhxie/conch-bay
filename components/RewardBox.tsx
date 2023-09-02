@@ -10,9 +10,9 @@ interface RewardBoxProps {
   last?: boolean;
   isAccepted: boolean;
   level: number;
-  image: ImageSource;
+  images: ImageSource[];
   name: string;
-  primaryAbility?: ImageSource;
+  primaryAbilities: ImageSource[];
   recyclingKey?: string;
   style?: StyleProp<ViewStyle>;
 }
@@ -34,24 +34,45 @@ const RewardBox = (props: RewardBoxProps) => {
       ]}
     >
       <VStack flex center>
-        <Center style={[ViewStyles.mb2, { width: 72, height: 72 }]}>
-          <Image
-            source={props.image}
-            contentFit="contain"
-            recyclingKey={props.recyclingKey}
-            style={{ width: 72, height: 72 }}
-          />
-          {props.primaryAbility && (
-            <Center style={{ position: "absolute", right: 0, bottom: 0 }}>
-              <Circle size={24} color={Color.DarkBackground} />
+        <HStack center style={[ViewStyles.mb2, { height: 72 }]}>
+          {props.images.map((image, i, images) => (
+            // HACK: there may be an overflow when there is more than 2 gears in a gear pack.
+            // HACK: there may be an overlap when there is multiple gears.
+            <Center
+              style={{
+                width: images.length === 1 ? 72 : 36,
+                height: images.length === 1 ? 72 : 36,
+              }}
+            >
               <Image
-                source={props.primaryAbility}
+                source={image}
+                contentFit="contain"
                 recyclingKey={props.recyclingKey}
-                style={[ViewStyles.transparent, { width: 20, height: 20, position: "absolute" }]}
+                style={{
+                  width: images.length === 1 ? 72 : 36,
+                  height: images.length === 1 ? 72 : 36,
+                }}
               />
+              {props.primaryAbilities[i] && (
+                <Center style={{ position: "absolute", right: 0, bottom: 0 }}>
+                  <Circle size={images.length === 1 ? 24 : 18} color={Color.DarkBackground} />
+                  <Image
+                    source={props.primaryAbilities[i]}
+                    recyclingKey={props.recyclingKey}
+                    style={[
+                      ViewStyles.transparent,
+                      {
+                        width: images.length === 1 ? 20 : 15,
+                        height: images.length === 1 ? 20 : 15,
+                        position: "absolute",
+                      },
+                    ]}
+                  />
+                </Center>
+              )}
             </Center>
-          )}
-        </Center>
+          ))}
+        </HStack>
         <HStack>
           <Marquee>
             <Text style={TextStyles.subtle}>{props.level} </Text>
