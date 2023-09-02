@@ -1255,6 +1255,16 @@ const MainView = () => {
     coops: CoopHistoryDetailResult[]
   ) => {
     const n = battles.length + coops.length;
+    // There is a bug introduced in 1.9.0 where all IDs imported from Salmonia3+ backup are suffixed with undefined.
+    const corruptedIds = new Set<string>();
+    for (let i = 0; i < coops.length; i++) {
+      if (
+        coops[i].coopHistoryDetail!.id.length > 124 &&
+        decode64String(coops[i].coopHistoryDetail!.id).endsWith("undefined")
+      ) {
+        corruptedIds.add(coops[i].coopHistoryDetail!.id);
+      }
+    }
     const battleExisted = await Promise.all(
       battles.map((battle: VsHistoryDetailResult) => Database.isExist(battle.vsHistoryDetail!.id))
     );
@@ -1262,7 +1272,9 @@ const MainView = () => {
       coops.map((coop: CoopHistoryDetailResult) => Database.isExist(coop.coopHistoryDetail!.id))
     );
     const newBattles = battles.filter((_, i: number) => !battleExisted[i]);
-    const newCoops = coops.filter((_, i: number) => !coopExisted[i]);
+    const newCoops = coops
+      .filter((_, i: number) => !coopExisted[i])
+      .filter((coop) => !corruptedIds.has(coop.coopHistoryDetail!.id));
     const skip = n - newBattles.length - newCoops.length;
     let error: Error | undefined;
     let fail = 0;
