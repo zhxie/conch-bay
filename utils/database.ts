@@ -130,11 +130,10 @@ export const upgrade = async () => {
     try {
       await exec('ALTER TABLE result ADD COLUMN stats TEXT NOT NULL DEFAULT ""', [], false);
       let batch = 0;
-      const filterOptions = await queryFilterOptions();
-      const battleModes = filterOptions.modes.filter((mode) => mode !== "salmon_run");
       while (true) {
         const records = await queryDetail(batch * BATCH_SIZE, BATCH_SIZE, {
-          modes: battleModes,
+          modes: ["salmon_run"],
+          inverted: true,
         });
         await Promise.all(
           records.map((record) =>
@@ -219,6 +218,7 @@ export interface FilterProps {
   rules?: string[];
   stages?: string[];
   weapons?: string[];
+  inverted?: boolean;
 }
 
 export const isFilterEqual = (a?: FilterProps, b?: FilterProps) => {
@@ -277,10 +277,17 @@ const convertFilter = (filter?: FilterProps, from?: number) => {
       );
     }
   }
-  if (from) {
-    filters.push(`(time >= ${from})`);
+  let condition = filters.map((filter) => `(${filter})`).join(" AND ");
+  if (!!condition && filter?.inverted) {
+    condition = `(NOT (${condition}))`;
   }
-  const condition = filters.map((filter) => `(${filter})`).join(" AND ");
+  if (from) {
+    if (condition) {
+      condition += `AND (time >= ${from})`;
+    } else {
+      condition += `time >= ${from}`;
+    }
+  }
   if (!condition) {
     return "";
   }

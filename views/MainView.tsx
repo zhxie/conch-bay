@@ -1344,37 +1344,37 @@ const MainView = () => {
       } else {
         // HACK: dynamic import the library.
         const FileAccess = await import("react-native-file-access");
+        // Export battles.
         await FileSystem.writeAsStringAsync(uri, '{"battles":[', {
           encoding: FileSystem.EncodingType.UTF8,
         });
-        const battleModes = (filterOptions?.modes ?? []).filter((mode) => mode !== "salmon_run");
-        if (battleModes.length > 0) {
-          let batch = 0;
-          while (true) {
-            let result = "";
-            const records = await Database.queryDetail(
-              Database.BATCH_SIZE * batch,
-              Database.BATCH_SIZE,
-              {
-                modes: battleModes,
-              }
-            );
-            for (let i = 0; i < records.length; i++) {
-              if (batch === 0 && i === 0) {
-                result += `${records[i].detail}`;
-              } else {
-                result += `,${records[i].detail}`;
-              }
-            }
-            await FileAccess.FileSystem.appendFile(uri, result, "utf8");
-            if (records.length < Database.BATCH_SIZE) {
-              break;
-            }
-            batch += 1;
-          }
-        }
-        await FileAccess.FileSystem.appendFile(uri, '],"coops":[', "utf8");
         let batch = 0;
+        while (true) {
+          let result = "";
+          const records = await Database.queryDetail(
+            Database.BATCH_SIZE * batch,
+            Database.BATCH_SIZE,
+            {
+              modes: ["salmon_run"],
+              inverted: true,
+            }
+          );
+          for (let i = 0; i < records.length; i++) {
+            if (batch === 0 && i === 0) {
+              result += `${records[i].detail}`;
+            } else {
+              result += `,${records[i].detail}`;
+            }
+          }
+          await FileAccess.FileSystem.appendFile(uri, result, "utf8");
+          if (records.length < Database.BATCH_SIZE) {
+            break;
+          }
+          batch += 1;
+        }
+        // Export coops.
+        await FileAccess.FileSystem.appendFile(uri, '],"coops":[', "utf8");
+        batch = 0;
         while (true) {
           let result = "";
           const records = await Database.queryDetail(
