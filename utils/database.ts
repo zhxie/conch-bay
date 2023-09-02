@@ -1,7 +1,7 @@
 import * as Device from "expo-device";
 import * as SQLite from "expo-sqlite";
 import { CoopHistoryDetailResult, VsHistoryDetailResult } from "../models/types";
-import weapons from "../models/weapons.json";
+import weaponList from "../models/weapons.json";
 import { decode64Index } from "./codec";
 import { countBattle, countCoop } from "./stats";
 import { getImageHash, getVsSelfPlayer } from "./ui";
@@ -254,7 +254,7 @@ const convertFilter = (filter?: FilterProps, from?: number) => {
       filters.push(
         `(${(filter.weapons ?? [])
           .map((weapon) => {
-            const image = weapons[weapon];
+            const image = weaponList[weapon];
             if (image) {
               return `(weapon = '${weapon}') OR (instr(weapon, '${image}') > 0)`;
             }
@@ -337,7 +337,7 @@ export const queryFilterOptions = async () => {
     const weapon = row["weapon"];
     for (const w of weapon.split(",")) {
       if (w.length > 0) {
-        weaponSet.add(weapons.images[w] ?? w);
+        weaponSet.add(weaponList.images[w] ?? w);
       }
     }
   }

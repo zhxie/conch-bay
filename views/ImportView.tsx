@@ -742,21 +742,21 @@ const ImportView = (props: ImportViewProps) => {
                 ),
                 species: player["species"],
               },
-              weapons: player["weapon_list"].map((weapon) => {
-                return formatSalmonia3Object(
+              weapons: player["weapon_list"].map((weapon) =>
+                formatSalmonia3Object(
                   "Weapon",
                   weapon,
                   true,
                   {
                     images: weaponList.weapons,
                     path: "weapon_illust",
-                    useSplatoon3ink: !!weaponList.coopRareWeapons.find(
+                    useSplatoon3ink: !weaponList.coopRareWeapons.find(
                       (w) => w === encode64String(`Weapon-${weapon}`)
                     ),
                   },
                   true
-                );
-              }),
+                )
+              ),
               specialWeapon:
                 player["special_id"] !== null
                   ? {
