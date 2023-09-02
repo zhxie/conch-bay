@@ -421,9 +421,9 @@ const ImportView = (props: ImportViewProps) => {
   const formatSalmdroidnwImageUrl = (image: any, path: string, useSplatoon3ink?: boolean) => {
     const file = image["url"];
     if (useSplatoon3ink) {
-      image["url"] = `https://splatoon3.ink/assets/splatnet/v1/${path}/${file}`;
+      image["url"] = `https://splatoon3.ink/assets/splatnet/v2/${path}/${file}`;
     } else {
-      image["url"] = `https://api.lp1.av5ja.srv.nintendo.net/resources/prod/v1/${path}/${file}`;
+      image["url"] = `https://api.lp1.av5ja.srv.nintendo.net/resources/prod/v2/${path}/${file}`;
     }
   };
   const formatSalmonia3PlusId = (
@@ -458,12 +458,12 @@ const ImportView = (props: ImportViewProps) => {
     if (image) {
       let url: string;
       if (id < 0) {
-        url = `https://splatoon3.ink/assets/splatnet/v1/ui_img/${SALMONIA3_PLUS_UNKNOWN_MAP[id]}_0.png`;
+        url = `https://splatoon3.ink/assets/splatnet/v2/ui_img/${SALMONIA3_PLUS_UNKNOWN_MAP[id]}_0.png`;
       } else {
         if (image.useSplatoon3ink) {
-          url = `https://splatoon3.ink/assets/splatnet/v1/${image.path}/${image.images[encoded]}_0.png`;
+          url = `https://splatoon3.ink/assets/splatnet/v2/${image.path}/${image.images[encoded]}_0.png`;
         } else {
-          url = `https://api.lp1.av5ja.srv.nintendo.net/resources/prod/v1/${image.path}/${image.images[encoded]}_0.png`;
+          url = `https://api.lp1.av5ja.srv.nintendo.net/resources/prod/v2/${image.path}/${image.images[encoded]}_0.png`;
         }
       }
       obj["image"] = { url };

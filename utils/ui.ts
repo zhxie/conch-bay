@@ -63,7 +63,7 @@ export const convertStageImageUrl = (stage: VsStage) => {
   const url = getAuthorityAndPath(stage.image.url);
   const pathComponents = url.split("/");
   const imageId = pathComponents[pathComponents.length - 1].split("_")[0];
-  return `https://splatoon3.ink/assets/splatnet/v1/stage_img/icon/high_resolution/${imageId}_0.png`;
+  return `https://splatoon3.ink/assets/splatnet/v2/stage_img/icon/high_resolution/${imageId}_0.png`;
 };
 
 export const getVsModeColor = (mode: VsMode) => {

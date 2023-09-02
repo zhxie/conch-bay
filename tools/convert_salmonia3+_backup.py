@@ -12,29 +12,29 @@ BACKGROUND_IMAGE = {}
 BADGE_IMAGE = {}
 UNIFORM_IMAGE = {}
 WEAPON_IMAGE = {
-    -1: "https://splatoon3.ink/assets/splatnet/v1/ui_img/473fffb2442075078d8bb7125744905abdeae651b6a5b7453ae295582e45f7d1_0.png",
-    -2: "https://splatoon3.ink/assets/splatnet/v1/ui_img/9d7272733ae2f2282938da17d69f13419a935eef42239132a02fcf37d8678f10_0.png",
+    -1: "https://splatoon3.ink/assets/splatnet/v2/ui_img/473fffb2442075078d8bb7125744905abdeae651b6a5b7453ae295582e45f7d1_0.png",
+    -2: "https://splatoon3.ink/assets/splatnet/v2/ui_img/9d7272733ae2f2282938da17d69f13419a935eef42239132a02fcf37d8678f10_0.png",
 }
 SPECIAL_WEAPON_IMAGE = {
-    -1: "https://splatoon3.ink/assets/splatnet/v1/ui_img/473fffb2442075078d8bb7125744905abdeae651b6a5b7453ae295582e45f7d1_0.png",
+    -1: "https://splatoon3.ink/assets/splatnet/v2/ui_img/473fffb2442075078d8bb7125744905abdeae651b6a5b7453ae295582e45f7d1_0.png",
 }
 ENEMY_IMAGE = {
-    4: "https://api.lp1.av5ja.srv.nintendo.net/resources/prod/v1/coop_enemy_img/f59fe344bd941f90dc8d3458ffd29b6586c1cffd00864967e7766a5a931dc4f6_0.png",
-    5: "https://api.lp1.av5ja.srv.nintendo.net/resources/prod/v1/coop_enemy_img/03c31763738c5628db6d8e7dd3ba0fd2fcb79a1f47694488b51969375148edde_0.png",
-    6: "https://api.lp1.av5ja.srv.nintendo.net/resources/prod/v1/coop_enemy_img/3a3e2c87b96b92e31ffc59a273b7d6aca20f9941e05ad84d6ae26092a627aa34_0.png",
-    7: "https://api.lp1.av5ja.srv.nintendo.net/resources/prod/v1/coop_enemy_img/999097a0908a4560f05a16e3f97c07b5d10bed22bee6d2ce0eedb2e6a6dcb9d0_0.png",
-    8: "https://api.lp1.av5ja.srv.nintendo.net/resources/prod/v1/coop_enemy_img/2d740da6f03364c3c289625455374f734fd8a96b25c26fde13912e90f3aea68c_0.png",
-    9: "https://api.lp1.av5ja.srv.nintendo.net/resources/prod/v1/coop_enemy_img/fd5abb7a9087c528e45a7a4e29c9c03d673b69d6f0ba2f424f6df8b732d9919a_0.png",
-    10: "https://api.lp1.av5ja.srv.nintendo.net/resources/prod/v1/coop_enemy_img/faed7977b2144ac5979de0ca7d23aefd507e517c3fbe19431054ac5a6ba300fa_0.png",
-    11: "https://api.lp1.av5ja.srv.nintendo.net/resources/prod/v1/coop_enemy_img/fb4851c75f62b8b50d9bac2128d6ef1c703c7884b63402762ddf78c1555e364a_0.png",
-    12: "https://api.lp1.av5ja.srv.nintendo.net/resources/prod/v1/coop_enemy_img/dbbf89da359fd880db49730ecc4f66150b148274aa005e22c1152cbf1a45e378_0.png",
-    13: "https://api.lp1.av5ja.srv.nintendo.net/resources/prod/v1/coop_enemy_img/2c7a648b4c73f291b5ede9c55f33d4e3f99c263d3a27ef3d2eb2a96d328d66ac_0.png",
-    14: "https://api.lp1.av5ja.srv.nintendo.net/resources/prod/v1/coop_enemy_img/2185696079cc39328cd69f0570e219f09b61d4a56508260fe97b16347ae8a55f_0.png",
-    15: "https://api.lp1.av5ja.srv.nintendo.net/resources/prod/v1/coop_enemy_img/a35aa2982499e9a404fdb81f72fbaf553bc47f7682cc67f9b8c32ca9910e2cbf_0.png",
-    17: "https://api.lp1.av5ja.srv.nintendo.net/resources/prod/v1/coop_enemy_img/8cd6dd3e1bb480e2897afdb434315bc78876204a0995c1552084e1d3edfe0536_0.png",
-    20: "https://api.lp1.av5ja.srv.nintendo.net/resources/prod/v1/coop_enemy_img/f0dd8c7eb5c2e96f347564cac71affe055f6c45a3339145ecc81287f800759d2_0.png",
-    23: "https://api.lp1.av5ja.srv.nintendo.net/resources/prod/v1/coop_enemy_img/75f39ca054c76c0c33cd71177780708e679d088c874a66101e9b76b001df8254_0.png",
-    24: "https://api.lp1.av5ja.srv.nintendo.net/resources/prod/v1/coop_enemy_img/0ee5853c43ebbef00ee2faecbd6c74f8a2d5e5b62b2cfa96d3838894b71381cb_0.png",
+    4: "https://api.lp1.av5ja.srv.nintendo.net/resources/prod/v2/coop_enemy_img/f59fe344bd941f90dc8d3458ffd29b6586c1cffd00864967e7766a5a931dc4f6_0.png",
+    5: "https://api.lp1.av5ja.srv.nintendo.net/resources/prod/v2/coop_enemy_img/03c31763738c5628db6d8e7dd3ba0fd2fcb79a1f47694488b51969375148edde_0.png",
+    6: "https://api.lp1.av5ja.srv.nintendo.net/resources/prod/v2/coop_enemy_img/3a3e2c87b96b92e31ffc59a273b7d6aca20f9941e05ad84d6ae26092a627aa34_0.png",
+    7: "https://api.lp1.av5ja.srv.nintendo.net/resources/prod/v2/coop_enemy_img/999097a0908a4560f05a16e3f97c07b5d10bed22bee6d2ce0eedb2e6a6dcb9d0_0.png",
+    8: "https://api.lp1.av5ja.srv.nintendo.net/resources/prod/v2/coop_enemy_img/2d740da6f03364c3c289625455374f734fd8a96b25c26fde13912e90f3aea68c_0.png",
+    9: "https://api.lp1.av5ja.srv.nintendo.net/resources/prod/v2/coop_enemy_img/fd5abb7a9087c528e45a7a4e29c9c03d673b69d6f0ba2f424f6df8b732d9919a_0.png",
+    10: "https://api.lp1.av5ja.srv.nintendo.net/resources/prod/v2/coop_enemy_img/faed7977b2144ac5979de0ca7d23aefd507e517c3fbe19431054ac5a6ba300fa_0.png",
+    11: "https://api.lp1.av5ja.srv.nintendo.net/resources/prod/v2/coop_enemy_img/fb4851c75f62b8b50d9bac2128d6ef1c703c7884b63402762ddf78c1555e364a_0.png",
+    12: "https://api.lp1.av5ja.srv.nintendo.net/resources/prod/v2/coop_enemy_img/dbbf89da359fd880db49730ecc4f66150b148274aa005e22c1152cbf1a45e378_0.png",
+    13: "https://api.lp1.av5ja.srv.nintendo.net/resources/prod/v2/coop_enemy_img/2c7a648b4c73f291b5ede9c55f33d4e3f99c263d3a27ef3d2eb2a96d328d66ac_0.png",
+    14: "https://api.lp1.av5ja.srv.nintendo.net/resources/prod/v2/coop_enemy_img/2185696079cc39328cd69f0570e219f09b61d4a56508260fe97b16347ae8a55f_0.png",
+    15: "https://api.lp1.av5ja.srv.nintendo.net/resources/prod/v2/coop_enemy_img/a35aa2982499e9a404fdb81f72fbaf553bc47f7682cc67f9b8c32ca9910e2cbf_0.png",
+    17: "https://api.lp1.av5ja.srv.nintendo.net/resources/prod/v2/coop_enemy_img/8cd6dd3e1bb480e2897afdb434315bc78876204a0995c1552084e1d3edfe0536_0.png",
+    20: "https://api.lp1.av5ja.srv.nintendo.net/resources/prod/v2/coop_enemy_img/f0dd8c7eb5c2e96f347564cac71affe055f6c45a3339145ecc81287f800759d2_0.png",
+    23: "https://api.lp1.av5ja.srv.nintendo.net/resources/prod/v2/coop_enemy_img/75f39ca054c76c0c33cd71177780708e679d088c874a66101e9b76b001df8254_0.png",
+    24: "https://api.lp1.av5ja.srv.nintendo.net/resources/prod/v2/coop_enemy_img/0ee5853c43ebbef00ee2faecbd6c74f8a2d5e5b62b2cfa96d3838894b71381cb_0.png",
 }
 COOP_STAGE_IMAGE = {}
 
@@ -132,9 +132,9 @@ def construct_member_result(result, player):
 def format_image(path, name, is_splatoon3_ink=False):
     sha = sha256(name.encode("utf-8")).hexdigest()
     if is_splatoon3_ink:
-        return f"https://splatoon3.ink/assets/splatnet/v1/{path}/{sha}_0.png"
+        return f"https://splatoon3.ink/assets/splatnet/v2/{path}/{sha}_0.png"
     else:
-        return f"https://api.lp1.av5ja.srv.nintendo.net/resources/prod/v1/{path}/{sha}_0.png"
+        return f"https://api.lp1.av5ja.srv.nintendo.net/resources/prod/v2/{path}/{sha}_0.png"
 
 
 def format_map(map, obj, path, is_splatoon3_ink=False, name_decorator=lambda x: x):

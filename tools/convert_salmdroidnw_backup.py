@@ -18,11 +18,11 @@ def decorate_image_obj(obj, path, is_splatoon3_ink=False):
     if is_splatoon3_ink:
         obj["image"][
             "url"
-        ] = f"https://splatoon3.ink/assets/splatnet/v1/{path}/{obj['image']['url']}"
+        ] = f"https://splatoon3.ink/assets/splatnet/v2/{path}/{obj['image']['url']}"
     else:
         obj["image"][
             "url"
-        ] = f"https://api.lp1.av5ja.srv.nintendo.net/resources/prod/v1/{path}/{obj['image']['url']}"
+        ] = f"https://api.lp1.av5ja.srv.nintendo.net/resources/prod/v2/{path}/{obj['image']['url']}"
 
 
 def format_member_result(member_result):
