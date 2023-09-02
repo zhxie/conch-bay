@@ -39,6 +39,7 @@ const RewardBox = (props: RewardBoxProps) => {
             // HACK: there may be an overflow when there is more than 2 gears in a gear pack.
             // HACK: there may be an overlap when there is multiple gears.
             <Center
+              key={i}
               style={{
                 width: images.length === 1 ? 72 : 36,
                 height: images.length === 1 ? 72 : 36,
