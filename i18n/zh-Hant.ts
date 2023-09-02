@@ -182,6 +182,7 @@ const zhHant = {
   waves_cleared: "完成WAVE",
   boss_salmonids_defeated: "擊倒的巨大鮭魚",
   king_salmonids_defeated: "擊倒的頭目鮭魚",
+  scales: "鱗片",
   golden_eggs_collected: "收集的金鮭魚卵",
   power_eggs_collected: "收集的鮭魚卵",
   rescued: "救援",

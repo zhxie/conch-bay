@@ -8,7 +8,7 @@ import { getImageHash, getVsSelfPlayer } from "./ui";
 
 let db: SQLite.SQLiteDatabase | undefined = undefined;
 
-const VERSION = 4;
+const VERSION = 5;
 // HACK: we take 2GB memory at maximum since Android Java VM may not use all the memory.
 export const BATCH_SIZE = Math.floor(
   (Math.max(Device.totalMemory!, 2 * 1024 * 1024 * 1024) / 1024 / 1024 / 1024) * 150
@@ -156,7 +156,7 @@ export const upgrade = async () => {
       throw e;
     }
   }
-  if (version < 4) {
+  if (version < 5) {
     await beginTransaction();
     try {
       let batch = 0;
@@ -178,7 +178,7 @@ export const upgrade = async () => {
         }
         batch += 1;
       }
-      await exec("PRAGMA user_version=4", [], false);
+      await exec("PRAGMA user_version=5", [], false);
       await commit();
     } catch (e) {
       await rollback();

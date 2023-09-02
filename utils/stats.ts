@@ -294,6 +294,11 @@ export interface CoopStats {
   team: CoopPlayerStats;
   bosses: BossSalmonidStats[];
   king?: { id: string; defeat: boolean };
+  scales?: {
+    gold: number;
+    silver: number;
+    bronze: number;
+  };
   waves: WaveStats[];
   stage: string;
   weapons: string[];
@@ -314,6 +319,11 @@ interface CoopsStats {
     appear: number;
     defeat: number;
   }[];
+  scales: {
+    gold: number;
+    silver: number;
+    bronze: number;
+  };
   waves: WaveStats[];
   stages: {
     id: string;
@@ -504,6 +514,13 @@ export const countCoop = (coop: CoopHistoryDetailResult): CoopStats => {
       .reduce((prev, current) => addCoopPlayerStats(prev, current)),
     bosses,
     king,
+    scales: coop.coopHistoryDetail!.scale
+      ? {
+          gold: coop.coopHistoryDetail!.scale!.gold,
+          silver: coop.coopHistoryDetail!.scale!.silver,
+          bronze: coop.coopHistoryDetail!.scale!.bronze,
+        }
+      : undefined,
     waves,
     stage: coop.coopHistoryDetail!.coopStage.id,
     weapons: coop.coopHistoryDetail!.myResult.weapons.map((weapon) =>
@@ -520,7 +537,10 @@ export const addCoopStats = (...coops: CoopStats[]): CoopsStats => {
     clear = 0,
     wave = 0,
     hazardLevel = 0,
-    member = 0;
+    member = 0,
+    gold = 0,
+    silver = 0,
+    bronze = 0;
   let self = {
       defeat: 0,
       golden: 0,
@@ -572,6 +592,9 @@ export const addCoopStats = (...coops: CoopStats[]): CoopsStats => {
       king.appear += 1;
       king.defeat += coop.king.defeat ? 1 : 0;
     }
+    gold += coop.scales?.gold ?? 0;
+    silver += coop.scales?.silver ?? 0;
+    bronze += coop.scales?.bronze ?? 0;
     for (const wave of coop.waves) {
       if (!waveMap.has(wave.id)) {
         waveMap.set(wave.id, new Map());
@@ -710,6 +733,11 @@ export const addCoopStats = (...coops: CoopStats[]): CoopsStats => {
     team,
     bosses,
     kings,
+    scales: {
+      gold,
+      silver,
+      bronze,
+    },
     waves,
     stages,
     weapons,

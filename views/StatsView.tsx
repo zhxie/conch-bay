@@ -7,6 +7,8 @@ import { NativeSyntheticEvent, StyleProp, ViewStyle } from "react-native";
 import {
   AccordionDisplay,
   Center,
+  Circle,
+  Color,
   Display,
   Marquee,
   Modal,
@@ -297,6 +299,18 @@ const StatsModal = (props: StatsModalProps) => {
                   {coopsStats.kings.reduce((prev, current) => prev + current.defeat, 0)}
                 </Text>
               </AccordionDisplay>
+              <Display title={t("scales")}>
+                <Circle size={10} color={Color.BronzeScale} style={ViewStyles.mr1} />
+                <Text numberOfLines={1} style={ViewStyles.mr1}>
+                  {coopsStats.scales.bronze}
+                </Text>
+                <Circle size={10} color={Color.SilverScale} style={ViewStyles.mr1} />
+                <Text numberOfLines={1} style={ViewStyles.mr1}>
+                  {coopsStats.scales.silver}
+                </Text>
+                <Circle size={10} color={Color.GoldScale} style={ViewStyles.mr1} />
+                <Text numberOfLines={1}>{coopsStats.scales.gold}</Text>
+              </Display>
               <Display title={t("golden_eggs_collected")}>
                 {formatTotalAndAverageGoldenEggs(
                   coopDimension.golden,
