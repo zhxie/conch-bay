@@ -222,9 +222,6 @@ def main():
                                 )
                             )
                         specialWeapons.append(specialWeapon)
-                rule = schedule["mode"]
-                if rule == "LIMITED":
-                    rule = "TEAM_CONTEST"
                 coops.append(
                     {
                         "coopHistoryDetail": {
@@ -280,7 +277,7 @@ def main():
                             if result["failure_wave"] != None
                             else 0,
                             "playedTime": result["play_time"],
-                            "rule": rule,
+                            "rule": schedule["rule"],
                             "coopStage": construct_image_obj(
                                 "CoopStage",
                                 schedule["stage_id"],

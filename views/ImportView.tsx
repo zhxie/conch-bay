@@ -433,8 +433,12 @@ const ImportView = (props: ImportViewProps) => {
     uuid: string,
     suffix?: string
   ) => {
-    const timeStr = dayjs(playedTime).format("YYYYMMDDTHHmmss");
-    return encode64String(`${path}-u-${nplnUserId}:${timeStr}_${uuid.toLowerCase()}${suffix}`);
+    const timeStr = dayjs(playedTime).utc().format("YYYYMMDDTHHmmss");
+    return encode64String(
+      `${path}-u-${nplnUserId}:${timeStr}_${uuid.toLowerCase()}${
+        suffix !== undefined ? suffix : ""
+      }`
+    );
   };
   const formatSalmonia3Object = (
     path: string,
@@ -855,7 +859,7 @@ const ImportView = (props: ImportViewProps) => {
               }),
               resultWave: result["failure_wave"] ?? 0,
               playedTime: result["play_time"],
-              rule: schedule["mode"] === "LIMITED" ? "TEAM_CONTEST" : schedule["mode"],
+              rule: schedule["rule"],
               coopStage: formatSalmonia3Object("CoopStage", schedule["stage_id"], true, {
                 images: coopStageList.coopStages,
                 path: "stage_img/icon/high_resolution",
