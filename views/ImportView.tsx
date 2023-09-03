@@ -440,7 +440,7 @@ const ImportView = (props: ImportViewProps) => {
       }`
     );
   };
-  const formatSalmonia3Object = (
+  const formatSalmonia3PlusObject = (
     path: string,
     id: number,
     name: boolean,
@@ -457,7 +457,11 @@ const ImportView = (props: ImportViewProps) => {
       obj["id"] = encoded;
     }
     if (name) {
-      obj["name"] = t(encoded);
+      if (id === -1 || id === -2) {
+        obj["name"] = t("random");
+      } else {
+        obj["name"] = t(encoded);
+      }
     }
     if (image) {
       let url: string;
@@ -698,7 +702,7 @@ const ImportView = (props: ImportViewProps) => {
       for (const schedule of data["schedules"]) {
         for (const result of schedule["results"]) {
           const memberResults = result["players"].map((player) => {
-            const background = formatSalmonia3Object(
+            const background = formatSalmonia3PlusObject(
               "NameplateBackground",
               player["background"],
               false,
@@ -718,7 +722,7 @@ const ImportView = (props: ImportViewProps) => {
                     if (!badge) {
                       return null;
                     }
-                    return formatSalmonia3Object("Badge", badge, false, {
+                    return formatSalmonia3PlusObject("Badge", badge, false, {
                       images: badgeList.badges,
                       path: "badge_img",
                     });
@@ -733,7 +737,7 @@ const ImportView = (props: ImportViewProps) => {
                     },
                   },
                 },
-                uniform: formatSalmonia3Object("CoopUniform", player["uniform"], true, {
+                uniform: formatSalmonia3PlusObject("CoopUniform", player["uniform"], true, {
                   images: workSuitList.workSuits,
                   path: "coop_skin_img",
                 }),
@@ -747,7 +751,7 @@ const ImportView = (props: ImportViewProps) => {
                 species: player["species"],
               },
               weapons: player["weapon_list"].map((weapon) =>
-                formatSalmonia3Object(
+                formatSalmonia3PlusObject(
                   "Weapon",
                   weapon,
                   true,
@@ -764,7 +768,7 @@ const ImportView = (props: ImportViewProps) => {
               specialWeapon:
                 player["special_id"] !== null
                   ? {
-                      ...formatSalmonia3Object(
+                      ...formatSalmonia3PlusObject(
                         "SpecialWeapon",
                         player["special_id"],
                         true,
@@ -796,14 +800,14 @@ const ImportView = (props: ImportViewProps) => {
               ),
               afterGrade:
                 result["grade_id"] !== null
-                  ? formatSalmonia3Object("CoopGrade", result["grade_id"], true)
+                  ? formatSalmonia3PlusObject("CoopGrade", result["grade_id"], true)
                   : null,
               myResult: memberResults[0],
               memberResults: memberResults.slice(1),
               bossResult:
                 result["boss_id"] !== null
                   ? {
-                      boss: formatSalmonia3Object("CoopEnemy", result["boss_id"], true, {
+                      boss: formatSalmonia3PlusObject("CoopEnemy", result["boss_id"], true, {
                         images: salmonidList.salmonids,
                         path: "coop_enemy_img",
                       }),
@@ -819,7 +823,7 @@ const ImportView = (props: ImportViewProps) => {
                     defeatCount: result["players"][0]["boss_kill_counts"][i],
                     teamDefeatCount: result["boss_kill_counts"][i],
                     popCount: count,
-                    enemy: formatSalmonia3Object(
+                    enemy: formatSalmonia3PlusObject(
                       "CoopEnemy",
                       SALMONIA3_PLUS_SALMONID_MAP[i],
                       true,
@@ -837,7 +841,7 @@ const ImportView = (props: ImportViewProps) => {
                 for (const player of result["players"]) {
                   for (let j = 0; j < player["special_counts"][i]; j++) {
                     specialWeapons.push(
-                      formatSalmonia3Object("SpecialWeapon", player["special_id"], true, {
+                      formatSalmonia3PlusObject("SpecialWeapon", player["special_id"], true, {
                         images: coopSpecialWeaponList.specialWeapons,
                         path: "special_img/blue",
                       })
@@ -849,7 +853,7 @@ const ImportView = (props: ImportViewProps) => {
                   waterLevel: wave["water_level"],
                   eventWave:
                     wave["event_type"] !== 0
-                      ? formatSalmonia3Object("CoopEventWave", wave["event_type"], true)
+                      ? formatSalmonia3PlusObject("CoopEventWave", wave["event_type"], true)
                       : null,
                   deliverNorm: wave["quota_num"],
                   goldenPopCount: wave["golden_ikura_pop_num"],
@@ -860,7 +864,7 @@ const ImportView = (props: ImportViewProps) => {
               resultWave: result["failure_wave"] ?? 0,
               playedTime: result["play_time"],
               rule: schedule["rule"],
-              coopStage: formatSalmonia3Object("CoopStage", schedule["stage_id"], true, {
+              coopStage: formatSalmonia3PlusObject("CoopStage", schedule["stage_id"], true, {
                 images: coopStageList.coopStages,
                 path: "stage_img/icon/high_resolution",
                 useSplatoon3ink: true,
@@ -869,7 +873,7 @@ const ImportView = (props: ImportViewProps) => {
               scenarioCode: result["scenario_code"],
               smellMeter: result["smell_meter"],
               weapons: schedule["weapon_list"].map((weapon) =>
-                formatSalmonia3Object(
+                formatSalmonia3PlusObject(
                   "Weapon",
                   weapon,
                   true,

@@ -213,6 +213,7 @@ const zhHans = {
   import_salmdroidnw_backup_notice: "请在salmdroidNW中备份，解压缩，并导入名为1的文件。",
   "import_salmonia3+_backup_notice":
     "请在Salmonia3+中备份为JSON并导入。请注意，由于Salmonia3+备份并未包含记录的所有数据，部分信息可能缺失。",
+  random: "随机",
   split_and_import_notice:
     "法螺湾需要占用大量的内存以导入记录。如果法螺湾无法导入记录，您可以分割记录并导入。请注意，分割并导入需要数分钟到数十分钟的时间。此外，您还可以通过主页下方的支持联系我们以获得帮助。",
   split_and_import: "分割并导入",

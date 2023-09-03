@@ -213,6 +213,7 @@ const zhHant = {
   import_salmdroidnw_backup_notice: "請在salmdroidNW中備份，解壓縮，並匯入名為1的檔案。",
   "import_salmonia3+_backup_notice":
     "請在Salmonia3+中備份為JSON並匯入。請注意，由於Salmonia3+備份並未包含記錄的所有數據，部分資訊可能缺失。",
+  random: "隨機",
   split_and_import_notice:
     "法螺灣需要佔用大量的內存以匯入記錄。如果法螺灣無法匯入記錄，您可以分割記錄並匯入。請注意，分割並匯入需要數分鐘到數十分鐘的時間。此外，您還可以通過主頁下方的支持聯繫我們以獲得幫助。",
   split_and_import: "分割並匯入",
