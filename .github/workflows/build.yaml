@@ -195,3 +195,7 @@ jobs:
           name: conch-bay-android
           path: |
             ./*.apk
+
+      - name: List CocoaPods cache
+        if: matrix.os == 'macos-latest'
+        run: pod cache list
