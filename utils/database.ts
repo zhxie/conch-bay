@@ -217,7 +217,6 @@ const rollback = async () => {
   return await exec("rollback", [], false);
 };
 
-// TODO: it would be better to have an inverted option.
 export interface FilterProps {
   modes?: string[];
   rules?: string[];
