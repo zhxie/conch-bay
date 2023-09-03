@@ -75,8 +75,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
           case BankaraMatchMode.CHALLENGE:
           case BankaraMatchMode.OPEN:
             return (anarchyMatchSettings as BankaraMatchSetting[]).find(
-              // HACK: wait for splatoon3.ink update.
-              (matchSetting) => matchSetting.bankaraMode === mode || matchSetting["mode"] === mode
+              (matchSetting) => matchSetting.bankaraMode === mode
             );
           case FestMatchMode.CHALLENGE:
           case FestMatchMode.OPEN:
@@ -90,27 +89,22 @@ const ScheduleView = (props: ScheduleViewProps) => {
       return xMatchSetting as XMatchSetting | null;
     }
     const splatfestMatchSettings = schedule["festMatchSettings"];
-    // HACK: wait for splatoon3.ink update.
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    if (splatfestMatchSettings !== undefined) {
-      if (splatfestMatchSettings === null) {
-        return null;
-      }
-      if (mode) {
-        switch (mode) {
-          case BankaraMatchMode.CHALLENGE:
-          case BankaraMatchMode.OPEN:
-            throw new Error(`unexpected fest match mode ${mode}`);
-          case FestMatchMode.CHALLENGE:
-          case FestMatchMode.OPEN:
-            return (schedule["festMatchSettings"] as FestMatchSetting[]).find(
-              (matchSetting) => matchSetting.festMode === mode
-            );
-        }
-      }
-      return (schedule["festMatchSettings"] as FestMatchSetting[])[0];
+    if (splatfestMatchSettings === null) {
+      return null;
     }
-    return undefined;
+    if (mode) {
+      switch (mode) {
+        case BankaraMatchMode.CHALLENGE:
+        case BankaraMatchMode.OPEN:
+          throw new Error(`unexpected fest match mode ${mode}`);
+        case FestMatchMode.CHALLENGE:
+        case FestMatchMode.OPEN:
+          return (schedule["festMatchSettings"] as FestMatchSetting[]).find(
+            (matchSetting) => matchSetting.festMode === mode
+          );
+      }
+    }
+    return (schedule["festMatchSettings"] as FestMatchSetting[])[0];
   };
   const isScheduleExpired = (
     schedule: VsSchedule | EventMatchTimePeriod | CoopGroupingSchedule
