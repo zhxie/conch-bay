@@ -159,39 +159,40 @@ jobs:
           packager: yarn
           token: ${{ secrets.EXPO_TOKEN }}
 
-      - name: Cache dependencies
+      - name: Cache node modules
         uses: actions/cache@v3
         with:
           path: node_modules
           key: ${{ runner.os }}-build-node-modules-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-build-node-modules-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+
+      - name: Cache CocoaPods
+        if: matrix.os == 'macos-latest'
+        uses: actions/cache@v3
+        with:
+          path: /Users/runner/Library/Caches/CocoaPods
+          key: ${{ runner.os }}-build-cocoa-pods-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-cocoa-pods-
 
       - name: Install dependencies
         run: yarn
 
-      - name: Build (iOS)
-        if: matrix.os == 'macos-latest'
-        run: eas build --local --non-interactive --platform ios --profile preview
+      - name: Build
+        run: |
+          if [[ $(uname) == "Darwin" ]]; then
+            eas build --local --non-interactive --platform ios --profile preview
+            echo "PLATFORM=ios" >> "$GITHUB_ENV"
+          else
+            eas build --local --non-interactive --platform android --profile preview
+            echo "PLATFORM=android" >> "$GITHUB_ENV"
+          fi
 
-      - name: Build (Android)
-        if: matrix.os == 'ubuntu-latest'
-        run: eas build --local --non-interactive --platform android --profile preview
-
-      - name: Upload build artifacts (iOS)
+      - name: Upload build artifacts
         uses: actions/upload-artifact@v3
-        if: matrix.os == 'macos-latest'
         with:
-          name: conch-bay-ios
+          name: conch-bay-${{ env.PLATFORM }}
           path: |
             ./*.tar.gz
-
-      - name: Upload build artifacts (Android)
-        uses: actions/upload-artifact@v3
-        if: matrix.os == 'ubuntu-latest'
-        with:
-          name: conch-bay-android
-          path: |
             ./*.apk
