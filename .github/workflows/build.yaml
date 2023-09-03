@@ -182,11 +182,12 @@ jobs:
       - name: Build
         run: |
           if [[ $(uname) == "Darwin" ]]; then
+            eas build --local --non-interactive --platform ios --profile preview
             echo "PLATFORM=ios" >> "$GITHUB_ENV"
           else
+            eas build --local --non-interactive --platform android --profile preview
             echo "PLATFORM=android" >> "$GITHUB_ENV"
           fi
-          eas build --local --non-interactive --platform $PLATFORM --profile preview
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v3
