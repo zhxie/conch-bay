@@ -1,5 +1,6 @@
 import * as Device from "expo-device";
 import * as SQLite from "expo-sqlite";
+import { Platform } from "react-native";
 import { CoopHistoryDetailResult, VsHistoryDetailResult } from "../models/types";
 import weaponList from "../models/weapons.json";
 import { decode64Index } from "./codec";
@@ -9,15 +10,19 @@ import { getImageHash, getVsSelfPlayer } from "./ui";
 let db: SQLite.SQLiteDatabase | undefined = undefined;
 
 const VERSION = 5;
-// HACK: we take 2GB memory at maximum since Android Java VM may not use all the memory.
-export const BATCH_SIZE = Math.floor(
-  (Math.max(Device.totalMemory!, 2 * 1024 * 1024 * 1024) / 1024 / 1024 / 1024) * 150
-);
+
+export let BATCH_SIZE = Math.floor((Math.max(Device.totalMemory!) / 1024 / 1024 / 1024) * 150);
+const requestBatchSize = async () => {
+  if (Platform.OS === "android") {
+    BATCH_SIZE = Math.floor(((await Device.getMaxMemoryAsync()) / 1024 / 1024 / 1024) * 150);
+  }
+};
 
 export const open = async () => {
   if (db) {
     return 0;
   }
+  await requestBatchSize();
   db = SQLite.openDatabase("conch-bay.db");
 
   // Initialize database.
