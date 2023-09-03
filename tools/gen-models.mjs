@@ -47,12 +47,16 @@ const getCoopStageMap = async () => {
   );
   const json = await res.json();
   const coopStages = {};
+  const bigRunStages = {};
   for (const stage of json) {
     const id = Buffer.from(`CoopStage-${stage["Id"]}`).toString("base64");
     const image = createHash("sha256").update(stage["__RowId"]).digest("hex");
     coopStages[id] = image;
+    if (stage["Id"] >= 100) {
+      bigRunStages[id] = image;
+    }
   }
-  return { coopStages };
+  return { coopStages, bigRunStages };
 };
 const getWeaponMap = async () => {
   const res = await fetch(

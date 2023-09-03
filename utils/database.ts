@@ -264,17 +264,7 @@ const convertFilter = (filter?: FilterProps, from?: number) => {
       );
     }
     if ((filter.stages ?? []).length > 0) {
-      filters.push(
-        `(${(filter.stages ?? [])
-          .map((stage) => {
-            // Includes Big Run stages.
-            if (stage === "VnNTdGFnZS0xNg==") {
-              return "stage = 'VnNTdGFnZS0xNg==' OR stage = 'Q29vcFN0YWdlLTEwMA=='";
-            }
-            return `stage = '${stage}'`;
-          })
-          .join(" OR ")})`
-      );
+      filters.push(`(${(filter.stages ?? []).map((stage) => `stage = '${stage}'`).join(" OR ")})`);
     }
   }
   let condition = filters.map((filter) => `(${filter})`).join(" AND ");
@@ -399,8 +389,6 @@ export const queryFilterOptions = async () => {
     stages: stageRecord.rows
       .map((row) => row["stage"])
       .filter((stage) => stage !== "")
-      // Escape Big Run stages.
-      .filter((stage) => stage !== "Q29vcFN0YWdlLTEwMA==")
       .sort((a, b) => {
         // Move coop stages behind battle stages.
         if (a.startsWith("V") && b.startsWith("Q")) {

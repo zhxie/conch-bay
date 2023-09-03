@@ -16,6 +16,7 @@ import {
   useTheme,
 } from "../components";
 import t from "../i18n";
+import coopStageList from "../models/coopStages.json";
 import { FilterProps, isFilterEqual } from "../utils/database";
 
 interface FilterViewProps {
@@ -245,7 +246,9 @@ const FilterView = (props: FilterViewProps) => {
                     key={stage}
                     disabled={props.disabled}
                     textColor={props.filter?.stages?.includes(stage) ? Color.DarkText : undefined}
-                    title={t(stage)}
+                    title={
+                      coopStageList.bigRunStages[stage] ? `${t(stage)} (${t("big_run")})` : t(stage)
+                    }
                     style={[
                       ViewStyles.mr2,
                       ViewStyles.mb2,
