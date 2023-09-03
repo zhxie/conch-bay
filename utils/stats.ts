@@ -695,7 +695,7 @@ export const addCoopStats = (...coops: CoopStats[]): CoopsStats => {
     } else if (bid === undefined) {
       return -1;
     }
-    return decode64Index(a.id) - decode64Index(b.id);
+    return aid - bid;
   });
   const specialWeapons = Array.from(specialWeaponMap, (specialWeapon) => ({
     id: coopSpecialWeaponList.images[specialWeapon[0]] ?? specialWeapon[0],

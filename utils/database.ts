@@ -411,7 +411,27 @@ export const queryFilterOptions = async () => {
         }
         return decode64Index(a) - decode64Index(b);
       }),
-    weapons: Array.from(weaponSet.values()).sort((a, b) => decode64Index(a) - decode64Index(b)),
+    weapons: Array.from(weaponSet.values()).sort((a, b) => {
+      let aid: number | undefined, bid: number | undefined;
+      try {
+        aid = decode64Index(a);
+      } catch {
+        /* empty */
+      }
+      try {
+        bid = decode64Index(b);
+      } catch {
+        /* empty */
+      }
+      if (aid === undefined && bid === undefined) {
+        return a.localeCompare(b);
+      } else if (aid === undefined) {
+        return 1;
+      } else if (bid === undefined) {
+        return -1;
+      }
+      return aid - bid;
+    }),
   };
 };
 export const count = async (filter?: FilterProps, from?: number) => {
