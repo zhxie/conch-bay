@@ -1,6 +1,6 @@
 import * as Convert from "color-convert";
 import { Color } from "../components";
-import { VsMode, VsHistoryDetailResult, VsStage, CoopRule, Gear } from "../models/types";
+import { VsMode, VsHistoryDetailResult, CoopRule, Gear } from "../models/types";
 import { getAuthorityAndPath } from "./codec";
 
 export const getImageExpires = (image: string) => {
@@ -19,11 +19,14 @@ export const isImageExpired = (image: string) => {
   return false;
 };
 export const getImageCacheKey = (image: string) => {
-  const splitted = image.split("?")[0].split("/");
-  return `${splitted[splitted.length - 2]}/${splitted[splitted.length - 1]}`;
+  const path = getAuthorityAndPath(image);
+  // HACK: we only take SplatNet 3 and Splatoon3.ink into consideration now.
+  const splitted = path.split(/prod|splatnet/);
+  return splitted[1];
 };
 export const getImageHash = (image: string) => {
-  const splitted = image.split("?")[0].split("/");
+  const path = getAuthorityAndPath(image);
+  const splitted = path.split("/");
   return splitted[splitted.length - 1].split("_")[0];
 };
 export const getImageCacheSource = (image: string) => {
@@ -57,13 +60,6 @@ export const dodgeColor = (color: string) => {
   const hsl = Convert.hex.hsl(color.replace("#", ""));
   const hex = Convert.hsl.hex([hsl[0], hsl[1], Math.min(hsl[2] * 1.3, 100)]);
   return `#${hex}`;
-};
-
-export const convertStageImageUrl = (stage: VsStage) => {
-  const url = getAuthorityAndPath(stage.image.url);
-  const pathComponents = url.split("/");
-  const imageId = pathComponents[pathComponents.length - 1].split("_")[0];
-  return `https://splatoon3.ink/assets/splatnet/v2/stage_img/icon/high_resolution/${imageId}_0.png`;
 };
 
 export const getVsModeColor = (mode: VsMode) => {

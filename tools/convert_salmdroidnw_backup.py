@@ -84,7 +84,9 @@ def main():
             for wave_result in obj["waveResults"]:
                 for special_weapon in wave_result["specialWeapons"]:
                     decorate_image_obj(special_weapon, "special_img/blue")
-            decorate_image_obj(obj["coopStage"], "stage_img/icon/high_resolution", True)
+            decorate_image_obj(
+                obj["coopStage"], "stage_img/banner/high_resolution", False
+            )
             for weapon in obj["weapons"]:
                 if weapon["image"]["url"] in RANDOM_IMAGE:
                     decorate_image_obj(weapon, "ui_img", True)

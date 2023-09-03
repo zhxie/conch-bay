@@ -648,8 +648,8 @@ const ImportView = (props: ImportViewProps) => {
         }
         formatSalmdroidnwImageUrl(
           coop.coopHistoryDetail!.coopStage.image,
-          "stage_img/icon/high_resolution",
-          true
+          "stage_img/banner/high_resolution",
+          false
         );
         for (const weapon of coop.coopHistoryDetail!.weapons) {
           if (!weaponList.images[getImageHash(weapon.image.url)]) {
@@ -866,8 +866,7 @@ const ImportView = (props: ImportViewProps) => {
               rule: schedule["rule"],
               coopStage: formatSalmonia3PlusObject("CoopStage", schedule["stage_id"], true, {
                 images: coopStageList.coopStages,
-                path: "stage_img/icon/high_resolution",
-                useSplatoon3ink: true,
+                path: "stage_img/banner/high_resolution",
               }),
               dangerRate: result["danger_rate"],
               scenarioCode: result["scenario_code"],

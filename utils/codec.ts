@@ -4,7 +4,6 @@ import { Buffer } from "buffer";
 export { toByteArray as decode64, fromByteArray as encode64 } from "base64-js";
 
 export const getAuthorityAndPath = (url: string) => {
-  url.split("?")[0];
   return url.split("?")[0];
 };
 export const getParam = (url: string, param: string) => {

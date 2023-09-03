@@ -178,7 +178,9 @@ def warmup():
 
     coop_stages = fetch_resource("CoopSceneInfo")
     for coop_stage in coop_stages:
-        format_map(COOP_STAGE_IMAGE, coop_stage, "stage_img/icon/high_resolution", True)
+        format_map(
+            COOP_STAGE_IMAGE, coop_stage, "stage_img/banner/high_resolution", False
+        )
 
 
 def main():

@@ -103,7 +103,6 @@ import * as Database from "../utils/database";
 import { ok } from "../utils/promise";
 import { StatsProps } from "../utils/stats";
 import {
-  convertStageImageUrl,
   getImageCacheKey,
   getImageHash,
   getUserIconCacheSource,
@@ -1472,14 +1471,6 @@ const MainView = () => {
         for (const record of records) {
           if (record.mode === "salmon_run") {
             const coop = JSON.parse(record.detail) as CoopHistoryDetailResult;
-
-            // Stages.
-            const stage = convertStageImageUrl(coop.coopHistoryDetail!.coopStage);
-            const stageCacheKey = getImageCacheKey(stage);
-            if (!resources.has(stageCacheKey)) {
-              resources.set(stageCacheKey, stage);
-            }
-
             for (const memberResult of [
               coop.coopHistoryDetail!.myResult,
               ...coop.coopHistoryDetail!.memberResults,
@@ -1534,14 +1525,6 @@ const MainView = () => {
             }
           } else {
             const battle = JSON.parse(record.detail) as VsHistoryDetailResult;
-
-            // Stages.
-            const stage = convertStageImageUrl(battle.vsHistoryDetail!.vsStage);
-            const stageCacheKey = getImageCacheKey(stage);
-            if (!resources.has(stageCacheKey)) {
-              resources.set(stageCacheKey, stage);
-            }
-
             for (const team of [
               battle.vsHistoryDetail!.myTeam,
               ...battle.vsHistoryDetail!.otherTeams,
