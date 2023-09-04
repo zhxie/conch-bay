@@ -18,7 +18,6 @@ import {
 import t from "../i18n";
 import * as Database from "../utils/database";
 import { BATCH_SIZE } from "../utils/memory";
-import { fillSignature } from "../utils/ui";
 
 interface ErrorViewProps {
   error: Error;
@@ -66,9 +65,9 @@ const ErrorView = (props: ErrorViewProps) => {
         const records = await Database.queryDetail(BATCH_SIZE * batch, BATCH_SIZE);
         for (const record of records) {
           if (record.mode === "salmon_run") {
-            coops += `${fillSignature(record.detail, images)},`;
+            coops += `${record.detail},`;
           } else {
-            battles += `${fillSignature(record.detail, images)},`;
+            battles += `${record.detail},`;
           }
         }
         if (records.length < BATCH_SIZE) {
@@ -83,9 +82,15 @@ const ErrorView = (props: ErrorViewProps) => {
       if (coops.endsWith(",")) {
         coops = coops.substring(0, coops.length - 1);
       }
-      await FileSystem.writeAsStringAsync(uri, `{"battles":[${battles}],"coops":[${coops}]}`, {
-        encoding: FileSystem.EncodingType.UTF8,
-      });
+      await FileSystem.writeAsStringAsync(
+        uri,
+        `{"battles":[${battles}],"coops":[${coops}],"images":${JSON.stringify(
+          Object.fromEntries(images)
+        )}}`,
+        {
+          encoding: FileSystem.EncodingType.UTF8,
+        }
+      );
     } else {
       // HACK: dynamic import the library.
       const FileAccess = await import("react-native-file-access");
@@ -101,7 +106,7 @@ const ErrorView = (props: ErrorViewProps) => {
           inverted: true,
         });
         for (let i = 0; i < records.length; i++) {
-          result += `,${fillSignature(records[i].detail, images)}`;
+          result += `,${records[i].detail}`;
         }
         await FileAccess.FileSystem.appendFile(uri, result.slice(1), "utf8");
         if (records.length < BATCH_SIZE) {
@@ -118,7 +123,7 @@ const ErrorView = (props: ErrorViewProps) => {
           modes: ["salmon_run"],
         });
         for (let i = 0; i < records.length; i++) {
-          result += `,${fillSignature(records[i].detail, images)}`;
+          result += `,${records[i].detail}`;
         }
         await FileAccess.FileSystem.appendFile(uri, result.slice(1), "utf8");
         if (records.length < BATCH_SIZE) {
@@ -126,7 +131,14 @@ const ErrorView = (props: ErrorViewProps) => {
         }
         batch += 1;
       }
-      await FileAccess.FileSystem.appendFile(uri, "]}", "utf8");
+      // Export images.
+      await FileAccess.FileSystem.appendFile(uri, '],"images":', "utf8");
+      await FileAccess.FileSystem.appendFile(
+        uri,
+        JSON.stringify(Object.fromEntries(images)),
+        "utf8"
+      );
+      await FileAccess.FileSystem.appendFile(uri, "}", "utf8");
     }
 
     await Sharing.shareAsync(uri, { UTI: "public.json" });

@@ -105,7 +105,7 @@ import * as Database from "../utils/database";
 import { BATCH_SIZE, requestMemory } from "../utils/memory";
 import { ok } from "../utils/promise";
 import { StatsProps } from "../utils/stats";
-import { fillSignature, getImageCacheKey, getImageHash, getUserIconCacheSource } from "../utils/ui";
+import { getImageCacheKey, getImageHash, getUserIconCacheSource } from "../utils/ui";
 import CatalogView from "./CatalogView";
 import FilterView from "./FilterView";
 import FriendView from "./FriendView";
@@ -1333,6 +1333,7 @@ const MainView = () => {
     setExporting(true);
     const uri = FileSystem.cacheDirectory + `conch-bay-export.json`;
     try {
+      const images = await Database.queryImages();
       if (Constants.appOwnership === AppOwnership.Expo) {
         let battles = "";
         let coops = "";
@@ -1341,9 +1342,9 @@ const MainView = () => {
           const records = await Database.queryDetail(BATCH_SIZE * batch, BATCH_SIZE);
           for (const record of records) {
             if (record.mode === "salmon_run") {
-              coops += `${fillSignature(record.detail, images)},`;
+              coops += `${record.detail},`;
             } else {
-              battles += `${fillSignature(record.detail, images)},`;
+              battles += `${record.detail},`;
             }
           }
           if (records.length < BATCH_SIZE) {
@@ -1361,7 +1362,7 @@ const MainView = () => {
         await FileSystem.writeAsStringAsync(
           uri,
           `{"battles":[${battles}],"coops":[${coops}],"images":${JSON.stringify(
-            images ? Object.fromEntries(images) : {}
+            Object.fromEntries(images)
           )}}`,
           {
             encoding: FileSystem.EncodingType.UTF8,
@@ -1382,7 +1383,7 @@ const MainView = () => {
             inverted: true,
           });
           for (let i = 0; i < records.length; i++) {
-            result += `,${fillSignature(records[i].detail, images)}`;
+            result += `,${records[i].detail}`;
           }
           await FileAccess.FileSystem.appendFile(uri, result.slice(1), "utf8");
           if (records.length < BATCH_SIZE) {
@@ -1399,7 +1400,7 @@ const MainView = () => {
             modes: ["salmon_run"],
           });
           for (let i = 0; i < records.length; i++) {
-            result += `,${fillSignature(records[i].detail, images)}`;
+            result += `,${records[i].detail}`;
           }
           await FileAccess.FileSystem.appendFile(uri, result.slice(1), "utf8");
           if (records.length < BATCH_SIZE) {
@@ -1411,7 +1412,7 @@ const MainView = () => {
         await FileAccess.FileSystem.appendFile(uri, '],"images":', "utf8");
         await FileAccess.FileSystem.appendFile(
           uri,
-          JSON.stringify(images ? Object.fromEntries(images) : {}),
+          JSON.stringify(Object.fromEntries(images)),
           "utf8"
         );
         await FileAccess.FileSystem.appendFile(uri, "}", "utf8");

@@ -2,10 +2,10 @@ import * as SQLite from "expo-sqlite";
 import { ImageSignature } from "../components";
 import { CoopHistoryDetailResult, VsHistoryDetailResult } from "../models/types";
 import weaponList from "../models/weapons.json";
-import { decode64Index } from "./codec";
+import { decode64Index, getAuthorityAndPath, getParams } from "./codec";
 import { BATCH_SIZE } from "./memory";
 import { countBattle, countCoop } from "./stats";
-import { getImageHash, getVsSelfPlayer, stripSignatureInto } from "./ui";
+import { getImageHash, getVsSelfPlayer } from "./ui";
 
 let db: SQLite.SQLiteDatabase | undefined;
 
@@ -190,34 +190,36 @@ export const upgrade = async () => {
         [],
         false
       );
-      const images = new Map<string, ImageSignature>();
       let batch = 0;
       while (true) {
+        const images: string[] = [];
         const records = await queryDetail(batch * BATCH_SIZE, BATCH_SIZE);
-        const strippedDetails: string[] = [];
-        for (const record of records) {
-          strippedDetails.push(stripSignatureInto(record.detail, images));
-        }
         await Promise.all(
-          records.map((record, i) =>
-            exec(
+          records.map((record) => {
+            if (record.mode === "salmon_run") {
+              const coop = JSON.parse(record.detail) as CoopHistoryDetailResult;
+              images.push(...stripCoop(coop));
+              return exec(
+                "UPDATE result SET detail = ? WHERE id = ?",
+                [JSON.stringify(coop), record.id],
+                false
+              );
+            }
+            const battle = JSON.parse(record.detail) as VsHistoryDetailResult;
+            images.push(...stripBattle(battle));
+            return exec(
               "UPDATE result SET detail = ? WHERE id = ?",
-              [strippedDetails[i], record.id],
+              [JSON.stringify(battle), record.id],
               false
-            )
-          )
+            );
+          })
         );
+        await Promise.all(images.map((url) => addImage(url)));
         if (records.length < BATCH_SIZE) {
           break;
         }
         batch += 1;
       }
-      await Promise.all(
-        Array.from(images.keys()).map((url) => {
-          const signature = images.get(url)!;
-          return addImage(url, signature.expire, signature.signature, signature.key);
-        })
-      );
       await exec("PRAGMA user_version=7", [], false);
       await commit();
     } catch (e) {
@@ -259,7 +261,6 @@ export interface FilterProps {
   weapons?: string[];
   inverted?: boolean;
 }
-
 export const isFilterEqual = (a?: FilterProps, b?: FilterProps) => {
   if (!a && !b) {
     return true;
@@ -279,7 +280,6 @@ export const isFilterEqual = (a?: FilterProps, b?: FilterProps) => {
   }
   return true;
 };
-
 const convertFilter = (filter?: FilterProps, from?: number) => {
   const filters: string[] = [];
   if (filter) {
@@ -324,6 +324,109 @@ const convertFilter = (filter?: FilterProps, from?: number) => {
 };
 
 let images: Map<string, ImageSignature> | undefined;
+const strip = (image: { url: string }) => {
+  image.url = getAuthorityAndPath(image.url);
+};
+const stripBattle = (battle: VsHistoryDetailResult): string[] => {
+  const result: string[] = [];
+  for (const badge of battle.vsHistoryDetail!.player.nameplate!.badges) {
+    if (badge) {
+      strip(badge.image);
+    }
+  }
+  strip(battle.vsHistoryDetail!.player.nameplate!.background.image);
+  for (const gear of [
+    battle.vsHistoryDetail!.player.headGear,
+    battle.vsHistoryDetail!.player.clothingGear,
+    battle.vsHistoryDetail!.player.shoesGear,
+  ]) {
+    strip(gear.image);
+    strip(gear.primaryGearPower.image);
+    for (const gearPower of gear.additionalGearPowers) {
+      strip(gearPower.image);
+    }
+    strip(gear.originalImage);
+    strip(gear.brand.image);
+  }
+  const images: { url: string }[] = [];
+  for (const team of [battle.vsHistoryDetail!.myTeam, ...battle.vsHistoryDetail!.otherTeams]) {
+    for (const player of team.players) {
+      images.push(player.weapon.image);
+      result.push(player.weapon.specialWeapon.maskingImage.maskImageUrl);
+      player.weapon.specialWeapon.maskingImage.maskImageUrl = getAuthorityAndPath(
+        player.weapon.specialWeapon.maskingImage.maskImageUrl
+      );
+      result.push(player.weapon.specialWeapon.maskingImage.overlayImageUrl);
+      player.weapon.specialWeapon.maskingImage.overlayImageUrl = getAuthorityAndPath(
+        player.weapon.specialWeapon.maskingImage.overlayImageUrl
+      );
+      images.push(player.weapon.specialWeapon.image);
+      images.push(player.weapon.image3d);
+      images.push(player.weapon.image2d);
+      images.push(player.weapon.image3dThumbnail);
+      images.push(player.weapon.image2dThumbnail);
+      images.push(player.weapon.subWeapon.image);
+      for (const badge of player.nameplate!.badges) {
+        if (badge) {
+          images.push(badge.image);
+        }
+      }
+      images.push(player.nameplate!.background.image);
+      for (const gear of [player.headGear, player.clothingGear, player.shoesGear]) {
+        images.push(gear.thumbnailImage);
+        images.push(gear.primaryGearPower.image);
+        for (const gearPower of gear.additionalGearPowers) {
+          images.push(gearPower.image);
+        }
+        images.push(gear.originalImage);
+        images.push(gear.brand.image);
+      }
+    }
+  }
+  images.push(battle.vsHistoryDetail!.vsStage.image);
+  for (const image of images) {
+    result.push(image.url);
+    strip(image);
+  }
+  return result;
+};
+const stripCoop = (coop: CoopHistoryDetailResult): string[] => {
+  const result: string[] = [];
+  const images: { url: string }[] = [];
+  for (const memberResult of [
+    coop.coopHistoryDetail!.myResult,
+    ...coop.coopHistoryDetail!.memberResults,
+  ]) {
+    for (const badge of memberResult.player.nameplate!.badges) {
+      if (badge) {
+        images.push(badge.image);
+      }
+    }
+    images.push(memberResult.player.nameplate!.background.image);
+    images.push(memberResult.player.uniform.image);
+    for (const weapon of memberResult.weapons) {
+      images.push(weapon.image);
+    }
+    if (memberResult.specialWeapon) {
+      images.push(memberResult.specialWeapon.image);
+    }
+  }
+  if (coop.coopHistoryDetail!.bossResult) {
+    images.push(coop.coopHistoryDetail!.bossResult.boss.image);
+  }
+  for (const enemyResult of coop.coopHistoryDetail!.enemyResults) {
+    images.push(enemyResult.enemy.image);
+  }
+  images.push(coop.coopHistoryDetail!.coopStage.image);
+  for (const weapon of coop.coopHistoryDetail!.weapons) {
+    images.push(weapon.image);
+  }
+  for (const image of images) {
+    result.push(image.url);
+    strip(image);
+  }
+  return result;
+};
 
 export const queryDetail = async (offset: number, limit: number, filter?: FilterProps) => {
   let condition: string = "";
@@ -500,79 +603,92 @@ export const addResult = async (
   stage: string,
   stats: string
 ) => {
-  // Update image.
-  const newImages = new Map<string, ImageSignature>();
-  const stripped = stripSignatureInto(detail, newImages);
-  if (!images) {
-    images = new Map();
-  }
-  for (const url of Array.from(newImages.keys())) {
-    const expire = newImages.get(url)!.expire;
-    if (!images.has(url) || expire > images.get(url)!.expire) {
-      images.set(url, newImages.get(url)!);
-    } else {
-      newImages.delete(url);
-    }
-  }
-  // TODO: there might be races.
-  await Promise.all([
-    Promise.all(
-      Array.from(newImages.keys()).map((url) => {
-        const signature = newImages.get(url)!;
-        return addImage(url, signature.expire, signature.signature, signature.key);
-      })
-    ),
-    exec(
-      "INSERT INTO result VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-      [id, time, mode, rule, weapon, players.join(","), stripped, stage, stats],
-      false
-    ),
-  ]);
-};
-export const addBattle = async (battle: VsHistoryDetailResult) => {
-  return await addResult(
-    battle.vsHistoryDetail!.id,
-    new Date(battle.vsHistoryDetail!.playedTime).valueOf(),
-    battle.vsHistoryDetail!.vsMode.id,
-    battle.vsHistoryDetail!.vsRule.id,
-    getVsSelfPlayer(battle).weapon.id,
-    battle
-      .vsHistoryDetail!.myTeam.players.map((player) => player.id)
-      .concat(
-        battle
-          .vsHistoryDetail!.otherTeams.map((otherTeam) =>
-            otherTeam.players.map((player) => player.id)
-          )
-          .flat()
-      ),
-    JSON.stringify(battle),
-    battle.vsHistoryDetail!.vsStage.id,
-    JSON.stringify(countBattle(battle))
-  );
-};
-export const addCoop = async (coop: CoopHistoryDetailResult) => {
-  return await addResult(
-    coop.coopHistoryDetail!.id,
-    new Date(coop.coopHistoryDetail!.playedTime).valueOf(),
-    "salmon_run",
-    coop.coopHistoryDetail!.rule,
-    coop
-      .coopHistoryDetail!.myResult.weapons.map((weapon) => getImageHash(weapon.image.url))
-      .join(","),
-    coop
-      .coopHistoryDetail!.memberResults.map((memberResult) => memberResult.player.id)
-      .concat(coop.coopHistoryDetail!.myResult.player.id),
-    JSON.stringify(coop),
-    coop.coopHistoryDetail!.coopStage.id,
-    JSON.stringify(countCoop(coop))
-  );
-};
-export const addImage = async (url: string, expire: number, signature: string, key: string) => {
   await exec(
-    "INSERT OR REPLACE INTO image VALUES (?, ?, ?, ?)",
-    [url, expire, signature, key],
+    "INSERT INTO result VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+    [
+      id,
+      time,
+      mode,
+      rule,
+      weapon,
+      players.join(","),
+      detail.replaceAll(/\?Expires=\d*&Signature=.+?&Key-Pair-Id=.+?"/g, '"'),
+      stage,
+      stats,
+    ],
     false
   );
+};
+export const addBattle = async (battle: VsHistoryDetailResult) => {
+  const images = stripBattle(battle);
+  return await Promise.all([
+    addResult(
+      battle.vsHistoryDetail!.id,
+      new Date(battle.vsHistoryDetail!.playedTime).valueOf(),
+      battle.vsHistoryDetail!.vsMode.id,
+      battle.vsHistoryDetail!.vsRule.id,
+      getVsSelfPlayer(battle).weapon.id,
+      battle
+        .vsHistoryDetail!.myTeam.players.map((player) => player.id)
+        .concat(
+          battle
+            .vsHistoryDetail!.otherTeams.map((otherTeam) =>
+              otherTeam.players.map((player) => player.id)
+            )
+            .flat()
+        ),
+      JSON.stringify(battle),
+      battle.vsHistoryDetail!.vsStage.id,
+      JSON.stringify(countBattle(battle))
+    ),
+    ...images.map((image) => addImage(image)),
+  ]);
+};
+export const addCoop = async (coop: CoopHistoryDetailResult) => {
+  const images = stripCoop(coop);
+  return await Promise.all([
+    addResult(
+      coop.coopHistoryDetail!.id,
+      new Date(coop.coopHistoryDetail!.playedTime).valueOf(),
+      "salmon_run",
+      coop.coopHistoryDetail!.rule,
+      coop
+        .coopHistoryDetail!.myResult.weapons.map((weapon) => getImageHash(weapon.image.url))
+        .join(","),
+      coop
+        .coopHistoryDetail!.memberResults.map((memberResult) => memberResult.player.id)
+        .concat(coop.coopHistoryDetail!.myResult.player.id),
+      JSON.stringify(coop),
+      coop.coopHistoryDetail!.coopStage.id,
+      JSON.stringify(countCoop(coop))
+    ),
+    ...images.map((image) => addImage(image)),
+  ]);
+};
+export const addImage = async (url: string) => {
+  const params = getParams(url);
+  let expire: number;
+  try {
+    expire = parseInt(params["Expires"]);
+  } catch {
+    return;
+  }
+  const signature = params["Signature"];
+  const key = params["Key-Pair-Id"];
+  if (expire && signature && key) {
+    const path = getAuthorityAndPath(url);
+    if (!images) {
+      images = new Map();
+    }
+    if (!images.has(path) || expire > images.get(path)!.expire) {
+      images.set(path, { expire, signature, key });
+      await exec(
+        "INSERT OR REPLACE INTO image VALUES (?, ?, ?, ?)",
+        [path, expire, signature, key],
+        false
+      );
+    }
+  }
 };
 export const remove = async (id: string) => {
   await exec("DELETE FROM result WHERE id = ?", [id], false);
