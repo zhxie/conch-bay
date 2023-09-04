@@ -19,7 +19,7 @@ export { default as GearBox } from "./GearBox";
 export { default as GroupButton } from "./GroupButton";
 export { default as Icon } from "./Icon";
 export { IconButton, PureIconButton } from "./IconButton";
-export { default as Image } from "./Image";
+export { default as Image, ImageSignature, ImageContext } from "./Image";
 export { default as KingSalmonidBox } from "./KingSalmonidBox";
 export { default as Marquee } from "./Marquee";
 export { Modal, FullscreenModal, FlashModal, MasonryFlashModal } from "./Modal";

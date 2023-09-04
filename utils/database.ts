@@ -1,14 +1,15 @@
 import * as SQLite from "expo-sqlite";
+import { ImageSignature } from "../components";
 import { CoopHistoryDetailResult, VsHistoryDetailResult } from "../models/types";
 import weaponList from "../models/weapons.json";
 import { decode64Index } from "./codec";
 import { BATCH_SIZE } from "./memory";
 import { countBattle, countCoop } from "./stats";
-import { getImageHash, getVsSelfPlayer } from "./ui";
+import { getImageHash, getVsSelfPlayer, stripSignatureInto } from "./ui";
 
-let db: SQLite.SQLiteDatabase | undefined = undefined;
+let db: SQLite.SQLiteDatabase | undefined;
 
-const VERSION = 6;
+const VERSION = 7;
 
 export const open = async () => {
   if (db) {
@@ -181,6 +182,49 @@ export const upgrade = async () => {
       throw e;
     }
   }
+  if (version < 7) {
+    await beginTransaction();
+    try {
+      await exec(
+        "CREATE TABLE IF NOT EXISTS image ( url TEXT PRIMARY KEY, expire INT NOT NULL, signature TEXT NOT NULL, key TEXT NOT NULL )",
+        [],
+        false
+      );
+      const images = new Map<string, ImageSignature>();
+      let batch = 0;
+      while (true) {
+        const records = await queryDetail(batch * BATCH_SIZE, BATCH_SIZE);
+        const strippedDetails: string[] = [];
+        for (const record of records) {
+          strippedDetails.push(stripSignatureInto(record.detail, images));
+        }
+        await Promise.all(
+          records.map((record, i) =>
+            exec(
+              "UPDATE result SET detail = ? WHERE id = ?",
+              [strippedDetails[i], record.id],
+              false
+            )
+          )
+        );
+        if (records.length < BATCH_SIZE) {
+          break;
+        }
+        batch += 1;
+      }
+      await Promise.all(
+        Array.from(images.keys()).map((url) => {
+          const signature = images.get(url)!;
+          return addImage(url, signature.expire, signature.signature, signature.key);
+        })
+      );
+      await exec("PRAGMA user_version=7", [], false);
+      await commit();
+    } catch (e) {
+      await rollback();
+      throw e;
+    }
+  }
 };
 export const close = () => {
   db!.closeAsync();
@@ -278,6 +322,8 @@ const convertFilter = (filter?: FilterProps, from?: number) => {
   }
   return `WHERE ${condition}`;
 };
+
+let images: Map<string, ImageSignature> | undefined;
 
 export const queryDetail = async (offset: number, limit: number, filter?: FilterProps) => {
   let condition: string = "";
@@ -430,7 +476,20 @@ export const isExist = async (id: string) => {
   const record = await exec("SELECT * FROM result WHERE id = ?", [id], true);
   return record.rows.length > 0;
 };
-export const add = async (
+export const queryImages = async () => {
+  const sql = "SELECT url, expire, signature, key FROM image";
+  const record = await exec(sql, [], true);
+  images = new Map<string, ImageSignature>();
+  for (const row of record.rows) {
+    images.set(row["url"], {
+      expire: row["expire"],
+      signature: row["signature"],
+      key: row["key"],
+    });
+  }
+  return images;
+};
+export const addResult = async (
   id: string,
   time: number,
   mode: string,
@@ -441,14 +500,37 @@ export const add = async (
   stage: string,
   stats: string
 ) => {
-  await exec(
-    "INSERT INTO result VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-    [id, time, mode, rule, weapon, players.join(","), detail, stage, stats],
-    false
-  );
+  // Update image.
+  const newImages = new Map<string, ImageSignature>();
+  const stripped = stripSignatureInto(detail, newImages);
+  if (!images) {
+    images = new Map();
+  }
+  for (const url of Array.from(newImages.keys())) {
+    const expire = newImages.get(url)!.expire;
+    if (!images.has(url) || expire > images.get(url)!.expire) {
+      images.set(url, newImages.get(url)!);
+    } else {
+      newImages.delete(url);
+    }
+  }
+  // TODO: there might be races.
+  await Promise.all([
+    Promise.all(
+      Array.from(newImages.keys()).map((url) => {
+        const signature = newImages.get(url)!;
+        return addImage(url, signature.expire, signature.signature, signature.key);
+      })
+    ),
+    exec(
+      "INSERT INTO result VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+      [id, time, mode, rule, weapon, players.join(","), stripped, stage, stats],
+      false
+    ),
+  ]);
 };
 export const addBattle = async (battle: VsHistoryDetailResult) => {
-  return await add(
+  return await addResult(
     battle.vsHistoryDetail!.id,
     new Date(battle.vsHistoryDetail!.playedTime).valueOf(),
     battle.vsHistoryDetail!.vsMode.id,
@@ -469,7 +551,7 @@ export const addBattle = async (battle: VsHistoryDetailResult) => {
   );
 };
 export const addCoop = async (coop: CoopHistoryDetailResult) => {
-  return await add(
+  return await addResult(
     coop.coopHistoryDetail!.id,
     new Date(coop.coopHistoryDetail!.playedTime).valueOf(),
     "salmon_run",
@@ -485,14 +567,24 @@ export const addCoop = async (coop: CoopHistoryDetailResult) => {
     JSON.stringify(countCoop(coop))
   );
 };
+export const addImage = async (url: string, expire: number, signature: string, key: string) => {
+  await exec(
+    "INSERT OR REPLACE INTO image VALUES (?, ?, ?, ?)",
+    [url, expire, signature, key],
+    false
+  );
+};
 export const remove = async (id: string) => {
   await exec("DELETE FROM result WHERE id = ?", [id], false);
 };
 export const clear = async () => {
   await exec("DELETE FROM result", [], false);
   await exec("VACUUM result", [], false);
+  await exec("DELETE FROM image", [], false);
+  await exec("VACUUM image", [], false);
 };
 export const drop = async () => {
   await exec("PRAGMA user_version=0", [], false);
   await exec("DROP TABLE result", [], false);
+  await exec("DROP TABLE image", [], false);
 };

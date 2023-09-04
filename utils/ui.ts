@@ -1,23 +1,8 @@
 import * as Convert from "color-convert";
-import { Color } from "../components";
+import { Color, ImageSignature } from "../components";
 import { VsMode, VsHistoryDetailResult, CoopRule, Gear } from "../models/types";
 import { getAuthorityAndPath } from "./codec";
 
-export const getImageExpires = (image: string) => {
-  const regex = /Expires=(\d*)&/;
-  const match = regex.exec(image);
-  if (!match) {
-    return null;
-  }
-  return match[1];
-};
-export const isImageExpired = (image: string) => {
-  const expires = getImageExpires(image);
-  if (expires && parseInt(expires) * 1000 < new Date().valueOf()) {
-    return true;
-  }
-  return false;
-};
 export const getImageCacheKey = (image: string) => {
   const path = getAuthorityAndPath(image);
   // HACK: we only take SplatNet 3 and Splatoon3.ink into consideration now.
@@ -40,6 +25,38 @@ export const getUserIconCacheSource = (userIcon: string) => {
     uri: userIcon,
     cacheKey: userIcon,
   };
+};
+
+export const stripSignatureInto = (result: string, images?: Map<string, ImageSignature>) => {
+  // HACK: assume that all params are in place.
+  const regex = /"(https:\/\/.+?)\?Expires=(\d*)&Signature=(.+?)&Key-Pair-Id=(.+?)"/g;
+  const match = result.matchAll(regex);
+  for (const pair of match) {
+    const url = pair[1];
+    const expire = parseInt(pair[2]);
+    const signature = pair[3];
+    const key = pair[4];
+    if (images) {
+      if (!images.has(url) || expire > images.get(url)!.expire) {
+        images.set(url, { expire, signature, key });
+      }
+    }
+  }
+  return result.replaceAll(/\?Expires=\d*&Signature=.+?&Key-Pair-Id=.+?"/g, '"');
+};
+export const fillSignature = (result: string, images?: Map<string, ImageSignature>) => {
+  if (!images) {
+    return result;
+  }
+  let newResult = result;
+  for (const url of Array.from(images.keys())) {
+    const signature = images.get(url)!;
+    newResult = newResult.replaceAll(
+      `"${url}"`,
+      `${url}?Expires=${signature.expire}&Signature=${signature.signature}&Key-Pair-Id=${signature.key}`
+    );
+  }
+  return newResult;
 };
 
 export const getColor = (color: { a: number; b: number; g: number; r: number }) => {

@@ -6,13 +6,17 @@ export { toByteArray as decode64, fromByteArray as encode64 } from "base64-js";
 export const getAuthorityAndPath = (url: string) => {
   return url.split("?")[0];
 };
-export const getParam = (url: string, param: string) => {
+export const getParams = (url: string) => {
   const regex = /[?&]([^=#]+)=([^&#]*)/g;
   const params: Record<string, string> = {};
   let match: string[] | null;
   while ((match = regex.exec(url))) {
     params[match[1]] = match[2];
   }
+  return params;
+};
+export const getParam = (url: string, param: string) => {
+  const params = getParams(url);
   return params[param];
 };
 export const parameterize = (params: Record<string, string>) => {

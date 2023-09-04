@@ -18,6 +18,7 @@ import {
 import t from "../i18n";
 import * as Database from "../utils/database";
 import { BATCH_SIZE } from "../utils/memory";
+import { fillSignature } from "../utils/ui";
 
 interface ErrorViewProps {
   error: Error;
@@ -56,6 +57,7 @@ const ErrorView = (props: ErrorViewProps) => {
     setExporting(true);
     // TODO: reuse export codes.
     const uri = FileSystem.cacheDirectory + `conch-bay-export.json`;
+    const images = await Database.queryImages();
     if (Constants.appOwnership === AppOwnership.Expo) {
       let battles = "";
       let coops = "";
@@ -64,9 +66,9 @@ const ErrorView = (props: ErrorViewProps) => {
         const records = await Database.queryDetail(BATCH_SIZE * batch, BATCH_SIZE);
         for (const record of records) {
           if (record.mode === "salmon_run") {
-            coops += `${record.detail},`;
+            coops += `${fillSignature(record.detail, images)},`;
           } else {
-            battles += `${record.detail},`;
+            battles += `${fillSignature(record.detail, images)},`;
           }
         }
         if (records.length < BATCH_SIZE) {
@@ -99,7 +101,7 @@ const ErrorView = (props: ErrorViewProps) => {
           inverted: true,
         });
         for (let i = 0; i < records.length; i++) {
-          result += `,${records[i].detail}`;
+          result += `,${fillSignature(records[i].detail, images)}`;
         }
         await FileAccess.FileSystem.appendFile(uri, result.slice(1), "utf8");
         if (records.length < BATCH_SIZE) {
@@ -116,7 +118,7 @@ const ErrorView = (props: ErrorViewProps) => {
           modes: ["salmon_run"],
         });
         for (let i = 0; i < records.length; i++) {
-          result += `,${records[i].detail}`;
+          result += `,${fillSignature(records[i].detail, images)}`;
         }
         await FileAccess.FileSystem.appendFile(uri, result.slice(1), "utf8");
         if (records.length < BATCH_SIZE) {
