@@ -456,8 +456,8 @@ export const add = async (
     false
   );
 };
-export const addBattle = (battle: VsHistoryDetailResult) => {
-  return add(
+export const addBattle = async (battle: VsHistoryDetailResult) => {
+  return await add(
     battle.vsHistoryDetail!.id,
     new Date(battle.vsHistoryDetail!.playedTime).valueOf(),
     battle.vsHistoryDetail!.vsMode.id,
@@ -477,8 +477,8 @@ export const addBattle = (battle: VsHistoryDetailResult) => {
     JSON.stringify(countBattle(battle))
   );
 };
-export const addCoop = (coop: CoopHistoryDetailResult) => {
-  return add(
+export const addCoop = async (coop: CoopHistoryDetailResult) => {
+  return await add(
     coop.coopHistoryDetail!.id,
     new Date(coop.coopHistoryDetail!.playedTime).valueOf(),
     "salmon_run",

@@ -105,13 +105,9 @@ const ErrorView = (props: ErrorViewProps) => {
           }
         );
         for (let i = 0; i < records.length; i++) {
-          if (batch === 0 && i === 0) {
-            result += `${records[i].detail}`;
-          } else {
-            result += `,${records[i].detail}`;
-          }
+          result += `,${records[i].detail}`;
         }
-        await FileAccess.FileSystem.appendFile(uri, result, "utf8");
+        await FileAccess.FileSystem.appendFile(uri, result.slice(1), "utf8");
         if (records.length < Database.BATCH_SIZE) {
           break;
         }
@@ -130,13 +126,9 @@ const ErrorView = (props: ErrorViewProps) => {
           }
         );
         for (let i = 0; i < records.length; i++) {
-          if (batch === 0 && i === 0) {
-            result += `${records[i].detail}`;
-          } else {
-            result += `,${records[i].detail}`;
-          }
+          result += `,${records[i].detail}`;
         }
-        await FileAccess.FileSystem.appendFile(uri, result, "utf8");
+        await FileAccess.FileSystem.appendFile(uri, result.slice(1), "utf8");
         if (records.length < Database.BATCH_SIZE) {
           break;
         }

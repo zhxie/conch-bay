@@ -1276,38 +1276,41 @@ const MainView = () => {
       .filter((coop) => !corruptedIds.has(coop.coopHistoryDetail!.id));
     const skip = n - newBattles.length - newCoops.length;
     let error: Error | undefined;
-    let fail = 0;
-    for (const battle of newBattles) {
-      const result = await Database.addBattle(battle)
-        .then(() => {
-          return true;
-        })
-        .catch((e) => {
-          if (!error) {
-            error = e;
-          }
-          return false;
-        });
-      if (!result) {
-        fail++;
-      }
-    }
-    for (const coop of newCoops) {
-      const result = await Database.addCoop(coop)
-        .then(() => {
-          return true;
-        })
-        .catch((e) => {
-          if (!error) {
-            error = e;
-          }
-          return false;
-        });
-      if (!result) {
-        fail++;
-      }
-    }
-    return { skip, fail, error };
+    const battleResults = await Promise.all(
+      newBattles.map((battle) =>
+        Database.addBattle(battle)
+          .then(() => {
+            return true;
+          })
+          .catch((e) => {
+            if (!error) {
+              error = e;
+            }
+            return false;
+          })
+      )
+    );
+    const coopResults = await Promise.all(
+      newCoops.map((coop) =>
+        Database.addCoop(coop)
+          .then(() => {
+            return true;
+          })
+          .catch((e) => {
+            if (!error) {
+              error = e;
+            }
+            return false;
+          })
+      )
+    );
+    return {
+      skip,
+      fail:
+        battleResults.filter((result) => !result).length +
+        coopResults.filter((result) => !result).length,
+      error,
+    };
   };
   const onImportComplete = async (n: number) => {
     // Query stored latest results if updated.
@@ -1371,13 +1374,9 @@ const MainView = () => {
             }
           );
           for (let i = 0; i < records.length; i++) {
-            if (batch === 0 && i === 0) {
-              result += `${records[i].detail}`;
-            } else {
-              result += `,${records[i].detail}`;
-            }
+            result += `,${records[i].detail}`;
           }
-          await FileAccess.FileSystem.appendFile(uri, result, "utf8");
+          await FileAccess.FileSystem.appendFile(uri, result.slice(1), "utf8");
           if (records.length < Database.BATCH_SIZE) {
             break;
           }
@@ -1396,13 +1395,9 @@ const MainView = () => {
             }
           );
           for (let i = 0; i < records.length; i++) {
-            if (batch === 0 && i === 0) {
-              result += `${records[i].detail}`;
-            } else {
-              result += `,${records[i].detail}`;
-            }
+            result += `,${records[i].detail}`;
           }
-          await FileAccess.FileSystem.appendFile(uri, result, "utf8");
+          await FileAccess.FileSystem.appendFile(uri, result.slice(1), "utf8");
           if (records.length < Database.BATCH_SIZE) {
             break;
           }
