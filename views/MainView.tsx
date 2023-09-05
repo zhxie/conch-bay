@@ -100,6 +100,7 @@ import {
 } from "../utils/background";
 import { decode64String, encode64String, parseVersion } from "../utils/codec";
 import * as Database from "../utils/database";
+import { BATCH_SIZE, requestMemory } from "../utils/memory";
 import { ok } from "../utils/promise";
 import { StatsProps } from "../utils/stats";
 import {
@@ -241,6 +242,7 @@ const MainView = () => {
     if (sessionTokenReady && webServiceTokenReady && bulletTokenReady && languageReady) {
       (async () => {
         try {
+          await requestMemory();
           const upgrade = await Database.open();
           if (upgrade !== undefined) {
             if (upgrade > 0) {
@@ -480,7 +482,7 @@ const MainView = () => {
     while (read < limit) {
       const records = await Database.queryDetail(
         offset + read,
-        Math.min(Database.BATCH_SIZE, limit - read),
+        Math.min(BATCH_SIZE, limit - read),
         filterRef.current
       );
       for (const record of records) {
@@ -490,7 +492,7 @@ const MainView = () => {
           details.push({ battle: JSON.parse(record.detail) as VsHistoryDetailResult });
         }
       }
-      if (records.length < Math.min(Database.BATCH_SIZE, limit - read)) {
+      if (records.length < Math.min(BATCH_SIZE, limit - read)) {
         break;
       }
       read += records.length;
@@ -1329,10 +1331,7 @@ const MainView = () => {
         let coops = "";
         let batch = 0;
         while (true) {
-          const records = await Database.queryDetail(
-            Database.BATCH_SIZE * batch,
-            Database.BATCH_SIZE
-          );
+          const records = await Database.queryDetail(BATCH_SIZE * batch, BATCH_SIZE);
           for (const record of records) {
             if (record.mode === "salmon_run") {
               coops += `${record.detail},`;
@@ -1340,7 +1339,7 @@ const MainView = () => {
               battles += `${record.detail},`;
             }
           }
-          if (records.length < Database.BATCH_SIZE) {
+          if (records.length < BATCH_SIZE) {
             break;
           }
           batch += 1;
@@ -1365,19 +1364,15 @@ const MainView = () => {
         let batch = 0;
         while (true) {
           let result = "";
-          const records = await Database.queryDetail(
-            Database.BATCH_SIZE * batch,
-            Database.BATCH_SIZE,
-            {
-              modes: ["salmon_run"],
-              inverted: true,
-            }
-          );
+          const records = await Database.queryDetail(BATCH_SIZE * batch, BATCH_SIZE, {
+            modes: ["salmon_run"],
+            inverted: true,
+          });
           for (let i = 0; i < records.length; i++) {
             result += `,${records[i].detail}`;
           }
           await FileAccess.FileSystem.appendFile(uri, result.slice(1), "utf8");
-          if (records.length < Database.BATCH_SIZE) {
+          if (records.length < BATCH_SIZE) {
             break;
           }
           batch += 1;
@@ -1387,18 +1382,14 @@ const MainView = () => {
         batch = 0;
         while (true) {
           let result = "";
-          const records = await Database.queryDetail(
-            Database.BATCH_SIZE * batch,
-            Database.BATCH_SIZE,
-            {
-              modes: ["salmon_run"],
-            }
-          );
+          const records = await Database.queryDetail(BATCH_SIZE * batch, BATCH_SIZE, {
+            modes: ["salmon_run"],
+          });
           for (let i = 0; i < records.length; i++) {
             result += `,${records[i].detail}`;
           }
           await FileAccess.FileSystem.appendFile(uri, result.slice(1), "utf8");
-          if (records.length < Database.BATCH_SIZE) {
+          if (records.length < BATCH_SIZE) {
             break;
           }
           batch += 1;
@@ -1459,10 +1450,7 @@ const MainView = () => {
       const resources = new Map<string, string>();
       let batch = 0;
       while (true) {
-        const records = await Database.queryDetail(
-          Database.BATCH_SIZE * batch,
-          Database.BATCH_SIZE
-        );
+        const records = await Database.queryDetail(BATCH_SIZE * batch, BATCH_SIZE);
         for (const record of records) {
           if (record.mode === "salmon_run") {
             const coop = JSON.parse(record.detail) as CoopHistoryDetailResult;
@@ -1594,7 +1582,7 @@ const MainView = () => {
             }
           }
         }
-        if (records.length < Database.BATCH_SIZE) {
+        if (records.length < BATCH_SIZE) {
           break;
         }
         batch += 1;

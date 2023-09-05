@@ -1,7 +1,6 @@
 import { Buffer } from "buffer";
 import dayjs from "dayjs";
 import Constants, { AppOwnership } from "expo-constants";
-import * as Device from "expo-device";
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
 import * as WebBrowser from "expo-web-browser";
@@ -30,10 +29,8 @@ import { CoopHistoryDetailResult, VsHistoryDetailResult } from "../models/types"
 import weaponList from "../models/weapons.json";
 import workSuitList from "../models/workSuits.json";
 import { decode64, encode64String } from "../utils/codec";
-import * as Database from "../utils/database";
+import { BATCH_SIZE } from "../utils/memory";
 import { getImageHash } from "../utils/ui";
-
-const IMPORT_READ_SIZE = Math.floor((Device.totalMemory! / 1024) * 15);
 
 enum ImportStreamMode {
   Unknown,
@@ -375,6 +372,7 @@ const ImportView = (props: ImportViewProps) => {
     let imported = 0;
     try {
       props.onBegin();
+      const importReadSize = Math.floor((BATCH_SIZE / 10) * 1024 * 1024);
       const parser = new ImportStreamParser();
       let n = 0,
         skip = 0,
@@ -384,8 +382,8 @@ const ImportView = (props: ImportViewProps) => {
       while (true) {
         const encoded = await FileSystem.readAsStringAsync(uri, {
           encoding: "base64",
-          length: IMPORT_READ_SIZE,
-          position: IMPORT_READ_SIZE * batch,
+          length: importReadSize,
+          position: importReadSize * batch,
         });
         const text = decode64(encoded);
         const results = parser.parse(text);
@@ -397,7 +395,7 @@ const ImportView = (props: ImportViewProps) => {
           error = result.error;
         }
 
-        if (text.length < IMPORT_READ_SIZE) {
+        if (text.length < importReadSize) {
           break;
         }
         batch += 1;
@@ -535,9 +533,7 @@ const ImportView = (props: ImportViewProps) => {
       let error: Error | undefined;
       while (true) {
         const record = await db.executeAsync(
-          `SELECT body FROM kv_default LIMIT ${Database.BATCH_SIZE} OFFSET ${
-            Database.BATCH_SIZE * batch
-          }`
+          `SELECT body FROM kv_default LIMIT ${BATCH_SIZE} OFFSET ${BATCH_SIZE * batch}`
         );
         const results = record.rows!._array;
         for (const row of results) {
@@ -556,7 +552,7 @@ const ImportView = (props: ImportViewProps) => {
         if (!error) {
           error = result.error;
         }
-        if (results.length < Database.BATCH_SIZE) {
+        if (results.length < BATCH_SIZE) {
           break;
         }
         batch += 1;
@@ -929,7 +925,8 @@ const ImportView = (props: ImportViewProps) => {
       }
       uri = doc.assets[0].uri;
       const info = await FileSystem.getInfoAsync(uri, { size: true });
-      if (info["size"] > IMPORT_READ_SIZE) {
+      const importReadSize = Math.floor((BATCH_SIZE / 10) * 1024 * 1024);
+      if (info["size"] > importReadSize) {
         setUri(uri);
       } else {
         importDirectly(uri);

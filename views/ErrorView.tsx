@@ -17,6 +17,7 @@ import {
 } from "../components";
 import t from "../i18n";
 import * as Database from "../utils/database";
+import { BATCH_SIZE } from "../utils/memory";
 
 interface ErrorViewProps {
   error: Error;
@@ -60,10 +61,7 @@ const ErrorView = (props: ErrorViewProps) => {
       let coops = "";
       let batch = 0;
       while (true) {
-        const records = await Database.queryDetail(
-          Database.BATCH_SIZE * batch,
-          Database.BATCH_SIZE
-        );
+        const records = await Database.queryDetail(BATCH_SIZE * batch, BATCH_SIZE);
         for (const record of records) {
           if (record.mode === "salmon_run") {
             coops += `${record.detail},`;
@@ -71,7 +69,7 @@ const ErrorView = (props: ErrorViewProps) => {
             battles += `${record.detail},`;
           }
         }
-        if (records.length < Database.BATCH_SIZE) {
+        if (records.length < BATCH_SIZE) {
           break;
         }
         batch += 1;
@@ -96,19 +94,15 @@ const ErrorView = (props: ErrorViewProps) => {
       let batch = 0;
       while (true) {
         let result = "";
-        const records = await Database.queryDetail(
-          Database.BATCH_SIZE * batch,
-          Database.BATCH_SIZE,
-          {
-            modes: ["salmon_run"],
-            inverted: true,
-          }
-        );
+        const records = await Database.queryDetail(BATCH_SIZE * batch, BATCH_SIZE, {
+          modes: ["salmon_run"],
+          inverted: true,
+        });
         for (let i = 0; i < records.length; i++) {
           result += `,${records[i].detail}`;
         }
         await FileAccess.FileSystem.appendFile(uri, result.slice(1), "utf8");
-        if (records.length < Database.BATCH_SIZE) {
+        if (records.length < BATCH_SIZE) {
           break;
         }
         batch += 1;
@@ -118,18 +112,14 @@ const ErrorView = (props: ErrorViewProps) => {
       batch = 0;
       while (true) {
         let result = "";
-        const records = await Database.queryDetail(
-          Database.BATCH_SIZE * batch,
-          Database.BATCH_SIZE,
-          {
-            modes: ["salmon_run"],
-          }
-        );
+        const records = await Database.queryDetail(BATCH_SIZE * batch, BATCH_SIZE, {
+          modes: ["salmon_run"],
+        });
         for (let i = 0; i < records.length; i++) {
           result += `,${records[i].detail}`;
         }
         await FileAccess.FileSystem.appendFile(uri, result.slice(1), "utf8");
-        if (records.length < Database.BATCH_SIZE) {
+        if (records.length < BATCH_SIZE) {
           break;
         }
         batch += 1;
