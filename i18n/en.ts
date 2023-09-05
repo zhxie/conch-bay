@@ -75,6 +75,10 @@ const en = {
     "If you encountered any problems using Conch Bay or have any advice, feel free to share your feedback.",
   create_a_github_issue: "Create a GitHub Issue",
   send_a_mail: "Send a mail",
+  database_notice:
+    "If you want to clear the database, please long press on Clear Database. Please export results via Export below the homepage before continuing.",
+  clear_database: "Clear Database",
+  clearing_database: "Clearing Database",
   debug_notice: "The following information is for debugging only. Please do NOT share with others.",
   diagnose_network: "Diagnose Network",
   diagnosing_network: "Diagnosing Network",

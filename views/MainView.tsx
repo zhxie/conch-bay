@@ -157,6 +157,7 @@ const MainView = () => {
   const [support, setSupport] = useState(false);
   const [clearingCache, setClearingCache] = useState(false);
   const [preloadingResources, setPreloadingResources] = useState(false);
+  const [clearingDatabase, setClearingDatabase] = useState(false);
   const [diagnosingNetwork, setDiagnosingNetwork] = useState(false);
   const [acknowledgments, setAcknowledgments] = useState(false);
   const [backgroundRefresh, setBackgroundRefresh] = useState(false);
@@ -1424,7 +1425,7 @@ const MainView = () => {
     setSupport(true);
   };
   const onSupportClose = () => {
-    if (!clearingCache && !preloadingResources && !diagnosingNetwork) {
+    if (!clearingCache && !preloadingResources && !clearingDatabase && !diagnosingNetwork) {
       setSupport(false);
     }
   };
@@ -1689,6 +1690,13 @@ const MainView = () => {
     } else {
       Linking.openURL("mailto:conch-bay@outlook.com");
     }
+  };
+  const onClearDatabasePress = async () => {
+    setClearingDatabase(true);
+    await Database.clear();
+    loadResults(20);
+    setClearingDatabase(false);
+    setSupport(false);
   };
   const onDiagnoseNetworkPress = async () => {
     setDiagnosingNetwork(true);
@@ -2214,6 +2222,17 @@ const MainView = () => {
             </Button>
             <Button style={ViewStyles.accent} onPress={onSendAMailPress}>
               <Marquee style={theme.reverseTextStyle}>{t("send_a_mail")}</Marquee>
+            </Button>
+          </DialogSection>
+          <DialogSection text={t("database_notice")} style={ViewStyles.mb4}>
+            <Button
+              loading={clearingDatabase}
+              loadingText={t("clearing_database")}
+              style={ViewStyles.danger}
+              textStyle={theme.reverseTextStyle}
+              onLongPress={onClearDatabasePress}
+            >
+              <Marquee style={theme.reverseTextStyle}>{t("clear_database")}</Marquee>
             </Button>
           </DialogSection>
           <DialogSection text={t("debug_notice")}>

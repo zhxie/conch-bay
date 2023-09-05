@@ -76,6 +76,10 @@ const ja = {
     "ホラガイベイの使用中にエラーが発生した場合、またはアドバイスがある場合は、お気軽にフィードバックをお寄せください。",
   create_a_github_issue: "GitHub Issueを作成",
   send_a_mail: "メールを送る",
+  database_notice:
+    "データベースを消去したい場合は、データーベースを消去を長押ししてください。続行する前に、ホームページ下のエクスポートを使用してリザルトをエクスポートしてください。",
+  clear_database: "データーベースを消去",
+  clearing_database: "データーベースを消去中",
   debug_notice: "次の情報はデバッグ専用です。他の人と共有しないでください。",
   diagnose_network: "ネットワークを診断",
   diagnosing_network: "ネットワークを診断中",
