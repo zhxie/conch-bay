@@ -57,10 +57,7 @@ const ErrorView = (props: ErrorViewProps) => {
     // TODO: reuse export codes.
     const uri = FileSystem.cacheDirectory + `conch-bay-export.json`;
     const images = await Database.queryImages();
-    const imageArray = Array.from(images.entries()).map(
-      (entry) =>
-        `${entry[0]}?Expires=${entry[1].expire}&Signature=${entry[1].signature}&Key-Pair-Id=${entry[1].key}`
-    );
+    const imageArray = Array.from(images.values());
     if (Constants.appOwnership === AppOwnership.Expo) {
       let battles = "";
       let coops = "";

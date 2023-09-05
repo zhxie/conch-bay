@@ -1,5 +1,4 @@
 import * as SQLite from "expo-sqlite";
-import { ImageSignature } from "../components";
 import { CoopHistoryDetailResult, VsHistoryDetailResult } from "../models/types";
 import weaponList from "../models/weapons.json";
 import { decode64Index, getAuthorityAndPath, getParams } from "./codec";
@@ -323,7 +322,7 @@ const convertFilter = (filter?: FilterProps, from?: number) => {
   return `WHERE ${condition}`;
 };
 
-let images: Map<string, ImageSignature> | undefined;
+let images: Map<string, number> | undefined;
 const strip = (image: { url: string }) => {
   image.url = getAuthorityAndPath(image.url);
 };
@@ -582,15 +581,16 @@ export const isExist = async (id: string) => {
 export const queryImages = async () => {
   const sql = "SELECT url, expire, signature, key FROM image";
   const record = await exec(sql, [], true);
-  images = new Map<string, ImageSignature>();
+  images = new Map<string, number>();
+  const result = new Map<string, string>();
   for (const row of record.rows) {
-    images.set(row["url"], {
-      expire: row["expire"],
-      signature: row["signature"],
-      key: row["key"],
-    });
+    images.set(row["url"], row["expire"]);
+    result.set(
+      row["url"],
+      `${row["url"]}?Expires=${row["expire"]}&Signature=${row["signature"]}&Key-Pair-Id=${row["key"]}`
+    );
   }
-  return images;
+  return result;
 };
 export const addResult = async (
   id: string,
@@ -605,17 +605,7 @@ export const addResult = async (
 ) => {
   await exec(
     "INSERT INTO result VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-    [
-      id,
-      time,
-      mode,
-      rule,
-      weapon,
-      players.join(","),
-      detail.replaceAll(/\?Expires=\d*&Signature=.+?&Key-Pair-Id=.+?"/g, '"'),
-      stage,
-      stats,
-    ],
+    [id, time, mode, rule, weapon, players.join(","), detail, stage, stats],
     false
   );
 };
@@ -680,8 +670,8 @@ export const addImage = async (url: string) => {
     if (!images) {
       images = new Map();
     }
-    if (!images.has(path) || expire > images.get(path)!.expire) {
-      images.set(path, { expire, signature, key });
+    if (!images.has(path) || expire > images.get(path)!) {
+      images.set(path, expire);
       await exec(
         "INSERT OR REPLACE INTO image VALUES (?, ?, ?, ?)",
         [path, expire, signature, key],

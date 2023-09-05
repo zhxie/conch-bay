@@ -41,7 +41,6 @@ import {
   FloatingActionButton,
   HStack,
   ImageContext,
-  ImageSignature,
   Marquee,
   Modal,
   Picker,
@@ -206,7 +205,7 @@ const MainView = () => {
   const [voting, setVoting] = useState<DetailVotingStatusResult>();
   const [catalog, setCatalog] = useState<CatalogResult>();
   const [groups, setGroups] = useState<GroupProps[]>();
-  const [images, setImages] = useState<Map<string, ImageSignature>>();
+  const [images, setImages] = useState<Map<string, string>>();
   const [filtered, setFiltered] = useState(0);
   const [total, setTotal] = useState(0);
   const [filter, setFilter] = useState<Database.FilterProps>();
@@ -1337,10 +1336,7 @@ const MainView = () => {
     const uri = FileSystem.cacheDirectory + `conch-bay-export.json`;
     try {
       const images = await Database.queryImages();
-      const imageArray = Array.from(images.entries()).map(
-        (entry) =>
-          `${entry[0]}?Expires=${entry[1].expire}&Signature=${entry[1].signature}&Key-Pair-Id=${entry[1].key}`
-      );
+      const imageArray = Array.from(images.values());
       if (Constants.appOwnership === AppOwnership.Expo) {
         let battles = "";
         let coops = "";
@@ -1596,13 +1592,10 @@ const MainView = () => {
       }
       if (images) {
         for (const key of resources.keys()) {
-          const uri = resources.get(key)!;
-          const signature = images.get(uri);
-          if (signature) {
-            resources.set(
-              key,
-              `${uri}?Expires=${signature.expire}&Signature=${signature.signature}&Key-Pair-Id=${signature.key}`
-            );
+          const url = resources.get(key)!;
+          const fullUrl = images.get(url);
+          if (fullUrl) {
+            resources.set(key, fullUrl);
           }
         }
       }

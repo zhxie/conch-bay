@@ -3,13 +3,7 @@ import { createContext, useContext, useMemo } from "react";
 import { ImageStyle, StyleProp } from "react-native";
 import { useTheme } from "./Styles";
 
-interface ImageSignature {
-  expire: number;
-  signature: string;
-  key: string;
-}
-
-const ImageContext = createContext<{ images: Map<string, ImageSignature> | undefined }>({
+const ImageContext = createContext<{ images: Map<string, string> | undefined }>({
   images: undefined,
 });
 
@@ -34,15 +28,8 @@ const Image = (props: ImageProps) => {
     if (!props.source) {
       return props.source;
     }
-    let uri = props.source.uri;
-    if (uri) {
-      const signature = context.images?.get(uri);
-      if (signature) {
-        uri = `${uri}?Expires=${signature.expire}&Signature=${signature.signature}&Key-Pair-Id=${signature.key}`;
-      }
-    }
     return {
-      uri,
+      uri: context.images?.get(props.source.uri ?? "") ?? props.source.uri,
       cacheKey: props.source.cacheKey,
     };
   }, [props.source, context.images]);
@@ -59,5 +46,5 @@ const Image = (props: ImageProps) => {
   );
 };
 
-export { ImageSignature, ImageContext, ImageSource };
+export { ImageContext, ImageSource };
 export default Image;
