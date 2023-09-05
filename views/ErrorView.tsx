@@ -57,6 +57,10 @@ const ErrorView = (props: ErrorViewProps) => {
     // TODO: reuse export codes.
     const uri = FileSystem.cacheDirectory + `conch-bay-export.json`;
     const images = await Database.queryImages();
+    const imageArray = Array.from(images.entries()).map(
+      (entry) =>
+        `${entry[0]}?Expires=${entry[1].expire}&Signature=${entry[1].signature}&Key-Pair-Id=${entry[1].key}`
+    );
     if (Constants.appOwnership === AppOwnership.Expo) {
       let battles = "";
       let coops = "";
@@ -84,9 +88,7 @@ const ErrorView = (props: ErrorViewProps) => {
       }
       await FileSystem.writeAsStringAsync(
         uri,
-        `{"battles":[${battles}],"coops":[${coops}],"images":${JSON.stringify(
-          Object.fromEntries(images)
-        )}}`,
+        `{"battles":[${battles}],"coops":[${coops}],"images":${JSON.stringify(imageArray)}}`,
         {
           encoding: FileSystem.EncodingType.UTF8,
         }
@@ -133,11 +135,7 @@ const ErrorView = (props: ErrorViewProps) => {
       }
       // Export images.
       await FileAccess.FileSystem.appendFile(uri, '],"images":', "utf8");
-      await FileAccess.FileSystem.appendFile(
-        uri,
-        JSON.stringify(Object.fromEntries(images)),
-        "utf8"
-      );
+      await FileAccess.FileSystem.appendFile(uri, JSON.stringify(imageArray), "utf8");
       await FileAccess.FileSystem.appendFile(uri, "}", "utf8");
     }
 

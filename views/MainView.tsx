@@ -1260,7 +1260,8 @@ const MainView = () => {
   };
   const onImportResults = async (
     battles: VsHistoryDetailResult[],
-    coops: CoopHistoryDetailResult[]
+    coops: CoopHistoryDetailResult[],
+    images: string[]
   ) => {
     const n = battles.length + coops.length;
     // There is a bug introduced in 1.9.0 where all IDs imported from Salmonia3+ backup are suffixed with undefined.
@@ -1313,6 +1314,7 @@ const MainView = () => {
           })
       )
     );
+    await Promise.all(images.map((image) => ok(Database.addImage(image))));
     return {
       skip,
       fail:
@@ -1334,6 +1336,10 @@ const MainView = () => {
     const uri = FileSystem.cacheDirectory + `conch-bay-export.json`;
     try {
       const images = await Database.queryImages();
+      const imageArray = Array.from(images.entries()).map(
+        (entry) =>
+          `${entry[0]}?Expires=${entry[1].expire}&Signature=${entry[1].signature}&Key-Pair-Id=${entry[1].key}`
+      );
       if (Constants.appOwnership === AppOwnership.Expo) {
         let battles = "";
         let coops = "";
@@ -1361,9 +1367,7 @@ const MainView = () => {
         }
         await FileSystem.writeAsStringAsync(
           uri,
-          `{"battles":[${battles}],"coops":[${coops}],"images":${JSON.stringify(
-            Object.fromEntries(images)
-          )}}`,
+          `{"battles":[${battles}],"coops":[${coops}],"images":${JSON.stringify(imageArray)}}`,
           {
             encoding: FileSystem.EncodingType.UTF8,
           }
@@ -1410,11 +1414,7 @@ const MainView = () => {
         }
         // Export images.
         await FileAccess.FileSystem.appendFile(uri, '],"images":', "utf8");
-        await FileAccess.FileSystem.appendFile(
-          uri,
-          JSON.stringify(Object.fromEntries(images)),
-          "utf8"
-        );
+        await FileAccess.FileSystem.appendFile(uri, JSON.stringify(imageArray), "utf8");
         await FileAccess.FileSystem.appendFile(uri, "}", "utf8");
       }
 

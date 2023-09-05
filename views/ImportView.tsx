@@ -36,8 +36,8 @@ enum ImportStreamMode {
   Unknown,
   Battles = '"battles":[',
   Coops = '"coops":[',
+  Images = '"images":[',
 }
-
 class ImportStreamParser {
   mode = ImportStreamMode.Unknown;
   drained = 0;
@@ -46,13 +46,15 @@ class ImportStreamParser {
   parse = (bytes: Uint8Array) => {
     // For prefix position.
     let battlesPrefix = 0,
-      coopsPrefix = 0;
+      coopsPrefix = 0,
+      imagesPrefix = 0;
     // For result parsing.
     let bracket = 0,
       quote = false;
     let bracketPos = -1;
     const battles: number[] = [],
-      coops: number[] = [];
+      coops: number[] = [],
+      images: number[] = [];
 
     let drainable = 0;
     // HACK: avoid spread syntax which may cause stack oversize.
@@ -90,15 +92,28 @@ class ImportStreamParser {
       } else {
         coopsPrefix = 0;
       }
+      if (this.buffer[i] === ImportStreamMode.Images.charCodeAt(imagesPrefix)) {
+        imagesPrefix += 1;
+      } else {
+        imagesPrefix = 0;
+      }
       if (battlesPrefix === ImportStreamMode.Battles.length) {
         this.mode = ImportStreamMode.Battles;
         battlesPrefix = 0;
         coopsPrefix = 0;
+        imagesPrefix = 0;
         drainable = i + 1;
       } else if (coopsPrefix === ImportStreamMode.Coops.length) {
         this.mode = ImportStreamMode.Coops;
         battlesPrefix = 0;
         coopsPrefix = 0;
+        imagesPrefix = 0;
+        drainable = i + 1;
+      } else if (imagesPrefix === ImportStreamMode.Images.length) {
+        this.mode = ImportStreamMode.Images;
+        battlesPrefix = 0;
+        coopsPrefix = 0;
+        imagesPrefix = 0;
         drainable = i + 1;
       }
 
@@ -108,6 +123,7 @@ class ImportStreamParser {
           break;
         case ImportStreamMode.Battles:
         case ImportStreamMode.Coops:
+        case ImportStreamMode.Images:
           if (this.buffer[i] === '"'.charCodeAt(0)) {
             quote = !quote;
           }
@@ -135,6 +151,11 @@ class ImportStreamParser {
                       coops.push(byte);
                     }
                     break;
+                  case ImportStreamMode.Images:
+                    images.push(",".charCodeAt(0));
+                    for (const byte of result) {
+                      images.push(byte);
+                    }
                 }
                 drainable = i + 1;
               }
@@ -158,9 +179,16 @@ class ImportStreamParser {
       coops[0] = "[".charCodeAt(0);
     }
     coops.push("]".charCodeAt(0));
+    if (images.length === 0) {
+      images.push("[".charCodeAt(0));
+    } else {
+      images[0] = "[".charCodeAt(0);
+    }
+    images.push("]".charCodeAt(0));
     return {
       battles: JSON.parse(Buffer.from(battles).toString()),
       coops: JSON.parse(Buffer.from(coops).toString()),
+      images: JSON.parse(Buffer.from(images).toString()),
     };
   };
 }
@@ -313,7 +341,8 @@ interface ImportViewProps {
   onBegin: () => void;
   onResults: (
     battles: VsHistoryDetailResult[],
-    coops: CoopHistoryDetailResult[]
+    coops: CoopHistoryDetailResult[],
+    images: string[]
   ) => Promise<ImportResult>;
   onComplete: (n: number) => void;
 }
@@ -352,7 +381,11 @@ const ImportView = (props: ImportViewProps) => {
       const results = JSON.parse(await FileSystem.readAsStringAsync(uri));
       const n = results["battles"].length + results["coops"].length;
       showBanner(BannerLevel.Info, t("loading_n_results", { n }));
-      const { skip, fail, error } = await props.onResults(results["battles"], results["coops"]);
+      const { skip, fail, error } = await props.onResults(
+        results["battles"],
+        results["coops"],
+        results["images"] ?? []
+      );
       showResultBanner(n, skip, fail, error);
       imported = n - fail - skip;
     } catch (e) {
@@ -388,7 +421,7 @@ const ImportView = (props: ImportViewProps) => {
         const text = decode64(encoded);
         const results = parser.parse(text);
         n += results.battles.length + results.coops.length;
-        const result = await props.onResults(results.battles, results.coops);
+        const result = await props.onResults(results.battles, results.coops, results.images);
         skip += result.skip;
         fail += result.fail;
         if (!error && result.error) {
@@ -557,7 +590,7 @@ const ImportView = (props: ImportViewProps) => {
           const result = parseFleece(row["body"], battleSharedKeys);
           battles.push({ vsHistoryDetail: result });
         }
-        const result = await props.onResults(battles, []);
+        const result = await props.onResults(battles, [], []);
         skip += result.skip;
         fail += result.fail;
         if (!error) {
@@ -582,7 +615,7 @@ const ImportView = (props: ImportViewProps) => {
           const result = parseFleece(row["body"], coopSharedKeys);
           coops.push({ coopHistoryDetail: result });
         }
-        const result = await props.onResults([], coops);
+        const result = await props.onResults([], coops, []);
         skip += result.skip;
         fail += result.fail;
         if (!error) {
@@ -713,7 +746,7 @@ const ImportView = (props: ImportViewProps) => {
         }
         coops.push(coop);
       }
-      const { skip, fail, error } = await props.onResults([], coops);
+      const { skip, fail, error } = await props.onResults([], coops, []);
       showResultBanner(n, skip, fail, error);
       imported = n - fail - skip;
     } catch (e) {
@@ -959,7 +992,7 @@ const ImportView = (props: ImportViewProps) => {
           });
         }
       }
-      const { skip, fail, error } = await props.onResults([], coops);
+      const { skip, fail, error } = await props.onResults([], coops, []);
       showResultBanner(n, skip, fail, error);
       imported = n - fail - skip;
     } catch (e) {
