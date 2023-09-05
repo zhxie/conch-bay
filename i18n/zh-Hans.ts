@@ -58,14 +58,14 @@ const zhHans = {
   update: "更新",
   support: "支持",
   language_notice:
-    "如果您的游戏语言与显示语言不一致，您可以在此修改。这将使法螺湾加载对应语言的记录。",
+    "如果您的游戏语言与显示语言不一致，您可以在此修改。这将使法螺湾加载对应语言的记录与鱿鱼圈3。",
   change_game_language_language: "修改游戏语言 (%{language})",
   change_display_language_language: "修改显示语言 (%{language})",
   relog_in_notice: "如果法螺湾无法获取令牌，您可以重新登录。",
   relog_in: "重新登录",
   relog_in_with_session_token: "通过会话令牌重新登录",
   resource_notice:
-    "如果法螺湾无法加载图片，您可以清除缓存或预加载资源。请注意，由于鱿鱼圈3的限制，法螺湾仅能预加载部分图片。",
+    "如果法螺湾无法加载图像，您可以清除缓存或预加载资源。请注意，由于鱿鱼圈3的限制，法螺湾仅能预加载部分图片。",
   clear_cache: "清除缓存",
   clearing_cache: "清除缓存中",
   preload_resources: "预加载资源",

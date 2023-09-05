@@ -58,14 +58,14 @@ const zhHant = {
   update: "更新",
   support: "支援",
   language_notice:
-    "如果您的遊戲語言與顯示語言不一致，您可以在此修改。這將使法螺灣載入對應語言的記錄。",
+    "如果您的遊戲語言與顯示語言不一致，您可以在此修改。這將使法螺灣載入對應語言的記錄與魷魚圈3。",
   change_game_language_language: "修改遊戲語言 (%{language})",
   change_display_language_language: "修改顯示語言 (%{language})",
   relog_in_notice: "如果法螺灣無法獲取令牌，您可以重新登錄。",
   relog_in: "重新登錄",
   relog_in_with_session_token: "通過會話令牌重新登錄",
   resource_notice:
-    "如果法螺灣無法載入圖片，您可以清除緩存或預載入資源。請注意，由於魷魚圈3的限制，法螺灣僅能預載入部分圖片。",
+    "如果法螺灣無法載入圖像，您可以清除緩存或預載入資源。請注意，由於魷魚圈3的限制，法螺灣僅能預載入部分圖像。",
   clear_cache: "清除緩存",
   clearing_cache: "清除緩存中",
   preload_resources: "預載入資源",
