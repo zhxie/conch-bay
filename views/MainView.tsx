@@ -154,7 +154,8 @@ const MainView = () => {
   const [support, setSupport] = useState(false);
   const [clearingCache, setClearingCache] = useState(false);
   const [preloadingResources, setPreloadingResources] = useState(false);
-  const [clearingDatabase, setClearingDatabase] = useState(false);
+  const [clearingImageDatabase, setClearingImageDatabase] = useState(false);
+  const [clearingResultDatabase, setClearingResultDatabase] = useState(false);
   const [diagnosingNetwork, setDiagnosingNetwork] = useState(false);
   const [acknowledgments, setAcknowledgments] = useState(false);
   const [backgroundRefresh, setBackgroundRefresh] = useState(false);
@@ -1445,7 +1446,13 @@ const MainView = () => {
     setSupport(true);
   };
   const onSupportClose = () => {
-    if (!clearingCache && !preloadingResources && !clearingDatabase && !diagnosingNetwork) {
+    if (
+      !clearingCache &&
+      !preloadingResources &&
+      !clearingImageDatabase &&
+      !clearingResultDatabase &&
+      !diagnosingNetwork
+    ) {
       setSupport(false);
     }
   };
@@ -1702,12 +1709,16 @@ const MainView = () => {
       Linking.openURL("mailto:conch-bay@outlook.com");
     }
   };
-  const onClearDatabasePress = async () => {
-    setClearingDatabase(true);
-    await Database.clear();
+  const onClearImageDatabasePress = async () => {
+    setClearingImageDatabase(true);
+    await Database.clearImage();
+    setClearingImageDatabase(false);
+  };
+  const onClearResultDatabasePress = async () => {
+    setClearingResultDatabase(true);
+    await Database.clearResult();
     loadResults(20);
-    setClearingDatabase(false);
-    setSupport(false);
+    setClearingResultDatabase(false);
   };
   const onDiagnoseNetworkPress = async () => {
     setDiagnosingNetwork(true);
@@ -2241,13 +2252,22 @@ const MainView = () => {
             </DialogSection>
             <DialogSection text={t("database_notice")} style={ViewStyles.mb4}>
               <Button
-                loading={clearingDatabase}
-                loadingText={t("clearing_database")}
+                loading={clearingImageDatabase}
+                loadingText={t("clearing_image_database")}
+                style={[ViewStyles.mb2, ViewStyles.danger]}
+                textStyle={theme.reverseTextStyle}
+                onLongPress={onClearImageDatabasePress}
+              >
+                <Marquee style={theme.reverseTextStyle}>{t("clear_image_database")}</Marquee>
+              </Button>
+              <Button
+                loading={clearingResultDatabase}
+                loadingText={t("clearing_result_database")}
                 style={ViewStyles.danger}
                 textStyle={theme.reverseTextStyle}
-                onLongPress={onClearDatabasePress}
+                onLongPress={onClearResultDatabasePress}
               >
-                <Marquee style={theme.reverseTextStyle}>{t("clear_database")}</Marquee>
+                <Marquee style={theme.reverseTextStyle}>{t("clear_result_database")}</Marquee>
               </Button>
             </DialogSection>
             <DialogSection text={t("debug_notice")}>

@@ -690,12 +690,14 @@ export const addImage = async (url: string) => {
     }
   }
 };
-export const remove = async (id: string) => {
+export const removeResult = async (id: string) => {
   await exec("DELETE FROM result WHERE id = ?", [id], false);
 };
-export const clear = async () => {
+export const clearResult = async () => {
   await exec("DELETE FROM result", [], false);
   await exec("VACUUM result", [], false);
+};
+export const clearImage = async () => {
   await exec("DELETE FROM image", [], false);
   await exec("VACUUM image", [], false);
 };
