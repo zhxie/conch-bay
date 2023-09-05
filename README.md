@@ -79,6 +79,21 @@ Run the following command to validate a results JSON.
 python3 tools/validate.py <PATH_TO_JSON>
 ```
 
+## Results JSON
+
+Results JSON is a flexible file structure used by Conch Bay in importing and exporting and can be converted back into SplatNet 3 format easily. A results JSON should conform to the following format.
+
+```json
+{
+  // An array of battle results.
+  "battles": VsHistoryDetailResult[],
+  // An array of coop results.
+  "coops": CoopHistoryDetailResult[],
+  // An array of image URLs with signatures. Using images field can save memory from long image URLs in each result. Available since 1.10.0.
+  "images": string[] | undefined
+}
+```
+
 ## License
 
 Conch Bay is licensed under [the MIT License](/LICENSE).
