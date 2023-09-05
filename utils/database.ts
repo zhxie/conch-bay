@@ -1,10 +1,10 @@
 import * as SQLite from "expo-sqlite";
 import { CoopHistoryDetailResult, VsHistoryDetailResult } from "../models/types";
 import weaponList from "../models/weapons.json";
-import { decode64Index, getAuthorityAndPath, getParams } from "./codec";
+import { decode64Index, getAuthorityAndPath } from "./codec";
 import { BATCH_SIZE } from "./memory";
 import { countBattle, countCoop } from "./stats";
-import { getImageHash, getVsSelfPlayer } from "./ui";
+import { getImageExpires, getImageHash, getVsSelfPlayer } from "./ui";
 
 let db: SQLite.SQLiteDatabase | undefined;
 
@@ -185,7 +185,7 @@ export const upgrade = async () => {
     await beginTransaction();
     try {
       await exec(
-        "CREATE TABLE IF NOT EXISTS image ( url TEXT PRIMARY KEY, expire INT NOT NULL, signature TEXT NOT NULL, key TEXT NOT NULL )",
+        "CREATE TABLE IF NOT EXISTS image ( url TEXT PRIMARY KEY, expire INT NOT NULL, full TEXT NOT NULL )",
         [],
         false
       );
@@ -579,16 +579,13 @@ export const isExist = async (id: string) => {
   return record.rows.length > 0;
 };
 export const queryImages = async () => {
-  const sql = "SELECT url, expire, signature, key FROM image";
+  const sql = "SELECT url, expire, full FROM image";
   const record = await exec(sql, [], true);
   images = new Map<string, number>();
   const result = new Map<string, string>();
   for (const row of record.rows) {
     images.set(row["url"], row["expire"]);
-    result.set(
-      row["url"],
-      `${row["url"]}?Expires=${row["expire"]}&Signature=${row["signature"]}&Key-Pair-Id=${row["key"]}`
-    );
+    result.set(row["url"], row["full"]);
   }
   return result;
 };
@@ -656,28 +653,17 @@ export const addCoop = async (coop: CoopHistoryDetailResult) => {
   ]);
 };
 export const addImage = async (url: string) => {
-  const params = getParams(url);
-  let expire: number;
-  try {
-    expire = parseInt(params["Expires"]);
-  } catch {
+  const expire = getImageExpires(url);
+  if (!expire) {
     return;
   }
-  const signature = params["Signature"];
-  const key = params["Key-Pair-Id"];
-  if (expire && signature && key) {
-    const path = getAuthorityAndPath(url);
-    if (!images) {
-      images = new Map();
-    }
-    if (!images.has(path) || expire > images.get(path)!) {
-      images.set(path, expire);
-      await exec(
-        "INSERT OR REPLACE INTO image VALUES (?, ?, ?, ?)",
-        [path, expire, signature, key],
-        false
-      );
-    }
+  const path = getAuthorityAndPath(url);
+  if (!images) {
+    images = new Map();
+  }
+  if (!images.has(path) || expire > images.get(path)!) {
+    images.set(path, expire);
+    await exec("INSERT OR REPLACE INTO image VALUES (?, ?, ?)", [path, expire, url], false);
   }
 };
 export const removeResult = async (id: string) => {

@@ -3,6 +3,14 @@ import { Color } from "../components";
 import { VsMode, VsHistoryDetailResult, CoopRule, Gear } from "../models/types";
 import { getAuthorityAndPath } from "./codec";
 
+export const getImageExpires = (image: string) => {
+  const regex = /Expires=(\d*)&/;
+  const match = regex.exec(image);
+  if (!match) {
+    return null;
+  }
+  return parseInt(match[1]);
+};
 export const getImageCacheKey = (image: string) => {
   const path = getAuthorityAndPath(image);
   // HACK: we only take SplatNet 3 and Splatoon3.ink into consideration now.
