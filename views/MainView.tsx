@@ -2220,14 +2220,14 @@ const MainView = () => {
             <Button
               loading={diagnosingNetwork}
               loadingText={t("diagnosing_network")}
-              style={[sessionToken.length > 0 && ViewStyles.mb2, ViewStyles.accent]}
+              style={[ViewStyles.mb2, ViewStyles.accent]}
               textStyle={theme.reverseTextStyle}
               onPress={onDiagnoseNetworkPress}
             >
               <Marquee style={theme.reverseTextStyle}>{t("diagnose_network")}</Marquee>
             </Button>
             {sessionToken.length > 0 && (
-              <VStack>
+              <VStack style={ViewStyles.mb2}>
                 <Button
                   style={[ViewStyles.mb2, ViewStyles.accent]}
                   onPress={onCopySessionTokenPress}
@@ -2240,17 +2240,14 @@ const MainView = () => {
                 >
                   <Marquee style={theme.reverseTextStyle}>{t("copy_web_service_token")}</Marquee>
                 </Button>
-                <Button
-                  style={[ViewStyles.mb2, ViewStyles.accent]}
-                  onPress={onCopyBulletTokenPress}
-                >
+                <Button style={ViewStyles.accent} onPress={onCopyBulletTokenPress}>
                   <Marquee style={theme.reverseTextStyle}>{t("copy_bullet_token")}</Marquee>
-                </Button>
-                <Button style={ViewStyles.accent} onPress={onExportDatabasePress}>
-                  <Marquee style={theme.reverseTextStyle}>{t("export_database")}</Marquee>
                 </Button>
               </VStack>
             )}
+            <Button style={ViewStyles.accent} onPress={onExportDatabasePress}>
+              <Marquee style={theme.reverseTextStyle}>{t("export_database")}</Marquee>
+            </Button>
           </DialogSection>
         </CustomDialog>
       </Modal>
