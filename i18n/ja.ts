@@ -219,9 +219,8 @@ const ja = {
   import_salmdroidnw_backup: "salmdroidNWバックアップをインポート",
   "import_salmonia3+_backup": "Salmonia3+バックアップをインポート",
   import_ikawidget3_ikax3_notice:
-    "ikawidget3に書き出してZIP形式で解凍し、db.sqlite3という名前のファイルを各フォルダにインポートしてください。IKAX3には暗号化されたデータが含まれているため、一部の情報が間違っている可能性があることに注意してください。",
-  import_salmdroidnw_backup_notice:
-    "salmdroidNWにバックアップして解凍し、1という名前のファイルをインポートしてください。",
+    "ikawidget3に書き出してインポートしてください。IKAX3には暗号化されたデータが含まれているため、一部の情報が間違っている可能性があることに注意してください。",
+  import_salmdroidnw_backup_notice: "salmdroidNWにバックアップしてインポートしてください。",
   "import_salmonia3+_backup_notice":
     "Salmonia3+にJSONとしてバックアップしてインポートしてください。Salmonia3+のバックアップにはリザルトのすべてのデータが含まれていないため、一部の情報が欠落している可能性があることに注意してください。",
   random: "ランダム",

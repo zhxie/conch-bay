@@ -212,8 +212,8 @@ const zhHans = {
   import_salmdroidnw_backup: "导入salmdroidNW备份",
   "import_salmonia3+_backup": "导入Salmonia3+备份",
   import_ikawidget3_ikax3_notice:
-    "请在ikawidget3中导出，以ZIP格式解压缩，并分别导入各项文件夹中名为db.sqlite3的文件。请注意，由于IKAX3包含加密数据，部分信息可能有误。",
-  import_salmdroidnw_backup_notice: "请在salmdroidNW中备份，解压缩，并导入名为1的文件。",
+    "请在ikawidget3中导出并导入。请注意，由于IKAX3包含加密数据，部分信息可能有误。",
+  import_salmdroidnw_backup_notice: "请在salmdroidNW中备份并导入。",
   "import_salmonia3+_backup_notice":
     "请在Salmonia3+中备份为JSON并导入。请注意，由于Salmonia3+备份并未包含记录的所有数据，部分信息可能缺失。",
   random: "随机",

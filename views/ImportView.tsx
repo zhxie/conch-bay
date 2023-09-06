@@ -501,7 +501,7 @@ const ImportView = (props: ImportViewProps) => {
   };
   const onImportIkawidget3Ikax3ContinuePress = async () => {
     setImporting(true);
-    const uri = `${FileSystem.documentDirectory!}ikawidget3.db`;
+    let uri = "";
     let imported = 0;
     try {
       const doc = await DocumentPicker.getDocumentAsync({ copyToCacheDirectory: true });
@@ -509,44 +509,80 @@ const ImportView = (props: ImportViewProps) => {
         setImporting(false);
         return;
       }
-      await FileSystem.copyAsync({
-        from: doc.assets[0].uri,
-        to: uri,
-      });
+      uri = doc.assets[0].uri;
 
       setIkawidget3(false);
       props.onBegin();
-      const battles: VsHistoryDetailResult[] = [];
-      const coops: CoopHistoryDetailResult[] = [];
-      const SQLite = await import("react-native-quick-sqlite");
-      const db = SQLite.open({ name: "ikawidget3.db" });
-      const info = await db.executeAsync("SELECT body FROM kv_info WHERE `key` = ?", [
-        "SharedKeys",
+      const Zip = await import("react-native-zip-archive");
+      await Zip.unzip(uri, `${FileSystem.cacheDirectory!}/ikawidget3`);
+      const account = JSON.parse(
+        await FileSystem.readAsStringAsync(`${FileSystem.cacheDirectory}/ikawidget3/account.json`)
+      );
+      const accountId = account["id"];
+      await Promise.all([
+        FileSystem.copyAsync({
+          from: `${FileSystem.cacheDirectory!}/ikawidget3/${accountId}/vsResult.cblite2/db.sqlite3`,
+          to: `${FileSystem.documentDirectory!}ikawidget3-battle.db`,
+        }),
+        FileSystem.copyAsync({
+          from: `${FileSystem.cacheDirectory!}/ikawidget3/${accountId}/coopResult.cblite2/db.sqlite3`,
+          to: `${FileSystem.documentDirectory!}ikawidget3-coop.db`,
+        }),
       ]);
-      const sharedKeys = parseFleece(info.rows!.item(0)["body"]);
-      const count = await db.executeAsync("SELECT COUNT(1) FROM kv_default");
-      const n = count.rows!.item(0)["COUNT(1)"];
+      const SQLite = await import("react-native-quick-sqlite");
+
+      const battleDb = SQLite.open({ name: "ikawidget3-battle.db" });
+      const coopDb = SQLite.open({ name: "ikawidget3-coop.db" });
+      const counts = await Promise.all([
+        battleDb.executeAsync("SELECT COUNT(1) FROM kv_default"),
+        coopDb.executeAsync("SELECT COUNT(1) FROM kv_default"),
+      ]);
+      const n = counts[0].rows!.item(0)["COUNT(1)"] + counts[1].rows!.item(0)["COUNT(1)"];
       showBanner(BannerLevel.Info, t("loading_n_results", { n }));
       let batch = 0;
       let skip = 0,
         fail = 0;
       let error: Error | undefined;
+      const battleInfo = await battleDb.executeAsync("SELECT body FROM kv_info WHERE `key` = ?", [
+        "SharedKeys",
+      ]);
+      const battleSharedKeys = parseFleece(battleInfo.rows!.item(0)["body"]);
       while (true) {
-        const record = await db.executeAsync(
+        const battles: VsHistoryDetailResult[] = [];
+        const record = await battleDb.executeAsync(
           `SELECT body FROM kv_default LIMIT ${BATCH_SIZE} OFFSET ${BATCH_SIZE * batch}`
         );
         const results = record.rows!._array;
         for (const row of results) {
-          const result = parseFleece(row["body"], sharedKeys);
-          if (result["__typename"] === "VsHistoryDetail") {
-            battles.push({ vsHistoryDetail: result });
-          } else if (result["__typename"] === "CoopHistoryDetail") {
-            coops.push({ coopHistoryDetail: result });
-          } else {
-            throw new Error(`unexpected type name ${result["__typename"]}`);
-          }
+          const result = parseFleece(row["body"], battleSharedKeys);
+          battles.push({ vsHistoryDetail: result });
         }
-        const result = await props.onResults(battles, coops);
+        const result = await props.onResults(battles, []);
+        skip += result.skip;
+        fail += result.fail;
+        if (!error) {
+          error = result.error;
+        }
+        if (results.length < BATCH_SIZE) {
+          break;
+        }
+        batch += 1;
+      }
+      const coopInfo = await coopDb.executeAsync("SELECT body FROM kv_info WHERE `key` = ?", [
+        "SharedKeys",
+      ]);
+      const coopSharedKeys = parseFleece(coopInfo.rows!.item(0)["body"]);
+      while (true) {
+        const coops: CoopHistoryDetailResult[] = [];
+        const record = await coopDb.executeAsync(
+          `SELECT body FROM kv_default LIMIT ${BATCH_SIZE} OFFSET ${BATCH_SIZE * batch}`
+        );
+        const results = record.rows!._array;
+        for (const row of results) {
+          const result = parseFleece(row["body"], coopSharedKeys);
+          coops.push({ coopHistoryDetail: result });
+        }
+        const result = await props.onResults([], coops);
         skip += result.skip;
         fail += result.fail;
         if (!error) {
@@ -566,8 +602,25 @@ const ImportView = (props: ImportViewProps) => {
     // Clean up.
     await Promise.all([
       FileSystem.deleteAsync(uri, { idempotent: true }),
-      FileSystem.deleteAsync(`${uri}-shm`, { idempotent: true }),
-      FileSystem.deleteAsync(`${uri}-wal`, { idempotent: true }),
+      FileSystem.deleteAsync(`${FileSystem.cacheDirectory!}/ikawidget3`, { idempotent: true }),
+      FileSystem.deleteAsync(`${FileSystem.documentDirectory!}ikawidget3-battle.db`, {
+        idempotent: true,
+      }),
+      FileSystem.deleteAsync(`${FileSystem.documentDirectory!}ikawidget3-battle.db-shm`, {
+        idempotent: true,
+      }),
+      FileSystem.deleteAsync(`${FileSystem.documentDirectory!}ikawidget3-battle.db-wal`, {
+        idempotent: true,
+      }),
+      FileSystem.deleteAsync(`${FileSystem.documentDirectory!}ikawidget3-coop.db`, {
+        idempotent: true,
+      }),
+      FileSystem.deleteAsync(`${FileSystem.documentDirectory!}ikawidget3-coop.db-shm`, {
+        idempotent: true,
+      }),
+      FileSystem.deleteAsync(`${FileSystem.documentDirectory!}ikawidget3-coop.db-wal`, {
+        idempotent: true,
+      }),
     ]);
     props.onComplete(imported);
     setImporting(false);
@@ -593,7 +646,11 @@ const ImportView = (props: ImportViewProps) => {
       setSalmdroidnw(false);
       props.onBegin();
       const coops: CoopHistoryDetailResult[] = [];
-      const data = JSON.parse(await FileSystem.readAsStringAsync(uri));
+      const Zip = await import("react-native-zip-archive");
+      await Zip.unzip(uri, `${FileSystem.cacheDirectory!}/salmdroidNW`);
+      const data = JSON.parse(
+        await FileSystem.readAsStringAsync(`${FileSystem.cacheDirectory!}/salmdroidNW/1`)
+      );
       const results = JSON.parse(data["results"]);
       const n = results.length;
       showBanner(BannerLevel.Info, t("loading_n_results", { n }));
@@ -664,7 +721,10 @@ const ImportView = (props: ImportViewProps) => {
     }
 
     // Clean up.
-    await FileSystem.deleteAsync(uri, { idempotent: true });
+    await Promise.all([
+      FileSystem.deleteAsync(uri, { idempotent: true }),
+      FileSystem.deleteAsync(`${FileSystem.cacheDirectory!}/salmdroidNW`, { idempotent: true }),
+    ]);
     props.onComplete(imported);
     setImporting(false);
     if (imported >= 0) {
@@ -1040,7 +1100,7 @@ const ImportView = (props: ImportViewProps) => {
         >
           <Dialog icon="info" text={t("import_salmdroidnw_backup_notice")}>
             <Button
-              disabled={importing}
+              disabled={Constants.appOwnership === AppOwnership.Expo || importing}
               style={ViewStyles.accent}
               textStyle={theme.reverseTextStyle}
               onPress={onImportSalmdroidnwBackupContinuePress}

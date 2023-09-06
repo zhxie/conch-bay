@@ -220,9 +220,8 @@ const en = {
   import_salmdroidnw_backup: "Import salmdroidNW Backup",
   "import_salmonia3+_backup": "Import Salmonia3+ Backup",
   import_ikawidget3_ikax3_notice:
-    "Please export in ikawidget3, extract it in ZIP format and import the file named db.sqlite3 in each folder. Please note, some information may be wrong since IKAX3 contains encrypted data.",
-  import_salmdroidnw_backup_notice:
-    "Please backup in salmdroidNW, extract it and import the file named 1.",
+    "Please export in ikawidget3 and import it. Please note, some information may be wrong since IKAX3 contains encrypted data.",
+  import_salmdroidnw_backup_notice: "Please backup in salmdroidNW and import it.",
   "import_salmonia3+_backup_notice":
     "Please backup as JSON in Salmonia3+ and import it. Please note, some information may be missing since the Salmonia3+ backup does not contain all the data of results.",
   random: "Random",

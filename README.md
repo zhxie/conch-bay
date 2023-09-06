@@ -41,7 +41,7 @@ python3 tools/convert_stat_ink_salmon_run_json.py <PATH_TO_EXTRACTED_STAT_INK_SA
 
 ### Import data from ikawidget3
 
-Run the following command to extract and convert data from a ikawidget3 database IKAX3 into `conch-bay-import.json`. You can then import it into Conch Bay.
+Run the following command to extract and convert data from a ikawidget3 database IKAX3 into `conch-bay-import.json`. You can then import it into Conch Bay. Notice that some information may be wrong since IKAX3 contains encrypted data.
 
 ```sh
 python3 tools/convert_ikax3.py <PATH_TO_IKAX3>
@@ -57,7 +57,7 @@ python3 tools/convert_salmdroidnw_backup.py <PATH_TO_SALMDROIDNW_BACKUP>
 
 ### Import data from Salmonia3+
 
-Run the following command to extract and convert data from a Salmonia3+ backup into `conch-bay-import.json`. You can then import it into Conch Bay. Notice that some information may be wrong since IKAX3 contains encrypted data.
+Run the following command to extract and convert data from a Salmonia3+ backup into `conch-bay-import.json`. You can then import it into Conch Bay. Notice that some information may be missing since the Salmonia3+ backup does not contain all the data of results.
 
 ```sh
 python3 tools/convert_salmonia3+_backup.py <PATH_TO_SALMONIA3+_PLAIN_JSON_BACKUP>
