@@ -8,7 +8,7 @@ import { getImageHash, getVsSelfPlayer } from "./ui";
 
 let db: SQLite.SQLiteDatabase | undefined = undefined;
 
-const VERSION = 5;
+const VERSION = 6;
 
 export const open = async () => {
   if (db) {
@@ -152,7 +152,7 @@ export const upgrade = async () => {
       throw e;
     }
   }
-  if (version < 5) {
+  if (version < 6) {
     await beginTransaction();
     try {
       let batch = 0;
@@ -174,7 +174,7 @@ export const upgrade = async () => {
         }
         batch += 1;
       }
-      await exec("PRAGMA user_version=5", [], false);
+      await exec("PRAGMA user_version=6", [], false);
       await commit();
     } catch (e) {
       await rollback();

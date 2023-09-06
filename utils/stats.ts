@@ -469,7 +469,7 @@ export const countCoop = (coop: CoopHistoryDetailResult): CoopStats => {
     id: boss[0],
     appear: boss[1].appear,
     defeat: boss[1].defeat,
-    defeatTeam: boss[1].defeat + boss[1].defeatTeam,
+    defeatTeam: boss[1].defeatTeam,
   }));
   bosses.sort((a, b) => decode64Index(a.id) - decode64Index(b.id));
   const waves = Array.from(waveMap, (wave) => {
@@ -636,7 +636,7 @@ export const addCoopStats = (...coops: CoopStats[]): CoopsStats => {
     id: boss[0],
     appear: boss[1].appear,
     defeat: boss[1].defeat,
-    defeatTeam: boss[1].defeat + boss[1].defeatTeam,
+    defeatTeam: boss[1].defeatTeam,
   }));
   bosses.sort((a, b) => decode64Index(a.id) - decode64Index(b.id));
   const stages = Array.from(stageMap, (stage) => ({
