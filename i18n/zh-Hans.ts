@@ -9,10 +9,10 @@ const zhHans = {
   // UI.
   log_in: "登录",
   log_in_notice:
-    "法螺湾需要获取令牌以访问鱿鱼圈3。该过程涉及向非任天堂的imink或nxapi发送含有最少的非身份信息的安全请求。这些信息不会被记录或存储，请参阅隐私政策以获取更多信息。",
+    "您可以在不登录的情况下使用法螺湾查看日程与鱿鱼须商城，导入记录并通过统计与趋势分析。登录将允许您加载记录、好友与目录，显示持有的装备以及访问鱿鱼圈3。登录需要向任天堂以外的imink或nxapi发送非识别信息，这些信息不会被记录或存储，请参阅隐私政策以获取更多信息。",
   log_in_continue: "我已阅读并理解",
   alternative_log_in_notice:
-    "如果您拥有会话令牌并希望跳过由法螺湾获取令牌，您也可以复制会话令牌并完成登录。",
+    "如果您拥有会话令牌并希望跳过由法螺湾获取会话令牌，您也可以复制会话令牌并完成登录。",
   log_in_with_session_token: "通过会话令牌登录",
   logging_in: "获取令牌中",
   failed_to_acquire_session_token: "未能获取会话令牌 (%{error})",
@@ -73,7 +73,7 @@ const zhHans = {
   feedback_notice: "如果您在使用法螺湾时遇到任何问题或有任何建议，请随时分享您的反馈。",
   create_a_github_issue: "创建GitHub Issue",
   send_a_mail: "发送邮件",
-  database_notice: "如果您想清除数据库，请长按清除数据库。请在继续之前通过主页下方的导出导出记录。",
+  database_notice: "如果您想清除数据库，请长按清除数据库。请在继续之前完成备份。",
   clear_database: "清除数据库",
   clearing_database: "清除数据库中",
   debug_notice: "以下信息仅用于调试。请不要与他人分享。",

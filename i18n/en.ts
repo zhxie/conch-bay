@@ -9,10 +9,10 @@ const en = {
   // UI.
   log_in: "Log In",
   log_in_notice:
-    "Conch Bay requires acquiring tokens to access SplatNet 3. The process involves making a secure request to non-Nintendo imink or nxapi with minimal, non-identifying information. This information will not be logged or stored, please see the privacy policy for more information.",
+    "You can use Conch Bay to view schedules and SplatNet Shop, import results, and analyze stats and trends without logging in. Logging in will allow you to load results, friends and catalog, display owned gears, and access SplatNet 3. Logging in involves sending non-identifying information to non-Nintendo imink or nxapi. This information will not be logged or stored, please see the privacy policy for more information.",
   log_in_continue: "I have read and understand",
   alternative_log_in_notice:
-    "If you have a session token and want to skip acquiring tokens by Conch Bay, you can also copy the session token and complete logging in alternatively.",
+    "If you have a session token and want to skip acquiring session token by Conch Bay, you can also copy the session token and complete logging in alternatively.",
   log_in_with_session_token: "Log In with Session Token",
   logging_in: "Acquiring tokens",
   failed_to_acquire_session_token: "Failed to acquire session token (%{error})",
@@ -76,7 +76,7 @@ const en = {
   create_a_github_issue: "Create a GitHub Issue",
   send_a_mail: "Send a mail",
   database_notice:
-    "If you want to clear the database, please long press on Clear Database. Please export results via Export below the homepage before continuing.",
+    "If you want to clear the database, please long press on Clear Database. Please complete a backup before proceeding.",
   clear_database: "Clear Database",
   clearing_database: "Clearing Database",
   debug_notice: "The following information is for debugging only. Please do NOT share with others.",

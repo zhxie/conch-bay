@@ -886,6 +886,7 @@ const MainView = () => {
                   if (!error) {
                     error = e;
                   }
+                  return false;
                 })
             )
           );
@@ -935,6 +936,7 @@ const MainView = () => {
                   if (!error) {
                     error = e;
                   }
+                  return false;
                 })
             )
           );
