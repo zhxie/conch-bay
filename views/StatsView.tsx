@@ -269,9 +269,9 @@ const StatsModal = (props: StatsModalProps) => {
                       {(() => {
                         switch (props.dimension || 0) {
                           case 0:
-                            return boss.defeat;
+                            return `${boss.defeat} / ${boss.appear}`;
                           case 1:
-                            return boss.defeatTeam;
+                            return `${boss.defeatTeam} / ${boss.appear}`;
                           default:
                             throw new Error(`unexpected dimension ${props.dimension}`);
                         }
@@ -291,7 +291,7 @@ const StatsModal = (props: StatsModalProps) => {
                 title={t("king_salmonids_defeated")}
                 subChildren={coopsStats.kings.map((king) => (
                   <Display key={king.id} level={1} title={t(king.id)}>
-                    <Text numberOfLines={1}>{king.defeat}</Text>
+                    <Text numberOfLines={1}>{`${king.defeat} / ${king.appear}`}</Text>
                   </Display>
                 ))}
               >
