@@ -12,7 +12,7 @@ const VERSION = 6;
 
 export const open = async () => {
   if (db) {
-    return 0;
+    return undefined;
   }
   db = SQLite.openDatabase("conch-bay.db");
 
