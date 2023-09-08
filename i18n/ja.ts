@@ -259,6 +259,7 @@ const ja = {
   normal: "普通",
   high_tide: "満潮",
   // Escaped.
+  "VnNTdGFnZS0tMQ==": "ランダム",
   VnNTdGFnZS0tOTk5: "",
   "Q29vcFN0YWdlLS05OTk=": "",
   "TGVhZ3VlTWF0Y2hFdmVudC1Ob3RGb3VuZA==": "",

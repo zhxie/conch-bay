@@ -94,7 +94,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
     if (mode) {
       switch (mode) {
         case FestMatchMode.CHALLENGE:
-        case FestMatchMode.OPEN:
+        case FestMatchMode.REGULAR:
           return (schedule["festMatchSettings"] as FestMatchSetting[]).find(
             (matchSetting) => matchSetting.festMode === mode
           );
@@ -122,7 +122,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
   const splatfestOpenSchedules = useMemo(
     () =>
       props.schedules?.festSchedules.nodes
-        .filter((node) => getMatchSetting(node, FestMatchMode.OPEN))
+        .filter((node) => getMatchSetting(node, FestMatchMode.REGULAR))
         .filter((node) => !isScheduleExpired(node)),
     [props.schedules]
   );
@@ -279,7 +279,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
       title: t("splatfest_battle_open"),
       color: Color.AccentColor,
       schedules: splatfestOpenSchedules,
-      mode: FestMatchMode.OPEN,
+      mode: FestMatchMode.REGULAR,
     });
     setDisplaySchedules(true);
   };
@@ -392,8 +392,8 @@ const ScheduleView = (props: ScheduleViewProps) => {
         {splatfestOpenSchedules?.[0] && (
           <ScheduleButton
             color={isScheduleStarted(splatfestOpenSchedules[0]) ? Color.AccentColor : undefined}
-            rule={td(getMatchSetting(splatfestOpenSchedules[0], FestMatchMode.OPEN)!.vsRule)}
-            stages={getMatchSetting(splatfestOpenSchedules[0], FestMatchMode.OPEN)!.vsStages.map(
+            rule={td(getMatchSetting(splatfestOpenSchedules[0], FestMatchMode.REGULAR)!.vsRule)}
+            stages={getMatchSetting(splatfestOpenSchedules[0], FestMatchMode.REGULAR)!.vsStages.map(
               (stage) => td(stage)
             )}
             onPress={onSplatfestOpenSchedulePress}

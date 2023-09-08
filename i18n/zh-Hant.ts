@@ -252,6 +252,7 @@ const zhHant = {
   normal: "普通",
   high_tide: "滿潮",
   // Escaped.
+  "VnNTdGFnZS0tMQ==": "隨機",
   VnNTdGFnZS0tOTk5: "",
   "Q29vcFN0YWdlLS05OTk=": "",
   "TGVhZ3VlTWF0Y2hFdmVudC1Ob3RGb3VuZA==": "",

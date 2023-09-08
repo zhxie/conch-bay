@@ -260,6 +260,7 @@ const en = {
   normal: "Normal",
   high_tide: "High Tide",
   // Escaped.
+  "VnNTdGFnZS0tMQ==": "Random",
   VnNTdGFnZS0tOTk5: "",
   "Q29vcFN0YWdlLS05OTk=": "",
   "TGVhZ3VlTWF0Y2hFdmVudC1Ob3RGb3VuZA==": "",
