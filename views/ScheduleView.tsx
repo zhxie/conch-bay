@@ -77,8 +77,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
             return (anarchyMatchSettings as BankaraMatchSetting[]).find(
               (matchSetting) => matchSetting.bankaraMode === mode
             );
-          case FestMatchMode.CHALLENGE:
-          case FestMatchMode.OPEN:
+          default:
             throw new Error(`unexpected bankara match mode ${mode}`);
         }
       }
@@ -94,14 +93,13 @@ const ScheduleView = (props: ScheduleViewProps) => {
     }
     if (mode) {
       switch (mode) {
-        case BankaraMatchMode.CHALLENGE:
-        case BankaraMatchMode.OPEN:
-          throw new Error(`unexpected fest match mode ${mode}`);
         case FestMatchMode.CHALLENGE:
         case FestMatchMode.OPEN:
           return (schedule["festMatchSettings"] as FestMatchSetting[]).find(
             (matchSetting) => matchSetting.festMode === mode
           );
+        default:
+          throw new Error(`unexpected fest match mode ${mode}`);
       }
     }
     return (schedule["festMatchSettings"] as FestMatchSetting[])[0];
