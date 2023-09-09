@@ -910,16 +910,6 @@ const ResultView = (props: ResultViewProps) => {
                         )}
                         {result.battle.vsHistoryDetail!.festMatch && (
                           <VStack>
-                            <Display level={1} title={t("clout")}>
-                              <Text numberOfLines={1}>
-                                {`${result.battle.vsHistoryDetail!.festMatch.contribution}`}
-                              </Text>
-                            </Display>
-                            <Display level={1} title={t("festival_shell")}>
-                              <Text numberOfLines={1}>
-                                {`${result.battle.vsHistoryDetail!.festMatch.jewel}`}
-                              </Text>
-                            </Display>
                             {result.battle.vsHistoryDetail!.festMatch.myFestPower !== null && (
                               <Display level={1} title={t("splatfest_power")}>
                                 <Text numberOfLines={1}>
@@ -929,6 +919,30 @@ const ResultView = (props: ResultViewProps) => {
                                 </Text>
                               </Display>
                             )}
+                            <Display level={1} title={t("clout")}>
+                              <Text numberOfLines={1}>
+                                {`${result.battle.vsHistoryDetail!.festMatch.contribution}`}
+                              </Text>
+                            </Display>
+                            <Display level={1} title={t("festival_shell")}>
+                              <HStack center>
+                                {new Array(7).fill(0).map((_, i, rects) => (
+                                  <Circle
+                                    key={i}
+                                    size={8}
+                                    style={[
+                                      i !== rects.length - 1 && ViewStyles.mr0_5,
+                                      {
+                                        backgroundColor:
+                                          result.battle!.vsHistoryDetail!.festMatch!.jewel >= i + 1
+                                            ? Color.AccentColor
+                                            : Color.MiddleTerritory,
+                                      },
+                                    ]}
+                                  />
+                                ))}
+                              </HStack>
+                            </Display>
                           </VStack>
                         )}
                         {result.battle.vsHistoryDetail!.awards.map((award, i) => (
