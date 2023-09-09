@@ -1,4 +1,5 @@
 import withAndroidLocalizedName from "@mmomtchev/expo-android-localized-app-name";
+import withAndroidLargeHeap from "./plugins/withAndroidLargeHeap";
 
 const config = {
   name: "Conch Bay",
@@ -17,7 +18,7 @@ const config = {
     "zh-Hant": "./i18n/locales/zh-Hant.json",
   },
   assetBundlePatterns: ["**/*"],
-  plugins: [withAndroidLocalizedName],
+  plugins: [withAndroidLargeHeap, withAndroidLocalizedName],
   splash: {
     image: "./assets/splash.png",
     backgroundColor: "#FAFAFA",
