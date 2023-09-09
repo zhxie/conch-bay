@@ -1,6 +1,6 @@
 import * as Clipboard from "expo-clipboard";
 import { ForwardedRef, forwardRef, useImperativeHandle, useState } from "react";
-import { ActivityIndicator, Share, StyleProp, ViewStyle } from "react-native";
+import { ActivityIndicator, Platform, Share, StyleProp, ViewStyle } from "react-native";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 import { WebView, WebViewMessageEvent } from "react-native-webview";
 import { Center, FullscreenModal, ToolButton, ViewStyles } from "../components";
@@ -44,16 +44,22 @@ const SplatNetView = (props: SplatNetViewProps, ref: ForwardedRef<SplatNetViewRe
       setWebView(false);
     } else if (event.nativeEvent.data.startsWith("share:")) {
       const obj = JSON.parse(event.nativeEvent.data.replace("share:", ""));
-      Share.share({ url: obj["image_url"], message: obj["text"] });
+      Share.share({
+        url: obj["image_url"],
+        message: Platform.OS === "android" ? obj["image_url"] : obj["text"],
+      });
     } else if (event.nativeEvent.data.startsWith("url:")) {
       const obj = JSON.parse(event.nativeEvent.data.replace("url:", ""));
-      Share.share({ url: obj["url"], message: obj["text"] });
+      Share.share({
+        url: obj["url"],
+        message: Platform.OS === "android" ? obj["url"] : obj["text"],
+      });
     } else if (event.nativeEvent.data.startsWith("copy:")) {
       Clipboard.setStringAsync(event.nativeEvent.data.replace("copy:", ""));
     } else if (event.nativeEvent.data.startsWith("images:")) {
       const obj = JSON.parse(event.nativeEvent.data.replace("images:", ""));
       for (const url of obj["image_urls"]) {
-        Share.share({ url });
+        Share.share({ url, message: url });
       }
     }
   };
