@@ -3971,10 +3971,10 @@ expo-sharing@~11.5.0:
   resolved "https://registry.yarnpkg.com/expo-sharing/-/expo-sharing-11.5.0.tgz#a8cad65874d882b7f75b12856b4ef55ea9b60a2d"
   integrity sha512-uerM5YH1FKDZXfkP9ORebvlMVOPP/AfoYgYBez6a8G9fztNYHnRCA6mgK+3aQmpnb3ltmjnAZC39kH18bTNcVw==
 
-expo-sqlite@~11.3.2:
-  version "11.3.2"
-  resolved "https://registry.yarnpkg.com/expo-sqlite/-/expo-sqlite-11.3.2.tgz#0841d57d727942315631e778c546b0ffa8b64710"
-  integrity sha512-99h4ld2R4NUU4sbJs30kxAL+kNMNb2G8pufnY2yxFXGe9vVctniP+9LFNgclmkaAkTFY2N60gi2cETnSPnsOlQ==
+expo-sqlite@~11.3.3:
+  version "11.3.3"
+  resolved "https://registry.yarnpkg.com/expo-sqlite/-/expo-sqlite-11.3.3.tgz#5b07e7ffd744d2d04fe2075ec6fac834c78a5f53"
+  integrity sha512-73n+mhwi5mO28oVVrDGYcjy28XeUjNtpXVPtEmc+sr/NQ0hKlkIf2PD3/gKsyNuI8O/twNCZxsAQdM32yHGr8A==
   dependencies:
     "@expo/websql" "^1.0.1"
 

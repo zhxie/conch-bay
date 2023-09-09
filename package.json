@@ -39,7 +39,7 @@
     "expo-mail-composer": "~12.3.0",
     "expo-notifications": "~0.20.1",
     "expo-sharing": "~11.5.0",
-    "expo-sqlite": "~11.3.2",
+    "expo-sqlite": "~11.3.3",
     "expo-status-bar": "~1.6.0",
     "expo-system-ui": "~2.4.0",
     "expo-web-browser": "~12.3.2",
