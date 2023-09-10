@@ -30,10 +30,10 @@ interface RotationViewProps {
   style?: StyleProp<ViewStyle>;
 }
 
-const RotationView = (props: RotationViewProps) => {
+const RotationsView = (props: RotationViewProps) => {
   const [stats, setStats] = useState<Stats[]>();
   const [loading, setLoading] = useState(false);
-  const [rotation, setRotation] = useState(false);
+  const [rotations, setRotations] = useState(false);
   const [group, setGroup] = useState<Stats[]>();
   const [displayGroup, setDisplayGroup] = useState(false);
   const [dimension, setDimension] = useState(0);
@@ -131,11 +131,11 @@ const RotationView = (props: RotationViewProps) => {
     setLoading(true);
     const results = await props.onStats();
     setStats(results);
-    setRotation(true);
+    setRotations(true);
     setLoading(false);
   };
   const onRotationClose = () => {
-    setRotation(false);
+    setRotations(false);
   };
   const onModalHide = () => {
     setStats(undefined);
@@ -240,11 +240,11 @@ const RotationView = (props: RotationViewProps) => {
         disabled={props.disabled}
         loading={loading}
         icon="calendar"
-        title={t("rotation")}
+        title={t("rotations")}
         onPress={onRotationPress}
       />
       <FlashModal
-        isVisible={rotation}
+        isVisible={rotations}
         data={groups}
         keyExtractor={(group) =>
           group.battles ? group.battles[0].time.toString() : group.coops![0].time.toString()
@@ -276,4 +276,4 @@ const RotationView = (props: RotationViewProps) => {
   );
 };
 
-export default RotationView;
+export default RotationsView;

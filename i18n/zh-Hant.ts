@@ -201,8 +201,8 @@ const zhHant = {
   golden_eggs_collected_including_assisted: "收集的金鮭魚卵 (含助攻)",
   trends_notice: "對戰為每分鐘，鮭魚跑為每次打工的平均值。",
   trends_notice2: "長按標籤以顯示團隊平均值。",
-  // Rotation.
-  rotation: "場次",
+  // Rotations.
+  rotations: "場次",
   // Import.
   import: "匯入",
   importing: "匯入中",

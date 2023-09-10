@@ -208,8 +208,8 @@ const ja = {
   golden_eggs_collected_including_assisted: "集めた金イクラ (含助攻)",
   trends_notice: "数字はバトルでは1分あたり、サーモンランでは各バイトのアベレージです。",
   trends_notice2: "タグを長押しして、チームのアベレージが表示されます。",
-  // Rotation.
-  rotation: "ローテーション",
+  // Rotations.
+  rotations: "ローテーション",
   // Import.
   import: "インポート",
   importing: "インポート中",

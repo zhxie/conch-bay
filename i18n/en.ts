@@ -209,8 +209,8 @@ const en = {
   trends_notice:
     "The number is over 1-minute average in battles and over each shift average in Salmon Run.",
   trends_notice2: "Long press on tags to show team's average.",
-  // Rotation.
-  rotation: "Rotation",
+  // Rotations.
+  rotations: "Rotations",
   // Import.
   import: "Import",
   importing: "Importing",
