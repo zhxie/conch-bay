@@ -21,8 +21,8 @@ export const isImageExpired = (image: string) => {
 export const getImageCacheKey = (image: string) => {
   const path = getAuthorityAndPath(image);
   // HACK: we only take SplatNet 3 and Splatoon3.ink into consideration now.
-  const splitted = path.split(/prod|splatnet/);
-  return splitted[1];
+  const splitted = path.split(/prod|splatnet|v\d*/g);
+  return splitted[splitted.length - 1];
 };
 export const getImageHash = (image: string) => {
   const path = getAuthorityAndPath(image);
