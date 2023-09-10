@@ -77,6 +77,9 @@ const FilterView = (props: FilterViewProps) => {
       filter[group].push(key);
       props.onChange(filter);
     } else {
+      if (!props.filter[group]) {
+        props.filter[group] = [];
+      }
       if (props.filter[group].includes(key)) {
         const newFilter = JSON.parse(JSON.stringify(props.filter));
         newFilter[group] = newFilter[group].filter((item: string) => item !== key);
