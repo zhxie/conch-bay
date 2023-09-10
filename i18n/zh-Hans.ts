@@ -201,6 +201,8 @@ const zhHans = {
   golden_eggs_collected_including_assisted: "收集的金鲑鱼卵 (含助攻)",
   trends_notice: "对战为每分钟，鲑鱼跑为每场打工的平均值。",
   trends_notice2: "长按标签以显示团队平均值。",
+  // Rotation.
+  rotation: "场次",
   // Import.
   import: "导入",
   importing: "导入中",

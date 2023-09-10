@@ -30,6 +30,7 @@ export interface BattleStats {
   team: BattlePlayerStats;
   allMember: number;
   all: BattlePlayerStats;
+  mode: string;
   rule: string;
   stage: string;
   weapon: string;
@@ -141,6 +142,7 @@ export const countBattle = (battle: VsHistoryDetailResult): BattleStats => {
           .reduce((prev, current) => addBattlePlayerStats(prev, current))
       )
       .reduce((prev, current) => addBattlePlayerStats(prev, current)),
+    mode: battle.vsHistoryDetail!.vsMode.id,
     rule: battle.vsHistoryDetail!.vsRule.id,
     stage: battle.vsHistoryDetail!.vsStage.id,
     weapon: selfPlayer.weapon.id,
@@ -300,9 +302,11 @@ export interface CoopStats {
     bronze: number;
   };
   waves: WaveStats[];
+  rule: string;
   stage: string;
   weapons: string[];
   specialWeapon?: string;
+  suppliedWeapons: string[];
 }
 interface CoopsStats {
   count: number;
@@ -522,6 +526,7 @@ export const countCoop = (coop: CoopHistoryDetailResult): CoopStats => {
         }
       : undefined,
     waves,
+    rule: coop.coopHistoryDetail!.rule,
     stage: coop.coopHistoryDetail!.coopStage.id,
     weapons: coop.coopHistoryDetail!.myResult.weapons.map((weapon) =>
       getImageHash(weapon.image.url)
@@ -529,6 +534,9 @@ export const countCoop = (coop: CoopHistoryDetailResult): CoopStats => {
     specialWeapon: coop.coopHistoryDetail!.myResult.specialWeapon
       ? getImageHash(coop.coopHistoryDetail!.myResult.specialWeapon.image.url)
       : undefined,
+    suppliedWeapons: coop.coopHistoryDetail!.weapons.map((weapon) =>
+      getImageHash(weapon.image.url)
+    ),
   };
 };
 export const addCoopStats = (...coops: CoopStats[]): CoopsStats => {

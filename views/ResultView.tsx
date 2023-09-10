@@ -574,7 +574,7 @@ const ResultView = (props: ResultViewProps) => {
 
   const renderItem = (result: ListRenderItemInfo<ResultAndGroup>) => {
     if (result.item.battle) {
-      const color = getVsModeColor(result.item.battle.vsHistoryDetail!.vsMode)!;
+      const color = getVsModeColor(result.item.battle.vsHistoryDetail!.vsMode.id)!;
       return (
         <VStack flex style={ViewStyles.px4}>
           <BattleButton
@@ -770,7 +770,7 @@ const ResultView = (props: ResultViewProps) => {
         {result?.battle && (
           <>
             <TitledList
-              color={getVsModeColor(result.battle.vsHistoryDetail!.vsMode)}
+              color={getVsModeColor(result.battle.vsHistoryDetail!.vsMode.id)}
               title={t(result.battle.vsHistoryDetail!.vsMode.id)}
               subtitle={formatAnnotation(result.battle)}
             >

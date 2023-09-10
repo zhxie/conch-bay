@@ -8,7 +8,7 @@ import { getImageHash, getVsSelfPlayer } from "./ui";
 
 let db: SQLite.SQLiteDatabase | undefined = undefined;
 
-const VERSION = 6;
+const VERSION = 7;
 
 export const open = async () => {
   if (db) {
@@ -175,6 +175,40 @@ export const upgrade = async () => {
         batch += 1;
       }
       await exec("PRAGMA user_version=6", [], false);
+      await commit();
+    } catch (e) {
+      await rollback();
+      throw e;
+    }
+  }
+  if (version < 7) {
+    await beginTransaction();
+    try {
+      let batch = 0;
+      while (true) {
+        const records = await queryDetail(batch * BATCH_SIZE, BATCH_SIZE);
+        await Promise.all(
+          records.map((record) => {
+            if (record.mode === "salmon_run") {
+              return exec(
+                "UPDATE result SET stats = ? WHERE id = ?",
+                [JSON.stringify(countCoop(JSON.parse(record.detail))), record.id],
+                false
+              );
+            }
+            return exec(
+              "UPDATE result SET stats = ? WHERE id = ?",
+              [JSON.stringify(countBattle(JSON.parse(record.detail))), record.id],
+              false
+            );
+          })
+        );
+        if (records.length < BATCH_SIZE) {
+          break;
+        }
+        batch += 1;
+      }
+      await exec("PRAGMA user_version=7", [], false);
       await commit();
     } catch (e) {
       await rollback();

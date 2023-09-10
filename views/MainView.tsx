@@ -114,6 +114,7 @@ import FilterView from "./FilterView";
 import FriendView from "./FriendView";
 import ImportView from "./ImportView";
 import ResultView, { ResultGroup, Result } from "./ResultView";
+import RotationView from "./RotationView";
 import ScheduleView from "./ScheduleView";
 import ShopView from "./ShopView";
 import SplatNetView, { SplatNetViewRef } from "./SplatNetView";
@@ -1977,6 +1978,7 @@ const MainView = () => {
                 <HStack flex center style={ViewStyles.px4}>
                   <StatsView disabled={counting} onStats={onStatsPress} style={ViewStyles.mr2} />
                   <TrendsView disabled={counting} onStats={onStatsPress} style={ViewStyles.mr2} />
+                  <RotationView disabled={counting} onStats={onStatsPress} style={ViewStyles.mr2} />
                   {sessionToken.length > 0 && (
                     <SplatNetView
                       ref={splatNetViewRef}

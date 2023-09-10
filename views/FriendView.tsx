@@ -48,7 +48,7 @@ const FriendView = (props: FriendViewProps) => {
   const getFriendColor = (friend: Friend) => {
     switch (friend.onlineState) {
       case FriendOnlineState.VS_MODE_FIGHTING:
-        return getVsModeColor(friend.vsMode!);
+        return getVsModeColor(friend.vsMode!.id);
       case FriendOnlineState.COOP_MODE_FIGHTING:
         return getCoopRuleColor(friend.coopRule!);
       case FriendOnlineState.MINI_GAME_PLAYING:
@@ -64,7 +64,7 @@ const FriendView = (props: FriendViewProps) => {
   const getFriendOutline = (friend: Friend) => {
     switch (friend.onlineState) {
       case FriendOnlineState.VS_MODE_MATCHING:
-        return getVsModeColor(friend.vsMode!);
+        return getVsModeColor(friend.vsMode!.id);
       case FriendOnlineState.COOP_MODE_MATCHING:
         return getCoopRuleColor(friend.coopRule!);
       case FriendOnlineState.ONLINE:
@@ -79,7 +79,7 @@ const FriendView = (props: FriendViewProps) => {
   const getFriendOnlineStatusColor = (friend: Friend) => {
     switch (friend.onlineState) {
       case FriendOnlineState.VS_MODE_FIGHTING:
-        return getVsModeColor(friend.vsMode!);
+        return getVsModeColor(friend.vsMode!.id);
       case FriendOnlineState.COOP_MODE_FIGHTING:
         return getCoopRuleColor(friend.coopRule!);
       case FriendOnlineState.MINI_GAME_PLAYING:
@@ -206,7 +206,7 @@ const FriendView = (props: FriendViewProps) => {
               />
               {friend.vsMode && (
                 <Badge
-                  color={getVsModeColor(friend.vsMode)!}
+                  color={getVsModeColor(friend.vsMode.id)!}
                   title={t(friend.vsMode.id)}
                   style={ViewStyles.mr1}
                 />

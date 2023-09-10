@@ -1,6 +1,6 @@
 import * as Convert from "color-convert";
 import { Color } from "../components";
-import { VsMode, VsHistoryDetailResult, CoopRule, Gear } from "../models/types";
+import { VsHistoryDetailResult, CoopRule, Gear } from "../models/types";
 import { getAuthorityAndPath } from "./codec";
 
 export const getImageExpires = (image: string) => {
@@ -62,8 +62,8 @@ export const dodgeColor = (color: string) => {
   return `#${hex}`;
 };
 
-export const getVsModeColor = (mode: VsMode) => {
-  switch (mode.id) {
+export const getVsModeColor = (mode: string) => {
+  switch (mode) {
     case "VnNNb2RlLTE=":
       return Color.RegularBattle;
     case "VnNNb2RlLTI=":
