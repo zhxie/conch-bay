@@ -102,7 +102,7 @@ import { decode64String, encode64String, parseVersion } from "../utils/codec";
 import * as Database from "../utils/database";
 import { BATCH_SIZE, requestMemory } from "../utils/memory";
 import { ok } from "../utils/promise";
-import { StatsProps } from "../utils/stats";
+import { Stats } from "../utils/stats";
 import {
   getImageCacheKey,
   getImageHash,
@@ -113,7 +113,7 @@ import CatalogView from "./CatalogView";
 import FilterView from "./FilterView";
 import FriendView from "./FriendView";
 import ImportView from "./ImportView";
-import ResultView, { GroupProps, ResultProps } from "./ResultView";
+import ResultView, { ResultGroup, Result } from "./ResultView";
 import ScheduleView from "./ScheduleView";
 import ShopView from "./ShopView";
 import SplatNetView, { SplatNetViewRef } from "./SplatNetView";
@@ -207,13 +207,13 @@ const MainView = () => {
   const [friends, setFriends] = useState<FriendListResult>();
   const [voting, setVoting] = useState<DetailVotingStatusResult>();
   const [catalog, setCatalog] = useState<CatalogResult>();
-  const [groups, setGroups] = useState<GroupProps[]>();
+  const [groups, setGroups] = useState<ResultGroup[]>();
   const [filtered, setFiltered] = useState(0);
   const [total, setTotal] = useState(0);
   const [filter, setFilter] = useState<Database.FilterProps>();
   const filterRef = useRef<Database.FilterProps>();
   const [filterOptions, setFilterOptions] = useState<Database.FilterProps>();
-  const [stats, setStats] = useState<StatsProps[]>();
+  const [stats, setStats] = useState<Stats[]>();
 
   const count = useMemo(() => {
     let current = 0;
@@ -372,7 +372,7 @@ const MainView = () => {
     }
   }, [fault]);
 
-  const canGroup = (current: ResultProps, group: GroupProps) => {
+  const canGroup = (current: Result, group: ResultGroup) => {
     // Battles with the same mode and in the 2 hours (24 hours for tricolors and unlimited for
     // privates) period will be regarded in the same group, coops with the same rule, stage and
     // supplied weapons in the 48 hours (2 hours period) will be regarded in the same group. There
@@ -478,7 +478,7 @@ const MainView = () => {
     }
 
     // Query results and merge into groups.
-    const details: ResultProps[] = [];
+    const details: Result[] = [];
     let read = 0;
     while (read < limit) {
       const records = await Database.queryDetail(
@@ -498,8 +498,8 @@ const MainView = () => {
       }
       read += records.length;
     }
-    const newGroups: GroupProps[] = [];
-    let group: GroupProps = {};
+    const newGroups: ResultGroup[] = [];
+    let group: ResultGroup = {};
     for (const detail of details) {
       if (canGroup(detail, group)) {
         if (detail.battle) {
@@ -1204,7 +1204,7 @@ const MainView = () => {
     }
     setCounting(true);
     const records = await Database.queryStats(filter);
-    const results: StatsProps[] = [];
+    const results: Stats[] = [];
     for (const record of records) {
       if (record.mode === "salmon_run") {
         results.push({ coop: JSON.parse(record.stats) });

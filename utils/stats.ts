@@ -745,7 +745,7 @@ export const addCoopStats = (...coops: CoopStats[]): CoopsStats => {
   };
 };
 
-export interface StatsProps {
+export interface Stats {
   battle?: BattleStats;
   coop?: CoopStats;
 }

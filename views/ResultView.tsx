@@ -38,7 +38,7 @@ import {
   Modal,
   PureIconButton,
   Rectangle,
-  Result,
+  Result as CResult,
   ResultButton,
   Splashtag,
   Text,
@@ -86,19 +86,19 @@ import {
 } from "../utils/ui";
 import { StatsModal } from "./StatsView";
 
-export interface ResultProps {
+export interface Result {
   battle?: VsHistoryDetailResult;
   coop?: CoopHistoryDetailResult;
 }
-export interface GroupProps {
+export interface ResultGroup {
   battles?: VsHistoryDetailResult[];
   coops?: CoopHistoryDetailResult[];
 }
-interface GroupAndResultProps extends ResultProps {
-  group?: GroupProps;
+interface ResultAndGroup extends Result {
+  group?: ResultGroup;
 }
 interface ResultViewProps {
-  groups?: GroupProps[];
+  groups?: ResultGroup[];
   refreshControl: React.ReactElement<RefreshControlProps>;
   header: React.ReactElement;
   footer: React.ReactElement;
@@ -120,8 +120,8 @@ const ResultView = (props: ResultViewProps) => {
 
   const showBanner = useBanner();
 
-  const [result, setResult] = useState<ResultProps>();
-  const [group, setGroup] = useState<ResultProps[]>();
+  const [result, setResult] = useState<Result>();
+  const [group, setGroup] = useState<Result[]>();
   const [displayResult, setDisplayResult] = useState(false);
   const [displayBattle, setDisplayBattle] = useState(false);
   const [battlePlayer, setBattlePlayer] = useState<VsPlayer>();
@@ -138,7 +138,7 @@ const ResultView = (props: ResultViewProps) => {
     if (!props.groups) {
       return undefined;
     }
-    const results: ResultProps[] = [];
+    const results: Result[] = [];
     for (const group of props.groups) {
       if (group.battles) {
         results.push(...group.battles!.map((battle) => ({ battle: battle })));
@@ -152,7 +152,7 @@ const ResultView = (props: ResultViewProps) => {
     if (!props.groups) {
       return undefined;
     }
-    const results: GroupAndResultProps[] = [];
+    const results: ResultAndGroup[] = [];
     for (const group of props.groups) {
       results.push({ group: group });
       if (group.battles) {
@@ -230,14 +230,14 @@ const ResultView = (props: ResultViewProps) => {
   const formatJudgement = (battle: VsHistoryDetailResult) => {
     switch (battle.vsHistoryDetail!.judgement as Judgement) {
       case Judgement.WIN:
-        return Result.Win;
+        return CResult.Win;
       case Judgement.DRAW:
-        return Result.Draw;
+        return CResult.Draw;
       case Judgement.LOSE:
       case Judgement.DEEMED_LOSE:
-        return Result.Lose;
+        return CResult.Lose;
       case Judgement.EXEMPTED_LOSE:
-        return Result.ExemptedLose;
+        return CResult.ExemptedLose;
     }
   };
   const formatDragon = (battle: VsHistoryDetailResult) => {
@@ -346,12 +346,12 @@ const ResultView = (props: ResultViewProps) => {
       case CoopRule.BIG_RUN:
         switch (coop.coopHistoryDetail!.resultWave) {
           case 0:
-            return Result.Win;
+            return CResult.Win;
           default:
             if (coop.coopHistoryDetail!.resultWave < 3) {
-              return Result.Lose;
+              return CResult.Lose;
             }
-            return Result.Draw;
+            return CResult.Draw;
         }
       case CoopRule.TEAM_CONTEST:
         return undefined;
@@ -560,8 +560,8 @@ const ResultView = (props: ResultViewProps) => {
     setResult({ coop });
     setDisplayCoop(true);
   }, []);
-  const onGroupPress = useCallback((group: GroupProps) => {
-    const results: ResultProps[] = [];
+  const onGroupPress = useCallback((group: ResultGroup) => {
+    const results: Result[] = [];
     for (const battle of group.battles ?? []) {
       results.push({ battle });
     }
@@ -572,13 +572,13 @@ const ResultView = (props: ResultViewProps) => {
     setDisplayGroup(true);
   }, []);
 
-  const renderItem = (result: ListRenderItemInfo<GroupAndResultProps>) => {
+  const renderItem = (result: ListRenderItemInfo<ResultAndGroup>) => {
     if (result.item.battle) {
       const color = getVsModeColor(result.item.battle.vsHistoryDetail!.vsMode)!;
       return (
         <VStack flex style={ViewStyles.px4}>
           <BattleButton
-            battle={(result.item as GroupAndResultProps).battle}
+            battle={(result.item as ResultAndGroup).battle}
             first={false}
             last={
               groupsAndResults!.length > result.index + 1 &&
@@ -626,7 +626,7 @@ const ResultView = (props: ResultViewProps) => {
       return (
         <VStack flex style={ViewStyles.px4}>
           <CoopButton
-            coop={(result.item as GroupAndResultProps).coop}
+            coop={(result.item as ResultAndGroup).coop}
             first={false}
             last={
               groupsAndResults!.length > result.index + 1 &&
@@ -639,7 +639,9 @@ const ResultView = (props: ResultViewProps) => {
                 : undefined
             }
             color={color}
-            result={result.item.coop.coopHistoryDetail!.resultWave === 0 ? Result.Win : Result.Lose}
+            result={
+              result.item.coop.coopHistoryDetail!.resultWave === 0 ? CResult.Win : CResult.Lose
+            }
             rule={t(result.item.coop.coopHistoryDetail!.rule)}
             stage={td(result.item.coop.coopHistoryDetail!.coopStage)}
             kingSalmonid={
@@ -678,7 +680,7 @@ const ResultView = (props: ResultViewProps) => {
     return (
       <VStack flex style={ViewStyles.px4}>
         <GroupButton
-          group={(result.item as GroupAndResultProps).group}
+          group={(result.item as ResultAndGroup).group}
           first={true}
           last={false}
           title={t(mode)}

@@ -5,14 +5,14 @@ import { HStack, VStack } from "./Stack";
 import { TextStyles, ViewStyles } from "./Styles";
 import Text from "./Text";
 
-interface StageProps {
+interface Stage {
   title: string;
   image: ImageSource;
 }
 interface ScheduleBoxProps {
   rule: string;
   time: string;
-  stages: StageProps[];
+  stages: Stage[];
   style?: StyleProp<ViewStyle>;
 }
 

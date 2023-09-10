@@ -27,12 +27,12 @@ import {
   useTheme,
 } from "../components";
 import t from "../i18n";
-import { BattleStats, CoopStats, StatsProps, addBattleStats, addCoopStats } from "../utils/stats";
+import { BattleStats, CoopStats, Stats, addBattleStats, addCoopStats } from "../utils/stats";
 import { burnColor, rationalize } from "../utils/ui";
 
 interface TrendViewProps {
   disabled?: boolean;
-  onStats: () => Promise<StatsProps[]>;
+  onStats: () => Promise<Stats[]>;
   style?: StyleProp<ViewStyle>;
 }
 
@@ -70,7 +70,7 @@ const TrendsView = (props: TrendViewProps) => {
   const theme = useTheme();
 
   const [point, setPoint] = useState(20);
-  const [stats, setStats] = useState<StatsProps[]>();
+  const [stats, setStats] = useState<Stats[]>();
   const [loading, setLoading] = useState(false);
   const [trends, setTrends] = useState(false);
   const [group, setGroup] = useState(0);

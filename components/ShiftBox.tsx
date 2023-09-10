@@ -5,7 +5,7 @@ import { HStack, VStack } from "./Stack";
 import { TextStyles, ViewStyles } from "./Styles";
 import Text from "./Text";
 
-interface StageProps {
+interface Stage {
   title: string;
   image: ImageSource;
 }
@@ -16,7 +16,7 @@ interface WeaponProps {
 interface ScheduleBoxProps {
   rule: string;
   time: string;
-  stage: StageProps;
+  stage: Stage;
   weapons: WeaponProps[];
   style?: StyleProp<ViewStyle>;
 }

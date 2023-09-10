@@ -20,11 +20,11 @@ import {
   ViewStyles,
 } from "../components";
 import t from "../i18n";
-import { BattleStats, CoopStats, StatsProps, addBattleStats, addCoopStats } from "../utils/stats";
+import { BattleStats, CoopStats, Stats, addBattleStats, addCoopStats } from "../utils/stats";
 import { roundPower } from "../utils/ui";
 
 interface StatsModalProps {
-  stats?: StatsProps[];
+  stats?: Stats[];
   dimension?: number;
   hideEmpty?: boolean;
   isVisible: boolean;
@@ -413,12 +413,12 @@ const StatsModal = (props: StatsModalProps) => {
 
 interface StatsViewProps {
   disabled?: boolean;
-  onStats: () => Promise<StatsProps[]>;
+  onStats: () => Promise<Stats[]>;
   style?: StyleProp<ViewStyle>;
 }
 
 const StatsView = (props: StatsViewProps) => {
-  const [stats, setStats] = useState<StatsProps[]>();
+  const [stats, setStats] = useState<Stats[]>();
   const [loading, setLoading] = useState(false);
   const [displayStats, setDisplayStats] = useState(false);
   const [group, setGroup] = useState(0);

@@ -41,7 +41,7 @@ interface ScheduleViewProps {
   style?: StyleProp<ViewStyle>;
   children?: React.ReactNode;
 }
-interface DisplayProps {
+interface ScheduleList {
   title: string;
   color: string;
   splatfest?: CurrentFest;
@@ -57,8 +57,8 @@ const ScheduleView = (props: ScheduleViewProps) => {
 
   const theme = useTheme();
 
-  const [display, setDisplay] = useState<DisplayProps>();
-  const [displaySchedules, setDisplaySchedules] = useState(false);
+  const [scheduleList, setScheduleList] = useState<ScheduleList>();
+  const [schedules, setSchedules] = useState(false);
 
   const getMatchSetting = (schedule: VsSchedule, mode?: BankaraMatchMode | FestMatchMode) => {
     const regularMatchSetting = schedule["regularMatchSetting"];
@@ -275,99 +275,99 @@ const ScheduleView = (props: ScheduleViewProps) => {
   };
 
   const onSplatfestOpenSchedulePress = () => {
-    setDisplay({
+    setScheduleList({
       title: t("splatfest_battle_open"),
       color: Color.AccentColor,
       schedules: splatfestOpenSchedules,
       mode: FestMatchMode.REGULAR,
     });
-    setDisplaySchedules(true);
+    setSchedules(true);
   };
   const onSplatfestProSchedulePress = () => {
-    setDisplay({
+    setScheduleList({
       title: t("splatfest_battle_pro"),
       color: Color.AccentColor,
       schedules: splatfestProSchedules,
       mode: FestMatchMode.CHALLENGE,
     });
-    setDisplaySchedules(true);
+    setSchedules(true);
   };
   const onCurrentSplatfestPress = () => {
-    setDisplay({
+    setScheduleList({
       title: t("tricolor_battle"),
       color: Color.AccentColor,
       splatfest: currentSplatfest,
     });
-    setDisplaySchedules(true);
+    setSchedules(true);
   };
   const onRegularSchedulePress = () => {
-    setDisplay({
+    setScheduleList({
       title: t("regular_battle"),
       color: Color.RegularBattle,
       schedules: regularSchedules,
     });
-    setDisplaySchedules(true);
+    setSchedules(true);
   };
   const onAnarchySeriesSchedulePress = () => {
-    setDisplay({
+    setScheduleList({
       title: t("anarchy_battle_series"),
       color: Color.AnarchyBattle,
       schedules: anarchySeriesSchedules,
       mode: BankaraMatchMode.CHALLENGE,
     });
-    setDisplaySchedules(true);
+    setSchedules(true);
   };
   const onAnarchyOpenSchedulePress = () => {
-    setDisplay({
+    setScheduleList({
       title: t("anarchy_battle_open"),
       color: Color.AnarchyBattle,
       schedules: anarchyOpenSchedules,
       mode: BankaraMatchMode.OPEN,
     });
-    setDisplaySchedules(true);
+    setSchedules(true);
   };
   const onXSchedulePress = () => {
-    setDisplay({
+    setScheduleList({
       title: t("x_battle"),
       color: Color.XBattle,
       schedules: xSchedules,
     });
-    setDisplaySchedules(true);
+    setSchedules(true);
   };
   const onChallengePress = () => {
-    setDisplay({
+    setScheduleList({
       title: t("challenge_b"),
       color: Color.Challenge,
       challenges: challenges,
     });
-    setDisplaySchedules(true);
+    setSchedules(true);
   };
   const onBigRunShiftPress = () => {
-    setDisplay({
+    setScheduleList({
       title: t("big_run"),
       color: Color.BigRun,
       shifts: bigRunShifts,
     });
-    setDisplaySchedules(true);
+    setSchedules(true);
   };
   const onEggstraWorkShiftPress = () => {
-    setDisplay({
+    setScheduleList({
       title: t("eggstra_work"),
       color: Color.EggstraWork,
       shifts: eggstraWorkShifts,
     });
-    setDisplaySchedules(true);
+    setSchedules(true);
   };
   const onRegularShiftPress = () => {
-    setDisplay({
+    setScheduleList({
       title: t("salmon_run"),
       color: Color.SalmonRun,
       shifts: regularShifts,
     });
-    setDisplaySchedules(true);
+    setSchedules(true);
   };
   const onDisplaySchedulesClose = () => {
-    setDisplaySchedules(false);
+    setSchedules(false);
   };
 
   return (
@@ -502,26 +502,22 @@ const ScheduleView = (props: ScheduleViewProps) => {
         )}
         {props.children}
       </HStack>
-      <Modal
-        isVisible={displaySchedules}
-        onClose={onDisplaySchedulesClose}
-        style={ViewStyles.modal2d}
-      >
-        <TitledList color={display?.color} title={display?.title}>
-          {display?.schedules &&
-            display.schedules
-              .filter((schedule) => getMatchSetting(schedule, display.mode))
+      <Modal isVisible={schedules} onClose={onDisplaySchedulesClose} style={ViewStyles.modal2d}>
+        <TitledList color={scheduleList?.color} title={scheduleList?.title}>
+          {scheduleList?.schedules &&
+            scheduleList.schedules
+              .filter((schedule) => getMatchSetting(schedule, scheduleList.mode))
               .map((schedule, i, schedules) => (
                 <ScheduleBox
                   key={i}
-                  rule={td(getMatchSetting(schedule, display.mode)!.vsRule)}
+                  rule={td(getMatchSetting(schedule, scheduleList.mode)!.vsRule)}
                   time={formatScheduleTimeRange(schedule, false)}
-                  stages={getMatchSetting(schedule, display.mode)!.vsStages.map(formatStage)}
+                  stages={getMatchSetting(schedule, scheduleList.mode)!.vsStages.map(formatStage)}
                   style={i !== schedules.length - 1 ? ViewStyles.mb2 : undefined}
                 />
               ))}
-          {display?.challenges &&
-            display.challenges.map((challenge, i, challenges) => (
+          {scheduleList?.challenges &&
+            scheduleList.challenges.map((challenge, i, challenges) => (
               <VStack
                 key={i}
                 style={[ViewStyles.wf, i !== challenges.length - 1 ? ViewStyles.mb4 : undefined]}
@@ -545,20 +541,20 @@ const ScheduleView = (props: ScheduleViewProps) => {
                   ))}
               </VStack>
             ))}
-          {display?.splatfest && (
+          {scheduleList?.splatfest && (
             <ScheduleBox
               rule={t("VnNSdWxlLTU=")}
-              time={formatSplatfestTimeRange(display.splatfest)}
-              stages={[formatStage(display.splatfest.tricolorStage)]}
+              time={formatSplatfestTimeRange(scheduleList.splatfest)}
+              stages={[formatStage(scheduleList.splatfest.tricolorStage)]}
             />
           )}
-          {display?.shifts &&
-            display.shifts
+          {scheduleList?.shifts &&
+            scheduleList.shifts
               .filter((shift) => shift.setting)
               .map((shift, i, shifts) => (
                 <ShiftBox
                   key={i}
-                  rule={display.title}
+                  rule={scheduleList.title}
                   time={formatScheduleTimeRange(shift, true)}
                   stage={formatStage(shift.setting!.coopStage)}
                   weapons={shift.setting!.weapons.map(formatWeapon)}
