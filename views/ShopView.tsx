@@ -1,12 +1,11 @@
 import { useMemo, useState } from "react";
-import { StyleProp, ViewStyle } from "react-native";
+import { ScrollView, StyleProp, ViewStyle } from "react-native";
 import {
   Button,
   Color,
   FilterButton,
   FlashModal,
   GearBox,
-  HStack,
   Marquee,
   Modal,
   Notice,
@@ -197,7 +196,7 @@ const ShopView = (props: ShopViewProps) => {
           renderItem={renderItem}
           estimatedItemSize={48}
           ListHeaderComponent={
-            <HStack style={[ViewStyles.pl4, ViewStyles.pr2, { flexWrap: "wrap" }]}>
+            <ScrollView horizontal style={ViewStyles.px4}>
               {Object.values(GearType).map((type) => (
                 <FilterButton
                   key={type}
@@ -209,7 +208,7 @@ const ShopView = (props: ShopViewProps) => {
                   }}
                 />
               ))}
-            </HStack>
+            </ScrollView>
           }
           onClose={onDisplayMyGearsClose}
           onModalHide={onDisplayMyGearsHide}
