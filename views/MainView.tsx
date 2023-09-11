@@ -92,7 +92,7 @@ import {
   updateNsoVersion,
   updateSplatnetVersion,
 } from "../utils/api";
-import { useAsyncStorage, useBooleanAsyncStorage } from "../utils/async-storage";
+import { useBooleanAsyncStorage, useStringAsyncStorage } from "../utils/async-storage";
 import {
   isBackgroundTaskRegistered,
   registerBackgroundTask,
@@ -165,12 +165,12 @@ const MainView = () => {
   const [fault, setFault] = useState<Error>();
 
   const [sessionToken, setSessionToken, clearSessionToken, sessionTokenReady] =
-    useAsyncStorage("sessionToken");
+    useStringAsyncStorage("sessionToken");
   const [webServiceToken, setWebServiceToken, clearWebServiceToken, webServiceTokenReady] =
-    useAsyncStorage("webServiceToken");
+    useStringAsyncStorage("webServiceToken");
   const [bulletToken, setBulletToken, clearBulletToken, bulletTokenReady] =
-    useAsyncStorage("bulletToken");
-  const [language, setLanguage, clearLanguage, languageReady] = useAsyncStorage(
+    useStringAsyncStorage("bulletToken");
+  const [language, setLanguage, clearLanguage, languageReady] = useStringAsyncStorage(
     "language",
     t("lang")
   );
@@ -179,28 +179,26 @@ const MainView = () => {
     false
   );
 
-  const [icon, setIcon, clearIcon] = useAsyncStorage("icon");
-  const [catalogLevel, setCatalogLevel, clearCatalogLevel] = useAsyncStorage("catalogLevel");
-  const [level, setLevel, clearLevel] = useAsyncStorage("level");
-  const [rank, setRank, clearRank] = useAsyncStorage("rank");
-  const [splatZonesXPower, setSplatZonesXPower, clearSplatZonesXPower] = useAsyncStorage(
+  const [icon, setIcon, clearIcon] = useStringAsyncStorage("icon");
+  const [catalogLevel, setCatalogLevel, clearCatalogLevel] = useStringAsyncStorage("catalogLevel");
+  const [level, setLevel, clearLevel] = useStringAsyncStorage("level");
+  const [rank, setRank, clearRank] = useStringAsyncStorage("rank");
+  const [splatZonesXPower, setSplatZonesXPower, clearSplatZonesXPower] = useStringAsyncStorage(
     "splatZonesXPower",
     "0"
   );
-  const [towerControlXPower, setTowerControlXPower, clearTowerControlXPower] = useAsyncStorage(
-    "towerControlXPower",
-    "0"
-  );
-  const [rainmakerXPower, setRainmakerXPower, clearRainmakerXPower] = useAsyncStorage(
+  const [towerControlXPower, setTowerControlXPower, clearTowerControlXPower] =
+    useStringAsyncStorage("towerControlXPower", "0");
+  const [rainmakerXPower, setRainmakerXPower, clearRainmakerXPower] = useStringAsyncStorage(
     "rainmakerXPower",
     "0"
   );
-  const [clamBlitzXPower, setClamBlitzXPower, clearClamBlitzXPower] = useAsyncStorage(
+  const [clamBlitzXPower, setClamBlitzXPower, clearClamBlitzXPower] = useStringAsyncStorage(
     "clamBlitzXPower",
     "0"
   );
-  const [grade, setGrade, clearGrade] = useAsyncStorage("grade");
-  const [playedTime, setPlayedTime] = useAsyncStorage("playedTime");
+  const [grade, setGrade, clearGrade] = useStringAsyncStorage("grade");
+  const [playedTime, setPlayedTime] = useStringAsyncStorage("playedTime");
 
   const [apiUpdated, setApiUpdated] = useState(false);
   const [schedules, setSchedules] = useState<Schedules>();
