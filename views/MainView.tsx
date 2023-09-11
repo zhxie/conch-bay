@@ -92,7 +92,11 @@ import {
   updateNsoVersion,
   updateSplatnetVersion,
 } from "../utils/api";
-import { useBooleanAsyncStorage, useStringAsyncStorage } from "../utils/async-storage";
+import {
+  useAsyncStorage,
+  useBooleanAsyncStorage,
+  useStringAsyncStorage,
+} from "../utils/async-storage";
 import {
   isBackgroundTaskRegistered,
   registerBackgroundTask,
@@ -174,10 +178,6 @@ const MainView = () => {
     "language",
     t("lang")
   );
-  const [autoRefresh, setAutoRefresh, clearAutoRefresh] = useBooleanAsyncStorage(
-    "autoRefresh",
-    false
-  );
 
   const [icon, setIcon, clearIcon] = useStringAsyncStorage("icon");
   const [catalogLevel, setCatalogLevel, clearCatalogLevel] = useStringAsyncStorage("catalogLevel");
@@ -200,6 +200,13 @@ const MainView = () => {
   const [grade, setGrade, clearGrade] = useStringAsyncStorage("grade");
   const [playedTime, setPlayedTime] = useStringAsyncStorage("playedTime");
 
+  const [filter, setFilter, clearFilter, filterReady] =
+    useAsyncStorage<Database.FilterProps>("filter");
+  const [autoRefresh, setAutoRefresh, clearAutoRefresh] = useBooleanAsyncStorage(
+    "autoRefresh",
+    false
+  );
+
   const [apiUpdated, setApiUpdated] = useState(false);
   const [schedules, setSchedules] = useState<Schedules>();
   const [shop, setShop] = useState<Shop>();
@@ -209,7 +216,6 @@ const MainView = () => {
   const [groups, setGroups] = useState<ResultGroup[]>();
   const [filtered, setFiltered] = useState(0);
   const [total, setTotal] = useState(0);
-  const [filter, setFilter] = useState<Database.FilterProps>();
   const filterRef = useRef<Database.FilterProps>();
   const [filterOptions, setFilterOptions] = useState<Database.FilterProps>();
   const [stats, setStats] = useState<Stats[]>();
@@ -239,7 +245,13 @@ const MainView = () => {
   const splatNetViewRef = useRef<SplatNetViewRef>(null);
 
   useEffect(() => {
-    if (sessionTokenReady && webServiceTokenReady && bulletTokenReady && languageReady) {
+    if (
+      sessionTokenReady &&
+      webServiceTokenReady &&
+      bulletTokenReady &&
+      languageReady &&
+      filterReady
+    ) {
       (async () => {
         try {
           await requestMemory();
@@ -258,7 +270,7 @@ const MainView = () => {
         }
       })();
     }
-  }, [sessionTokenReady, webServiceTokenReady, bulletTokenReady, languageReady]);
+  }, [sessionTokenReady, webServiceTokenReady, bulletTokenReady, languageReady, filterReady]);
   useEffect(() => {
     if (ready) {
       Animated.timing(fade, {
@@ -1164,8 +1176,12 @@ const MainView = () => {
       showBanner(BannerLevel.Error, e);
     }
   };
-  const onChangeFilterPress = (filter?: Database.FilterProps) => {
-    setFilter(filter);
+  const onChangeFilterPress = async (filter?: Database.FilterProps) => {
+    if (filter) {
+      await setFilter(filter);
+    } else {
+      await clearFilter();
+    }
   };
   const onShowMorePress = async () => {
     if (allResultsShown) {
@@ -1797,13 +1813,13 @@ const MainView = () => {
   const onSourceCodeRepositoryPress = () => {
     WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay");
   };
-  const onAutoRefreshPress = () => {
+  const onAutoRefreshPress = async () => {
     if (!autoRefresh) {
       showBanner(BannerLevel.Info, t("auto_refresh_enabled"));
-      setAutoRefresh(true);
+      await setAutoRefresh(true);
     } else {
       showBanner(BannerLevel.Info, t("auto_refresh_disabled"));
-      setAutoRefresh(false);
+      await setAutoRefresh(false);
     }
   };
   const onBackgroundRefreshClose = () => {
