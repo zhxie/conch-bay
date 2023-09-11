@@ -15,6 +15,7 @@ import {
   ViewStyles,
 } from "../components";
 import t from "../i18n";
+import unknownList from "../models/unknown.json";
 import { BattleStats, CoopStats, Stats } from "../utils/stats";
 import { getCoopRuleColor, getImageCacheSource, getVsModeColor } from "../utils/ui";
 import { StatsModal } from "./StatsView";
@@ -223,11 +224,17 @@ const RotationsView = (props: RotationViewProps) => {
             result.item.coops![0].time
           )}
           stage={t(result.item.coops![0].stage)}
-          weapons={result.item.coops![0].suppliedWeapons.map((weapon) =>
-            getImageCacheSource(
+          weapons={result.item.coops![0].suppliedWeapons.map((weapon) => {
+            // TODO: use v1 assets until both random and golden random weapon icon are cached in Splatoon3.ink.
+            if (unknownList[weapon]) {
+              return getImageCacheSource(
+                `https://splatoon3.ink/assets/splatnet/v1/ui_img/${weapon}_0.png`
+              );
+            }
+            return getImageCacheSource(
               `https://splatoon3.ink/assets/splatnet/v2/weapon_illust/${weapon}_0.png`
-            )
-          )}
+            );
+          })}
           onPress={onPress}
         />
       </VStack>
