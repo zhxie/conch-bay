@@ -1723,6 +1723,7 @@ const MainView = () => {
       SPLATNET_VERSION: versions.SPLATNET_VERSION,
       sessionToken: sessionToken,
       webServiceToken: webServiceToken,
+      bulletToken: bulletToken,
       language: language,
       tests: {
         bulletToken: {},
@@ -1732,7 +1733,7 @@ const MainView = () => {
 
     // Diagnose bullet token.
     try {
-      const bulletToken = await getBulletToken(webServiceToken, language);
+      const bulletToken = await getBulletToken(webServiceToken);
       result.tests.bulletToken["bulletToken"] = bulletToken;
     } catch (e) {
       if (e instanceof AxiosError) {
@@ -1744,9 +1745,9 @@ const MainView = () => {
 
     // Diagnose web service token.
     try {
-      const webServiceToken = await getWebServiceToken(sessionToken);
-      result.tests.webServiceToken["webServiceToken"] = webServiceToken;
-      const bulletToken = await getBulletToken(webServiceToken.webServiceToken, language);
+      const res = await getWebServiceToken(sessionToken);
+      result.tests.webServiceToken["webServiceToken"] = res;
+      const bulletToken = await getBulletToken(res.webServiceToken);
       result.tests.webServiceToken["bulletToken"] = bulletToken;
     } catch (e) {
       if (e instanceof AxiosError) {
