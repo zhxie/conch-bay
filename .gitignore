@@ -13,5 +13,5 @@ web-build/
 
 assets/fonts/
 models/*.json
-!models/unknown.json
+!models/unknowns.json
 i18n/*.json

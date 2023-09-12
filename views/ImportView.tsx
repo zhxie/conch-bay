@@ -26,6 +26,7 @@ import coopSpecialWeaponList from "../models/coopSpecialWeapons.json";
 import coopStageList from "../models/coopStages.json";
 import salmonidList from "../models/salmonids.json";
 import { CoopHistoryDetailResult, VsHistoryDetailResult } from "../models/types";
+import unknownList from "../models/unknowns.json";
 import weaponList from "../models/weapons.json";
 import workSuitList from "../models/workSuits.json";
 import { decode64, encode64String } from "../utils/codec";
@@ -297,10 +298,6 @@ const parseFleece = (bytes: number[], sharedKeys?: string[], index?: number, wid
 };
 
 const SALMONIA3_PLUS_SALMONID_MAP = [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17, 20];
-const SALMONIA3_PLUS_UNKNOWN_MAP = {
-  "-1": "473fffb2442075078d8bb7125744905abdeae651b6a5b7453ae295582e45f7d1",
-  "-2": "9d7272733ae2f2282938da17d69f13419a935eef42239132a02fcf37d8678f10",
-};
 
 interface ImportResult {
   skip: number;
@@ -463,8 +460,9 @@ const ImportView = (props: ImportViewProps) => {
     }
     if (image) {
       let url: string;
-      if (id < 0) {
-        url = `https://splatoon3.ink/assets/splatnet/v2/ui_img/${SALMONIA3_PLUS_UNKNOWN_MAP[id]}_0.png`;
+      const unknownImage = unknownList.unknowns[id];
+      if (unknownImage) {
+        url = `https://splatoon3.ink/assets/splatnet/v2/ui_img/${unknownImage}_0.png`;
       } else {
         if (image.useSplatoon3ink) {
           url = `https://splatoon3.ink/assets/splatnet/v2/${image.path}/${image.images[encoded]}_0.png`;
