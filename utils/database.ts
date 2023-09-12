@@ -283,7 +283,7 @@ const convertFilter = (filter?: FilterProps, from?: number) => {
       filters.push(
         `(${(filter.weapons ?? [])
           .map((weapon) => {
-            const image = weaponList[weapon];
+            const image = weaponList.weapons[weapon];
             if (image) {
               return `(weapon = '${weapon}') OR (instr(weapon, '${image}') > 0)`;
             }
