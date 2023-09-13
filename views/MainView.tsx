@@ -28,6 +28,7 @@ import {
 } from "react-native";
 import * as Progress from "react-native-progress";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import semver from "semver";
 import {
   AvatarButton,
   Badge,
@@ -102,7 +103,7 @@ import {
   registerBackgroundTask,
   unregisterBackgroundTask,
 } from "../utils/background";
-import { decode64String, encode64String, parseVersion } from "../utils/codec";
+import { decode64String, encode64String } from "../utils/codec";
 import * as Database from "../utils/database";
 import { BATCH_SIZE, requestMemory } from "../utils/memory";
 import { ok } from "../utils/promise";
@@ -281,38 +282,24 @@ const MainView = () => {
         // HACK: avoid animation racing.
         setTimeout(() => {
           refresh();
-          let current: number[];
           if (Constants.appOwnership !== AppOwnership.Expo) {
-            current = parseVersion(Application.nativeApplicationVersion!);
-          } else {
-            current = parseVersion(Constants.expoConfig!.version!);
-          }
-          if (Constants.appOwnership !== AppOwnership.Expo) {
-            switch (Platform.OS) {
-              case "ios":
-                ok(
-                  fetchAppStoreVersion().then((version) => {
-                    const latest = parseVersion(version);
-                    if (latest > current) {
-                      setUpdate(true);
-                    }
-                  })
-                );
-                break;
-              case "android":
-                ok(
-                  fetchReleaseVersion().then((version) => {
-                    const latest = parseVersion(version.replace("v", ""));
-                    if (latest > current) {
-                      setUpdate(true);
-                    }
-                  })
-                );
-                break;
-              case "windows":
-              case "macos":
-              case "web":
-                break;
+            const current = Application.nativeApplicationVersion!;
+            if (Platform.OS === "ios") {
+              ok(
+                fetchAppStoreVersion().then((version) => {
+                  if (semver.compare(version, current) > 0) {
+                    setUpdate(true);
+                  }
+                })
+              );
+            } else {
+              ok(
+                fetchReleaseVersion().then((version) => {
+                  if (semver.compare(version.replace("v", ""), current) > 0) {
+                    setUpdate(true);
+                  }
+                })
+              );
             }
           }
         }, 100);
@@ -1425,17 +1412,10 @@ const MainView = () => {
     setExporting(false);
   };
   const onUpdatePress = () => {
-    switch (Platform.OS) {
-      case "ios":
-        Linking.openURL("https://apps.apple.com/us/app/conch-bay/id1659268579");
-        break;
-      case "android":
-        WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay/releases");
-        break;
-      case "windows":
-      case "macos":
-      case "web":
-        throw new Error(`unexpected OS ${Platform.OS}`);
+    if (Platform.OS === "ios") {
+      Linking.openURL("https://apps.apple.com/us/app/conch-bay/id1659268579");
+    } else {
+      WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay/releases");
     }
   };
   const onSupportPress = () => {

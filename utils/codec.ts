@@ -52,8 +52,3 @@ export const decode64Index = (base64: string) => {
   const s = Buffer.from(data).toString();
   return parseInt(s.split("-")[1]);
 };
-
-export const parseVersion = (version: string) => {
-  const segments = version.split(".");
-  return segments.map((segment) => parseInt(segment));
-};
