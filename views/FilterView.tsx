@@ -10,6 +10,7 @@ import {
   IconButton,
   Marquee,
   Modal,
+  SalmonRunSwitcher,
   TextStyles,
   VStack,
   ViewStyles,
@@ -115,76 +116,88 @@ const FilterView = (props: FilterViewProps) => {
           />
         </Center>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          <HStack flex center style={[ViewStyles.pl2, ViewStyles.pr4]}>
-            <ColorFilterButton
-              disabled={props.disabled}
-              color={
-                isFilterEqual(props.filter, RegularBattleFilterProps)
-                  ? Color.RegularBattle
-                  : undefined
-              }
-              title={t("regular_battle")}
-              style={ViewStyles.mr2}
-              onPress={() => {
-                onQuickFilterPress(RegularBattleFilterProps);
-              }}
-            />
-            <ColorFilterButton
-              disabled={props.disabled}
-              color={
-                isFilterEqual(props.filter, AnarchyBattleFilterProps)
-                  ? Color.AnarchyBattle
-                  : undefined
-              }
-              title={t("anarchy_battle")}
-              style={ViewStyles.mr2}
-              onPress={() => {
-                onQuickFilterPress(AnarchyBattleFilterProps);
-              }}
-            />
-            <ColorFilterButton
-              disabled={props.disabled}
-              color={isFilterEqual(props.filter, XBattleFilterProps) ? Color.XBattle : undefined}
-              title={t("x_battle")}
-              style={ViewStyles.mr2}
-              onPress={() => {
-                onQuickFilterPress(XBattleFilterProps);
-              }}
-            />
-            <ColorFilterButton
-              disabled={props.disabled}
-              color={
-                isFilterEqual(props.filter, ChallengeFilterProps) ? Color.Challenge : undefined
-              }
-              title={t("challenge_b")}
-              style={ViewStyles.mr2}
-              onPress={() => {
-                onQuickFilterPress(ChallengeFilterProps);
-              }}
-            />
-            <ColorFilterButton
-              disabled={props.disabled}
-              color={
-                isFilterEqual(props.filter, PrivateBattleFilterProps)
-                  ? Color.PrivateBattle
-                  : undefined
-              }
-              title={t("private_battle")}
-              style={ViewStyles.mr2}
-              onPress={() => {
-                onQuickFilterPress(PrivateBattleFilterProps);
-              }}
-            />
-            <ColorFilterButton
-              disabled={props.disabled}
-              color={
-                isFilterEqual(props.filter, SalmonRunFilterProps) ? Color.SalmonRun : undefined
-              }
-              title={t("salmon_run")}
-              onPress={() => {
-                onQuickFilterPress(SalmonRunFilterProps);
-              }}
-            />
+          {/* HACK: withdraw 8px margin in the last filter button. */}
+          <HStack
+            flex
+            center
+            style={[ViewStyles.pl2, ViewStyles.pr4, { marginRight: -ViewStyles.mr2.marginRight }]}
+          >
+            <SalmonRunSwitcher>
+              <>
+                <ColorFilterButton
+                  disabled={props.disabled}
+                  color={
+                    isFilterEqual(props.filter, RegularBattleFilterProps)
+                      ? Color.RegularBattle
+                      : undefined
+                  }
+                  title={t("regular_battle")}
+                  style={ViewStyles.mr2}
+                  onPress={() => {
+                    onQuickFilterPress(RegularBattleFilterProps);
+                  }}
+                />
+                <ColorFilterButton
+                  disabled={props.disabled}
+                  color={
+                    isFilterEqual(props.filter, AnarchyBattleFilterProps)
+                      ? Color.AnarchyBattle
+                      : undefined
+                  }
+                  title={t("anarchy_battle")}
+                  style={ViewStyles.mr2}
+                  onPress={() => {
+                    onQuickFilterPress(AnarchyBattleFilterProps);
+                  }}
+                />
+                <ColorFilterButton
+                  disabled={props.disabled}
+                  color={
+                    isFilterEqual(props.filter, XBattleFilterProps) ? Color.XBattle : undefined
+                  }
+                  title={t("x_battle")}
+                  style={ViewStyles.mr2}
+                  onPress={() => {
+                    onQuickFilterPress(XBattleFilterProps);
+                  }}
+                />
+                <ColorFilterButton
+                  disabled={props.disabled}
+                  color={
+                    isFilterEqual(props.filter, ChallengeFilterProps) ? Color.Challenge : undefined
+                  }
+                  title={t("challenge_b")}
+                  style={ViewStyles.mr2}
+                  onPress={() => {
+                    onQuickFilterPress(ChallengeFilterProps);
+                  }}
+                />
+                <ColorFilterButton
+                  disabled={props.disabled}
+                  color={
+                    isFilterEqual(props.filter, PrivateBattleFilterProps)
+                      ? Color.PrivateBattle
+                      : undefined
+                  }
+                  title={t("private_battle")}
+                  style={ViewStyles.mr2}
+                  onPress={() => {
+                    onQuickFilterPress(PrivateBattleFilterProps);
+                  }}
+                />
+              </>
+              <ColorFilterButton
+                disabled={props.disabled}
+                color={
+                  isFilterEqual(props.filter, SalmonRunFilterProps) ? Color.SalmonRun : undefined
+                }
+                title={t("salmon_run")}
+                style={ViewStyles.mr2}
+                onPress={() => {
+                  onQuickFilterPress(SalmonRunFilterProps);
+                }}
+              />
+            </SalmonRunSwitcher>
           </HStack>
         </ScrollView>
       </HStack>

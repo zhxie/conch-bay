@@ -57,6 +57,10 @@ const zhHant = {
   disclaimer: "本應用是使用魷魚圈3的資訊的非官方應用，與任天堂有限公司無關。",
   update: "更新",
   support: "支援",
+  preference_notice: "您可以根據自己的喜好定制法螺灣。例如，您可以優先顯示鮭魚跑的相關資訊。",
+  salmon_run_friendly_mode_enabled: "鮭魚跑友好模式 (%{enabled})",
+  enabled: "已啟用",
+  disabled: "已停用",
   language_notice:
     "如果您的遊戲語言與顯示語言不一致，您可以在此修改。這將使法螺灣載入對應語言的記錄與魷魚圈3。",
   change_game_language_language: "修改遊戲語言 (%{language})",

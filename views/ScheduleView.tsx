@@ -7,6 +7,7 @@ import {
   HStack,
   Marquee,
   Modal,
+  SalmonRunSwitcher,
   ScheduleBox,
   ScheduleButton,
   ShiftBox,
@@ -389,117 +390,129 @@ const ScheduleView = (props: ScheduleViewProps) => {
                 style={props.children || i !== 9 ? ViewStyles.mr2 : undefined}
               />
             ))}
-        {splatfestOpenSchedules?.[0] && (
-          <ScheduleButton
-            color={isScheduleStarted(splatfestOpenSchedules[0]) ? Color.AccentColor : undefined}
-            rule={td(getMatchSetting(splatfestOpenSchedules[0], FestMatchMode.REGULAR)!.vsRule)}
-            stages={getMatchSetting(splatfestOpenSchedules[0], FestMatchMode.REGULAR)!.vsStages.map(
-              (stage) => td(stage)
+        <SalmonRunSwitcher>
+          <>
+            {splatfestOpenSchedules?.[0] && (
+              <ScheduleButton
+                color={isScheduleStarted(splatfestOpenSchedules[0]) ? Color.AccentColor : undefined}
+                rule={td(getMatchSetting(splatfestOpenSchedules[0], FestMatchMode.REGULAR)!.vsRule)}
+                stages={getMatchSetting(
+                  splatfestOpenSchedules[0],
+                  FestMatchMode.REGULAR
+                )!.vsStages.map((stage) => td(stage))}
+                onPress={onSplatfestOpenSchedulePress}
+                style={ViewStyles.mr2}
+              />
             )}
-            onPress={onSplatfestOpenSchedulePress}
-            style={ViewStyles.mr2}
-          />
-        )}
-        {splatfestProSchedules?.[0] && (
-          <ScheduleButton
-            color={isScheduleStarted(splatfestProSchedules[0]) ? Color.AccentColor : undefined}
-            rule={td(getMatchSetting(splatfestProSchedules[0], FestMatchMode.CHALLENGE)!.vsRule)}
-            stages={getMatchSetting(
-              splatfestProSchedules[0],
-              FestMatchMode.CHALLENGE
-            )!.vsStages.map((stage) => td(stage))}
-            onPress={onSplatfestProSchedulePress}
-            style={ViewStyles.mr2}
-          />
-        )}
-        {currentSplatfest && (
-          <ScheduleButton
-            color={isSplatfestStarted(currentSplatfest) ? Color.AccentColor : undefined}
-            rule={t("VnNSdWxlLTU=")}
-            stages={[td(currentSplatfest.tricolorStage)]}
-            onPress={onCurrentSplatfestPress}
-            style={ViewStyles.mr2}
-          />
-        )}
-        {regularSchedules?.[0] && (
-          <ScheduleButton
-            color={isScheduleStarted(regularSchedules[0]) ? Color.RegularBattle : undefined}
-            rule={td(getMatchSetting(regularSchedules[0])!.vsRule)}
-            stages={getMatchSetting(regularSchedules[0])!.vsStages.map((stage) => td(stage))}
-            onPress={onRegularSchedulePress}
-            style={ViewStyles.mr2}
-          />
-        )}
-        {anarchySeriesSchedules?.[0] && (
-          <ScheduleButton
-            color={isScheduleStarted(anarchySeriesSchedules[0]) ? Color.AnarchyBattle : undefined}
-            rule={td(
-              getMatchSetting(anarchySeriesSchedules[0], BankaraMatchMode.CHALLENGE)!.vsRule
+            {splatfestProSchedules?.[0] && (
+              <ScheduleButton
+                color={isScheduleStarted(splatfestProSchedules[0]) ? Color.AccentColor : undefined}
+                rule={td(
+                  getMatchSetting(splatfestProSchedules[0], FestMatchMode.CHALLENGE)!.vsRule
+                )}
+                stages={getMatchSetting(
+                  splatfestProSchedules[0],
+                  FestMatchMode.CHALLENGE
+                )!.vsStages.map((stage) => td(stage))}
+                onPress={onSplatfestProSchedulePress}
+                style={ViewStyles.mr2}
+              />
             )}
-            stages={getMatchSetting(
-              anarchySeriesSchedules[0],
-              BankaraMatchMode.CHALLENGE
-            )!.vsStages.map((stage) => td(stage))}
-            onPress={onAnarchySeriesSchedulePress}
-            style={ViewStyles.mr2}
-          />
-        )}
-        {anarchyOpenSchedules?.[0] && (
-          <ScheduleButton
-            color={isScheduleStarted(anarchyOpenSchedules[0]) ? Color.AnarchyBattle : undefined}
-            rule={td(getMatchSetting(anarchyOpenSchedules[0], BankaraMatchMode.OPEN)!.vsRule)}
-            stages={getMatchSetting(anarchyOpenSchedules[0], BankaraMatchMode.OPEN)!.vsStages.map(
-              (stage) => td(stage)
+            {currentSplatfest && (
+              <ScheduleButton
+                color={isSplatfestStarted(currentSplatfest) ? Color.AccentColor : undefined}
+                rule={t("VnNSdWxlLTU=")}
+                stages={[td(currentSplatfest.tricolorStage)]}
+                onPress={onCurrentSplatfestPress}
+                style={ViewStyles.mr2}
+              />
             )}
-            onPress={onAnarchyOpenSchedulePress}
-            style={ViewStyles.mr2}
-          />
-        )}
-        {xSchedules?.[0] && (
-          <ScheduleButton
-            color={isScheduleStarted(xSchedules[0]) ? Color.XBattle : undefined}
-            rule={td(getMatchSetting(xSchedules[0])!.vsRule)}
-            stages={getMatchSetting(xSchedules[0])!.vsStages.map((stage) => td(stage))}
-            onPress={onXSchedulePress}
-            style={ViewStyles.mr2}
-          />
-        )}
-        {challenges?.[0] && (
-          <ScheduleButton
-            color={isChallengeStarted(challenges[0]) ? Color.Challenge : undefined}
-            rule={td(challenges[0].leagueMatchSetting.vsRule)}
-            stages={challenges[0].leagueMatchSetting.vsStages.map((stage) => td(stage))}
-            onPress={onChallengePress}
-            style={ViewStyles.mr2}
-          />
-        )}
-        {bigRunShifts?.[0] && (
-          <ScheduleButton
-            color={isScheduleStarted(bigRunShifts[0]) ? Color.BigRun : undefined}
-            rule={t("big_run")}
-            stages={[td(bigRunShifts[0].setting!.coopStage)]}
-            onPress={onBigRunShiftPress}
-            style={ViewStyles.mr2}
-          />
-        )}
-        {eggstraWorkShifts?.[0] && (
-          <ScheduleButton
-            color={isScheduleStarted(eggstraWorkShifts[0]) ? Color.EggstraWork : undefined}
-            rule={t("eggstra_work")}
-            stages={[td(eggstraWorkShifts[0].setting!.coopStage)]}
-            onPress={onEggstraWorkShiftPress}
-            style={ViewStyles.mr2}
-          />
-        )}
-        {regularShifts?.[0] && (
-          <ScheduleButton
-            color={isScheduleStarted(regularShifts[0]) ? Color.SalmonRun : undefined}
-            rule={t("salmon_run")}
-            stages={[td(regularShifts[0].setting!.coopStage)]}
-            onPress={onRegularShiftPress}
-            style={!!props.children && ViewStyles.mr2}
-          />
-        )}
+            {regularSchedules?.[0] && (
+              <ScheduleButton
+                color={isScheduleStarted(regularSchedules[0]) ? Color.RegularBattle : undefined}
+                rule={td(getMatchSetting(regularSchedules[0])!.vsRule)}
+                stages={getMatchSetting(regularSchedules[0])!.vsStages.map((stage) => td(stage))}
+                onPress={onRegularSchedulePress}
+                style={ViewStyles.mr2}
+              />
+            )}
+            {anarchySeriesSchedules?.[0] && (
+              <ScheduleButton
+                color={
+                  isScheduleStarted(anarchySeriesSchedules[0]) ? Color.AnarchyBattle : undefined
+                }
+                rule={td(
+                  getMatchSetting(anarchySeriesSchedules[0], BankaraMatchMode.CHALLENGE)!.vsRule
+                )}
+                stages={getMatchSetting(
+                  anarchySeriesSchedules[0],
+                  BankaraMatchMode.CHALLENGE
+                )!.vsStages.map((stage) => td(stage))}
+                onPress={onAnarchySeriesSchedulePress}
+                style={ViewStyles.mr2}
+              />
+            )}
+            {anarchyOpenSchedules?.[0] && (
+              <ScheduleButton
+                color={isScheduleStarted(anarchyOpenSchedules[0]) ? Color.AnarchyBattle : undefined}
+                rule={td(getMatchSetting(anarchyOpenSchedules[0], BankaraMatchMode.OPEN)!.vsRule)}
+                stages={getMatchSetting(
+                  anarchyOpenSchedules[0],
+                  BankaraMatchMode.OPEN
+                )!.vsStages.map((stage) => td(stage))}
+                onPress={onAnarchyOpenSchedulePress}
+                style={ViewStyles.mr2}
+              />
+            )}
+            {xSchedules?.[0] && (
+              <ScheduleButton
+                color={isScheduleStarted(xSchedules[0]) ? Color.XBattle : undefined}
+                rule={td(getMatchSetting(xSchedules[0])!.vsRule)}
+                stages={getMatchSetting(xSchedules[0])!.vsStages.map((stage) => td(stage))}
+                onPress={onXSchedulePress}
+                style={ViewStyles.mr2}
+              />
+            )}
+            {challenges?.[0] && (
+              <ScheduleButton
+                color={isChallengeStarted(challenges[0]) ? Color.Challenge : undefined}
+                rule={td(challenges[0].leagueMatchSetting.vsRule)}
+                stages={challenges[0].leagueMatchSetting.vsStages.map((stage) => td(stage))}
+                onPress={onChallengePress}
+                style={ViewStyles.mr2}
+              />
+            )}
+          </>
+          <>
+            {bigRunShifts?.[0] && (
+              <ScheduleButton
+                color={isScheduleStarted(bigRunShifts[0]) ? Color.BigRun : undefined}
+                rule={t("big_run")}
+                stages={[td(bigRunShifts[0].setting!.coopStage)]}
+                onPress={onBigRunShiftPress}
+                style={ViewStyles.mr2}
+              />
+            )}
+            {eggstraWorkShifts?.[0] && (
+              <ScheduleButton
+                color={isScheduleStarted(eggstraWorkShifts[0]) ? Color.EggstraWork : undefined}
+                rule={t("eggstra_work")}
+                stages={[td(eggstraWorkShifts[0].setting!.coopStage)]}
+                onPress={onEggstraWorkShiftPress}
+                style={ViewStyles.mr2}
+              />
+            )}
+            {regularShifts?.[0] && (
+              <ScheduleButton
+                color={isScheduleStarted(regularShifts[0]) ? Color.SalmonRun : undefined}
+                rule={t("salmon_run")}
+                stages={[td(regularShifts[0].setting!.coopStage)]}
+                onPress={onRegularShiftPress}
+                style={!!props.children && ViewStyles.mr2}
+              />
+            )}
+          </>
+        </SalmonRunSwitcher>
         {props.children}
       </HStack>
       <Modal isVisible={schedules} onClose={onDisplaySchedulesClose} style={ViewStyles.modal2d}>

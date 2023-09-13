@@ -20,6 +20,7 @@ import {
   Marquee,
   Modal,
   Notice,
+  SalmonRunSwitcher,
   Text,
   ToolButton,
   VStack,
@@ -392,246 +393,250 @@ const TrendsView = (props: TrendViewProps) => {
             onChange={onGroupChange}
           />
         </VStack>
-        <VStack style={ViewStyles.mb2}>
-          <Display first last={battleGroups.length === 0} title={t("battle")}>
-            <Text numberOfLines={1}>{battles?.length ?? 0}</Text>
-          </Display>
-          {battleGroups.length > 0 && (
-            <VStack style={[ViewStyles.rb2, theme.territoryStyle]}>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                <HStack flex center>
-                  <ColorFilterButton
-                    color={battleDimensions.includes("VICTORY") ? Color.AccentColor : undefined}
-                    title={`${t("victory")} (%)`}
-                    onPress={() => {
-                      onBattleDimensionPress("VICTORY");
-                    }}
+        <SalmonRunSwitcher>
+          <VStack style={ViewStyles.mb2}>
+            <Display first last={battleGroups.length === 0} title={t("battle")}>
+              <Text numberOfLines={1}>{battles?.length ?? 0}</Text>
+            </Display>
+            {battleGroups.length > 0 && (
+              <VStack style={[ViewStyles.rb2, theme.territoryStyle]}>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                  <HStack flex center>
+                    <ColorFilterButton
+                      color={battleDimensions.includes("VICTORY") ? Color.AccentColor : undefined}
+                      title={`${t("victory")} (%)`}
+                      onPress={() => {
+                        onBattleDimensionPress("VICTORY");
+                      }}
+                    />
+                    <ColorFilterButton
+                      color={battleDimensions.includes("POWER") ? Color.AnarchyBattle : undefined}
+                      title={`${t("power")}`}
+                      onPress={() => {
+                        onBattleDimensionPress("POWER");
+                      }}
+                    />
+                    <ColorFilterButton
+                      color={
+                        battleDimensions.includes("TURF_INKED") ||
+                        battleDimensions.includes("TURF_INKED_TEAM_AVERAGE")
+                          ? Color.AccentColor
+                          : undefined
+                      }
+                      title={t("turf_inked")}
+                      onPress={() => {
+                        onBattleDimensionPress("TURF_INKED");
+                      }}
+                      onLongPress={() => {
+                        onBattleDimensionPress("TURF_INKED_TEAM_AVERAGE");
+                      }}
+                    />
+                    <ColorFilterButton
+                      color={
+                        battleDimensions.includes("SPLATTED") ||
+                        battleDimensions.includes("SPLATTED_TEAM_AVERAGE")
+                          ? Color.KillAndRescue
+                          : undefined
+                      }
+                      title={t("splatted")}
+                      onPress={() => {
+                        onBattleDimensionPress("SPLATTED");
+                      }}
+                      onLongPress={() => {
+                        onBattleDimensionPress("SPLATTED_TEAM_AVERAGE");
+                      }}
+                    />
+                    <ColorFilterButton
+                      color={
+                        battleDimensions.includes("SPLATTED_INCLUDING_ASSISTED") ||
+                        battleDimensions.includes("SPLATTED_INCLUDING_ASSISTED_TEAM_AVERAGE")
+                          ? Color.KillAndRescue
+                          : undefined
+                      }
+                      title={t("splatted_including_assisted")}
+                      onPress={() => {
+                        onBattleDimensionPress("SPLATTED_INCLUDING_ASSISTED");
+                      }}
+                      onLongPress={() => {
+                        onBattleDimensionPress("SPLATTED_INCLUDING_ASSISTED_TEAM_AVERAGE");
+                      }}
+                    />
+                    <ColorFilterButton
+                      color={
+                        battleDimensions.includes("BE_SPLATTED") ||
+                        battleDimensions.includes("BE_SPLATTED_TEAM_AVERAGE")
+                          ? Color.Death
+                          : undefined
+                      }
+                      title={t("be_splatted")}
+                      onPress={() => {
+                        onBattleDimensionPress("BE_SPLATTED");
+                      }}
+                      onLongPress={() => {
+                        onBattleDimensionPress("BE_SPLATTED_TEAM_AVERAGE");
+                      }}
+                    />
+                    <ColorFilterButton
+                      color={
+                        battleDimensions.includes("SPECIAL_WEAPON_USES") ||
+                        battleDimensions.includes("SPECIAL_WEAPON_USES_TEAM_AVERAGE")
+                          ? Color.Special
+                          : undefined
+                      }
+                      title={t("special_weapon_uses")}
+                      onPress={() => {
+                        onBattleDimensionPress("SPECIAL_WEAPON_USES");
+                      }}
+                      onLongPress={() => {
+                        onBattleDimensionPress("SPECIAL_WEAPON_USES_TEAM_AVERAGE");
+                      }}
+                    />
+                  </HStack>
+                </ScrollView>
+                {battleDimensions.length > 0 && (
+                  <Chart
+                    dataGroup={battleDimensions.map((dimension) => getBattleData(dimension))}
+                    style={[ViewStyles.rb2, theme.territoryStyle, { height: 150, width: "100%" }]}
                   />
-                  <ColorFilterButton
-                    color={battleDimensions.includes("POWER") ? Color.AnarchyBattle : undefined}
-                    title={`${t("power")}`}
-                    onPress={() => {
-                      onBattleDimensionPress("POWER");
-                    }}
+                )}
+              </VStack>
+            )}
+          </VStack>
+          <VStack style={ViewStyles.mb2}>
+            <Display first last={coopGroups.length === 0} title={t("salmon_run")}>
+              <Text numberOfLines={1}>{coops?.length ?? 0}</Text>
+            </Display>
+            {coopGroups.length > 0 && (
+              <VStack style={[ViewStyles.rb2, theme.territoryStyle]}>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                  <HStack flex center>
+                    <ColorFilterButton
+                      color={coopDimensions.includes("CLEAR") ? Color.AccentColor : undefined}
+                      title={`${t("clear")} (%)`}
+                      onPress={() => {
+                        onCoopDimensionPress("CLEAR");
+                      }}
+                    />
+                    <ColorFilterButton
+                      color={coopDimensions.includes("WAVES_CLEARED") ? Color.SalmonRun : undefined}
+                      title={t("waves_cleared")}
+                      onPress={() => {
+                        onCoopDimensionPress("WAVES_CLEARED");
+                      }}
+                    />
+                    <ColorFilterButton
+                      color={coopDimensions.includes("HAZARD_LEVEL") ? Color.BigRun : undefined}
+                      title={t("hazard_level")}
+                      onPress={() => {
+                        onCoopDimensionPress("HAZARD_LEVEL");
+                      }}
+                    />
+                    <ColorFilterButton
+                      color={
+                        coopDimensions.includes("BOSS_SALMONIDS_DEFEATED") ||
+                        coopDimensions.includes("BOSS_SALMONIDS_DEFEATED_TEAM_AVERAGE")
+                          ? Color.KillAndRescue
+                          : undefined
+                      }
+                      title={t("boss_salmonids_defeated")}
+                      onPress={() => {
+                        onCoopDimensionPress("BOSS_SALMONIDS_DEFEATED");
+                      }}
+                      onLongPress={() => {
+                        onCoopDimensionPress("BOSS_SALMONIDS_DEFEATED_TEAM_AVERAGE");
+                      }}
+                    />
+                    <ColorFilterButton
+                      color={
+                        coopDimensions.includes("GOLDEN_EGGS_COLLECTED") ||
+                        coopDimensions.includes("GOLDEN_EGGS_COLLECTED")
+                          ? Color.GoldenEgg
+                          : undefined
+                      }
+                      title={t("golden_eggs_collected")}
+                      onPress={() => {
+                        onCoopDimensionPress("GOLDEN_EGGS_COLLECTED");
+                      }}
+                      onLongPress={() => {
+                        onCoopDimensionPress("GOLDEN_EGGS_COLLECTED_TEAM_AVERAGE");
+                      }}
+                    />
+                    <ColorFilterButton
+                      color={
+                        coopDimensions.includes("GOLDEN_EGGS_COLLECTED_INCLUDING_ASSISTED") ||
+                        coopDimensions.includes(
+                          "GOLDEN_EGGS_COLLECTED_INCLUDING_ASSISTED_TEAM_AVERAGE"
+                        )
+                          ? Color.GoldenEgg
+                          : undefined
+                      }
+                      title={t("golden_eggs_collected_including_assisted")}
+                      onPress={() => {
+                        onCoopDimensionPress("GOLDEN_EGGS_COLLECTED_INCLUDING_ASSISTED");
+                      }}
+                      onLongPress={() => {
+                        onCoopDimensionPress(
+                          "GOLDEN_EGGS_COLLECTED_INCLUDING_ASSISTED_TEAM_AVERAGE"
+                        );
+                      }}
+                    />
+                    <ColorFilterButton
+                      color={
+                        coopDimensions.includes("POWER_EGGS_COLLECTED") ||
+                        coopDimensions.includes("POWER_EGGS_COLLECTED_TEAM_AVERAGE")
+                          ? Color.PowerEgg
+                          : undefined
+                      }
+                      title={t("power_eggs_collected")}
+                      onPress={() => {
+                        onCoopDimensionPress("POWER_EGGS_COLLECTED");
+                      }}
+                      onLongPress={() => {
+                        onCoopDimensionPress("POWER_EGGS_COLLECTED_TEAM_AVERAGE");
+                      }}
+                    />
+                    <ColorFilterButton
+                      color={
+                        coopDimensions.includes("RESCUED") ||
+                        coopDimensions.includes("RESCUED_TEAM_AVERAGE")
+                          ? Color.KillAndRescue
+                          : undefined
+                      }
+                      title={t("rescued")}
+                      onPress={() => {
+                        onCoopDimensionPress("RESCUED");
+                      }}
+                      onLongPress={() => {
+                        onCoopDimensionPress("RESCUED_TEAM_AVERAGE");
+                      }}
+                    />
+                    <ColorFilterButton
+                      color={
+                        coopDimensions.includes("BE_RESCUED") ||
+                        coopDimensions.includes("BE_RESCUED_TEAM_AVERAGE")
+                          ? Color.Death
+                          : undefined
+                      }
+                      title={t("be_rescued")}
+                      onPress={() => {
+                        onCoopDimensionPress("BE_RESCUED");
+                      }}
+                      onLongPress={() => {
+                        onCoopDimensionPress("BE_RESCUED_TEAM_AVERAGE");
+                      }}
+                    />
+                  </HStack>
+                </ScrollView>
+                {coopDimensions.length > 0 && (
+                  <Chart
+                    dataGroup={coopDimensions.map((dimension) => getCoopData(dimension))}
+                    style={[ViewStyles.rb2, theme.territoryStyle, { height: 150, width: "100%" }]}
                   />
-                  <ColorFilterButton
-                    color={
-                      battleDimensions.includes("TURF_INKED") ||
-                      battleDimensions.includes("TURF_INKED_TEAM_AVERAGE")
-                        ? Color.AccentColor
-                        : undefined
-                    }
-                    title={t("turf_inked")}
-                    onPress={() => {
-                      onBattleDimensionPress("TURF_INKED");
-                    }}
-                    onLongPress={() => {
-                      onBattleDimensionPress("TURF_INKED_TEAM_AVERAGE");
-                    }}
-                  />
-                  <ColorFilterButton
-                    color={
-                      battleDimensions.includes("SPLATTED") ||
-                      battleDimensions.includes("SPLATTED_TEAM_AVERAGE")
-                        ? Color.KillAndRescue
-                        : undefined
-                    }
-                    title={t("splatted")}
-                    onPress={() => {
-                      onBattleDimensionPress("SPLATTED");
-                    }}
-                    onLongPress={() => {
-                      onBattleDimensionPress("SPLATTED_TEAM_AVERAGE");
-                    }}
-                  />
-                  <ColorFilterButton
-                    color={
-                      battleDimensions.includes("SPLATTED_INCLUDING_ASSISTED") ||
-                      battleDimensions.includes("SPLATTED_INCLUDING_ASSISTED_TEAM_AVERAGE")
-                        ? Color.KillAndRescue
-                        : undefined
-                    }
-                    title={t("splatted_including_assisted")}
-                    onPress={() => {
-                      onBattleDimensionPress("SPLATTED_INCLUDING_ASSISTED");
-                    }}
-                    onLongPress={() => {
-                      onBattleDimensionPress("SPLATTED_INCLUDING_ASSISTED_TEAM_AVERAGE");
-                    }}
-                  />
-                  <ColorFilterButton
-                    color={
-                      battleDimensions.includes("BE_SPLATTED") ||
-                      battleDimensions.includes("BE_SPLATTED_TEAM_AVERAGE")
-                        ? Color.Death
-                        : undefined
-                    }
-                    title={t("be_splatted")}
-                    onPress={() => {
-                      onBattleDimensionPress("BE_SPLATTED");
-                    }}
-                    onLongPress={() => {
-                      onBattleDimensionPress("BE_SPLATTED_TEAM_AVERAGE");
-                    }}
-                  />
-                  <ColorFilterButton
-                    color={
-                      battleDimensions.includes("SPECIAL_WEAPON_USES") ||
-                      battleDimensions.includes("SPECIAL_WEAPON_USES_TEAM_AVERAGE")
-                        ? Color.Special
-                        : undefined
-                    }
-                    title={t("special_weapon_uses")}
-                    onPress={() => {
-                      onBattleDimensionPress("SPECIAL_WEAPON_USES");
-                    }}
-                    onLongPress={() => {
-                      onBattleDimensionPress("SPECIAL_WEAPON_USES_TEAM_AVERAGE");
-                    }}
-                  />
-                </HStack>
-              </ScrollView>
-              {battleDimensions.length > 0 && (
-                <Chart
-                  dataGroup={battleDimensions.map((dimension) => getBattleData(dimension))}
-                  style={[ViewStyles.rb2, theme.territoryStyle, { height: 150, width: "100%" }]}
-                />
-              )}
-            </VStack>
-          )}
-        </VStack>
-        <VStack style={ViewStyles.mb2}>
-          <Display first last={coopGroups.length === 0} title={t("salmon_run")}>
-            <Text numberOfLines={1}>{coops?.length ?? 0}</Text>
-          </Display>
-          {coopGroups.length > 0 && (
-            <VStack style={[ViewStyles.rb2, theme.territoryStyle]}>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                <HStack flex center>
-                  <ColorFilterButton
-                    color={coopDimensions.includes("CLEAR") ? Color.AccentColor : undefined}
-                    title={`${t("clear")} (%)`}
-                    onPress={() => {
-                      onCoopDimensionPress("CLEAR");
-                    }}
-                  />
-                  <ColorFilterButton
-                    color={coopDimensions.includes("WAVES_CLEARED") ? Color.SalmonRun : undefined}
-                    title={t("waves_cleared")}
-                    onPress={() => {
-                      onCoopDimensionPress("WAVES_CLEARED");
-                    }}
-                  />
-                  <ColorFilterButton
-                    color={coopDimensions.includes("HAZARD_LEVEL") ? Color.BigRun : undefined}
-                    title={t("hazard_level")}
-                    onPress={() => {
-                      onCoopDimensionPress("HAZARD_LEVEL");
-                    }}
-                  />
-                  <ColorFilterButton
-                    color={
-                      coopDimensions.includes("BOSS_SALMONIDS_DEFEATED") ||
-                      coopDimensions.includes("BOSS_SALMONIDS_DEFEATED_TEAM_AVERAGE")
-                        ? Color.KillAndRescue
-                        : undefined
-                    }
-                    title={t("boss_salmonids_defeated")}
-                    onPress={() => {
-                      onCoopDimensionPress("BOSS_SALMONIDS_DEFEATED");
-                    }}
-                    onLongPress={() => {
-                      onCoopDimensionPress("BOSS_SALMONIDS_DEFEATED_TEAM_AVERAGE");
-                    }}
-                  />
-                  <ColorFilterButton
-                    color={
-                      coopDimensions.includes("GOLDEN_EGGS_COLLECTED") ||
-                      coopDimensions.includes("GOLDEN_EGGS_COLLECTED")
-                        ? Color.GoldenEgg
-                        : undefined
-                    }
-                    title={t("golden_eggs_collected")}
-                    onPress={() => {
-                      onCoopDimensionPress("GOLDEN_EGGS_COLLECTED");
-                    }}
-                    onLongPress={() => {
-                      onCoopDimensionPress("GOLDEN_EGGS_COLLECTED_TEAM_AVERAGE");
-                    }}
-                  />
-                  <ColorFilterButton
-                    color={
-                      coopDimensions.includes("GOLDEN_EGGS_COLLECTED_INCLUDING_ASSISTED") ||
-                      coopDimensions.includes(
-                        "GOLDEN_EGGS_COLLECTED_INCLUDING_ASSISTED_TEAM_AVERAGE"
-                      )
-                        ? Color.GoldenEgg
-                        : undefined
-                    }
-                    title={t("golden_eggs_collected_including_assisted")}
-                    onPress={() => {
-                      onCoopDimensionPress("GOLDEN_EGGS_COLLECTED_INCLUDING_ASSISTED");
-                    }}
-                    onLongPress={() => {
-                      onCoopDimensionPress("GOLDEN_EGGS_COLLECTED_INCLUDING_ASSISTED_TEAM_AVERAGE");
-                    }}
-                  />
-                  <ColorFilterButton
-                    color={
-                      coopDimensions.includes("POWER_EGGS_COLLECTED") ||
-                      coopDimensions.includes("POWER_EGGS_COLLECTED_TEAM_AVERAGE")
-                        ? Color.PowerEgg
-                        : undefined
-                    }
-                    title={t("power_eggs_collected")}
-                    onPress={() => {
-                      onCoopDimensionPress("POWER_EGGS_COLLECTED");
-                    }}
-                    onLongPress={() => {
-                      onCoopDimensionPress("POWER_EGGS_COLLECTED_TEAM_AVERAGE");
-                    }}
-                  />
-                  <ColorFilterButton
-                    color={
-                      coopDimensions.includes("RESCUED") ||
-                      coopDimensions.includes("RESCUED_TEAM_AVERAGE")
-                        ? Color.KillAndRescue
-                        : undefined
-                    }
-                    title={t("rescued")}
-                    onPress={() => {
-                      onCoopDimensionPress("RESCUED");
-                    }}
-                    onLongPress={() => {
-                      onCoopDimensionPress("RESCUED_TEAM_AVERAGE");
-                    }}
-                  />
-                  <ColorFilterButton
-                    color={
-                      coopDimensions.includes("BE_RESCUED") ||
-                      coopDimensions.includes("BE_RESCUED_TEAM_AVERAGE")
-                        ? Color.Death
-                        : undefined
-                    }
-                    title={t("be_rescued")}
-                    onPress={() => {
-                      onCoopDimensionPress("BE_RESCUED");
-                    }}
-                    onLongPress={() => {
-                      onCoopDimensionPress("BE_RESCUED_TEAM_AVERAGE");
-                    }}
-                  />
-                </HStack>
-              </ScrollView>
-              {coopDimensions.length > 0 && (
-                <Chart
-                  dataGroup={coopDimensions.map((dimension) => getCoopData(dimension))}
-                  style={[ViewStyles.rb2, theme.territoryStyle, { height: 150, width: "100%" }]}
-                />
-              )}
-            </VStack>
-          )}
-        </VStack>
+                )}
+              </VStack>
+            )}
+          </VStack>
+        </SalmonRunSwitcher>
         <VStack center style={(battleGroups.length > 0 || coopGroups.length > 0) && ViewStyles.mb2}>
           <Marquee>{t("trends_notice")}</Marquee>
         </VStack>

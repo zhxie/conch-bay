@@ -44,6 +44,7 @@ import {
   Marquee,
   Modal,
   Picker,
+  SalmonRunSwitcherContext,
   Text,
   TextStyles,
   ToolButton,
@@ -203,6 +204,8 @@ const MainView = () => {
 
   const [filter, setFilter, clearFilter, filterReady] =
     useAsyncStorage<Database.FilterProps>("filter");
+  const [salmonRunFriendlyMode, setSalmonRunFriendlyMode, clearSalmonRunFriendlyMode] =
+    useBooleanAsyncStorage("salmonRunFriendlyMode");
   const [autoRefresh, setAutoRefresh, clearAutoRefresh] = useBooleanAsyncStorage(
     "autoRefresh",
     false
@@ -1436,6 +1439,13 @@ const MainView = () => {
   const onChangeDisplayLanguagePress = () => {
     Linking.openSettings();
   };
+  const onSwitchSalmonRunFriendlyMode = async () => {
+    if (salmonRunFriendlyMode) {
+      await clearSalmonRunFriendlyMode();
+    } else {
+      await setSalmonRunFriendlyMode(true);
+    }
+  };
   const onClearCachePress = async () => {
     setClearingCache(true);
     await Image.clearDiskCache();
@@ -1817,536 +1827,554 @@ const MainView = () => {
   };
 
   return (
-    <VStack flex style={theme.backgroundStyle}>
-      {upgrade && (
-        // TODO: the safe area view may not be in size when start up.
-        <SafeAreaView style={[ViewStyles.ff, { position: "absolute" }]}>
-          <Center style={ViewStyles.ff}>
-            <VStack center>
-              <ActivityIndicator style={ViewStyles.mb2} />
-              <Text>{t("upgrading_database")}</Text>
-            </VStack>
-          </Center>
-        </SafeAreaView>
-      )}
-      <Animated.View style={[ViewStyles.f, { opacity: fade }]}>
-        {/* HACK: it is a little bit weird concentrating on result list. */}
-        <ResultView
-          groups={groups}
-          refreshControl={
-            <RefreshControl
-              progressViewOffset={insets.top}
-              refreshing={refreshing}
-              onRefresh={refresh}
-            />
-          }
-          header={
-            <SafeAreaView
-              edges={["top", "left", "right"]}
-              // HACK: add additional 8px margin in the top.
-              style={[ViewStyles.mt2, { alignItems: "center" }]}
-              onLayout={onHeaderLayout}
-            >
-              {!sessionToken && (
-                <Center flex style={[ViewStyles.px4, ViewStyles.mb4]}>
-                  <Button style={ViewStyles.accent} onPress={onLogInPress}>
-                    <Marquee style={theme.reverseTextStyle}>{t("log_in")}</Marquee>
-                  </Button>
-                </Center>
-              )}
-              {sessionToken.length > 0 && (
-                <VStack center style={[ViewStyles.px4, ViewStyles.mb4]}>
-                  <AvatarButton
-                    size={64}
-                    image={icon.length > 0 ? getUserIconCacheSource(icon) : undefined}
-                    onPress={onLogOutPress}
-                    onLongPress={onSplatNetPress}
-                    style={ViewStyles.mb2}
-                  />
-                  {/* HACK: withdraw 4px margin in the last badge. */}
-                  <HStack style={{ marginRight: -ViewStyles.mr1.marginRight }}>
-                    {catalogLevel.length > 0 && (
-                      <CatalogView
-                        catalogLevel={catalogLevel}
-                        catalog={catalog}
-                        style={ViewStyles.mr1}
-                      />
-                    )}
-                    {level.length > 0 && (
-                      <Badge color={Color.RegularBattle} title={level} style={ViewStyles.mr1} />
-                    )}
-                    {rank.length > 0 && (
-                      <Badge color={Color.AnarchyBattle} title={rank} style={ViewStyles.mr1} />
-                    )}
-                    {(splatZonesXPower.length > 1 ||
-                      towerControlXPower.length > 1 ||
-                      rainmakerXPower.length > 1 ||
-                      clamBlitzXPower.length > 1) && (
-                      <XView
-                        splatZones={parseFloat(splatZonesXPower)}
-                        towerControl={parseFloat(towerControlXPower)}
-                        rainmaker={parseFloat(rainmakerXPower)}
-                        clamBlitz={parseFloat(clamBlitzXPower)}
-                        style={ViewStyles.mr1}
-                      />
-                    )}
-                    {grade.length > 0 && (
-                      <Badge color={Color.SalmonRun} title={t(grade)} style={ViewStyles.mr1} />
-                    )}
-                  </HStack>
-                  {progressTotal > 0 && progress < progressTotal && (
-                    <Progress.Bar
-                      animated
-                      progress={progress / progressTotal}
-                      color={Color.AccentColor}
-                      unfilledColor={theme.territoryColor}
-                      borderColor={Color.AccentColor}
-                      width={64}
-                      borderRadius={2}
-                      useNativeDriver
-                      style={{ position: "absolute", top: 50 }}
-                    />
-                  )}
-                </VStack>
-              )}
-              <ScheduleView schedules={schedules} style={ViewStyles.mb4}>
-                {shop && (
-                  <ShopView
-                    shop={shop}
-                    onRefresh={sessionToken.length > 0 ? onEquipmentsRefresh : undefined}
-                  />
-                )}
-              </ScheduleView>
-              {sessionToken.length > 0 &&
-                (friends === undefined || friends.friends.nodes.length > 0) && (
-                  <FriendView friends={friends} voting={voting} style={ViewStyles.mb4} />
-                )}
-              <FilterView
-                disabled={loadingMore}
-                filter={filter}
-                options={filterOptions}
-                onChange={onChangeFilterPress}
-                onLayout={onFilterLayout}
-                style={ViewStyles.mb2}
-              />
-            </SafeAreaView>
-          }
-          footer={
-            <SafeAreaView
-              edges={["bottom", "left", "right"]}
-              style={[ViewStyles.mb2, { alignItems: "center" }]}
-            >
-              <VStack style={[ViewStyles.mb4, ViewStyles.wf, ViewStyles.px4]}>
-                <Picker
-                  loading={loadingMore}
-                  loadingText={t("loading_more")}
-                  title={allResultsShown ? t("all_results_showed") : t("show_more")}
-                  items={Object.values(TimeRange).map((range) => ({
-                    key: range,
-                    value: t(range),
-                  }))}
-                  header={
-                    <VStack center>
-                      <Marquee style={ViewStyles.mb2}>
-                        {filtered === total
-                          ? t("n_total_results_showed", { n: count, total })
-                          : t("n_filtered_total_filtered_results_showed", {
-                              n: count,
-                              filtered,
-                              total,
-                            })}
-                      </Marquee>
-                    </VStack>
-                  }
-                  style={[ViewStyles.rt0, ViewStyles.rb2, { height: 64 }, theme.territoryStyle]}
-                  textStyle={[TextStyles.h3, theme.textStyle]}
-                  // HACK: forcly cast.
-                  onSelected={onShowMoreSelected as (_: string) => void}
-                  onPress={onShowMorePress}
-                />
+    <SalmonRunSwitcherContext.Provider value={{ salmonRun: salmonRunFriendlyMode }}>
+      <VStack flex style={theme.backgroundStyle}>
+        {upgrade && (
+          // TODO: the safe area view may not be in size when start up.
+          <SafeAreaView style={[ViewStyles.ff, { position: "absolute" }]}>
+            <Center style={ViewStyles.ff}>
+              <VStack center>
+                <ActivityIndicator style={ViewStyles.mb2} />
+                <Text>{t("upgrading_database")}</Text>
               </VStack>
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                style={[ViewStyles.mb4, ViewStyles.wf]}
-              >
-                <HStack flex center style={ViewStyles.px4}>
-                  <StatsView disabled={counting} onStats={onStatsPress} style={ViewStyles.mr2} />
-                  <TrendsView disabled={counting} onStats={onStatsPress} style={ViewStyles.mr2} />
-                  <RotationsView
-                    disabled={counting}
-                    onStats={onStatsPress}
-                    style={ViewStyles.mr2}
-                  />
-                  {sessionToken.length > 0 && (
-                    <SplatNetView
-                      ref={splatNetViewRef}
-                      lang={language}
-                      style={ViewStyles.mr2}
-                      onGetWebServiceToken={onGetWebServiceToken}
-                    />
-                  )}
-                  <ImportView
-                    disabled={refreshing}
-                    onBegin={onImportBegin}
-                    onResults={onImportResults}
-                    onComplete={onImportComplete}
-                    style={ViewStyles.mr2}
-                  />
-                  <ToolButton
-                    loading={exporting}
-                    loadingText={t("exporting")}
-                    icon="upload"
-                    title={t("export")}
-                    onPress={onExportPress}
-                  />
-                </HStack>
-              </ScrollView>
-              <VStack center style={ViewStyles.px4}>
-                <Text center style={[TextStyles.subtle, ViewStyles.mb2]}>
-                  {t("disclaimer")}
-                </Text>
-                <VStack center>
-                  <HStack center>
-                    <Text
-                      style={[update && ViewStyles.mr1, TextStyles.subtle]}
-                    >{`${Application.applicationName} ${Application.nativeApplicationVersion} (${Application.nativeBuildVersion})`}</Text>
-                    {update && (
-                      <Text style={[TextStyles.link, TextStyles.subtle]} onPress={onUpdatePress}>
-                        {t("update")}
-                      </Text>
-                    )}
-                  </HStack>
-                  <HStack center>
-                    <Text
-                      style={[TextStyles.link, TextStyles.subtle, ViewStyles.mr2]}
-                      onPress={onSupportPress}
-                    >
-                      {t("support")}
-                    </Text>
-                    <Text
-                      style={[TextStyles.link, TextStyles.subtle, ViewStyles.mr2]}
-                      onPress={onPrivacyPolicyPress}
-                    >
-                      {t("privacy_policy")}
-                    </Text>
-                    <Text
-                      style={[TextStyles.link, TextStyles.subtle]}
-                      onPress={onAcknowledgmentsPress}
-                    >
-                      {t("acknowledgments")}
-                    </Text>
-                  </HStack>
-                </VStack>
-              </VStack>
-            </SafeAreaView>
-          }
-          onScroll={onScroll}
-          onScrollBeginDrag={onScrollBegin}
-          onScrollEndDrag={onScrollEndDrag}
-          onMomentumScrollBegin={onScrollBegin}
-          onMomentumScrollEnd={onScrollEnd}
-        />
-        <Animated.View
-          style={{
-            position: "absolute",
-            top: -(filterHeight + ViewStyles.mt2.marginTop + ViewStyles.mb2.marginBottom),
-            width: "100%",
-            height:
-              filterHeight + insets.top + ViewStyles.mt2.marginTop + ViewStyles.mb2.marginBottom,
-            opacity: blurOnTopFade,
-            transform: [
-              {
-                translateY: blurOnTopTranslateY,
-              },
-            ],
-          }}
-        >
-          <BlurView
-            intensity={100}
-            tint={theme.colorScheme ?? "default"}
-            style={[ViewStyles.f, { flexDirection: "column-reverse" }]}
-          >
-            <Animated.View style={{ opacity: topFilterFade }}>
-              <FilterView
-                disabled={loadingMore}
-                filter={filter}
-                options={filterOptions}
-                style={ViewStyles.mb2}
-                onChange={onChangeFilterPress}
-                onLayout={onFilterLayout}
-              />
-            </Animated.View>
-          </BlurView>
-        </Animated.View>
-        {sessionToken.length > 0 && (
-          <FloatingActionButton
-            size={50}
-            color={autoRefresh ? Color.AccentColor : undefined}
-            icon="refresh-cw"
-            spin={autoRefresh}
-            onPress={onAutoRefreshPress}
-          />
+            </Center>
+          </SafeAreaView>
         )}
-      </Animated.View>
-      <Modal isVisible={logIn} onClose={onLogInClose} style={ViewStyles.modal1d}>
-        <CustomDialog icon="alert-circle">
-          <DialogSection text={t("log_in_notice")} style={ViewStyles.mb4}>
-            <Button
-              style={[
-                ViewStyles.mb2,
-                { borderColor: Color.AccentColor, borderWidth: 1.5 },
-                theme.backgroundStyle,
-              ]}
-              onPress={onPrivacyPolicyPress}
-            >
-              <Marquee>{t("privacy_policy")}</Marquee>
-            </Button>
-            <Button
-              disabled={refreshing}
-              loading={loggingIn}
-              loadingText={t("logging_in")}
-              style={ViewStyles.accent}
-              textStyle={theme.reverseTextStyle}
-              onPress={onLogInContinuePress}
-            >
-              <Marquee style={theme.reverseTextStyle}>{t("log_in_continue")}</Marquee>
-            </Button>
-          </DialogSection>
-          <DialogSection text={t("alternative_log_in_notice")}>
-            <Button
-              disabled={refreshing}
-              loading={loggingIn}
-              loadingText={t("logging_in")}
-              style={ViewStyles.accent}
-              textStyle={theme.reverseTextStyle}
-              onPress={onAlternativeLogInPress}
-            >
-              <Marquee style={theme.reverseTextStyle}>{t("log_in_with_session_token")}</Marquee>
-            </Button>
-          </DialogSection>
-        </CustomDialog>
-      </Modal>
-      <Modal isVisible={logOut} onClose={onLogOutClose} style={ViewStyles.modal1d}>
-        <CustomDialog icon="alert-circle">
-          <DialogSection text={t("relog_in_notice")} style={ViewStyles.mb4}>
-            <Button
-              disabled={refreshing}
-              loading={loggingIn}
-              loadingText={t("logging_in")}
-              style={[ViewStyles.mb2, ViewStyles.accent]}
-              textStyle={theme.reverseTextStyle}
-              onPress={onLogInContinuePress}
-            >
-              <Marquee style={theme.reverseTextStyle}>{t("relog_in")}</Marquee>
-            </Button>
-            <Button
-              disabled={refreshing}
-              loading={loggingIn}
-              loadingText={t("logging_in")}
-              style={ViewStyles.accent}
-              textStyle={theme.reverseTextStyle}
-              onPress={onAlternativeLogInPress}
-            >
-              <Marquee style={theme.reverseTextStyle}>{t("relog_in_with_session_token")}</Marquee>
-            </Button>
-          </DialogSection>
-          <DialogSection text={t("log_out_notice")}>
-            <Button
-              disabled={loggingIn || refreshing || loadingMore || exporting}
-              loading={loggingOut}
-              loadingText={t("logging_out")}
-              style={ViewStyles.danger}
-              textStyle={theme.reverseTextStyle}
-              onPress={onLogOutContinuePress}
-            >
-              <Marquee style={theme.reverseTextStyle}>{t("log_out_continue")}</Marquee>
-            </Button>
-          </DialogSection>
-        </CustomDialog>
-      </Modal>
-      <Modal isVisible={support} onClose={onSupportClose} style={ViewStyles.modal1d}>
-        <CustomDialog icon="help-circle">
-          <DialogSection text={t("language_notice")} style={ViewStyles.mb4}>
-            <Picker
-              disabled={refreshing}
-              title={t("change_game_language_language", { language: t(language) })}
-              items={[
-                { key: "de-DE", value: t("de-DE") },
-                { key: "en-GB", value: t("en-GB") },
-                { key: "en-US", value: t("en-US") },
-                { key: "es-ES", value: t("es-ES") },
-                { key: "es-MX", value: t("es-MX") },
-                { key: "fr-CA", value: t("fr-CA") },
-                { key: "it-IT", value: t("it-IT") },
-                { key: "ja-JP", value: t("ja-JP") },
-                { key: "ko-KR", value: t("ko-KR") },
-                { key: "nl-NL", value: t("nl-NL") },
-                { key: "ru-RU", value: t("ru-RU") },
-                { key: "zh-CN", value: t("zh-CN") },
-                { key: "zh-TW", value: t("zh-TW") },
-              ]}
-              onSelected={onGameLanguageSelected}
-              style={ViewStyles.mb2}
-            />
-            <Button
-              style={ViewStyles.accent}
-              textStyle={theme.reverseTextStyle}
-              onPress={onChangeDisplayLanguagePress}
-            >
-              <Marquee style={theme.reverseTextStyle}>
-                {t("change_display_language_language", { language: t(t("lang")) })}
-              </Marquee>
-            </Button>
-          </DialogSection>
-          <DialogSection text={t("resource_notice")} style={ViewStyles.mb4}>
-            <Button
-              loading={clearingCache}
-              loadingText={t("clearing_cache")}
-              style={[ViewStyles.accent, ViewStyles.mb2]}
-              textStyle={theme.reverseTextStyle}
-              onPress={onClearCachePress}
-            >
-              <Marquee style={theme.reverseTextStyle}>{t("clear_cache")}</Marquee>
-            </Button>
-            <Button
-              loading={preloadingResources}
-              loadingText={t("preloading_resources")}
-              style={ViewStyles.accent}
-              textStyle={theme.reverseTextStyle}
-              onPress={onPreloadResourcesPress}
-            >
-              <Marquee style={theme.reverseTextStyle}>{t("preload_resources")}</Marquee>
-            </Button>
-          </DialogSection>
-          <DialogSection text={t("feedback_notice")} style={ViewStyles.mb4}>
-            <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onCreateAGithubIssuePress}>
-              <Marquee style={theme.reverseTextStyle}>{t("create_a_github_issue")}</Marquee>
-            </Button>
-            <Button style={ViewStyles.accent} onPress={onSendAMailPress}>
-              <Marquee style={theme.reverseTextStyle}>{t("send_a_mail")}</Marquee>
-            </Button>
-          </DialogSection>
-          <DialogSection text={t("database_notice")} style={ViewStyles.mb4}>
-            <Button
-              loading={clearingDatabase}
-              loadingText={t("clearing_database")}
-              style={ViewStyles.danger}
-              textStyle={theme.reverseTextStyle}
-              onLongPress={onClearDatabasePress}
-            >
-              <Marquee style={theme.reverseTextStyle}>{t("clear_database")}</Marquee>
-            </Button>
-          </DialogSection>
-          <DialogSection text={t("debug_notice")}>
-            <Button
-              loading={diagnosingNetwork}
-              loadingText={t("diagnosing_network")}
-              style={[ViewStyles.mb2, ViewStyles.accent]}
-              textStyle={theme.reverseTextStyle}
-              onPress={onDiagnoseNetworkPress}
-            >
-              <Marquee style={theme.reverseTextStyle}>{t("diagnose_network")}</Marquee>
-            </Button>
-            {sessionToken.length > 0 && (
-              <VStack style={ViewStyles.mb2}>
-                <Button
-                  style={[ViewStyles.mb2, ViewStyles.accent]}
-                  onPress={onCopySessionTokenPress}
+        <Animated.View style={[ViewStyles.f, { opacity: fade }]}>
+          {/* HACK: it is a little bit weird concentrating on result list. */}
+          <ResultView
+            groups={groups}
+            refreshControl={
+              <RefreshControl
+                progressViewOffset={insets.top}
+                refreshing={refreshing}
+                onRefresh={refresh}
+              />
+            }
+            header={
+              <SafeAreaView
+                edges={["top", "left", "right"]}
+                // HACK: add additional 8px margin in the top.
+                style={[ViewStyles.mt2, { alignItems: "center" }]}
+                onLayout={onHeaderLayout}
+              >
+                {!sessionToken && (
+                  <Center flex style={[ViewStyles.px4, ViewStyles.mb4]}>
+                    <Button style={ViewStyles.accent} onPress={onLogInPress}>
+                      <Marquee style={theme.reverseTextStyle}>{t("log_in")}</Marquee>
+                    </Button>
+                  </Center>
+                )}
+                {sessionToken.length > 0 && (
+                  <VStack center style={[ViewStyles.px4, ViewStyles.mb4]}>
+                    <AvatarButton
+                      size={64}
+                      image={icon.length > 0 ? getUserIconCacheSource(icon) : undefined}
+                      onPress={onLogOutPress}
+                      onLongPress={onSplatNetPress}
+                      style={ViewStyles.mb2}
+                    />
+                    {/* HACK: withdraw 4px margin in the last badge. */}
+                    <HStack style={{ marginRight: -ViewStyles.mr1.marginRight }}>
+                      {catalogLevel.length > 0 && (
+                        <CatalogView
+                          catalogLevel={catalogLevel}
+                          catalog={catalog}
+                          style={ViewStyles.mr1}
+                        />
+                      )}
+                      {level.length > 0 && (
+                        <Badge color={Color.RegularBattle} title={level} style={ViewStyles.mr1} />
+                      )}
+                      {rank.length > 0 && (
+                        <Badge color={Color.AnarchyBattle} title={rank} style={ViewStyles.mr1} />
+                      )}
+                      {(splatZonesXPower.length > 1 ||
+                        towerControlXPower.length > 1 ||
+                        rainmakerXPower.length > 1 ||
+                        clamBlitzXPower.length > 1) && (
+                        <XView
+                          splatZones={parseFloat(splatZonesXPower)}
+                          towerControl={parseFloat(towerControlXPower)}
+                          rainmaker={parseFloat(rainmakerXPower)}
+                          clamBlitz={parseFloat(clamBlitzXPower)}
+                          style={ViewStyles.mr1}
+                        />
+                      )}
+                      {grade.length > 0 && (
+                        <Badge color={Color.SalmonRun} title={t(grade)} style={ViewStyles.mr1} />
+                      )}
+                    </HStack>
+                    {progressTotal > 0 && progress < progressTotal && (
+                      <Progress.Bar
+                        animated
+                        progress={progress / progressTotal}
+                        color={Color.AccentColor}
+                        unfilledColor={theme.territoryColor}
+                        borderColor={Color.AccentColor}
+                        width={64}
+                        borderRadius={2}
+                        useNativeDriver
+                        style={{ position: "absolute", top: 50 }}
+                      />
+                    )}
+                  </VStack>
+                )}
+                <ScheduleView schedules={schedules} style={ViewStyles.mb4}>
+                  {shop && (
+                    <ShopView
+                      shop={shop}
+                      onRefresh={sessionToken.length > 0 ? onEquipmentsRefresh : undefined}
+                    />
+                  )}
+                </ScheduleView>
+                {sessionToken.length > 0 &&
+                  (friends === undefined || friends.friends.nodes.length > 0) && (
+                    <FriendView friends={friends} voting={voting} style={ViewStyles.mb4} />
+                  )}
+                <FilterView
+                  disabled={loadingMore}
+                  filter={filter}
+                  options={filterOptions}
+                  onChange={onChangeFilterPress}
+                  onLayout={onFilterLayout}
+                  style={ViewStyles.mb2}
+                />
+              </SafeAreaView>
+            }
+            footer={
+              <SafeAreaView
+                edges={["bottom", "left", "right"]}
+                style={[ViewStyles.mb2, { alignItems: "center" }]}
+              >
+                <VStack style={[ViewStyles.mb4, ViewStyles.wf, ViewStyles.px4]}>
+                  <Picker
+                    loading={loadingMore}
+                    loadingText={t("loading_more")}
+                    title={allResultsShown ? t("all_results_showed") : t("show_more")}
+                    items={Object.values(TimeRange).map((range) => ({
+                      key: range,
+                      value: t(range),
+                    }))}
+                    header={
+                      <VStack center>
+                        <Marquee style={ViewStyles.mb2}>
+                          {filtered === total
+                            ? t("n_total_results_showed", { n: count, total })
+                            : t("n_filtered_total_filtered_results_showed", {
+                                n: count,
+                                filtered,
+                                total,
+                              })}
+                        </Marquee>
+                      </VStack>
+                    }
+                    style={[ViewStyles.rt0, ViewStyles.rb2, { height: 64 }, theme.territoryStyle]}
+                    textStyle={[TextStyles.h3, theme.textStyle]}
+                    // HACK: forcly cast.
+                    onSelected={onShowMoreSelected as (_: string) => void}
+                    onPress={onShowMorePress}
+                  />
+                </VStack>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  style={[ViewStyles.mb4, ViewStyles.wf]}
                 >
-                  <Marquee style={theme.reverseTextStyle}>{t("copy_session_token")}</Marquee>
-                </Button>
-                <Button
-                  style={[ViewStyles.mb2, ViewStyles.accent]}
-                  onPress={onCopyWebServiceTokenPress}
-                >
-                  <Marquee style={theme.reverseTextStyle}>{t("copy_web_service_token")}</Marquee>
-                </Button>
-                <Button style={ViewStyles.accent} onPress={onCopyBulletTokenPress}>
-                  <Marquee style={theme.reverseTextStyle}>{t("copy_bullet_token")}</Marquee>
-                </Button>
-              </VStack>
-            )}
-            <Button style={ViewStyles.accent} onPress={onExportDatabasePress}>
-              <Marquee style={theme.reverseTextStyle}>{t("export_database")}</Marquee>
+                  <HStack flex center style={ViewStyles.px4}>
+                    <StatsView disabled={counting} onStats={onStatsPress} style={ViewStyles.mr2} />
+                    <TrendsView disabled={counting} onStats={onStatsPress} style={ViewStyles.mr2} />
+                    <RotationsView
+                      disabled={counting}
+                      onStats={onStatsPress}
+                      style={ViewStyles.mr2}
+                    />
+                    {sessionToken.length > 0 && (
+                      <SplatNetView
+                        ref={splatNetViewRef}
+                        lang={language}
+                        style={ViewStyles.mr2}
+                        onGetWebServiceToken={onGetWebServiceToken}
+                      />
+                    )}
+                    <ImportView
+                      disabled={refreshing}
+                      onBegin={onImportBegin}
+                      onResults={onImportResults}
+                      onComplete={onImportComplete}
+                      style={ViewStyles.mr2}
+                    />
+                    <ToolButton
+                      loading={exporting}
+                      loadingText={t("exporting")}
+                      icon="upload"
+                      title={t("export")}
+                      onPress={onExportPress}
+                    />
+                  </HStack>
+                </ScrollView>
+                <VStack center style={ViewStyles.px4}>
+                  <Text center style={[TextStyles.subtle, ViewStyles.mb2]}>
+                    {t("disclaimer")}
+                  </Text>
+                  <VStack center>
+                    <HStack center>
+                      <Text
+                        style={[update && ViewStyles.mr1, TextStyles.subtle]}
+                      >{`${Application.applicationName} ${Application.nativeApplicationVersion} (${Application.nativeBuildVersion})`}</Text>
+                      {update && (
+                        <Text style={[TextStyles.link, TextStyles.subtle]} onPress={onUpdatePress}>
+                          {t("update")}
+                        </Text>
+                      )}
+                    </HStack>
+                    <HStack center>
+                      <Text
+                        style={[TextStyles.link, TextStyles.subtle, ViewStyles.mr2]}
+                        onPress={onSupportPress}
+                      >
+                        {t("support")}
+                      </Text>
+                      <Text
+                        style={[TextStyles.link, TextStyles.subtle, ViewStyles.mr2]}
+                        onPress={onPrivacyPolicyPress}
+                      >
+                        {t("privacy_policy")}
+                      </Text>
+                      <Text
+                        style={[TextStyles.link, TextStyles.subtle]}
+                        onPress={onAcknowledgmentsPress}
+                      >
+                        {t("acknowledgments")}
+                      </Text>
+                    </HStack>
+                  </VStack>
+                </VStack>
+              </SafeAreaView>
+            }
+            onScroll={onScroll}
+            onScrollBeginDrag={onScrollBegin}
+            onScrollEndDrag={onScrollEndDrag}
+            onMomentumScrollBegin={onScrollBegin}
+            onMomentumScrollEnd={onScrollEnd}
+          />
+          <Animated.View
+            style={{
+              position: "absolute",
+              top: -(filterHeight + ViewStyles.mt2.marginTop + ViewStyles.mb2.marginBottom),
+              width: "100%",
+              height:
+                filterHeight + insets.top + ViewStyles.mt2.marginTop + ViewStyles.mb2.marginBottom,
+              opacity: blurOnTopFade,
+              transform: [
+                {
+                  translateY: blurOnTopTranslateY,
+                },
+              ],
+            }}
+          >
+            <BlurView
+              intensity={100}
+              tint={theme.colorScheme ?? "default"}
+              style={[ViewStyles.f, { flexDirection: "column-reverse" }]}
+            >
+              <Animated.View style={{ opacity: topFilterFade }}>
+                <FilterView
+                  disabled={loadingMore}
+                  filter={filter}
+                  options={filterOptions}
+                  style={ViewStyles.mb2}
+                  onChange={onChangeFilterPress}
+                  onLayout={onFilterLayout}
+                />
+              </Animated.View>
+            </BlurView>
+          </Animated.View>
+          {sessionToken.length > 0 && (
+            <FloatingActionButton
+              size={50}
+              color={autoRefresh ? Color.AccentColor : undefined}
+              icon="refresh-cw"
+              spin={autoRefresh}
+              onPress={onAutoRefreshPress}
+            />
+          )}
+        </Animated.View>
+        <Modal isVisible={logIn} onClose={onLogInClose} style={ViewStyles.modal1d}>
+          <CustomDialog icon="alert-circle">
+            <DialogSection text={t("log_in_notice")} style={ViewStyles.mb4}>
+              <Button
+                style={[
+                  ViewStyles.mb2,
+                  { borderColor: Color.AccentColor, borderWidth: 1.5 },
+                  theme.backgroundStyle,
+                ]}
+                onPress={onPrivacyPolicyPress}
+              >
+                <Marquee>{t("privacy_policy")}</Marquee>
+              </Button>
+              <Button
+                disabled={refreshing}
+                loading={loggingIn}
+                loadingText={t("logging_in")}
+                style={ViewStyles.accent}
+                textStyle={theme.reverseTextStyle}
+                onPress={onLogInContinuePress}
+              >
+                <Marquee style={theme.reverseTextStyle}>{t("log_in_continue")}</Marquee>
+              </Button>
+            </DialogSection>
+            <DialogSection text={t("alternative_log_in_notice")}>
+              <Button
+                disabled={refreshing}
+                loading={loggingIn}
+                loadingText={t("logging_in")}
+                style={ViewStyles.accent}
+                textStyle={theme.reverseTextStyle}
+                onPress={onAlternativeLogInPress}
+              >
+                <Marquee style={theme.reverseTextStyle}>{t("log_in_with_session_token")}</Marquee>
+              </Button>
+            </DialogSection>
+          </CustomDialog>
+        </Modal>
+        <Modal isVisible={logOut} onClose={onLogOutClose} style={ViewStyles.modal1d}>
+          <CustomDialog icon="alert-circle">
+            <DialogSection text={t("relog_in_notice")} style={ViewStyles.mb4}>
+              <Button
+                disabled={refreshing}
+                loading={loggingIn}
+                loadingText={t("logging_in")}
+                style={[ViewStyles.mb2, ViewStyles.accent]}
+                textStyle={theme.reverseTextStyle}
+                onPress={onLogInContinuePress}
+              >
+                <Marquee style={theme.reverseTextStyle}>{t("relog_in")}</Marquee>
+              </Button>
+              <Button
+                disabled={refreshing}
+                loading={loggingIn}
+                loadingText={t("logging_in")}
+                style={ViewStyles.accent}
+                textStyle={theme.reverseTextStyle}
+                onPress={onAlternativeLogInPress}
+              >
+                <Marquee style={theme.reverseTextStyle}>{t("relog_in_with_session_token")}</Marquee>
+              </Button>
+            </DialogSection>
+            <DialogSection text={t("log_out_notice")}>
+              <Button
+                disabled={loggingIn || refreshing || loadingMore || exporting}
+                loading={loggingOut}
+                loadingText={t("logging_out")}
+                style={ViewStyles.danger}
+                textStyle={theme.reverseTextStyle}
+                onPress={onLogOutContinuePress}
+              >
+                <Marquee style={theme.reverseTextStyle}>{t("log_out_continue")}</Marquee>
+              </Button>
+            </DialogSection>
+          </CustomDialog>
+        </Modal>
+        <Modal isVisible={support} onClose={onSupportClose} style={ViewStyles.modal1d}>
+          <CustomDialog icon="help-circle">
+            <DialogSection text={t("preference_notice")} style={ViewStyles.mb4}>
+              <Button
+                style={ViewStyles.accent}
+                textStyle={theme.reverseTextStyle}
+                onPress={onSwitchSalmonRunFriendlyMode}
+              >
+                <Marquee style={theme.reverseTextStyle}>
+                  {t("salmon_run_friendly_mode_enabled", {
+                    enabled: salmonRunFriendlyMode ? t("enabled") : t("disabled"),
+                  })}
+                </Marquee>
+              </Button>
+            </DialogSection>
+            <DialogSection text={t("language_notice")} style={ViewStyles.mb4}>
+              <Picker
+                disabled={refreshing}
+                title={t("change_game_language_language", { language: t(language) })}
+                items={[
+                  { key: "de-DE", value: t("de-DE") },
+                  { key: "en-GB", value: t("en-GB") },
+                  { key: "en-US", value: t("en-US") },
+                  { key: "es-ES", value: t("es-ES") },
+                  { key: "es-MX", value: t("es-MX") },
+                  { key: "fr-CA", value: t("fr-CA") },
+                  { key: "it-IT", value: t("it-IT") },
+                  { key: "ja-JP", value: t("ja-JP") },
+                  { key: "ko-KR", value: t("ko-KR") },
+                  { key: "nl-NL", value: t("nl-NL") },
+                  { key: "ru-RU", value: t("ru-RU") },
+                  { key: "zh-CN", value: t("zh-CN") },
+                  { key: "zh-TW", value: t("zh-TW") },
+                ]}
+                onSelected={onGameLanguageSelected}
+                style={ViewStyles.mb2}
+              />
+              <Button
+                style={ViewStyles.accent}
+                textStyle={theme.reverseTextStyle}
+                onPress={onChangeDisplayLanguagePress}
+              >
+                <Marquee style={theme.reverseTextStyle}>
+                  {t("change_display_language_language", { language: t(t("lang")) })}
+                </Marquee>
+              </Button>
+            </DialogSection>
+            <DialogSection text={t("resource_notice")} style={ViewStyles.mb4}>
+              <Button
+                loading={clearingCache}
+                loadingText={t("clearing_cache")}
+                style={[ViewStyles.accent, ViewStyles.mb2]}
+                textStyle={theme.reverseTextStyle}
+                onPress={onClearCachePress}
+              >
+                <Marquee style={theme.reverseTextStyle}>{t("clear_cache")}</Marquee>
+              </Button>
+              <Button
+                loading={preloadingResources}
+                loadingText={t("preloading_resources")}
+                style={ViewStyles.accent}
+                textStyle={theme.reverseTextStyle}
+                onPress={onPreloadResourcesPress}
+              >
+                <Marquee style={theme.reverseTextStyle}>{t("preload_resources")}</Marquee>
+              </Button>
+            </DialogSection>
+            <DialogSection text={t("feedback_notice")} style={ViewStyles.mb4}>
+              <Button
+                style={[ViewStyles.mb2, ViewStyles.accent]}
+                onPress={onCreateAGithubIssuePress}
+              >
+                <Marquee style={theme.reverseTextStyle}>{t("create_a_github_issue")}</Marquee>
+              </Button>
+              <Button style={ViewStyles.accent} onPress={onSendAMailPress}>
+                <Marquee style={theme.reverseTextStyle}>{t("send_a_mail")}</Marquee>
+              </Button>
+            </DialogSection>
+            <DialogSection text={t("database_notice")} style={ViewStyles.mb4}>
+              <Button
+                loading={clearingDatabase}
+                loadingText={t("clearing_database")}
+                style={ViewStyles.danger}
+                textStyle={theme.reverseTextStyle}
+                onLongPress={onClearDatabasePress}
+              >
+                <Marquee style={theme.reverseTextStyle}>{t("clear_database")}</Marquee>
+              </Button>
+            </DialogSection>
+            <DialogSection text={t("debug_notice")}>
+              <Button
+                loading={diagnosingNetwork}
+                loadingText={t("diagnosing_network")}
+                style={[ViewStyles.mb2, ViewStyles.accent]}
+                textStyle={theme.reverseTextStyle}
+                onPress={onDiagnoseNetworkPress}
+              >
+                <Marquee style={theme.reverseTextStyle}>{t("diagnose_network")}</Marquee>
+              </Button>
+              {sessionToken.length > 0 && (
+                <VStack style={ViewStyles.mb2}>
+                  <Button
+                    style={[ViewStyles.mb2, ViewStyles.accent]}
+                    onPress={onCopySessionTokenPress}
+                  >
+                    <Marquee style={theme.reverseTextStyle}>{t("copy_session_token")}</Marquee>
+                  </Button>
+                  <Button
+                    style={[ViewStyles.mb2, ViewStyles.accent]}
+                    onPress={onCopyWebServiceTokenPress}
+                  >
+                    <Marquee style={theme.reverseTextStyle}>{t("copy_web_service_token")}</Marquee>
+                  </Button>
+                  <Button style={ViewStyles.accent} onPress={onCopyBulletTokenPress}>
+                    <Marquee style={theme.reverseTextStyle}>{t("copy_bullet_token")}</Marquee>
+                  </Button>
+                </VStack>
+              )}
+              <Button style={ViewStyles.accent} onPress={onExportDatabasePress}>
+                <Marquee style={theme.reverseTextStyle}>{t("export_database")}</Marquee>
+              </Button>
+            </DialogSection>
+          </CustomDialog>
+        </Modal>
+        <Modal
+          isVisible={acknowledgments}
+          onClose={onAcknowledgmentsClose}
+          style={ViewStyles.modal1d}
+        >
+          <VStack center style={ViewStyles.mb3}>
+            <Marquee style={[TextStyles.h3, ViewStyles.mb2]}>{t("creators")}</Marquee>
+            <HStack center>
+              <AvatarButton
+                size={48}
+                image={getUserIconCacheSource(
+                  "https://cdn-image-e0d67c509fb203858ebcb2fe3f88c2aa.baas.nintendo.com/1/1afd1450a5a5ebec"
+                )}
+                onPress={() => {
+                  WebBrowser.openBrowserAsync("https://weibo.com/u/2269567390");
+                }}
+                style={ViewStyles.mr2}
+              />
+              <AvatarButton
+                size={48}
+                image={getUserIconCacheSource(
+                  "https://cdn-image-e0d67c509fb203858ebcb2fe3f88c2aa.baas.nintendo.com/1/4b98d8291ae60b8c"
+                )}
+                onPress={() => {
+                  WebBrowser.openBrowserAsync("https://weibo.com/u/6622470330");
+                }}
+                style={ViewStyles.mr2}
+              />
+            </HStack>
+          </VStack>
+          <VStack center style={ViewStyles.mb3}>
+            <Marquee style={[TextStyles.h3, ViewStyles.mb2]}>{t("license")}</Marquee>
+            <VStack center>
+              <Text style={[TextStyles.link, ViewStyles.mb1]} onPress={onSplatoon3InkPress}>
+                Splatoon3.ink
+              </Text>
+              <Text style={[TextStyles.link, ViewStyles.mb1]} onPress={onIminkFApiPress}>
+                imink f API
+              </Text>
+              <Text style={[TextStyles.link, ViewStyles.mb1]} onPress={onNxapiZncaApiPress}>
+                nxapi znca API
+              </Text>
+              <Text style={[TextStyles.link, ViewStyles.mb1]} onPress={onNintendoAppVersionsPress}>
+                Nintendo app versions
+              </Text>
+              <Text style={[TextStyles.link, ViewStyles.mb1]} onPress={onSplat3Press}>
+                splat3
+              </Text>
+              <Text style={TextStyles.link} onPress={onOssLicensesPress}>
+                {t("oss_licenses")}
+              </Text>
+            </VStack>
+          </VStack>
+          <VStack center>
+            <Marquee style={[TextStyles.h3, ViewStyles.mb2]}>{t("source_code_repository")}</Marquee>
+            <VStack center>
+              <Text style={[TextStyles.link, ViewStyles.mb1]} onPress={onSourceCodeRepositoryPress}>
+                GitHub
+              </Text>
+            </VStack>
+          </VStack>
+        </Modal>
+        <Modal
+          isVisible={backgroundRefresh}
+          onClose={onBackgroundRefreshClose}
+          style={ViewStyles.modal1d}
+        >
+          <Dialog icon="bell-dot" text={t("background_refresh_notice")}>
+            <Button style={ViewStyles.accent} onPress={onBackgroundRefreshContinue}>
+              <Marquee style={theme.reverseTextStyle}>{t("ok")}</Marquee>
             </Button>
-          </DialogSection>
-        </CustomDialog>
-      </Modal>
-      <Modal
-        isVisible={acknowledgments}
-        onClose={onAcknowledgmentsClose}
-        style={ViewStyles.modal1d}
-      >
-        <VStack center style={ViewStyles.mb3}>
-          <Marquee style={[TextStyles.h3, ViewStyles.mb2]}>{t("creators")}</Marquee>
-          <HStack center>
-            <AvatarButton
-              size={48}
-              image={getUserIconCacheSource(
-                "https://cdn-image-e0d67c509fb203858ebcb2fe3f88c2aa.baas.nintendo.com/1/1afd1450a5a5ebec"
-              )}
-              onPress={() => {
-                WebBrowser.openBrowserAsync("https://weibo.com/u/2269567390");
-              }}
-              style={ViewStyles.mr2}
-            />
-            <AvatarButton
-              size={48}
-              image={getUserIconCacheSource(
-                "https://cdn-image-e0d67c509fb203858ebcb2fe3f88c2aa.baas.nintendo.com/1/4b98d8291ae60b8c"
-              )}
-              onPress={() => {
-                WebBrowser.openBrowserAsync("https://weibo.com/u/6622470330");
-              }}
-              style={ViewStyles.mr2}
-            />
-          </HStack>
-        </VStack>
-        <VStack center style={ViewStyles.mb3}>
-          <Marquee style={[TextStyles.h3, ViewStyles.mb2]}>{t("license")}</Marquee>
-          <VStack center>
-            <Text style={[TextStyles.link, ViewStyles.mb1]} onPress={onSplatoon3InkPress}>
-              Splatoon3.ink
-            </Text>
-            <Text style={[TextStyles.link, ViewStyles.mb1]} onPress={onIminkFApiPress}>
-              imink f API
-            </Text>
-            <Text style={[TextStyles.link, ViewStyles.mb1]} onPress={onNxapiZncaApiPress}>
-              nxapi znca API
-            </Text>
-            <Text style={[TextStyles.link, ViewStyles.mb1]} onPress={onNintendoAppVersionsPress}>
-              Nintendo app versions
-            </Text>
-            <Text style={[TextStyles.link, ViewStyles.mb1]} onPress={onSplat3Press}>
-              splat3
-            </Text>
-            <Text style={TextStyles.link} onPress={onOssLicensesPress}>
-              {t("oss_licenses")}
-            </Text>
-          </VStack>
-        </VStack>
-        <VStack center>
-          <Marquee style={[TextStyles.h3, ViewStyles.mb2]}>{t("source_code_repository")}</Marquee>
-          <VStack center>
-            <Text style={[TextStyles.link, ViewStyles.mb1]} onPress={onSourceCodeRepositoryPress}>
-              GitHub
-            </Text>
-          </VStack>
-        </VStack>
-      </Modal>
-      <Modal
-        isVisible={backgroundRefresh}
-        onClose={onBackgroundRefreshClose}
-        style={ViewStyles.modal1d}
-      >
-        <Dialog icon="bell-dot" text={t("background_refresh_notice")}>
-          <Button style={ViewStyles.accent} onPress={onBackgroundRefreshContinue}>
-            <Marquee style={theme.reverseTextStyle}>{t("ok")}</Marquee>
-          </Button>
-        </Dialog>
-      </Modal>
-    </VStack>
+          </Dialog>
+        </Modal>
+      </VStack>
+    </SalmonRunSwitcherContext.Provider>
   );
 };
 

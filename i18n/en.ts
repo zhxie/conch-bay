@@ -58,6 +58,11 @@ const en = {
     "This app is an unofficial app which uses the information of SplatNet 3, and is not related to Nintendo Co., Ltd.",
   update: "Update",
   support: "Support",
+  preference_notice:
+    "You can customize Conch Bay to your liking. For example, you can prioritize showing information about Salmon Run.",
+  salmon_run_friendly_mode_enabled: "Salmon Run Friendly Mode (%{enabled})",
+  enabled: "Enabled",
+  disabled: "Disabled",
   language_notice:
     "If your game language is inconsistent with the display one, you can change it here. This will allow Conch Bay to load results and SplatNet 3 with the corresponding language.",
   change_game_language_language: "Change Game Language (%{language})",
