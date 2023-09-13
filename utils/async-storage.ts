@@ -13,32 +13,22 @@ export const useStringAsyncStorage = (
 
   useEffect(() => {
     (async () => {
-      try {
-        const value = await AsyncStorage.getItem(key);
+      const value = await AsyncStorage.getItem(key);
+      if (value) {
         setData(value || initialValue || "");
-        setReady(true);
-      } catch (error) {
-        console.error("useAsyncStorage getItem error:", error);
       }
+      setReady(true);
     })();
   }, [key, initialValue]);
 
   const setNewData = async (value: string) => {
-    try {
-      await AsyncStorage.setItem(key, value);
-      setData(value);
-    } catch (error) {
-      console.error("useAsyncStorage setItem error:", error);
-    }
+    await AsyncStorage.setItem(key, value);
+    setData(value);
   };
 
   const clearData = async () => {
-    try {
-      await AsyncStorage.removeItem(key);
-      setData(initialValue || "");
-    } catch (error) {
-      console.error("useAsyncStorage removeItem error:", error);
-    }
+    await AsyncStorage.removeItem(key);
+    setData(initialValue || "");
   };
 
   return [data, setNewData, clearData, ready];
@@ -70,32 +60,20 @@ export const useAsyncStorage = <T>(key: string, initialValue?: T): UseNullableAs
 
   useEffect(() => {
     (async () => {
-      try {
-        const value = await AsyncStorage.getItem(key);
-        setData(value ? JSON.parse(value) : initialValue);
-        setReady(true);
-      } catch (error) {
-        console.error("useAsyncStorage getItem error:", error);
-      }
+      const value = await AsyncStorage.getItem(key);
+      setData(value ? JSON.parse(value) : initialValue);
+      setReady(true);
     })();
   }, [key, initialValue]);
 
   const setNewData = async (value: T) => {
-    try {
-      setData(value);
-      await AsyncStorage.setItem(key, JSON.stringify(value));
-    } catch (error) {
-      console.error("useAsyncStorage setItem error:", error);
-    }
+    setData(value);
+    await AsyncStorage.setItem(key, JSON.stringify(value));
   };
 
   const clearData = async () => {
-    try {
-      setData(initialValue);
-      await AsyncStorage.removeItem(key);
-    } catch (error) {
-      console.error("useAsyncStorage removeItem error:", error);
-    }
+    setData(initialValue);
+    await AsyncStorage.removeItem(key);
   };
 
   return [data, setNewData, clearData, ready];
