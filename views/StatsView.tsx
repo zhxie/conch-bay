@@ -135,6 +135,119 @@ const StatsModal = (props: StatsModalProps) => {
       {props.children}
       <SalmonRunSwitcher>
         <>
+          {(!props.hideEmpty || battlesStats.count > 0) && (
+            <VStack style={ViewStyles.mb2}>
+              <Display first last={battlesStats.count === 0} title={t("battle")}>
+                <Text numberOfLines={1}>{battlesStats.count}</Text>
+              </Display>
+              {battlesStats.count > 0 && (
+                <VStack>
+                  <Display title={t("victory")}>
+                    <Text numberOfLines={1}>{battlesStats.win}</Text>
+                  </Display>
+                  <Display title={t("defeat")}>
+                    <Text numberOfLines={1}>{battlesStats.lose}</Text>
+                  </Display>
+                  {battlesStats.power.count > 0 && (
+                    <Display title={t("power")}>
+                      <Text numberOfLines={1}>
+                        {formatPower(
+                          battlesStats.power.total,
+                          battlesStats.power.max,
+                          battlesStats.power.count
+                        )}
+                      </Text>
+                    </Display>
+                  )}
+                  <Display title={t("turf_inked")}>
+                    <Text numberOfLines={1}>
+                      {formatTotalAndAverage(battleDimension.turf, battlesStats.duration / 60)}
+                    </Text>
+                  </Display>
+                  <Display title={t("splatted")}>
+                    <Text numberOfLines={1}>
+                      {formatTotalAndAverageKillAndAssist(
+                        battleDimension.kill,
+                        battleDimension.assist,
+                        battlesStats.duration / 60
+                      )}
+                    </Text>
+                  </Display>
+                  <Display title={t("be_splatted")}>
+                    <Text numberOfLines={1}>
+                      {formatTotalAndAverage(battleDimension.death, battlesStats.duration / 60)}
+                    </Text>
+                  </Display>
+                  <Display last={battlesStats.stages.length === 0} title={t("special_weapon_uses")}>
+                    <Text numberOfLines={1}>
+                      {formatTotalAndAverage(battleDimension.special, battlesStats.duration / 60)}
+                    </Text>
+                  </Display>
+                  {battlesStats.stages.length > 0 && (
+                    <VStack>
+                      <AccordionDisplay
+                        title={t("stage_stats")}
+                        subChildren={battlesStats.stages.map((stage) => (
+                          <AccordionDisplay
+                            key={stage.id}
+                            level={1}
+                            title={t(stage.id)}
+                            subChildren={stage.rules.map((rule) => (
+                              <Display key={rule.id} level={2} title={t(rule.id)}>
+                                <Text numberOfLines={1}>
+                                  {formatWinRateAndTotal(rule.win, rule.count)}
+                                </Text>
+                              </Display>
+                            ))}
+                          >
+                            <Text numberOfLines={1}>
+                              {formatWinRateAndTotal(
+                                stage.rules.reduce((prev, current) => prev + current.win, 0),
+                                stage.rules.reduce((prev, current) => prev + current.count, 0)
+                              )}
+                            </Text>
+                          </AccordionDisplay>
+                        ))}
+                      />
+                      <AccordionDisplay
+                        last
+                        title={t("weapon_stats")}
+                        subChildren={battlesStats.weapons.map((weapon, i, weapons) => (
+                          <AccordionDisplay
+                            key={weapon.id}
+                            last={i === weapons.length - 1}
+                            level={1}
+                            title={t(weapon.id)}
+                            subChildren={weapon.rules.map((rule, j, rules) => (
+                              <Display
+                                key={rule.id}
+                                last={i === weapons.length - 1 && j === rules.length - 1}
+                                level={2}
+                                title={t(rule.id)}
+                              >
+                                <Text numberOfLines={1}>
+                                  {formatWinRateAndTotal(rule.win, rule.count)}
+                                </Text>
+                              </Display>
+                            ))}
+                          >
+                            <Text numberOfLines={1}>
+                              {formatWinRateAndTotal(
+                                weapon.rules.reduce((prev, current) => prev + current.win, 0),
+                                weapon.rules.reduce((prev, current) => prev + current.count, 0)
+                              )}
+                            </Text>
+                          </AccordionDisplay>
+                        ))}
+                      />
+                    </VStack>
+                  )}
+                </VStack>
+              )}
+            </VStack>
+          )}
+        </>
+        <>
           {(!props.hideEmpty || coopsStats.count > 0) && (
             <VStack style={ViewStyles.mb2}>
               <Display first last={coopsStats.count === 0} title={t("salmon_run")}>
@@ -291,119 +404,6 @@ const StatsModal = (props: StatsModalProps) => {
                             </Display>
                           )
                         )}
-                      />
-                    </VStack>
-                  )}
-                </VStack>
-              )}
-            </VStack>
-          )}
-        </>
-        <>
-          {(!props.hideEmpty || battlesStats.count > 0) && (
-            <VStack style={ViewStyles.mb2}>
-              <Display first last={battlesStats.count === 0} title={t("battle")}>
-                <Text numberOfLines={1}>{battlesStats.count}</Text>
-              </Display>
-              {battlesStats.count > 0 && (
-                <VStack>
-                  <Display title={t("victory")}>
-                    <Text numberOfLines={1}>{battlesStats.win}</Text>
-                  </Display>
-                  <Display title={t("defeat")}>
-                    <Text numberOfLines={1}>{battlesStats.lose}</Text>
-                  </Display>
-                  {battlesStats.power.count > 0 && (
-                    <Display title={t("power")}>
-                      <Text numberOfLines={1}>
-                        {formatPower(
-                          battlesStats.power.total,
-                          battlesStats.power.max,
-                          battlesStats.power.count
-                        )}
-                      </Text>
-                    </Display>
-                  )}
-                  <Display title={t("turf_inked")}>
-                    <Text numberOfLines={1}>
-                      {formatTotalAndAverage(battleDimension.turf, battlesStats.duration / 60)}
-                    </Text>
-                  </Display>
-                  <Display title={t("splatted")}>
-                    <Text numberOfLines={1}>
-                      {formatTotalAndAverageKillAndAssist(
-                        battleDimension.kill,
-                        battleDimension.assist,
-                        battlesStats.duration / 60
-                      )}
-                    </Text>
-                  </Display>
-                  <Display title={t("be_splatted")}>
-                    <Text numberOfLines={1}>
-                      {formatTotalAndAverage(battleDimension.death, battlesStats.duration / 60)}
-                    </Text>
-                  </Display>
-                  <Display last={battlesStats.stages.length === 0} title={t("special_weapon_uses")}>
-                    <Text numberOfLines={1}>
-                      {formatTotalAndAverage(battleDimension.special, battlesStats.duration / 60)}
-                    </Text>
-                  </Display>
-                  {battlesStats.stages.length > 0 && (
-                    <VStack>
-                      <AccordionDisplay
-                        title={t("stage_stats")}
-                        subChildren={battlesStats.stages.map((stage) => (
-                          <AccordionDisplay
-                            key={stage.id}
-                            level={1}
-                            title={t(stage.id)}
-                            subChildren={stage.rules.map((rule) => (
-                              <Display key={rule.id} level={2} title={t(rule.id)}>
-                                <Text numberOfLines={1}>
-                                  {formatWinRateAndTotal(rule.win, rule.count)}
-                                </Text>
-                              </Display>
-                            ))}
-                          >
-                            <Text numberOfLines={1}>
-                              {formatWinRateAndTotal(
-                                stage.rules.reduce((prev, current) => prev + current.win, 0),
-                                stage.rules.reduce((prev, current) => prev + current.count, 0)
-                              )}
-                            </Text>
-                          </AccordionDisplay>
-                        ))}
-                      />
-                      <AccordionDisplay
-                        last
-                        title={t("weapon_stats")}
-                        subChildren={battlesStats.weapons.map((weapon, i, weapons) => (
-                          <AccordionDisplay
-                            key={weapon.id}
-                            last={i === weapons.length - 1}
-                            level={1}
-                            title={t(weapon.id)}
-                            subChildren={weapon.rules.map((rule, j, rules) => (
-                              <Display
-                                key={rule.id}
-                                last={i === weapons.length - 1 && j === rules.length - 1}
-                                level={2}
-                                title={t(rule.id)}
-                              >
-                                <Text numberOfLines={1}>
-                                  {formatWinRateAndTotal(rule.win, rule.count)}
-                                </Text>
-                              </Display>
-                            ))}
-                          >
-                            <Text numberOfLines={1}>
-                              {formatWinRateAndTotal(
-                                weapon.rules.reduce((prev, current) => prev + current.win, 0),
-                                weapon.rules.reduce((prev, current) => prev + current.count, 0)
-                              )}
-                            </Text>
-                          </AccordionDisplay>
-                        ))}
                       />
                     </VStack>
                   )}
