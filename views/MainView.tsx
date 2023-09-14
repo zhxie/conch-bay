@@ -7,6 +7,7 @@ import * as Clipboard from "expo-clipboard";
 import Constants, { AppOwnership } from "expo-constants";
 import * as FileSystem from "expo-file-system";
 import { Image } from "expo-image";
+import * as IntentLauncher from "expo-intent-launcher";
 import { activateKeepAwakeAsync, deactivateKeepAwake } from "expo-keep-awake";
 import * as MailComposer from "expo-mail-composer";
 import * as ModulesCore from "expo-modules-core";
@@ -1418,7 +1419,10 @@ const MainView = () => {
     if (Platform.OS === "ios") {
       Linking.openURL("https://apps.apple.com/us/app/conch-bay/id1659268579");
     } else {
-      WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay/releases");
+      IntentLauncher.startActivityAsync("android.intent.action.VIEW", {
+        data: "https://play.google.com/store/apps/details?id=name.sketch.conch_bay",
+        packageName: "com.android.vending",
+      });
     }
   };
   const onSupportPress = () => {
