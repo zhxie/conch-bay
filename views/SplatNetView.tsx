@@ -138,7 +138,7 @@ const SplatNetView = (props: SplatNetViewProps, ref: ForwardedRef<SplatNetViewRe
                   window.ReactNativeWebView.postMessage("images:" + s);
                 };
                 window.requestGameWebToken = function() {
-                  Promise.resolve().then(() => window.onGameWebTokenReceive?.call(null, "${webServiceToken}"));
+                  Promise.resolve().then(() => window.onGameWebTokenReceive?.call(null, "${webServiceToken.accessToken}"));
                 };
                 true;
               `}
