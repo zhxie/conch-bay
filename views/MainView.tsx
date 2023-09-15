@@ -903,23 +903,21 @@ const MainView = () => {
               showBanner(BannerLevel.Info, t("loading_n_results", { n }));
             }
           }
-          const results = await Promise.all(
-            newIds.map((id) =>
-              fetchVsHistoryDetail(webServiceToken, bulletToken, language, id)
-                .then(async (detail) => {
-                  setProgress((progress) => progress + 1);
-                  await Database.addBattle(detail);
-                  return true;
-                })
-                .catch((e) => {
-                  if (!error) {
-                    error = e;
-                  }
-                  return false;
-                })
-            )
-          );
-          return results.filter((result) => !result).length;
+          let results = 0;
+          for (const id of newIds) {
+            await fetchVsHistoryDetail(webServiceToken, bulletToken, language, id)
+              .then(async (detail) => {
+                setProgress((progress) => progress + 1);
+                await Database.addBattle(detail);
+              })
+              .catch((e) => {
+                if (!error) {
+                  error = e;
+                }
+                results += 1;
+              });
+          }
+          return results;
         })
         .catch((e) => {
           throwable += 1;
@@ -953,23 +951,21 @@ const MainView = () => {
               showBanner(BannerLevel.Info, t("loading_n_results", { n }));
             }
           }
-          const results = await Promise.all(
-            newIds.map((id) =>
-              fetchCoopHistoryDetail(webServiceToken, bulletToken, language, id)
-                .then(async (detail) => {
-                  setProgress((progress) => progress + 1);
-                  await Database.addCoop(detail);
-                  return true;
-                })
-                .catch((e) => {
-                  if (!error) {
-                    error = e;
-                  }
-                  return false;
-                })
-            )
-          );
-          return results.filter((result) => !result).length;
+          let results = 0;
+          for (const id of newIds) {
+            await fetchCoopHistoryDetail(webServiceToken, bulletToken, language, id)
+              .then(async (detail) => {
+                setProgress((progress) => progress + 1);
+                await Database.addCoop(detail);
+              })
+              .catch((e) => {
+                if (!error) {
+                  error = e;
+                }
+                results += 1;
+              });
+          }
+          return results;
         })
         .catch((e) => {
           throwable += 1;

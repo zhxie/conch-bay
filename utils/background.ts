@@ -102,18 +102,18 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
 
           const existed = await Promise.all(ids.map((id) => Database.isExist(id)));
           const newIds = ids.filter((_, i) => !existed[i]);
-          const results = await Promise.all(
-            newIds.map((id) =>
-              ok(
-                fetchVsHistoryDetail(webServiceToken!, bulletToken, language, id).then(
-                  async (detail) => {
-                    await Database.addBattle(detail);
-                  }
-                )
+          let results = 0;
+          for (const id of newIds) {
+            await ok(
+              fetchVsHistoryDetail(webServiceToken!, bulletToken, language, id).then(
+                async (detail) => {
+                  await Database.addBattle(detail);
+                  results += 1;
+                }
               )
-            )
-          );
-          return results.filter((result) => result).length;
+            );
+          }
+          return results;
         })
         .catch((e) => {
           return e as Error;
@@ -130,18 +130,18 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
 
           const existed = await Promise.all(ids.map((id) => Database.isExist(id)));
           const newIds = ids.filter((_, i) => !existed[i]);
-          const results = await Promise.all(
-            newIds.map((id) =>
-              ok(
-                fetchCoopHistoryDetail(webServiceToken!, bulletToken, language, id).then(
-                  async (detail) => {
-                    await Database.addCoop(detail);
-                  }
-                )
+          let results = 0;
+          for (const id of newIds) {
+            await ok(
+              fetchCoopHistoryDetail(webServiceToken!, bulletToken, language, id).then(
+                async (detail) => {
+                  await Database.addCoop(detail);
+                  results += 1;
+                }
               )
-            )
-          );
-          return results.filter((result) => result).length;
+            );
+          }
+          return results;
         })
         .catch((e) => {
           return e as Error;
