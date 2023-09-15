@@ -1,13 +1,31 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
 
+export enum Key {
+  SessionToken = "sessionToken",
+  WebServiceToken = "webServiceToken2",
+  BulletToken = "bulletToken",
+  Language = "language",
+  Icon = "icon",
+  CatalogLevel = "catalogLevel",
+  Level = "level",
+  Rank = "rank",
+  SplatZonesXPower = "splatZonesXPower",
+  TowerControlXPower = "towerControlXPower",
+  RainmakerXPower = "rainmakerXPower",
+  ClamBlitzXPower = "clamBlitzXPower",
+  Grade = "grade",
+  PlayedTime = "playedTime",
+  Filter = "filter",
+  BackgroundRefresh = "backgroundRefresh",
+  SalmonRunFriendlyMode = "salmonRunFriendlyMode",
+  AutoRefresh = "autoRefresh",
+}
+
 type UseAsyncStorage<T> = [T, (value: T) => Promise<void>, () => Promise<void>, boolean];
 
 // https://stackoverflow.com/a/65137974.
-export const useStringAsyncStorage = (
-  key: string,
-  initialValue?: string
-): UseAsyncStorage<string> => {
+export const useStringAsyncStorage = (key: Key, initialValue?: string): UseAsyncStorage<string> => {
   const [data, setData] = useState(initialValue || "");
   const [ready, setReady] = useState(false);
 
@@ -34,8 +52,21 @@ export const useStringAsyncStorage = (
   return [data, setNewData, clearData, ready];
 };
 
+export const useNumberAsyncStorage = (key: Key, initialValue?: number): UseAsyncStorage<number> => {
+  const [data, setNewData, clearData, ready] = useStringAsyncStorage(
+    key,
+    initialValue?.toString() ?? "0"
+  );
+
+  const setNewNumberData = async (n: number) => {
+    await setNewData(n.toString());
+  };
+
+  return [parseInt(data), setNewNumberData, clearData, ready];
+};
+
 export const useBooleanAsyncStorage = (
-  key: string,
+  key: Key,
   initialValue?: boolean
 ): UseAsyncStorage<boolean> => {
   const [data, setNewData, clearData, ready] = useStringAsyncStorage(key, initialValue ? "1" : "");
@@ -54,7 +85,7 @@ type UseNullableAsyncStorage<T> = [
   boolean
 ];
 
-export const useAsyncStorage = <T>(key: string, initialValue?: T): UseNullableAsyncStorage<T> => {
+export const useAsyncStorage = <T>(key: Key, initialValue?: T): UseNullableAsyncStorage<T> => {
   const [data, setData] = useState(initialValue);
   const [ready, setReady] = useState(false);
 

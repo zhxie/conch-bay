@@ -12,6 +12,7 @@ import {
   getBulletToken,
   getWebServiceToken,
 } from "./api";
+import { Key } from "./async-storage";
 import { decode64String, encode64String } from "./codec";
 import * as Database from "./database";
 import { ok } from "./promise";
@@ -24,10 +25,10 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
   }
   try {
     // Check previous token.
-    const language = (await AsyncStorage.getItem("language")) || t("lang");
+    const language = (await AsyncStorage.getItem(Key.Language)) || t("lang");
     let webServiceToken: WebServiceToken | undefined = undefined;
     let bulletToken = "";
-    const webServiceTokenString = await AsyncStorage.getItem("webServiceToken");
+    const webServiceTokenString = await AsyncStorage.getItem(Key.WebServiceToken);
     if (webServiceTokenString) {
       try {
         webServiceToken = JSON.parse(webServiceTokenString) as WebServiceToken;
@@ -39,7 +40,7 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
 
     // Reacquire tokens.
     if (bulletToken.length === 0) {
-      const sessionToken = await AsyncStorage.getItem("sessionToken");
+      const sessionToken = await AsyncStorage.getItem(Key.SessionToken);
       if (!sessionToken || sessionToken.length === 0) {
         throw new Error("no session token");
       }
@@ -48,7 +49,7 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
         throw new Error(`failed to acquire web service token ${newWebServiceToken.message}`);
       }
       webServiceToken = newWebServiceToken;
-      await AsyncStorage.setItem("webServiceToken", JSON.stringify(webServiceToken));
+      await AsyncStorage.setItem(Key.WebServiceToken, JSON.stringify(webServiceToken));
       const newBulletToken = await getBulletToken(webServiceToken, language).catch(
         (e) => e as Error
       );
@@ -156,7 +157,7 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
     }
     if ((await Notifications.getPermissionsAsync()).granted) {
       // Always set badge as unread result count.
-      const playedTime = parseInt((await AsyncStorage.getItem("playedTime")) || "0");
+      const playedTime = parseInt((await AsyncStorage.getItem(Key.PlayedTime)) || "0");
       const unread = (await Database.count(undefined, playedTime)) - 1;
       if (unread > 0) {
         Notifications.setBadgeCountAsync(unread);

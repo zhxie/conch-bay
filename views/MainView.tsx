@@ -97,8 +97,10 @@ import {
   WebServiceToken,
 } from "../utils/api";
 import {
+  Key,
   useAsyncStorage,
   useBooleanAsyncStorage,
+  useNumberAsyncStorage,
   useStringAsyncStorage,
 } from "../utils/async-storage";
 import {
@@ -173,45 +175,50 @@ const MainView = () => {
   const [fault, setFault] = useState<Error>();
 
   const [sessionToken, setSessionToken, clearSessionToken, sessionTokenReady] =
-    useStringAsyncStorage("sessionToken");
+    useStringAsyncStorage(Key.SessionToken);
   const [webServiceToken, setWebServiceToken, clearWebServiceToken, webServiceTokenReady] =
-    useAsyncStorage<WebServiceToken>("webServiceToken");
-  const [bulletToken, setBulletToken, clearBulletToken, bulletTokenReady] =
-    useStringAsyncStorage("bulletToken");
+    useAsyncStorage<WebServiceToken>(Key.WebServiceToken);
+  const [bulletToken, setBulletToken, clearBulletToken, bulletTokenReady] = useStringAsyncStorage(
+    Key.BulletToken
+  );
   const [language, setLanguage, clearLanguage, languageReady] = useStringAsyncStorage(
-    "language",
+    Key.Language,
     t("lang")
   );
 
-  const [icon, setIcon, clearIcon] = useStringAsyncStorage("icon");
-  const [catalogLevel, setCatalogLevel, clearCatalogLevel] = useStringAsyncStorage("catalogLevel");
-  const [level, setLevel, clearLevel] = useStringAsyncStorage("level");
-  const [rank, setRank, clearRank] = useStringAsyncStorage("rank");
+  const [icon, setIcon, clearIcon] = useStringAsyncStorage(Key.Icon);
+  const [catalogLevel, setCatalogLevel, clearCatalogLevel] = useStringAsyncStorage(
+    Key.CatalogLevel
+  );
+  const [level, setLevel, clearLevel] = useStringAsyncStorage(Key.Level);
+  const [rank, setRank, clearRank] = useStringAsyncStorage(Key.Rank);
   const [splatZonesXPower, setSplatZonesXPower, clearSplatZonesXPower] = useStringAsyncStorage(
-    "splatZonesXPower",
+    Key.SplatZonesXPower,
     "0"
   );
   const [towerControlXPower, setTowerControlXPower, clearTowerControlXPower] =
-    useStringAsyncStorage("towerControlXPower", "0");
+    useStringAsyncStorage(Key.TowerControlXPower, "0");
   const [rainmakerXPower, setRainmakerXPower, clearRainmakerXPower] = useStringAsyncStorage(
-    "rainmakerXPower",
+    Key.RainmakerXPower,
     "0"
   );
   const [clamBlitzXPower, setClamBlitzXPower, clearClamBlitzXPower] = useStringAsyncStorage(
-    "clamBlitzXPower",
+    Key.ClamBlitzXPower,
     "0"
   );
-  const [grade, setGrade, clearGrade] = useStringAsyncStorage("grade");
-  const [playedTime, setPlayedTime] = useStringAsyncStorage("playedTime");
+  const [grade, setGrade, clearGrade] = useStringAsyncStorage(Key.Grade);
+  const [playedTime, setPlayedTime] = useNumberAsyncStorage(Key.PlayedTime);
 
-  const [filter, setFilter, clearFilter, filterReady] =
-    useAsyncStorage<Database.FilterProps>("filter");
-  const [backgroundRefresh, setBackgroundRefresh, clearBackgroundRefresh] =
-    useBooleanAsyncStorage("backgroundRefresh");
+  const [filter, setFilter, clearFilter, filterReady] = useAsyncStorage<Database.FilterProps>(
+    Key.Filter
+  );
+  const [backgroundRefresh, setBackgroundRefresh, clearBackgroundRefresh] = useBooleanAsyncStorage(
+    Key.BackgroundRefresh
+  );
   const [salmonRunFriendlyMode, setSalmonRunFriendlyMode, clearSalmonRunFriendlyMode] =
-    useBooleanAsyncStorage("salmonRunFriendlyMode");
+    useBooleanAsyncStorage(Key.SalmonRunFriendlyMode);
   const [autoRefresh, setAutoRefresh, clearAutoRefresh] = useBooleanAsyncStorage(
-    "autoRefresh",
+    Key.AutoRefresh,
     false
   );
 
@@ -575,9 +582,8 @@ const MainView = () => {
   const updatePlayedTime = async () => {
     const time = await Database.queryLatestTime();
     if (time !== undefined) {
-      const lastPlayedTime = time.toString();
-      if (playedTime !== lastPlayedTime) {
-        await setPlayedTime(lastPlayedTime);
+      if (playedTime !== time) {
+        await setPlayedTime(time);
         return true;
       }
     }
