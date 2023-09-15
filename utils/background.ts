@@ -158,7 +158,10 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
     if ((await Notifications.getPermissionsAsync()).granted) {
       // Always set badge as unread result count.
       const playedTime = parseInt((await AsyncStorage.getItem(Key.PlayedTime)) || "0");
-      const unread = (await Database.count(undefined, playedTime)) - 1;
+      let unread = await Database.count(undefined, playedTime);
+      if (playedTime !== 0) {
+        unread -= 1;
+      }
       if (unread > 0) {
         Notifications.setBadgeCountAsync(unread);
       }
