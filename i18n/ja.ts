@@ -60,7 +60,8 @@ const ja = {
   update: "アップデート",
   support: "サポート",
   preference_notice:
-    "ホラガイベイを自分好みにカスタマイズできます。例えば、サーモンランに関する情報を優先的に表示できます。",
+    "ホラガイベイを自分好みにカスタマイズできます。例えば、ホラガイベイがバックグラウンドでリザルトを読み込むことを許可したり、サーモンランに関する情報を優先的に表示したりできます。",
+  background_refresh_enabled: "バックグラウンド更新 (%{enabled})",
   salmon_run_friendly_mode_enabled: "サーモンランフレンドリーモード (%{enabled})",
   enabled: "有効",
   disabled: "無効",
@@ -101,7 +102,7 @@ const ja = {
   source_code_repository: "ソースコードリポジトリ",
   auto_refresh_enabled: "自動更新が有効になりました",
   auto_refresh_disabled: "自動更新が無効になりました",
-  background_refresh_notice:
+  notification_notice:
     "ホラガイベイがバックグラウンドで実行されている場合、ホラガイベイは定期的にリザルトを読み込みます。ホラガイベイが読み込みステータスを通知する通知を送信できるようにしてください。",
   ok: "OK",
   failed_to_enable_background_refresh: "バックグラウンド更新を有効できません (%{error})",

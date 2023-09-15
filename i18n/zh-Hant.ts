@@ -57,7 +57,9 @@ const zhHant = {
   disclaimer: "本應用是使用魷魚圈3的資訊的非官方應用，與任天堂有限公司無關。",
   update: "更新",
   support: "支援",
-  preference_notice: "您可以根據自己的喜好定制法螺灣。例如，您可以優先顯示鮭魚跑的相關資訊。",
+  preference_notice:
+    "您可以根據自己的喜好定制法螺灣。例如，您可以允許法螺灣在背景載入記錄或是優先顯示鮭魚跑的相關資訊。",
+  background_refresh_enabled: "背景重新整理 (%{enabled})",
   salmon_run_friendly_mode_enabled: "鮭魚跑友好模式 (%{enabled})",
   enabled: "已啟用",
   disabled: "已停用",
@@ -96,7 +98,7 @@ const zhHant = {
   source_code_repository: "源代碼庫",
   auto_refresh_enabled: "已啟用自動刷新",
   auto_refresh_disabled: "已停用自動刷新",
-  background_refresh_notice:
+  notification_notice:
     "當法螺灣運行於背景時，法螺灣將定期載入記錄。請允許法螺灣傳送通知以提醒您載入狀況。",
   ok: "OK",
   failed_to_enable_background_refresh: "未能啟用背景重新整理 (%{error})",

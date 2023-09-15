@@ -57,7 +57,9 @@ const zhHans = {
   disclaimer: "本应用是使用鱿鱼圈3的信息的非官方应用，与任天堂有限公司无关。",
   update: "更新",
   support: "支持",
-  preference_notice: "您可以根据自己的喜好自定义法螺湾。例如，您可以优先显示鲑鱼跑的相关信息。",
+  preference_notice:
+    "您可以根据自己的喜好自定义法螺湾。例如，您可以允许法螺湾在后台加载记录或是优先显示鲑鱼跑的相关信息。",
+  background_refresh_enabled: "后台刷新 (%{enabled})",
   salmon_run_friendly_mode_enabled: "鲑鱼跑友好模式 (%{enabled})",
   enabled: "已启用",
   disabled: "已停用",
@@ -96,7 +98,7 @@ const zhHans = {
   source_code_repository: "源代码库",
   auto_refresh_enabled: "已启用自动刷新",
   auto_refresh_disabled: "已停用自动刷新",
-  background_refresh_notice:
+  notification_notice:
     "当法螺湾运行于后台时，法螺湾将定期加载记录。请允许法螺湾发送通知以提醒您加载状况。",
   ok: "OK",
   failed_to_enable_background_refresh: "未能启用后台刷新 (%{error})",

@@ -168,7 +168,7 @@ const MainView = () => {
   const [clearingDatabase, setClearingDatabase] = useState(false);
   const [diagnosingNetwork, setDiagnosingNetwork] = useState(false);
   const [acknowledgments, setAcknowledgments] = useState(false);
-  const [backgroundRefresh, setBackgroundRefresh] = useState(false);
+  const [notification, setNotification] = useState(false);
   const [fault, setFault] = useState<Error>();
 
   const [sessionToken, setSessionToken, clearSessionToken, sessionTokenReady] =
@@ -205,6 +205,8 @@ const MainView = () => {
 
   const [filter, setFilter, clearFilter, filterReady] =
     useAsyncStorage<Database.FilterProps>("filter");
+  const [backgroundRefresh, setBackgroundRefresh, clearBackgroundRefresh] =
+    useBooleanAsyncStorage("backgroundRefresh");
   const [salmonRunFriendlyMode, setSalmonRunFriendlyMode, clearSalmonRunFriendlyMode] =
     useBooleanAsyncStorage("salmonRunFriendlyMode");
   const [autoRefresh, setAutoRefresh, clearAutoRefresh] = useBooleanAsyncStorage(
@@ -704,17 +706,13 @@ const MainView = () => {
             ]);
 
             // Background refresh.
-            // HACK: not use notification and background refresh in Expo Go currently.
-            if (Constants.appOwnership !== AppOwnership.Expo) {
-              switch ((await Notifications.getPermissionsAsync()).status) {
-                case ModulesCore.PermissionStatus.GRANTED:
-                case ModulesCore.PermissionStatus.DENIED:
-                  await onBackgroundRefreshContinue();
-                  break;
-                case ModulesCore.PermissionStatus.UNDETERMINED:
-                  setBackgroundRefresh(true);
-                  break;
-              }
+            if (backgroundRefresh && !(await isBackgroundTaskRegistered())) {
+              await registerBackgroundTask().catch((e) => {
+                showBanner(
+                  BannerLevel.Warn,
+                  t("failed_to_enable_background_refresh", { error: e })
+                );
+              });
             }
           }
         })(),
@@ -1116,13 +1114,11 @@ const MainView = () => {
             await Notifications.setBadgeCountAsync(0);
           }
         }),
-        ok(
-          isBackgroundTaskRegistered().then(async (res) => {
-            if (res) {
-              await unregisterBackgroundTask();
-            }
-          })
-        ),
+        isBackgroundTaskRegistered().then(async (res) => {
+          if (res) {
+            await unregisterBackgroundTask();
+          }
+        }),
       ]);
       setLoggingOut(false);
       setLogOut(false);
@@ -1443,7 +1439,26 @@ const MainView = () => {
   const onChangeDisplayLanguagePress = () => {
     Linking.openSettings();
   };
-  const onSwitchSalmonRunFriendlyMode = async () => {
+  const onBackgroundRefreshPress = async () => {
+    if (backgroundRefresh) {
+      const registered = await isBackgroundTaskRegistered();
+      if (registered) {
+        await unregisterBackgroundTask();
+      }
+      await clearBackgroundRefresh();
+    } else {
+      switch ((await Notifications.getPermissionsAsync()).status) {
+        case ModulesCore.PermissionStatus.GRANTED:
+        case ModulesCore.PermissionStatus.DENIED:
+          await setBackgroundRefresh(true);
+          break;
+        case ModulesCore.PermissionStatus.UNDETERMINED:
+          setNotification(true);
+          break;
+      }
+    }
+  };
+  const onSalmonRunFriendlyModePress = async () => {
     if (salmonRunFriendlyMode) {
       await clearSalmonRunFriendlyMode();
     } else {
@@ -1781,6 +1796,14 @@ const MainView = () => {
       showBanner(BannerLevel.Error, e);
     }
   };
+  const onNotificationClose = () => {
+    setNotification(false);
+  };
+  const onNotificationContinue = async () => {
+    await Notifications.requestPermissionsAsync();
+    await setBackgroundRefresh(true);
+    setNotification(false);
+  };
   const onAcknowledgmentsPress = () => {
     setAcknowledgments(true);
   };
@@ -1816,18 +1839,6 @@ const MainView = () => {
       showBanner(BannerLevel.Info, t("auto_refresh_disabled"));
       await setAutoRefresh(false);
     }
-  };
-  const onBackgroundRefreshClose = () => {
-    setBackgroundRefresh(false);
-  };
-  const onBackgroundRefreshContinue = async () => {
-    await Notifications.requestPermissionsAsync();
-    if (!(await isBackgroundTaskRegistered())) {
-      await registerBackgroundTask().catch((e) => {
-        showBanner(BannerLevel.Warn, t("failed_to_enable_background_refresh", { error: e }));
-      });
-    }
-    setBackgroundRefresh(false);
   };
 
   return (
@@ -2184,9 +2195,20 @@ const MainView = () => {
           <CustomDialog icon="help-circle">
             <DialogSection text={t("preference_notice")} style={ViewStyles.mb4}>
               <Button
+                style={[ViewStyles.mb2, ViewStyles.accent]}
+                textStyle={theme.reverseTextStyle}
+                onPress={onBackgroundRefreshPress}
+              >
+                <Marquee style={theme.reverseTextStyle}>
+                  {t("background_refresh_enabled", {
+                    enabled: backgroundRefresh ? t("enabled") : t("disabled"),
+                  })}
+                </Marquee>
+              </Button>
+              <Button
                 style={ViewStyles.accent}
                 textStyle={theme.reverseTextStyle}
-                onPress={onSwitchSalmonRunFriendlyMode}
+                onPress={onSalmonRunFriendlyModePress}
               >
                 <Marquee style={theme.reverseTextStyle}>
                   {t("salmon_run_friendly_mode_enabled", {
@@ -2303,6 +2325,13 @@ const MainView = () => {
               </Button>
             </DialogSection>
           </CustomDialog>
+          <Modal isVisible={notification} onClose={onNotificationClose} style={ViewStyles.modal1d}>
+            <Dialog icon="bell-dot" text={t("notification_notice")}>
+              <Button style={ViewStyles.accent} onPress={onNotificationContinue}>
+                <Marquee style={theme.reverseTextStyle}>{t("ok")}</Marquee>
+              </Button>
+            </Dialog>
+          </Modal>
         </Modal>
         <Modal
           isVisible={acknowledgments}
@@ -2365,17 +2394,6 @@ const MainView = () => {
               </Text>
             </VStack>
           </VStack>
-        </Modal>
-        <Modal
-          isVisible={backgroundRefresh}
-          onClose={onBackgroundRefreshClose}
-          style={ViewStyles.modal1d}
-        >
-          <Dialog icon="bell-dot" text={t("background_refresh_notice")}>
-            <Button style={ViewStyles.accent} onPress={onBackgroundRefreshContinue}>
-              <Marquee style={theme.reverseTextStyle}>{t("ok")}</Marquee>
-            </Button>
-          </Dialog>
         </Modal>
       </VStack>
     </SalmonRunSwitcherContext.Provider>

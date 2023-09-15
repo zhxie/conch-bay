@@ -59,7 +59,8 @@ const en = {
   update: "Update",
   support: "Support",
   preference_notice:
-    "You can customize Conch Bay to your liking. For example, you can prioritize showing information about Salmon Run.",
+    "You can customize Conch Bay to your liking. For example, you can allow Conch Bay to load results in the background or prioritize showing Salmon Run-related information.",
+  background_refresh_enabled: "Background Refresh (%{enabled})",
   salmon_run_friendly_mode_enabled: "Salmon Run Friendly Mode (%{enabled})",
   enabled: "Enabled",
   disabled: "Disabled",
@@ -100,7 +101,7 @@ const en = {
   source_code_repository: "Source Code Repository",
   auto_refresh_enabled: "Auto refresh enabled",
   auto_refresh_disabled: "Auto refresh disabled",
-  background_refresh_notice:
+  notification_notice:
     "When Conch Bay is running in the background, Conch Bay will load results regularly. Please allow Conch Bay to send notifications to remind you of the load status.",
   ok: "OK",
   failed_to_enable_background_refresh: "Failed to enable background refresh (%{error})",
