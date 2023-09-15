@@ -2161,6 +2161,16 @@ const MainView = () => {
         </Animated.View>
         <Modal isVisible={logIn} onClose={onLogInClose} style={ViewStyles.modal1d}>
           <CustomDialog icon="alert-circle">
+            <Text
+              style={[
+                ViewStyles.mb2,
+                ViewStyles.p1,
+                ViewStyles.r2,
+                { borderWidth: 2, borderColor: theme.textColor },
+              ]}
+            >
+              {t("log_in_warning")}
+            </Text>
             <DialogSection text={t("log_in_notice")} style={ViewStyles.mb4}>
               <Button
                 style={[
