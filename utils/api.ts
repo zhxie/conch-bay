@@ -71,6 +71,12 @@ export const fetchSplatfests = async () => {
 let NSO_VERSION = versions.NSO_VERSION;
 let SPLATNET_VERSION = versions.SPLATNET_VERSION;
 
+export interface WebServiceToken {
+  accessToken: string;
+  country: string;
+  language: string;
+}
+
 export const updateNsoVersion = async () => {
   // HACK: use jsDelivr to avoid any network issue in China Mainland.
   const res = await axios.get(
@@ -166,17 +172,24 @@ export const getSessionToken = async (url: string, cv: string) => {
   if (!sessionTokenCode) {
     return undefined;
   }
+  const body = {
+    client_id: "71b963c1b7b6d119",
+    session_token_code: sessionTokenCode,
+    session_token_code_verifier: cv,
+  };
   const res = await axios.post(
     "https://accounts.nintendo.com/connect/1.0.0/api/session_token",
-    {
-      client_id: "71b963c1b7b6d119",
-      session_token_code: sessionTokenCode,
-      session_token_code_verifier: cv,
-    },
+    body,
     {
       headers: {
+        Accept: "application/json",
+        "Accept-Encoding": "gzip",
+        Connection: "Keep-Alive",
+        "Content-Length": JSON.stringify(body).length,
         "Content-Type": "application/x-www-form-urlencoded",
         Host: "accounts.nintendo.com",
+        "User-Agent":
+          "Dalvik/2.1.0 (Linux; U; Android 11; sdk_gphone_arm64 Build/RSR1.210722.013.A6)",
       },
       timeout: AXIOS_TOKEN_TIMEOUT,
     }
@@ -185,21 +198,24 @@ export const getSessionToken = async (url: string, cv: string) => {
 };
 export const getWebServiceToken = async (sessionToken: string) => {
   // Get tokens.
-  const res = await axios.post(
-    "https://accounts.nintendo.com/connect/1.0.0/api/token",
-    {
-      client_id: "71b963c1b7b6d119",
-      session_token: sessionToken,
-      grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer-session-token",
+  const body = {
+    client_id: "71b963c1b7b6d119",
+    session_token: sessionToken,
+    grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer-session-token",
+  };
+  const res = await axios.post("https://accounts.nintendo.com/connect/1.0.0/api/token", body, {
+    // TODO: missing accept-language and cookie fields, and the user-agent is not accurate.
+    headers: {
+      Accept: "application/json",
+      "Accept-Encoding": "gzip",
+      "Content-Length": JSON.stringify(body).length,
+      "Content-Type": "application/json",
+      Host: "accounts.nintendo.com",
+      "User-Agent":
+        "Dalvik/2.1.0 (Linux; U; Android 11; sdk_gphone_arm64 Build/RSR1.210722.013.A6)",
     },
-    {
-      headers: {
-        "Content-Type": "application/json",
-        Host: "accounts.nintendo.com",
-      },
-      timeout: AXIOS_TOKEN_TIMEOUT,
-    }
-  );
+    timeout: AXIOS_TOKEN_TIMEOUT,
+  });
   const { access_token: accessToken, id_token: idToken } = res.data;
   if (!accessToken || !idToken) {
     throw new Error(`/api/token: ${JSON.stringify(res.data)}`);
@@ -208,9 +224,14 @@ export const getWebServiceToken = async (sessionToken: string) => {
   // Get user info.
   const res2 = await axios.get("https://api.accounts.nintendo.com/2.0.0/users/me", {
     headers: {
+      "Accept-Encoding": "gzip",
+      "Accept-Language": "en-US",
+      Accept: "application/json",
       Authorization: `Bearer ${accessToken}`,
+      Connection: "Keep-Alive",
       "Content-Type": "application/json",
       Host: "api.accounts.nintendo.com",
+      "User-Agent": "NASDKAPI; Android",
     },
     timeout: AXIOS_TOKEN_TIMEOUT,
   });
@@ -229,22 +250,26 @@ export const getWebServiceToken = async (sessionToken: string) => {
       if (!f || !requestId || !timestamp) {
         throw new Error(`/f: ${JSON.stringify(json)}`);
       }
+      const body3 = {
+        parameter: {
+          f: f,
+          language: language,
+          naBirthday: birthday,
+          naCountry: country,
+          naIdToken: idToken,
+          requestId: requestId,
+          timestamp: timestamp,
+        },
+      };
       const res3 = await axios.post(
         "https://api-lp1.znc.srv.nintendo.net/v3/Account/Login",
-        {
-          parameter: {
-            f: f,
-            language: language,
-            naBirthday: birthday,
-            naCountry: country,
-            naIdToken: idToken,
-            requestId: requestId,
-            timestamp: timestamp,
-          },
-        },
+        body3,
         {
           headers: {
+            "Accept-Encoding": "gzip",
+            "Content-Length": JSON.stringify(body3).length,
             "Content-Type": "application/json; charset=utf-8",
+            "User-Agent": `com.nintendo.znca/${NSO_VERSION}(Android/11)`,
             "X-Platform": "Android",
             "X-ProductVersion": NSO_VERSION,
           },
@@ -263,21 +288,25 @@ export const getWebServiceToken = async (sessionToken: string) => {
       if (!f2 || !requestId2 || !timestamp2) {
         throw new Error(`/f: ${JSON.stringify(json)}`);
       }
+      const body4 = {
+        parameter: {
+          f: f2,
+          id: 4834290508791808,
+          registrationToken: "",
+          requestId: requestId2,
+          timestamp: timestamp2,
+        },
+      };
       const res4 = await axios.post(
         "https://api-lp1.znc.srv.nintendo.net/v2/Game/GetWebServiceToken",
-        {
-          parameter: {
-            f: f2,
-            id: 4834290508791808,
-            registrationToken: "",
-            requestId: requestId2,
-            timestamp: timestamp2,
-          },
-        },
+        body4,
         {
           headers: {
+            "Accept-Encoding": "gzip",
             Authorization: `Bearer ${idToken2}`,
+            "Content-Length": JSON.stringify(body4).length,
             "Content-Type": "application/json; charset=utf-8",
+            "User-Agent": `com.nintendo.znca/${NSO_VERSION}(Android/11)`,
             "X-Platform": "Android",
             "X-ProductVersion": NSO_VERSION,
           },
@@ -287,8 +316,8 @@ export const getWebServiceToken = async (sessionToken: string) => {
       if (!res4.data["result"]?.["accessToken"]) {
         throw new Error(`/Game/GetWebServiceToken: ${JSON.stringify(res4.data)}`);
       }
-      const webServiceToken = res4.data["result"]["accessToken"];
-      return { webServiceToken, country, language };
+      const accessToken = res4.data["result"]["accessToken"];
+      return { accessToken, country, language };
     } catch (e) {
       // Throw the first error which would be an error using imink f API.
       if (error === undefined) {
@@ -300,7 +329,7 @@ export const getWebServiceToken = async (sessionToken: string) => {
   }
   throw new Error("unreachable");
 };
-export const getBulletToken = async (webServiceToken: string, language?: string) => {
+export const getBulletToken = async (webServiceToken: WebServiceToken, language: string) => {
   if (Constants.appOwnership !== AppOwnership.Expo) {
     // HACK: dynamic import the library.
     const Cookies = await import("@react-native-cookies/cookies");
@@ -312,8 +341,21 @@ export const getBulletToken = async (webServiceToken: string, language?: string)
     undefined,
     {
       headers: {
-        "Accept-Language": language ?? "*",
-        Cookie: `_gtoken=${webServiceToken}`,
+        Accept: "*/*",
+        "Accept-Encoding": "gzip, deflate",
+        "Accept-Language": language,
+        "Content-Length": 0,
+        "Content-Type": "application/json",
+        Cookie: `_gtoken=${webServiceToken.accessToken}; _dnt=1`,
+        Origin: "https://api.lp1.av5ja.srv.nintendo.net",
+        Referer: `https://api.lp1.av5ja.srv.nintendo.net/?lang=${language}&na_country=${webServiceToken.country}&na_lang=${webServiceToken.language}`,
+        "Sec-Fetch-Dest": "empty",
+        "Sec-Fetch-Mode": "cors",
+        "Sec-Fetch-Site": "same-origin",
+        "User-Agent":
+          "Mozilla/5.0 (Linux; Android 11; sdk_gphone_arm64 Build/RSR1.210722.013.A6; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/91.0.4472.114 Mobile Safari/537.36",
+        "X-NACOUNTRY": webServiceToken.country,
+        "X-Requested-With": "com.nintendo.znca",
         "X-Web-View-Ver": SPLATNET_VERSION,
       },
       timeout: AXIOS_TOKEN_TIMEOUT,
@@ -323,76 +365,114 @@ export const getBulletToken = async (webServiceToken: string, language?: string)
 };
 
 const fetchGraphQl = async <T>(
+  webServiceToken: WebServiceToken,
   bulletToken: string,
+  language: string,
   hash: string,
-  language?: string,
   variables?: T
 ) => {
-  const res = await fetch("https://api.lp1.av5ja.srv.nintendo.net/api/graphql", {
-    method: "POST",
+  const body = {
+    extensions: {
+      persistedQuery: {
+        sha256Hash: hash,
+        version: 1,
+      },
+    },
+    variables: variables ?? {},
+  };
+  const res = await axios.post("https://api.lp1.av5ja.srv.nintendo.net/api/graphql", body, {
     headers: {
-      "Accept-Language": language || "*",
+      Accept: "*/*",
+      "Accept-Encoding": "gzip, deflate",
+      "Accept-Language": language,
       Authorization: `Bearer ${bulletToken}`,
+      "Content-Length": JSON.stringify(body).length,
       "Content-Type": "application/json",
+      Cookie: `_gtoken=${webServiceToken.accessToken}; _dnt=1`,
+      Origin: "https://api.lp1.av5ja.srv.nintendo.net",
+      Referer: `https://api.lp1.av5ja.srv.nintendo.net/?lang=${language}&na_country=${webServiceToken.country}&na_lang=${webServiceToken.language}`,
+      "Sec-Fetch-Dest": "empty",
+      "Sec-Fetch-Mode": "cors",
+      "Sec-Fetch-Site": "same-origin",
+      "User-Agent":
+        "Mozilla/5.0 (Linux; Android 11; sdk_gphone_arm64 Build/RSR1.210722.013.A6; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/91.0.4472.114 Mobile Safari/537.36",
+      "X-Requested-With": "com.nintendo.znca",
       "X-Web-View-Ver": SPLATNET_VERSION,
     },
-    body: JSON.stringify({
-      extensions: {
-        persistedQuery: {
-          sha256Hash: hash,
-          version: 1,
-        },
-      },
-      variables: variables ?? {},
-    }),
   });
   return res;
 };
-export const fetchFriends = async (bulletToken: string, language?: string) => {
-  const res = await fetchGraphQl(bulletToken, RequestId.FriendListQuery, language);
-  const json = await res.json();
-  const friends = json as GraphQLSuccessResponse<FriendListResult>;
+export const fetchFriends = async (
+  webServiceToken: WebServiceToken,
+  bulletToken: string,
+  language: string
+) => {
+  const res = await fetchGraphQl(webServiceToken, bulletToken, language, RequestId.FriendListQuery);
+  const friends = res.data as GraphQLSuccessResponse<FriendListResult>;
   if (friends.errors) {
     throw new Error(friends.errors[0].message);
   }
   return friends.data;
 };
-export const fetchSummary = async (bulletToken: string, language?: string) => {
-  const res = await fetchGraphQl(bulletToken, RequestId.HistoryRecordQuery, language);
-  const json = await res.json();
-  const summary = json as GraphQLSuccessResponse<HistoryRecordResult>;
+export const fetchSummary = async (
+  webServiceToken: WebServiceToken,
+  bulletToken: string,
+  language: string
+) => {
+  const res = await fetchGraphQl(
+    webServiceToken,
+    bulletToken,
+    language,
+    RequestId.HistoryRecordQuery
+  );
+  const summary = res.data as GraphQLSuccessResponse<HistoryRecordResult>;
   if (summary.errors) {
     throw new Error(summary.errors[0].message);
   }
   return summary.data;
 };
-export const fetchCatalog = async (bulletToken: string, language?: string) => {
-  const res = await fetchGraphQl(bulletToken, RequestId.CatalogQuery, language);
-  const json = await res.json();
-  const catalog = json as GraphQLSuccessResponse<CatalogResult>;
+export const fetchCatalog = async (
+  webServiceToken: WebServiceToken,
+  bulletToken: string,
+  language: string
+) => {
+  const res = await fetchGraphQl(webServiceToken, bulletToken, language, RequestId.CatalogQuery);
+  const catalog = res.data as GraphQLSuccessResponse<CatalogResult>;
   if (catalog.errors) {
     throw new Error(catalog.errors[0].message);
   }
   return catalog.data;
 };
 
-export const fetchWeaponRecords = async (bulletToken: string, language?: string) => {
-  const res = await fetchGraphQl(bulletToken, RequestId.WeaponRecordQuery, language);
-  const json = await res.json();
-  const weaponRecords = json as GraphQLSuccessResponse<WeaponRecordResult>;
+export const fetchWeaponRecords = async (
+  webServiceToken: WebServiceToken,
+  bulletToken: string,
+  language: string
+) => {
+  const res = await fetchGraphQl(
+    webServiceToken,
+    bulletToken,
+    language,
+    RequestId.WeaponRecordQuery
+  );
+  const weaponRecords = res.data as GraphQLSuccessResponse<WeaponRecordResult>;
   if (weaponRecords.errors) {
     throw new Error(weaponRecords.errors[0].message);
   }
   return weaponRecords.data;
 };
-export const fetchEquipments = async (bulletToken: string, language?: string) => {
+export const fetchEquipments = async (
+  webServiceToken: WebServiceToken,
+  bulletToken: string,
+  language: string
+) => {
   const res = await fetchGraphQl(
+    webServiceToken,
     bulletToken,
-    RequestId.MyOutfitCommonDataEquipmentsQuery,
-    language
+    language,
+    RequestId.MyOutfitCommonDataEquipmentsQuery
   );
-  const json = await res.json();
-  const gears = json as GraphQLSuccessResponse<MyOutfitCommonDataEquipmentsResult>;
+  const gears = res.data as GraphQLSuccessResponse<MyOutfitCommonDataEquipmentsResult>;
   if (gears.errors) {
     throw new Error(gears.errors[0].message);
   }
@@ -400,120 +480,183 @@ export const fetchEquipments = async (bulletToken: string, language?: string) =>
 };
 
 export const fetchDetailVotingStatus = async (
-  id: string,
+  webServiceToken: WebServiceToken,
   bulletToken: string,
-  language?: string
+  language: string,
+  id: string
 ) => {
   const res = await fetchGraphQl<DetailVotingStatusVariables>(
+    webServiceToken,
     bulletToken,
-    RequestId.DetailVotingStatusQuery,
     language,
+    RequestId.DetailVotingStatusQuery,
     {
       festId: id,
     }
   );
-  const json = await res.json();
-  const detail = json as GraphQLSuccessResponse<DetailVotingStatusResult>;
+  const detail = res.data as GraphQLSuccessResponse<DetailVotingStatusResult>;
   if (detail.errors) {
     throw new Error(detail.errors[0].message);
   }
   return detail.data;
 };
 
-export const fetchLatestBattleHistories = async (bulletToken: string, language?: string) => {
-  const res = await fetchGraphQl(bulletToken, RequestId.LatestBattleHistoriesQuery, language);
-  const json = await res.json();
-  const result = json as GraphQLSuccessResponse<LatestBattleHistoriesResult>;
-  if (result.errors) {
-    throw new Error(result.errors[0].message);
-  }
-  return result.data;
-};
-export const fetchRegularBattleHistories = async (bulletToken: string, language?: string) => {
-  const res = await fetchGraphQl(bulletToken, RequestId.RegularBattleHistoriesQuery, language);
-  const json = await res.json();
-  const result = json as GraphQLSuccessResponse<RegularBattleHistoriesResult>;
-  if (result.errors) {
-    throw new Error(result.errors[0].message);
-  }
-  return result.data;
-};
-export const fetchAnarchyBattleHistories = async (bulletToken: string, language?: string) => {
-  const res = await fetchGraphQl(bulletToken, RequestId.BankaraBattleHistoriesQuery, language);
-  const json = await res.json();
-  const result = json as GraphQLSuccessResponse<BankaraBattleHistoriesResult>;
-  if (result.errors) {
-    throw new Error(result.errors[0].message);
-  }
-  return result.data;
-};
-export const fetchXBattleHistories = async (bulletToken: string, language?: string) => {
-  const res = await fetchGraphQl(bulletToken, RequestId.XBattleHistoriesQuery, language);
-  const json = await res.json();
-  const result = json as GraphQLSuccessResponse<XBattleHistoriesResult>;
-  if (result.errors) {
-    throw new Error(result.errors[0].message);
-  }
-  return result.data;
-};
-export const fetchChallengeHistories = async (bulletToken: string, language?: string) => {
-  const res = await fetchGraphQl(bulletToken, RequestId.EventBattleHistoriesQuery, language);
-  const json = await res.json();
-  const result = json as GraphQLSuccessResponse<EventBattleHistoriesResult>;
-  if (result.errors) {
-    throw new Error(result.errors[0].message);
-  }
-  return result.data;
-};
-export const fetchPrivateBattleHistories = async (bulletToken: string, language?: string) => {
-  const res = await fetchGraphQl(bulletToken, RequestId.PrivateBattleHistoriesQuery, language);
-  const json = await res.json();
-  const result = json as GraphQLSuccessResponse<PrivateBattleHistoriesResult>;
-  if (result.errors) {
-    throw new Error(result.errors[0].message);
-  }
-  return result.data;
-};
-export const fetchVsHistoryDetail = async (id: string, bulletToken: string, language?: string) => {
-  const res = await fetchGraphQl<VsHistoryDetailVariables>(
+export const fetchLatestBattleHistories = async (
+  webServiceToken: WebServiceToken,
+  bulletToken: string,
+  language: string
+) => {
+  const res = await fetchGraphQl(
+    webServiceToken,
     bulletToken,
-    RequestId.VsHistoryDetailQuery,
     language,
+    RequestId.LatestBattleHistoriesQuery
+  );
+  const result = res.data as GraphQLSuccessResponse<LatestBattleHistoriesResult>;
+  if (result.errors) {
+    throw new Error(result.errors[0].message);
+  }
+  return result.data;
+};
+export const fetchRegularBattleHistories = async (
+  webServiceToken: WebServiceToken,
+  bulletToken: string,
+  language: string
+) => {
+  const res = await fetchGraphQl(
+    webServiceToken,
+    bulletToken,
+    language,
+    RequestId.RegularBattleHistoriesQuery
+  );
+  const result = res.data as GraphQLSuccessResponse<RegularBattleHistoriesResult>;
+  if (result.errors) {
+    throw new Error(result.errors[0].message);
+  }
+  return result.data;
+};
+export const fetchAnarchyBattleHistories = async (
+  webServiceToken: WebServiceToken,
+  bulletToken: string,
+  language: string
+) => {
+  const res = await fetchGraphQl(
+    webServiceToken,
+    bulletToken,
+    language,
+    RequestId.BankaraBattleHistoriesQuery
+  );
+  const result = res.data as GraphQLSuccessResponse<BankaraBattleHistoriesResult>;
+  if (result.errors) {
+    throw new Error(result.errors[0].message);
+  }
+  return result.data;
+};
+export const fetchXBattleHistories = async (
+  webServiceToken: WebServiceToken,
+  bulletToken: string,
+  language: string
+) => {
+  const res = await fetchGraphQl(
+    webServiceToken,
+    bulletToken,
+    language,
+    RequestId.XBattleHistoriesQuery
+  );
+  const result = res.data as GraphQLSuccessResponse<XBattleHistoriesResult>;
+  if (result.errors) {
+    throw new Error(result.errors[0].message);
+  }
+  return result.data;
+};
+export const fetchChallengeHistories = async (
+  webServiceToken: WebServiceToken,
+  bulletToken: string,
+  language: string
+) => {
+  const res = await fetchGraphQl(
+    webServiceToken,
+    bulletToken,
+    language,
+    RequestId.EventBattleHistoriesQuery
+  );
+  const result = res.data as GraphQLSuccessResponse<EventBattleHistoriesResult>;
+  if (result.errors) {
+    throw new Error(result.errors[0].message);
+  }
+  return result.data;
+};
+export const fetchPrivateBattleHistories = async (
+  webServiceToken: WebServiceToken,
+  bulletToken: string,
+  language: string
+) => {
+  const res = await fetchGraphQl(
+    webServiceToken,
+    bulletToken,
+    language,
+    RequestId.PrivateBattleHistoriesQuery
+  );
+  const result = res.data as GraphQLSuccessResponse<PrivateBattleHistoriesResult>;
+  if (result.errors) {
+    throw new Error(result.errors[0].message);
+  }
+  return result.data;
+};
+export const fetchVsHistoryDetail = async (
+  webServiceToken: WebServiceToken,
+  bulletToken: string,
+  language: string,
+  id: string
+) => {
+  const res = await fetchGraphQl<VsHistoryDetailVariables>(
+    webServiceToken,
+    bulletToken,
+    language,
+    RequestId.VsHistoryDetailQuery,
     {
       vsResultId: id,
     }
   );
-  const json = await res.json();
-  const detail = json as GraphQLSuccessResponse<VsHistoryDetailResult>;
+  const detail = res.data as GraphQLSuccessResponse<VsHistoryDetailResult>;
   if (detail.errors) {
     throw new Error(detail.errors[0].message);
   }
   return detail.data;
 };
-export const fetchCoopResult = async (bulletToken: string, language?: string) => {
-  const res = await fetchGraphQl(bulletToken, RequestId.CoopHistoryQuery, language);
-  const json = await res.json();
-  const result = json as GraphQLSuccessResponse<CoopHistoryResult>;
+export const fetchCoopResult = async (
+  webServiceToken: WebServiceToken,
+  bulletToken: string,
+  language: string
+) => {
+  const res = await fetchGraphQl(
+    webServiceToken,
+    bulletToken,
+    language,
+    RequestId.CoopHistoryQuery
+  );
+  const result = res.data as GraphQLSuccessResponse<CoopHistoryResult>;
   if (result.errors) {
     throw new Error(result.errors[0].message);
   }
   return result.data;
 };
 export const fetchCoopHistoryDetail = async (
-  id: string,
+  webServiceToken: WebServiceToken,
   bulletToken: string,
-  language?: string
+  language: string,
+  id: string
 ) => {
   const res = await fetchGraphQl<CoopHistoryDetailVariables>(
+    webServiceToken,
     bulletToken,
-    RequestId.CoopHistoryDetailQuery,
     language,
+    RequestId.CoopHistoryDetailQuery,
     {
       coopHistoryDetailId: id,
     }
   );
-  const json = await res.json();
-  const detail = json as GraphQLSuccessResponse<CoopHistoryDetailResult>;
+  const detail = res.data as GraphQLSuccessResponse<CoopHistoryDetailResult>;
   if (detail.errors) {
     throw new Error(detail.errors[0].message);
   }

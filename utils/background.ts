@@ -4,6 +4,7 @@ import * as Notifications from "expo-notifications";
 import * as TaskManager from "expo-task-manager";
 import t from "../i18n";
 import {
+  WebServiceToken,
   fetchCoopHistoryDetail,
   fetchCoopResult,
   fetchLatestBattleHistories,
@@ -23,10 +24,17 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
   }
   try {
     // Check previous token.
+    const language = (await AsyncStorage.getItem("language")) || t("lang");
+    let webServiceToken: WebServiceToken | undefined = undefined;
     let bulletToken = "";
-    const webServiceToken = await AsyncStorage.getItem("webServiceToken");
-    if (webServiceToken) {
-      bulletToken = await getBulletToken(webServiceToken).catch(() => "");
+    const webServiceTokenString = await AsyncStorage.getItem("webServiceToken");
+    if (webServiceTokenString) {
+      try {
+        webServiceToken = JSON.parse(webServiceTokenString) as WebServiceToken;
+        bulletToken = await getBulletToken(webServiceToken, language).catch(() => "");
+      } catch {
+        /* empty */
+      }
     }
 
     // Reacquire tokens.
@@ -35,13 +43,15 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
       if (!sessionToken || sessionToken.length === 0) {
         throw new Error("no session token");
       }
-      const res = await getWebServiceToken(sessionToken).catch((e) => e as Error);
-      if (res instanceof Error) {
-        throw new Error(`failed to acquire web service token ${res.message}`);
+      const newWebServiceToken = await getWebServiceToken(sessionToken).catch((e) => e as Error);
+      if (newWebServiceToken instanceof Error) {
+        throw new Error(`failed to acquire web service token ${newWebServiceToken.message}`);
       }
-      const newWebServiceToken = res.webServiceToken;
-      await AsyncStorage.setItem("webServiceToken", newWebServiceToken);
-      const newBulletToken = await getBulletToken(newWebServiceToken).catch((e) => e as Error);
+      webServiceToken = newWebServiceToken;
+      await AsyncStorage.setItem("webServiceToken", JSON.stringify(webServiceToken));
+      const newBulletToken = await getBulletToken(webServiceToken, language).catch(
+        (e) => e as Error
+      );
       if (newBulletToken instanceof Error) {
         throw new Error(`failed to acquire bullet token ${newBulletToken.message}`);
       }
@@ -49,13 +59,12 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
     }
 
     // Refresh results.
-    const language = (await AsyncStorage.getItem("language")) || t("lang");
     const upgrade = await Database.open();
     if (upgrade !== undefined) {
       return BackgroundFetch.BackgroundFetchResult.NoData;
     }
     const [battle, coop] = await Promise.all([
-      fetchLatestBattleHistories(bulletToken)
+      fetchLatestBattleHistories(webServiceToken!, bulletToken, language)
         .then(async (battleHistories) => {
           // Fetch details.
           const ids: string[] = [];
@@ -95,9 +104,11 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
           const results = await Promise.all(
             newIds.map((id) =>
               ok(
-                fetchVsHistoryDetail(id, bulletToken, language).then(async (detail) => {
-                  await Database.addBattle(detail);
-                })
+                fetchVsHistoryDetail(webServiceToken!, bulletToken, language, id).then(
+                  async (detail) => {
+                    await Database.addBattle(detail);
+                  }
+                )
               )
             )
           );
@@ -106,7 +117,7 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
         .catch((e) => {
           return e as Error;
         }),
-      fetchCoopResult(bulletToken)
+      fetchCoopResult(webServiceToken!, bulletToken, language)
         .then(async (coopResult) => {
           // Fetch details.
           const ids: string[] = [];
@@ -121,9 +132,11 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
           const results = await Promise.all(
             newIds.map((id) =>
               ok(
-                fetchCoopHistoryDetail(id, bulletToken, language).then(async (detail) => {
-                  await Database.addCoop(detail);
-                })
+                fetchCoopHistoryDetail(webServiceToken!, bulletToken, language, id).then(
+                  async (detail) => {
+                    await Database.addCoop(detail);
+                  }
+                )
               )
             )
           );

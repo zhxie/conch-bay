@@ -94,6 +94,7 @@ import {
   getWebServiceToken,
   updateNsoVersion,
   updateSplatnetVersion,
+  WebServiceToken,
 } from "../utils/api";
 import {
   useAsyncStorage,
@@ -174,7 +175,7 @@ const MainView = () => {
   const [sessionToken, setSessionToken, clearSessionToken, sessionTokenReady] =
     useStringAsyncStorage("sessionToken");
   const [webServiceToken, setWebServiceToken, clearWebServiceToken, webServiceTokenReady] =
-    useStringAsyncStorage("webServiceToken");
+    useAsyncStorage<WebServiceToken>("webServiceToken");
   const [bulletToken, setBulletToken, clearBulletToken, bulletTokenReady] =
     useStringAsyncStorage("bulletToken");
   const [language, setLanguage, clearLanguage, languageReady] = useStringAsyncStorage(
@@ -346,8 +347,12 @@ const MainView = () => {
         autoRefreshTimeout = setTimeout(async () => {
           setRefreshing(true);
           try {
-            await refreshResults(bulletToken, true);
-          } catch (e) {
+            if (webServiceToken) {
+              await refreshResults(webServiceToken, bulletToken, true);
+            } else {
+              throw new Error("empty web service token");
+            }
+          } catch {
             await refresh();
           }
           setRefreshing(false);
@@ -595,26 +600,25 @@ const MainView = () => {
     }
 
     // Attempt to acquire bullet token from web service token.
-    let newBulletTokenAttempt: string | undefined;
-    if (webServiceToken.length > 0) {
-      newBulletTokenAttempt = await getBulletToken(webServiceToken).catch(() => undefined);
-    }
-    if (newBulletTokenAttempt) {
-      await setBulletToken(newBulletTokenAttempt);
-      return newBulletTokenAttempt;
+    if (webServiceToken) {
+      const newBulletToken = await getBulletToken(webServiceToken, language).catch(() => undefined);
+      if (newBulletToken) {
+        await setBulletToken(newBulletToken);
+        return { webServiceToken, bulletToken: newBulletToken };
+      }
     }
 
     // Acquire both web service token and bullet token.
-    const res = await getWebServiceToken(sessionToken).catch((e) => {
+    const newWebServiceToken = await getWebServiceToken(sessionToken).catch((e) => {
       throw new Error(t("failed_to_acquire_web_service_token", { error: e }));
     });
-    await setWebServiceToken(res.webServiceToken);
-    const newBulletToken = await getBulletToken(res.webServiceToken).catch((e) => {
+    await setWebServiceToken(newWebServiceToken);
+    const newBulletToken = await getBulletToken(newWebServiceToken, language).catch((e) => {
       throw new Error(t("failed_to_acquire_bullet_token", { error: e }));
     });
     await setBulletToken(newBulletToken);
 
-    return newBulletToken;
+    return { webServiceToken: newWebServiceToken, bulletToken: newBulletToken };
   };
   const refresh = async () => {
     setRefreshing(true);
@@ -634,12 +638,14 @@ const MainView = () => {
         (async () => {
           if (sessionToken) {
             // Attempt to friends.
+            let newWebServiceToken: WebServiceToken | undefined = undefined;
             let newBulletToken = "";
             let friendsAttempt: FriendListResult | undefined;
-            if (bulletToken.length > 0) {
+            if (webServiceToken && bulletToken.length > 0) {
               try {
-                friendsAttempt = await fetchFriends(bulletToken);
+                friendsAttempt = await fetchFriends(webServiceToken, bulletToken, language);
                 setFriends(friendsAttempt);
+                newWebServiceToken = webServiceToken;
                 newBulletToken = bulletToken;
               } catch {
                 /* empty */
@@ -648,13 +654,15 @@ const MainView = () => {
 
             // Regenerate bullet token if necessary.
             if (!newBulletToken) {
-              newBulletToken = await generateBulletToken();
+              const res = await generateBulletToken();
+              newWebServiceToken = res.webServiceToken;
+              newBulletToken = res.bulletToken;
             }
 
             // Fetch friends, voting, summary, catalog and results.
             await Promise.all([
               friendsAttempt ||
-                fetchFriends(newBulletToken)
+                fetchFriends(newWebServiceToken!, newBulletToken, language)
                   .then((friends) => {
                     setFriends(friends);
                   })
@@ -665,9 +673,10 @@ const MainView = () => {
                 .then(async (splatfests) => {
                   if (splatfests.festRecords.nodes[0]?.isVotable) {
                     await fetchDetailVotingStatus(
-                      splatfests.festRecords.nodes[0].id,
+                      newWebServiceToken!,
                       newBulletToken,
-                      language
+                      language,
+                      splatfests.festRecords.nodes[0].id
                     )
                       .then((voting) => {
                         setVoting(voting);
@@ -683,7 +692,7 @@ const MainView = () => {
                 .catch((e) => {
                   showBanner(BannerLevel.Warn, t("failed_to_check_splatfest", { error: e }));
                 }),
-              fetchSummary(newBulletToken)
+              fetchSummary(newWebServiceToken!, newBulletToken, language)
                 .then(async (summary) => {
                   const icon = summary.currentPlayer.userIcon.url;
                   const level = String(summary.playHistory.rank);
@@ -693,7 +702,7 @@ const MainView = () => {
                 .catch((e) => {
                   showBanner(BannerLevel.Warn, t("failed_to_load_summary", { error: e }));
                 }),
-              fetchCatalog(newBulletToken, language)
+              fetchCatalog(newWebServiceToken!, newBulletToken, language)
                 .then(async (catalog) => {
                   setCatalog(catalog);
                   const catalogLevel = String(catalog.catalog.progress?.level ?? 0);
@@ -702,7 +711,7 @@ const MainView = () => {
                 .catch((e) => {
                   showBanner(BannerLevel.Warn, t("failed_to_load_catalog", { error: e }));
                 }),
-              ok(refreshResults(newBulletToken, false)),
+              ok(refreshResults(newWebServiceToken!, newBulletToken, false)),
             ]);
 
             // Background refresh.
@@ -722,15 +731,19 @@ const MainView = () => {
     }
     setRefreshing(false);
   };
-  const refreshResults = async (bulletToken: string, latestOnly: boolean) => {
+  const refreshResults = async (
+    webServiceToken: WebServiceToken,
+    bulletToken: string,
+    latestOnly: boolean
+  ) => {
     // Fetch results.
     let n = -1;
     let throwable = 0;
     let error: Error | undefined;
     const [battleFail, coopFail] = await Promise.all([
       Promise.all([
-        fetchLatestBattleHistories(bulletToken),
-        latestOnly ? undefined : fetchXBattleHistories(bulletToken),
+        fetchLatestBattleHistories(webServiceToken, bulletToken, language),
+        latestOnly ? undefined : fetchXBattleHistories(webServiceToken, bulletToken, language),
       ])
         .then(async ([latestBattleHistories, xBattleHistoriesAttempt]) => {
           if (xBattleHistoriesAttempt) {
@@ -809,28 +822,38 @@ const MainView = () => {
             challengeHistories,
             privateBattleHistories,
           ] = await Promise.all([
-            skipRegular ? undefined : fetchRegularBattleHistories(bulletToken),
-            skipAnarchy ? undefined : fetchAnarchyBattleHistories(bulletToken),
+            skipRegular
+              ? undefined
+              : fetchRegularBattleHistories(webServiceToken, bulletToken, language),
+            skipAnarchy
+              ? undefined
+              : fetchAnarchyBattleHistories(webServiceToken, bulletToken, language),
             skipX
               ? undefined
               : xBattleHistoriesAttempt ||
-                fetchXBattleHistories(bulletToken).then((historyDetail) => {
-                  setSplatZonesXPower(
-                    historyDetail.xBattleHistories.summary.xPowerAr?.lastXPower?.toString() ?? "0"
-                  );
-                  setTowerControlXPower(
-                    historyDetail.xBattleHistories.summary.xPowerLf?.lastXPower?.toString() ?? "0"
-                  );
-                  setRainmakerXPower(
-                    historyDetail.xBattleHistories.summary.xPowerGl?.lastXPower?.toString() ?? "0"
-                  );
-                  setClamBlitzXPower(
-                    historyDetail.xBattleHistories.summary.xPowerCl?.lastXPower?.toString() ?? "0"
-                  );
-                  return historyDetail;
-                }),
-            skipChallenge ? undefined : fetchChallengeHistories(bulletToken),
-            skipPrivate ? undefined : fetchPrivateBattleHistories(bulletToken),
+                fetchXBattleHistories(webServiceToken, bulletToken, language).then(
+                  (historyDetail) => {
+                    setSplatZonesXPower(
+                      historyDetail.xBattleHistories.summary.xPowerAr?.lastXPower?.toString() ?? "0"
+                    );
+                    setTowerControlXPower(
+                      historyDetail.xBattleHistories.summary.xPowerLf?.lastXPower?.toString() ?? "0"
+                    );
+                    setRainmakerXPower(
+                      historyDetail.xBattleHistories.summary.xPowerGl?.lastXPower?.toString() ?? "0"
+                    );
+                    setClamBlitzXPower(
+                      historyDetail.xBattleHistories.summary.xPowerCl?.lastXPower?.toString() ?? "0"
+                    );
+                    return historyDetail;
+                  }
+                ),
+            skipChallenge
+              ? undefined
+              : fetchChallengeHistories(webServiceToken, bulletToken, language),
+            skipPrivate
+              ? undefined
+              : fetchPrivateBattleHistories(webServiceToken, bulletToken, language),
           ]);
 
           // Fetch details.
@@ -876,7 +899,7 @@ const MainView = () => {
           }
           const results = await Promise.all(
             newIds.map((id) =>
-              fetchVsHistoryDetail(id, bulletToken, language)
+              fetchVsHistoryDetail(webServiceToken, bulletToken, language, id)
                 .then(async (detail) => {
                   setProgress((progress) => progress + 1);
                   await Database.addBattle(detail);
@@ -897,7 +920,7 @@ const MainView = () => {
           showBanner(BannerLevel.Warn, t("failed_to_load_battle_results", { error: e }));
           return 0;
         }),
-      fetchCoopResult(bulletToken)
+      fetchCoopResult(webServiceToken, bulletToken, language)
         .then(async (coopResult) => {
           await setGrade(coopResult.coopResult.regularGrade.id);
 
@@ -926,7 +949,7 @@ const MainView = () => {
           }
           const results = await Promise.all(
             newIds.map((id) =>
-              fetchCoopHistoryDetail(id, bulletToken, language)
+              fetchCoopHistoryDetail(webServiceToken, bulletToken, language, id)
                 .then(async (detail) => {
                   setProgress((progress) => progress + 1);
                   await Database.addCoop(detail);
@@ -1132,11 +1155,13 @@ const MainView = () => {
   };
   const onEquipmentsRefresh = async () => {
     try {
+      let newWebServiceToken: WebServiceToken | undefined = undefined;
       let newBulletToken = "";
       let equipmentsAttempt: MyOutfitCommonDataEquipmentsResult | undefined;
-      if (bulletToken.length > 0) {
+      if (webServiceToken && bulletToken.length > 0) {
         try {
-          equipmentsAttempt = await fetchEquipments(bulletToken, language);
+          equipmentsAttempt = await fetchEquipments(webServiceToken, bulletToken, language);
+          newWebServiceToken = webServiceToken;
           newBulletToken = bulletToken;
         } catch {
           /* empty */
@@ -1145,12 +1170,14 @@ const MainView = () => {
 
       // Regenerate bullet token if necessary.
       if (!newBulletToken) {
-        newBulletToken = await generateBulletToken();
+        const res = await generateBulletToken();
+        newWebServiceToken = res.webServiceToken;
+        newBulletToken = res.bulletToken;
       }
 
       const equipments =
         equipmentsAttempt ||
-        (await fetchEquipments(newBulletToken, language)
+        (await fetchEquipments(newWebServiceToken!, newBulletToken, language)
           .then((equipments) => {
             return equipments;
           })
@@ -1231,13 +1258,12 @@ const MainView = () => {
     }
 
     // Attempt to acquire bullet token from web service token.
-    let newBulletTokenAttempt: string | undefined;
-    if (webServiceToken.length > 0) {
-      newBulletTokenAttempt = await getBulletToken(webServiceToken).catch(() => undefined);
-    }
-    if (newBulletTokenAttempt) {
-      await setBulletToken(newBulletTokenAttempt);
-      return webServiceToken;
+    if (webServiceToken) {
+      const newBulletToken = await getBulletToken(webServiceToken, language).catch(() => undefined);
+      if (newBulletToken) {
+        await setBulletToken(newBulletToken);
+        return webServiceToken;
+      }
     }
 
     // Acquire web service token.
@@ -1247,10 +1273,10 @@ const MainView = () => {
       return undefined;
     });
     if (res) {
-      await setWebServiceToken(res.webServiceToken);
-      return res.webServiceToken as string;
+      await setWebServiceToken(res);
+      return res;
     }
-    return "";
+    return undefined;
   };
   const onImportBegin = () => {
     setRefreshing(true);
@@ -1619,11 +1645,16 @@ const MainView = () => {
       // TODO: need better error message.
       try {
         if (sessionToken.length > 0) {
+          let newWebServiceToken: WebServiceToken | undefined = undefined;
           let newBulletToken = "";
           let weaponRecordsAttempt: WeaponRecordResult | undefined;
-          if (bulletToken.length > 0) {
+          if (webServiceToken && bulletToken.length > 0) {
             try {
-              weaponRecordsAttempt = await fetchWeaponRecords(bulletToken);
+              weaponRecordsAttempt = await fetchWeaponRecords(
+                webServiceToken,
+                bulletToken,
+                language
+              );
               weaponRecordsAttempt.weaponRecords.nodes.forEach((record) => {
                 resources.set(getImageCacheKey(record.image2d.url), record.image2d.url);
                 resources.set(
@@ -1635,6 +1666,7 @@ const MainView = () => {
                   record.specialWeapon.image.url
                 );
               });
+              newWebServiceToken = webServiceToken;
               newBulletToken = bulletToken;
             } catch {
               /* empty */
@@ -1643,29 +1675,33 @@ const MainView = () => {
 
           // Regenerate bullet token if necessary.
           if (!newBulletToken) {
-            newBulletToken = await generateBulletToken();
+            const res = await generateBulletToken();
+            newWebServiceToken = res.webServiceToken;
+            newBulletToken = res.bulletToken;
           }
 
           // Preload weapon, equipments, badge images from API.
           await Promise.all([
             weaponRecordsAttempt ||
               ok(
-                fetchWeaponRecords(newBulletToken).then((weaponRecords) => {
-                  weaponRecords.weaponRecords.nodes.forEach((record) => {
-                    resources.set(getImageCacheKey(record.image2d.url), record.image2d.url);
-                    resources.set(
-                      getImageCacheKey(record.subWeapon.image.url),
-                      record.subWeapon.image.url
-                    );
-                    resources.set(
-                      getImageCacheKey(record.specialWeapon.image.url),
-                      record.specialWeapon.image.url
-                    );
-                  });
-                })
+                fetchWeaponRecords(newWebServiceToken!, newBulletToken, language).then(
+                  (weaponRecords) => {
+                    weaponRecords.weaponRecords.nodes.forEach((record) => {
+                      resources.set(getImageCacheKey(record.image2d.url), record.image2d.url);
+                      resources.set(
+                        getImageCacheKey(record.subWeapon.image.url),
+                        record.subWeapon.image.url
+                      );
+                      resources.set(
+                        getImageCacheKey(record.specialWeapon.image.url),
+                        record.specialWeapon.image.url
+                      );
+                    });
+                  }
+                )
               ),
             ok(
-              fetchEquipments(newBulletToken).then((equipments) => {
+              fetchEquipments(newWebServiceToken!, newBulletToken, language).then((equipments) => {
                 [
                   ...equipments.headGears.nodes,
                   ...equipments.clothingGears.nodes,
@@ -1684,7 +1720,7 @@ const MainView = () => {
               })
             ),
             ok(
-              fetchSummary(newBulletToken).then((summary) => {
+              fetchSummary(newWebServiceToken!, newBulletToken, language).then((summary) => {
                 summary.playHistory.allBadges.forEach((badge) => {
                   resources.set(getImageCacheKey(badge.image.url), badge.image.url);
                 });
@@ -1741,14 +1777,16 @@ const MainView = () => {
     };
 
     // Diagnose bullet token.
-    try {
-      const bulletToken = await getBulletToken(webServiceToken);
-      result.tests.bulletToken["bulletToken"] = bulletToken;
-    } catch (e) {
-      if (e instanceof AxiosError) {
-        result.tests.bulletToken["error"] = e.toJSON();
-      } else if (e instanceof Error) {
-        result.tests.bulletToken["error"] = e.message;
+    if (webServiceToken) {
+      try {
+        const bulletToken = await getBulletToken(webServiceToken, language);
+        result.tests.bulletToken["bulletToken"] = bulletToken;
+      } catch (e) {
+        if (e instanceof AxiosError) {
+          result.tests.bulletToken["error"] = e.toJSON();
+        } else if (e instanceof Error) {
+          result.tests.bulletToken["error"] = e.message;
+        }
       }
     }
 
@@ -1756,7 +1794,7 @@ const MainView = () => {
     try {
       const res = await getWebServiceToken(sessionToken);
       result.tests.webServiceToken["webServiceToken"] = res;
-      const bulletToken = await getBulletToken(res.webServiceToken);
+      const bulletToken = await getBulletToken(res, language);
       result.tests.webServiceToken["bulletToken"] = bulletToken;
     } catch (e) {
       if (e instanceof AxiosError) {
@@ -1777,8 +1815,8 @@ const MainView = () => {
     }
   };
   const onCopyWebServiceTokenPress = async () => {
-    if (webServiceToken.length > 0) {
-      await Clipboard.setStringAsync(webServiceToken);
+    if (webServiceToken) {
+      await Clipboard.setStringAsync(JSON.stringify(webServiceToken));
       showBanner(BannerLevel.Info, t("copied_to_clipboard"));
     }
   };

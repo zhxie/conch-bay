@@ -5,6 +5,7 @@ import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 import { WebView, WebViewMessageEvent } from "react-native-webview";
 import { Center, FullscreenModal, ToolButton, ViewStyles } from "../components";
 import t from "../i18n";
+import { WebServiceToken } from "../utils/api";
 
 interface SplatNetViewRef {
   open: () => void;
@@ -12,7 +13,7 @@ interface SplatNetViewRef {
 interface SplatNetViewProps {
   lang: string;
   style?: StyleProp<ViewStyle>;
-  onGetWebServiceToken: () => Promise<string>;
+  onGetWebServiceToken: () => Promise<WebServiceToken | undefined>;
 }
 
 const SplatNetView = (props: SplatNetViewProps, ref: ForwardedRef<SplatNetViewRef>) => {
@@ -25,19 +26,19 @@ const SplatNetView = (props: SplatNetViewProps, ref: ForwardedRef<SplatNetViewRe
   );
 
   const [webView, setWebView] = useState(false);
-  const [webServiceToken, setWebServiceToken] = useState("");
+  const [webServiceToken, setWebServiceToken] = useState<WebServiceToken>();
 
   const onWebViewPress = async () => {
     setWebView(true);
     const webServiceToken = await props.onGetWebServiceToken();
-    if (webServiceToken.length > 0) {
+    if (webServiceToken) {
       setWebServiceToken(webServiceToken);
     } else {
       setWebView(false);
     }
   };
   const onModalHide = () => {
-    setWebServiceToken("");
+    setWebServiceToken(undefined);
   };
   const onMessage = (event: WebViewMessageEvent) => {
     if (event.nativeEvent.data === "close") {
@@ -67,7 +68,7 @@ const SplatNetView = (props: SplatNetViewProps, ref: ForwardedRef<SplatNetViewRe
   return (
     <Center style={props.style}>
       <ToolButton icon="donut" title={t("splatnet_3")} onPress={onWebViewPress} />
-      {webView && webServiceToken.length === 0 && (
+      {webView && webServiceToken && (
         <WebView
           source={{ uri: `https://api.lp1.av5ja.srv.nintendo.net/?lang=${props.lang}` }}
           style={{ width: 0, height: 0 }}
@@ -93,15 +94,32 @@ const SplatNetView = (props: SplatNetViewProps, ref: ForwardedRef<SplatNetViewRe
               },
             ]}
           >
-            {webServiceToken.length === 0 && (
+            {!webServiceToken && (
               <Center style={[ViewStyles.ff, { backgroundColor: "#292e35" }]}>
                 <ActivityIndicator />
               </Center>
             )}
-            {webServiceToken.length > 0 && (
+            {webServiceToken && (
               <WebView
                 source={{
-                  uri: `https://api.lp1.av5ja.srv.nintendo.net/?lang=${props.lang}`,
+                  uri: `https://api.lp1.av5ja.srv.nintendo.net/?lang=${props.lang}&na_country=${webServiceToken.country}&na_lang=${webServiceToken.language}`,
+                  headers: {
+                    Accept:
+                      "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+                    "Accept-Encoding": "gzip, deflate",
+                    "Accept-Language": `${props.lang};q=0.9`,
+                    DNT: 1,
+                    "Sec-Fetch-Dest": "document",
+                    "Sec-Fetch-Mode": "navigate",
+                    "Sec-Fetch-Site": "none",
+                    "Sec-Fetch-User": "?1",
+                    "Upgrade-Insecure-Requests": 1,
+                    "User-Agent":
+                      "Mozilla/5.0 (Linux; Android 11; sdk_gphone_arm64 Build/RSR1.210722.013.A6; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/91.0.4472.114 Mobile Safari/537.36",
+                    "X-AppColorScheme": "LIGHT",
+                    "X-GameWebToken": webServiceToken.accessToken,
+                    "X-Requested-With": "com.nintendo.znca",
+                  },
                 }}
                 injectedJavaScript={`
                 window.closeWebView = function() {
