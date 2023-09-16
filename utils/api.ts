@@ -204,7 +204,6 @@ export const getWebServiceToken = async (sessionToken: string) => {
     grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer-session-token",
   };
   const res = await axios.post("https://accounts.nintendo.com/connect/1.0.0/api/token", body, {
-    // TODO: missing accept-language and cookie fields, and the user-agent is not accurate.
     headers: {
       Accept: "application/json",
       "Accept-Encoding": "gzip",
