@@ -125,6 +125,9 @@ const RotationsView = (props: RotationViewProps) => {
         }
       }
     }
+    if (group.battles || group.coops) {
+      groups.push(group);
+    }
     return groups;
   }, [stats]);
 
