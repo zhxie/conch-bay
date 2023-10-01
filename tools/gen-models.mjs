@@ -26,21 +26,6 @@ const buildTrie = (array) => {
   return trie;
 };
 
-const getNsoVersion = async () => {
-  const res = await fetch(
-    "https://raw.githubusercontent.com/nintendoapis/nintendo-app-versions/main/data/coral-google-play.json"
-  );
-  const json = await res.json();
-  return json["version"];
-};
-const getSplatnetVersion = async () => {
-  const res = await fetch(
-    "https://raw.githubusercontent.com/nintendoapis/nintendo-app-versions/main/data/splatnet3-app.json"
-  );
-  const json = await res.json();
-  return json["web_app_ver"];
-};
-
 const getCoopStageMap = async () => {
   const res = await fetch(
     `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${VERSION}/CoopSceneInfo.json`
@@ -244,9 +229,6 @@ const getWorkSuitMap = async () => {
   }
   return { workSuits };
 };
-
-const [nso_version, splatnet_version] = await Promise.all([getNsoVersion(), getSplatnetVersion()]);
-writeOut("models/versions.json", { NSO_VERSION: nso_version, SPLATNET_VERSION: splatnet_version });
 
 const [
   coopStageMap,
