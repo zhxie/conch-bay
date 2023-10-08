@@ -28,7 +28,6 @@ export { Modal, FullscreenModal, FlashModal, MasonryFlashModal } from "./Modal";
 export { default as Notice } from "./Notice";
 export { default as Picker } from "./Picker";
 export { default as ResultButton, Result } from "./ResultButton";
-export { default as RewardBox } from "./RewardBox";
 export { default as SalmonRunSwitcher, SalmonRunSwitcherContext } from "./SalmonRunSwitcher";
 export { default as ScheduleButton } from "./ScheduleButton";
 export { default as ScheduleBox } from "./ScheduleBox";
