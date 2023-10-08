@@ -1395,13 +1395,15 @@ const MainView = () => {
               </Animated.View>
             </BlurView>
           </Animated.View>
-          <FloatingActionButton
-            size={50}
-            color={autoRefresh ? Color.AccentColor : undefined}
-            icon="refresh-cw"
-            spin={autoRefresh}
-            onPress={onAutoRefreshPress}
-          />
+          {headers && (
+            <FloatingActionButton
+              size={50}
+              color={autoRefresh ? Color.AccentColor : undefined}
+              icon="refresh-cw"
+              spin={autoRefresh}
+              onPress={onAutoRefreshPress}
+            />
+          )}
         </Animated.View>
         <Modal isVisible={support} onClose={onSupportClose} style={ViewStyles.modal1d}>
           <CustomDialog icon="help-circle">
