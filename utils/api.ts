@@ -28,6 +28,7 @@ import {
 } from "../models/types";
 import versions from "../models/versions.json";
 import { encode64, encode64Url, getParam, parameterize } from "./codec";
+import { sleep } from "./promise";
 
 const AXIOS_TIMEOUT = 10000;
 const AXIOS_TOKEN_TIMEOUT = 15000;
@@ -379,6 +380,7 @@ const fetchGraphQl = async <T>(
     },
     variables: variables ?? {},
   };
+  await sleep(Math.floor(Math.random() * 100));
   const res = await axios.post("https://api.lp1.av5ja.srv.nintendo.net/api/graphql", body, {
     headers: {
       Accept: "*/*",
