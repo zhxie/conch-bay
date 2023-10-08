@@ -111,7 +111,7 @@ import {
 import { decode64String, encode64String } from "../utils/codec";
 import * as Database from "../utils/database";
 import { BATCH_SIZE, requestMemory } from "../utils/memory";
-import { ok } from "../utils/promise";
+import { ok, sleep } from "../utils/promise";
 import { Stats } from "../utils/stats";
 import {
   getImageCacheKey,
@@ -904,19 +904,22 @@ const MainView = () => {
             }
           }
           let results = 0;
-          for (const id of newIds) {
-            await fetchVsHistoryDetail(webServiceToken, bulletToken, language, id)
-              .then(async (detail) => {
-                setProgress((progress) => progress + 1);
-                await Database.addBattle(detail);
-              })
-              .catch((e) => {
-                if (!error) {
-                  error = e;
-                }
-                results += 1;
-              });
-          }
+          await Promise.all(
+            newIds.map((id, i) =>
+              sleep(i * 500)
+                .then(() => fetchVsHistoryDetail(webServiceToken, bulletToken, language, id))
+                .then(async (detail) => {
+                  setProgress((progress) => progress + 1);
+                  await Database.addBattle(detail);
+                })
+                .catch((e) => {
+                  if (!error) {
+                    error = e;
+                  }
+                  results += 1;
+                })
+            )
+          );
           return results;
         })
         .catch((e) => {
@@ -952,19 +955,22 @@ const MainView = () => {
             }
           }
           let results = 0;
-          for (const id of newIds) {
-            await fetchCoopHistoryDetail(webServiceToken, bulletToken, language, id)
-              .then(async (detail) => {
-                setProgress((progress) => progress + 1);
-                await Database.addCoop(detail);
-              })
-              .catch((e) => {
-                if (!error) {
-                  error = e;
-                }
-                results += 1;
-              });
-          }
+          await Promise.all(
+            newIds.map((id, i) =>
+              sleep(i * 500)
+                .then(() => fetchCoopHistoryDetail(webServiceToken, bulletToken, language, id))
+                .then(async (detail) => {
+                  setProgress((progress) => progress + 1);
+                  await Database.addCoop(detail);
+                })
+                .catch((e) => {
+                  if (!error) {
+                    error = e;
+                  }
+                  results += 1;
+                })
+            )
+          );
           return results;
         })
         .catch((e) => {

@@ -6,3 +6,5 @@ export const ok = async <T>(promise: Promise<T>) => {
     return false;
   }
 };
+
+export const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
