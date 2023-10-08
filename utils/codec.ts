@@ -24,15 +24,6 @@ export const parameterize = (params: Record<string, string>) => {
   }
   return body.join("&");
 };
-export const formUrlEncoded = (form: Record<string, string>) => {
-  const body: string[] = [];
-  for (const property in form) {
-    const encodedKey = encodeURIComponent(property);
-    const encodedValue = encodeURIComponent(form[property]);
-    body.push(`${encodedKey}=${encodedValue}`);
-  }
-  return body.join("&");
-};
 
 export const encode64Url = (base64: string) => {
   return base64.replaceAll("+", "-").replaceAll("/", "_").replaceAll("=", "");
