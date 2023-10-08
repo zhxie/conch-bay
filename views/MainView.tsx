@@ -110,6 +110,8 @@ const MainView = () => {
   const [upgrade, setUpgrade] = useState(false);
   const [update, setUpdate] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [progressTotal, setProgressTotal] = useState(0);
   const [headers, setHeaders] = useState<Record<string, string>>();
   const [headersError, setHeadersError] = useState(0);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -250,6 +252,11 @@ const MainView = () => {
   useEffect(() => {
     setStats(undefined);
   }, [filter, filtered]);
+  useEffect(() => {
+    if (!progressTotal) {
+      setProgress(0);
+    }
+  }, [progressTotal]);
   useEffect(() => {
     if (autoRefresh) {
       activateKeepAwakeAsync("refresh");
@@ -594,8 +601,12 @@ const MainView = () => {
           const newIds = uniqueIds.filter((_, i) => !existed[i]);
           if (n === -1) {
             n = newIds.length;
+            if (n !== 0) {
+              setProgressTotal(n);
+            }
           } else {
             n += newIds.length;
+            setProgressTotal(n);
             if (n > 0) {
               showBanner(BannerLevel.Info, t("loading_n_results", { n }));
             }
@@ -605,7 +616,10 @@ const MainView = () => {
             newIds.map((id, i) =>
               sleep(i * 500)
                 .then(() => fetchVsHistoryDetail(headers, id))
-                .then(async (detail) => Database.addBattle(detail))
+                .then(async (detail) => {
+                  setProgress((progress) => progress + 1);
+                  return Database.addBattle(detail);
+                })
                 .catch((e) => {
                   if (!error) {
                     error = e;
@@ -635,8 +649,12 @@ const MainView = () => {
           const newIds = ids.filter((_, i) => !existed[i]);
           if (n === -1) {
             n = newIds.length;
+            if (n !== 0) {
+              setProgressTotal(n);
+            }
           } else {
             n += newIds.length;
+            setProgressTotal(n);
             if (n > 0) {
               showBanner(BannerLevel.Info, t("loading_n_results", { n }));
             }
@@ -646,7 +664,10 @@ const MainView = () => {
             newIds.map((id, i) =>
               sleep(i * 500)
                 .then(() => fetchCoopHistoryDetail(headers, id))
-                .then(async (detail) => Database.addCoop(detail))
+                .then(async (detail) => {
+                  setProgress((progress) => progress + 1);
+                  return Database.addCoop(detail);
+                })
                 .catch((e) => {
                   if (!error) {
                     error = e;
@@ -663,6 +684,7 @@ const MainView = () => {
           return 0;
         }),
     ]);
+    setProgressTotal(0);
 
     if (n > 0) {
       const fail = battleFail + coopFail;
@@ -1233,6 +1255,7 @@ const MainView = () => {
                 progressViewOffset={insets.top}
                 refreshing={refreshing}
                 onRefresh={refresh}
+                title={progressTotal > 0 ? `${progress} / ${progressTotal}` : undefined}
               />
             }
             header={
