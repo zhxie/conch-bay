@@ -1410,7 +1410,7 @@ const MainView = () => {
           for (let i = 0; i < records.length; i++) {
             result += `,${records[i].detail}`;
           }
-          await FileAccess.FileSystem.appendFile(uri, result.slice(1), "utf8");
+          await FileAccess.FileSystem.appendFile(uri, result.slice(batch === 0 ? 1 : 0), "utf8");
           if (records.length < BATCH_SIZE) {
             break;
           }
@@ -1427,7 +1427,7 @@ const MainView = () => {
           for (let i = 0; i < records.length; i++) {
             result += `,${records[i].detail}`;
           }
-          await FileAccess.FileSystem.appendFile(uri, result.slice(1), "utf8");
+          await FileAccess.FileSystem.appendFile(uri, result.slice(batch === 0 ? 1 : 0), "utf8");
           if (records.length < BATCH_SIZE) {
             break;
           }
