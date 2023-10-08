@@ -6,6 +6,7 @@ const ja = {
   lang: "ja-JP",
   // UI.
   upgrading_database: "データベースをアップグレード中",
+  failed_to_parse_credentials: "認証情報を解析できません (%{error})",
   failed_to_update_schedules: "スケジュールを更新できません (%{error})",
   failed_to_update_splatnet_shop: "ゲソタウンを更新できません (%{error})",
   failed_to_load_battle_results: "バトルのリザルトを読み込めません (%{error})",
@@ -33,6 +34,11 @@ const ja = {
     "当アプリは、イカリング3の情報を利用した非公式アプリであり、任天堂株式会社とは一切関係はございません。",
   update: "アップデート",
   support: "サポート",
+  load_results_notice:
+    "ホラガイベイは、Mudmouthを介したリザルトの自動読み込みをサポートしています。Mudmouthプロファイルをインストールした後、Mudmouthからホラガイベイを起動してください。",
+  load_results_warning:
+    "ホラガイベイによってアカウントが不正使用されたり、個人情報が漏洩したりすることはありません。ただし、任天堂はサードパーティアプリに対して引き続き否定的な姿勢をとっているため、自己責任で使してください。",
+  install_mudmouth_profile: "Mudmouthプロファイルをインストール",
   preference_notice:
     "ホラガイベイを自分好みにカスタマイズできます。例えば、サーモンランに関する情報を優先的に表示できます。",
   salmon_run_friendly_mode_enabled: "サーモンランフレンドリーモード (%{enabled})",

@@ -28,6 +28,15 @@ export const parameterize = (params: Record<string, string>) => {
 export const encode64Url = (base64: string) => {
   return base64.replaceAll("+", "-").replaceAll("/", "_").replaceAll("=", "");
 };
+export const decode64Url = (base64: string) => {
+  let result = base64.replaceAll("-", "+").replaceAll("_", "/");
+  if (base64.length % 4 !== 0) {
+    for (let i = 0; i < 4 - (base64.length % 4); i++) {
+      result = result + "=";
+    }
+  }
+  return result;
+};
 
 export const decode64String = (base64: string) => {
   const data = decode64(base64);

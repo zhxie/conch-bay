@@ -6,6 +6,7 @@ const zhHans = {
   lang: "zh-CN",
   // UI.
   upgrading_database: "升级数据库中",
+  failed_to_parse_credentials: "未能解析凭据 (%{error})",
   failed_to_update_schedules: "未能更新日程 (%{error})",
   failed_to_update_splatnet_shop: "未能更新鱿鱼须商城 (%{error})",
   failed_to_load_battle_results: "未能加载对战记录 (%{error})",
@@ -31,6 +32,11 @@ const zhHans = {
   disclaimer: "本应用是使用鱿鱼圈3的信息的非官方应用，与任天堂有限公司无关。",
   update: "更新",
   support: "支持",
+  load_results_notice:
+    "法螺湾支持通过Mudmouth自动加载记录，请在安装Mudmouth配置后，从Mudmouth启动法螺湾。",
+  load_results_warning:
+    "法螺湾并不会盗用您的账号或导致您的个人信息泄漏，但介于任天堂持续对第三方应用的消极态度，您需要自负使用风险。",
+  install_mudmouth_profile: "安装Mudmouth配置",
   preference_notice: "您可以根据自己的喜好自定义法螺湾。例如，您可以优先显示鲑鱼跑的相关信息。",
   salmon_run_friendly_mode_enabled: "鲑鱼跑友好模式 (%{enabled})",
   enabled: "已启用",

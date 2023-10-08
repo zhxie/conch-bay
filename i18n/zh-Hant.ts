@@ -6,6 +6,7 @@ const zhHant = {
   lang: "zh-TW",
   // UI.
   upgrading_database: "升級資料庫中",
+  failed_to_parse_credentials: "未能解析憑證 (%{error})",
   failed_to_update_schedules: "未能更新時間表 (%{error})",
   failed_to_update_splatnet_shop: "未能更新魷魚鬚商城 (%{error})",
   failed_to_load_battle_results: "未能載入對戰記錄 (%{error})",
@@ -31,6 +32,11 @@ const zhHant = {
   disclaimer: "本應用是使用魷魚圈3的資訊的非官方應用，與任天堂有限公司無關。",
   update: "更新",
   support: "支援",
+  load_results_notice:
+    "法螺灣支援透過Mudmouth自動載入記錄，請在安裝Mudmouth配置後，從Mudmouth啟動法螺灣。",
+  load_results_warning:
+    "法螺灣並不會盜用您的帳戶或導致您的個人資訊外洩。但介於任天堂持續對第三方應用的消極態度，您需要自負使用風險。",
+  install_mudmouth_profile: "安裝Mudmouth配置",
   preference_notice: "您可以根據自己的喜好定制法螺灣。例如，您可以優先顯示鮭魚跑的相關資訊。",
   salmon_run_friendly_mode_enabled: "鮭魚跑友好模式 (%{enabled})",
   enabled: "已啟用",
@@ -169,7 +175,7 @@ const zhHant = {
     "請在Salmonia3+中備份為JSON並匯入。請注意，由於Salmonia3+備份並未包含記錄的所有數據，部分資訊可能缺失。",
   random: "隨機",
   split_and_import_notice:
-    "法螺灣需要佔用大量的內存以匯入記錄。如果法螺灣無法匯入記錄，您可以分割記錄並匯入。請注意，分割並匯入需要數分鐘到數十分鐘的時間。此外，您還可以通過主頁下方的支持聯繫我們以獲得幫助。",
+    "法螺灣需要佔用大量的內存以匯入記錄。如果法螺灣無法匯入記錄，您可以分割記錄並匯入。請注意，分割並匯入需要數分鐘到數十分鐘的時間。此外，您還可以透過主頁下方的支持聯繫我們以獲得幫助。",
   split_and_import: "分割並匯入",
   // Modes.
   battle: "對戰",

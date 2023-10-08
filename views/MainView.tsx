@@ -6,6 +6,7 @@ import * as FileSystem from "expo-file-system";
 import { Image } from "expo-image";
 import * as IntentLauncher from "expo-intent-launcher";
 import { activateKeepAwakeAsync, deactivateKeepAwake } from "expo-keep-awake";
+import * as Linking from "expo-linking";
 import * as MailComposer from "expo-mail-composer";
 import * as Sharing from "expo-sharing";
 import * as WebBrowser from "expo-web-browser";
@@ -14,7 +15,7 @@ import {
   ActivityIndicator,
   Animated,
   LayoutChangeEvent,
-  Linking,
+  Linking as RNLinking,
   NativeScrollEvent,
   NativeSyntheticEvent,
   Platform,
@@ -62,9 +63,10 @@ import {
   fetchSchedules,
   fetchVsHistoryDetail,
   fetchXBattleHistories,
+  clearCookies,
 } from "../utils/api";
 import { Key, useAsyncStorage, useBooleanAsyncStorage } from "../utils/async-storage";
-import { decode64String, encode64String } from "../utils/codec";
+import { decode64String, decode64Url, encode64String, getParam } from "../utils/codec";
 import * as Database from "../utils/database";
 import { BATCH_SIZE, requestMemory } from "../utils/memory";
 import { ok, sleep } from "../utils/promise";
@@ -95,6 +97,8 @@ enum TimeRange {
 let autoRefreshTimeout: NodeJS.Timeout | undefined;
 
 const MainView = () => {
+  const url = Linking.useURL();
+
   const theme = useTheme();
 
   const { height } = useWindowDimensions();
@@ -107,6 +111,7 @@ const MainView = () => {
   const [update, setUpdate] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [headers, setHeaders] = useState<Record<string, string>>();
+  const [headersError, setHeadersError] = useState(0);
   const [loadingMore, setLoadingMore] = useState(false);
   const [counting, setCounting] = useState(false);
   const [exporting, setExporting] = useState(false);
@@ -155,6 +160,26 @@ const MainView = () => {
     outputRange: [0, 1],
   });
 
+  useEffect(() => {
+    (async () => {
+      if (url && url.startsWith("conchbay://refresh?")) {
+        try {
+          const encoded = getParam(url, "headers");
+          const headers = decode64String(decode64Url(encoded)).split("\r\n");
+          const result = new Map<string, string>();
+          for (const header of headers) {
+            const components = header.split(":", 2);
+            result.set(components[0], components[1].trim());
+          }
+          await clearCookies();
+          setHeaders(Object.fromEntries(result));
+          setHeadersError(0);
+        } catch (e) {
+          showBanner(BannerLevel.Error, t("failed_to_parse_credentials", { error: e }));
+        }
+      }
+    })();
+  }, [url]);
   useEffect(() => {
     if (filterReady) {
       (async () => {
@@ -210,6 +235,12 @@ const MainView = () => {
       });
     }
   }, [ready]);
+  useEffect(() => {
+    if (headersError >= 3) {
+      setHeaders(undefined);
+      setHeadersError(0);
+    }
+  }, [headersError]);
   useEffect(() => {
     filterRef.current = filter;
     if (ready) {
@@ -645,6 +676,7 @@ const MainView = () => {
       await loadResults(20);
     }
     if (throwable > 1) {
+      setHeadersError(headersError + 1);
       throw new Error();
     }
   };
@@ -921,7 +953,7 @@ const MainView = () => {
   };
   const onUpdatePress = () => {
     if (Platform.OS === "ios") {
-      Linking.openURL("https://apps.apple.com/us/app/conch-bay/id1659268579");
+      RNLinking.openURL("https://apps.apple.com/us/app/conch-bay/id1659268579");
     } else {
       IntentLauncher.startActivityAsync("android.intent.action.VIEW", {
         data: "https://play.google.com/store/apps/details?id=name.sketch.conch_bay",
@@ -938,7 +970,12 @@ const MainView = () => {
     }
   };
   const onChangeDisplayLanguagePress = () => {
-    Linking.openSettings();
+    RNLinking.openSettings();
+  };
+  const onInstallMudmouthProfilePress = () => {
+    RNLinking.openURL(
+      "mudmouth://add?name=Conch%20Bay&url=https%3A%2F%2Fapi.lp1.av5ja.srv.nintendo.net%2Fapi%2Fgraphql&preAction=1&preActionUrlScheme=com.nintendo.znca%3A%2F%2Fznca%2Fgame%2F4834290508791808&postAction=1&postActionUrlScheme=conchbay%3A%2F%2Frefresh"
+    );
   };
   const onSalmonRunFriendlyModePress = async () => {
     if (salmonRunFriendlyMode) {
@@ -1107,7 +1144,7 @@ const MainView = () => {
     setPreloadingResources(false);
   };
   const onCreateAGithubIssuePress = () => {
-    Linking.openURL("https://github.com/zhxie/conch-bay/issues/new");
+    RNLinking.openURL("https://github.com/zhxie/conch-bay/issues/new");
   };
   const onSendAMailPress = async () => {
     if (await MailComposer.isAvailableAsync()) {
@@ -1115,7 +1152,7 @@ const MainView = () => {
         recipients: ["conch-bay@outlook.com"],
       });
     } else {
-      Linking.openURL("mailto:conch-bay@outlook.com");
+      RNLinking.openURL("mailto:conch-bay@outlook.com");
     }
   };
   const onClearDatabasePress = async () => {
@@ -1368,6 +1405,25 @@ const MainView = () => {
         </Animated.View>
         <Modal isVisible={support} onClose={onSupportClose} style={ViewStyles.modal1d}>
           <CustomDialog icon="help-circle">
+            <DialogSection text={t("load_results_notice")} style={ViewStyles.mb4}>
+              <Text
+                style={[
+                  ViewStyles.mb2,
+                  ViewStyles.p1,
+                  ViewStyles.r2,
+                  { borderWidth: 2, borderColor: theme.textColor },
+                ]}
+              >
+                {t("load_results_warning")}
+              </Text>
+              <Button
+                style={ViewStyles.accent}
+                textStyle={theme.reverseTextStyle}
+                onPress={onInstallMudmouthProfilePress}
+              >
+                <Marquee style={theme.reverseTextStyle}>{t("install_mudmouth_profile")}</Marquee>
+              </Button>
+            </DialogSection>
             <DialogSection text={t("preference_notice")} style={ViewStyles.mb4}>
               <Button
                 style={[ViewStyles.mb2, ViewStyles.accent]}

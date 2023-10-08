@@ -6,6 +6,7 @@ const en = {
   lang: "en-US",
   // UI.
   upgrading_database: "Upgrading database",
+  failed_to_parse_credentials: "Failed to parse credentials (%{error})",
   failed_to_update_schedules: "Failed to update schedules (%{error})",
   failed_to_update_splatnet_shop: "Failed to update SplatNet Shop (%{error})",
   failed_to_load_battle_results: "Failed to load battle results (%{error})",
@@ -32,6 +33,11 @@ const en = {
     "This app is an unofficial app which uses the information of SplatNet 3, and is not related to Nintendo Co., Ltd.",
   update: "Update",
   support: "Support",
+  load_results_notice:
+    "Conch Bay supports automatic records loading through Mudmouth. Please start Conch Bay from Mudmouth after installing Mudmouth profile.",
+  load_results_warning:
+    "Conch Bay will not cause your account to be compromised or your personal information to be leaked. However, due to Nintendo's continued negative attitude towards 3rd party apps, you should use at your own risk.",
+  install_mudmouth_profile: "Install Mudmouth Profile",
   preference_notice:
     "You can customize Conch Bay to your liking. For example, you can prioritize showing Salmon Run-related information.",
   salmon_run_friendly_mode_enabled: "Salmon Run Friendly Mode (%{enabled})",
