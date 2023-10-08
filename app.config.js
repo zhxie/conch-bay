@@ -4,7 +4,7 @@ import withAndroidLargeHeap from "./plugins/withAndroidLargeHeap";
 const config = {
   name: "Conch Bay",
   slug: "conch-bay",
-  version: "1.10.0",
+  version: "2.0.0",
   orientation: "portrait",
   userInterfaceStyle: "automatic",
   icon: "./assets/icon.png",
@@ -25,7 +25,7 @@ const config = {
   },
   ios: {
     bundleIdentifier: "name.sketch.ConchBay",
-    buildNumber: "131",
+    buildNumber: "132",
     config: {
       usesNonExemptEncryption: false,
     },
@@ -45,7 +45,7 @@ const config = {
   },
   android: {
     package: "name.sketch.conch_bay",
-    versionCode: 131,
+    versionCode: 132,
     adaptiveIcon: {
       foregroundImage: "./assets/adaptive-icon.png",
       backgroundColor: "#6B84F5",
