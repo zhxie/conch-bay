@@ -1370,7 +1370,7 @@ const MainView = () => {
           <CustomDialog icon="help-circle">
             <DialogSection text={t("preference_notice")} style={ViewStyles.mb4}>
               <Button
-                style={ViewStyles.accent}
+                style={[ViewStyles.mb2, ViewStyles.accent]}
                 textStyle={theme.reverseTextStyle}
                 onPress={onSalmonRunFriendlyModePress}
               >
@@ -1380,16 +1380,12 @@ const MainView = () => {
                   })}
                 </Marquee>
               </Button>
-            </DialogSection>
-            <DialogSection text={t("language_notice")} style={ViewStyles.mb4}>
               <Button
                 style={ViewStyles.accent}
                 textStyle={theme.reverseTextStyle}
                 onPress={onChangeDisplayLanguagePress}
               >
-                <Marquee style={theme.reverseTextStyle}>
-                  {t("change_display_language_language", { language: t(t("lang")) })}
-                </Marquee>
+                <Marquee style={theme.reverseTextStyle}>{t("change_display_language")}</Marquee>
               </Button>
             </DialogSection>
             <DialogSection text={t("resource_notice")} style={ViewStyles.mb4}>

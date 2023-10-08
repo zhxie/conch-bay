@@ -1,39 +1,13 @@
-import base from "./base";
 import generated from "./en.json";
 
 const en = {
-  ...base,
   ...generated,
   // API.
   lang: "en-US",
   // UI.
-  log_in: "Log In",
-  log_in_notice:
-    "You can use Conch Bay to view schedules and SplatNet Shop, import results, and analyze stats and trends without logging in. Logging in will allow you to load results, friends and catalog, display owned gears, and access SplatNet 3. Logging in involves sending non-identifying information to non-Nintendo imink or nxapi. This information will not be logged or stored, please see the privacy policy for more information.",
-  log_in_warning:
-    "Conch Bay will not cause your account to be compromised or your personal information to be leaked. You can review the open-source code. However, due to Nintendo's continued negative attitude towards 3rd party apps, you should use Conch Bay at your own risk.",
-  log_in_continue: "I have read and understand",
-  alternative_log_in_notice:
-    "If you have a session token and want to skip acquiring session token by Conch Bay, you can also copy the session token and complete logging in alternatively.",
-  log_in_with_session_token: "Log In with Session Token",
-  logging_in: "Acquiring tokens",
-  failed_to_acquire_session_token: "Failed to acquire session token (%{error})",
-  log_out_notice:
-    "After logging out, you will be not able to load results, friends and catalog, display owned gears, and access SplatNet 3. Results stored in Conch Bay will not be removed.",
-  log_out_continue: "Log Out",
-  logging_out: "Logging out",
   upgrading_database: "Upgrading database",
-  reacquiring_tokens: "Reacquiring tokens",
-  failed_to_acquire_web_service_token: "Failed to acquire web service token (%{error})",
-  failed_to_acquire_bullet_token: "Failed to acquire bullet token (%{error})",
   failed_to_update_schedules: "Failed to update schedules (%{error})",
   failed_to_update_splatnet_shop: "Failed to update SplatNet Shop (%{error})",
-  failed_to_check_api_update: "Failed to check API update (%{error})",
-  failed_to_load_friends: "Failed to load friends (%{error})",
-  failed_to_load_friends_splatfest_voting: "Failed to load friends Splatfest voting (%{error})",
-  failed_to_check_splatfest: "Failed to check Splatfest (%{error})",
-  failed_to_load_summary: "Failed to load summary (%{error})",
-  failed_to_load_catalog: "Failed to load catalog (%{error})",
   failed_to_load_battle_results: "Failed to load battle results (%{error})",
   failed_to_load_salmon_run_results: "Failed to load Salmon Run results (%{error})",
   loading_n_results: "Loading %{n} result(s)",
@@ -52,8 +26,6 @@ const en = {
   this_month: "This Month",
   this_season: "This Season",
   all_results: "All Results",
-  splatnet: "SplatNet",
-  splatnet_3: "SplatNet 3",
   export: "Export",
   exporting: "Exporting",
   disclaimer:
@@ -61,18 +33,11 @@ const en = {
   update: "Update",
   support: "Support",
   preference_notice:
-    "You can customize Conch Bay to your liking. For example, you can allow Conch Bay to load results in the background or prioritize showing Salmon Run-related information.",
-  background_refresh_enabled: "Background Refresh (%{enabled})",
+    "You can customize Conch Bay to your liking. For example, you can prioritize showing Salmon Run-related information.",
   salmon_run_friendly_mode_enabled: "Salmon Run Friendly Mode (%{enabled})",
   enabled: "Enabled",
   disabled: "Disabled",
-  language_notice:
-    "If your game language is inconsistent with the display one, you can change it here. This will allow Conch Bay to load results and SplatNet 3 with the corresponding language.",
-  change_game_language_language: "Change Game Language (%{language})",
-  change_display_language_language: "Change Display Language (%{language})",
-  relog_in_notice: "If Conch Bay cannot acquire tokens, you can relog in.",
-  relog_in: "Relog in",
-  relog_in_with_session_token: "Relog in with Session Token",
+  change_display_language: "Change Display Language",
   resource_notice:
     "If Conch Bay cannot load images, you can clear cache or preload resources. Please note, due to SplatNet 3 restrictions, Conch Bay can only preload some images.",
   clear_cache: "Clear Cache",
@@ -88,12 +53,6 @@ const en = {
   clear_database: "Clear Database",
   clearing_database: "Clearing Database",
   debug_notice: "The following information is for debugging only. Please do NOT share with others.",
-  diagnose_network: "Diagnose Network",
-  diagnosing_network: "Diagnosing Network",
-  copy_session_token: "Copy Session Token",
-  copy_web_service_token: "Copy Web Service Token",
-  copy_bullet_token: "Copy Bullet Token",
-  copied_to_clipboard: "Copied to clipboard",
   export_database: "Export Database",
   privacy_policy: "Privacy Policy",
   acknowledgments: "Acknowledgments",
@@ -103,13 +62,6 @@ const en = {
   source_code_repository: "Source Code Repository",
   auto_refresh_enabled: "Auto refresh enabled",
   auto_refresh_disabled: "Auto refresh disabled",
-  notification_notice:
-    "When Conch Bay is running in the background, Conch Bay will load results regularly. Please allow Conch Bay to send notifications to remind you of the load status.",
-  ok: "OK",
-  failed_to_enable_background_refresh: "Failed to enable background refresh (%{error})",
-  new_results: "New Results",
-  loaded_n_results_in_the_background:
-    "Conch Bay has loaded %{n} result(s) in the background, please open the app to check.",
   sorry: "Sorry",
   sorry_notice:
     "Conch Bay has encountered some problems, please check for app updates and restart the app. If you continue to face the problem, please contact us.",
@@ -120,18 +72,6 @@ const en = {
   export_results: "Export Results",
   // Shop.
   gesotown: "SplatNet Shop",
-  show_owned_gears: "Display Owned Gears",
-  loading_owned_gears: "Loading Owned Gears",
-  failed_to_load_owned_gears: "Failed to load owned gears (%{error})",
-  headgear: "Headgear",
-  clothes: "Clothes",
-  shoes: "Shoes",
-  shop_notice: "You can order gear through the SplatNet 3 below the homepage.",
-  // Friend.
-  playing: "Playing",
-  working: "Working",
-  online: "Online",
-  offline: "Offline",
   // Filter.
   filter: "Filter",
   modes: "Modes",
@@ -175,6 +115,7 @@ const en = {
   hide_player_names: "Hide Player Names",
   show_player_names: "Show Player Names",
   show_raw_data: "Show Raw Data",
+  copied_to_clipboard: "Copied to clipboard",
   self: "Self",
   team: "Team",
   // Stats.

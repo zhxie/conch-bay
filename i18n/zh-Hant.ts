@@ -1,39 +1,13 @@
-import base from "./base";
 import generated from "./zh-Hant.json";
 
 const zhHant = {
-  ...base,
   ...generated,
   // API.
   lang: "zh-TW",
   // UI.
-  log_in: "登錄",
-  log_in_warning:
-    "法螺灣並不會盜用您的帳戶或導致您的個人資訊外洩，您可以對開源原始碼進行審查。但介於任天堂持續對第三方應用的消極態度，您需要自負使用法螺灣的風險。",
-  log_in_notice:
-    "您可以在不登錄的情況下使用法螺灣查看日程與魷魚須商城，匯入記錄並通過統計與趨勢分析。登錄將允許您載入記錄、朋友與目錄，顯示持有的裝備以及訪問魷魚圈3。登錄需要向任天堂以外的imink或nxapi發送非識別資訊，這些資訊不會被記錄或存儲，請參閱私隱政策以獲取更多資訊。",
-  log_in_continue: "我已閱讀並理解",
-  alternative_log_in_notice:
-    "如果您擁有會話令牌並希望跳過由法螺灣獲取會話令牌，您也可以複製會話令牌並完成登錄。",
-  log_in_with_session_token: "通過會話令牌登錄",
-  logging_in: "獲取令牌中",
-  failed_to_acquire_session_token: "未能獲取會話令牌 (%{error})",
-  log_out_notice:
-    "登出後，您將無法載入記錄、朋友與目錄，顯示持有的裝備以及訪問魷魚圈3。法螺灣已存儲的記錄不會被清除。",
-  log_out_continue: "登出",
-  logging_out: "登出中",
   upgrading_database: "升級資料庫中",
-  reacquiring_tokens: "重新獲取令牌中",
-  failed_to_acquire_web_service_token: "未能獲取Web服務令牌 (%{error})",
-  failed_to_acquire_bullet_token: "未能獲取Bullet令牌 (%{error})",
   failed_to_update_schedules: "未能更新時間表 (%{error})",
   failed_to_update_splatnet_shop: "未能更新魷魚鬚商城 (%{error})",
-  failed_to_check_api_update: "未能檢查API更新 (%{error})",
-  failed_to_load_friends: "未能載入朋友 (%{error})",
-  failed_to_load_friends_splatfest_voting: "未能載入朋友的祭典投票狀況 (%{error})",
-  failed_to_check_splatfest: "未能檢查祭典 (%{error})",
-  failed_to_load_summary: "未能載入總覽 (%{error})",
-  failed_to_load_catalog: "未能載入目錄 (%{error})",
   failed_to_load_battle_results: "未能載入對戰記錄 (%{error})",
   failed_to_load_salmon_run_results: "未能載入鮭魚跑記錄 (%{error})",
   loading_n_results: "載入%{n}項記錄中",
@@ -52,26 +26,16 @@ const zhHant = {
   this_month: "本月",
   this_season: "本賽季",
   all_results: "全部記錄",
-  splatnet: "魷魚圈",
-  splatnet_3: "魷魚圈3",
   export: "匯出",
   exporting: "匯出中",
   disclaimer: "本應用是使用魷魚圈3的資訊的非官方應用，與任天堂有限公司無關。",
   update: "更新",
   support: "支援",
-  preference_notice:
-    "您可以根據自己的喜好定制法螺灣。例如，您可以允許法螺灣在背景載入記錄或是優先顯示鮭魚跑的相關資訊。",
-  background_refresh_enabled: "背景重新整理 (%{enabled})",
+  preference_notice: "您可以根據自己的喜好定制法螺灣。例如，您可以優先顯示鮭魚跑的相關資訊。",
   salmon_run_friendly_mode_enabled: "鮭魚跑友好模式 (%{enabled})",
   enabled: "已啟用",
   disabled: "已停用",
-  language_notice:
-    "如果您的遊戲語言與顯示語言不一致，您可以在此修改。這將使法螺灣載入對應語言的記錄與魷魚圈3。",
-  change_game_language_language: "修改遊戲語言 (%{language})",
-  change_display_language_language: "修改顯示語言 (%{language})",
-  relog_in_notice: "如果法螺灣無法獲取令牌，您可以重新登錄。",
-  relog_in: "重新登錄",
-  relog_in_with_session_token: "通過會話令牌重新登錄",
+  change_display_language: "修改顯示語言",
   resource_notice:
     "如果法螺灣無法載入圖像，您可以清除緩存或預載入資源。請注意，由於魷魚圈3的限制，法螺灣僅能預載入部分圖像。",
   clear_cache: "清除緩存",
@@ -85,12 +49,6 @@ const zhHant = {
   clear_database: "清除資料庫",
   clearing_database: "清除資料庫中",
   debug_notice: "以下資訊僅用於調試。請不要與他人分享。",
-  diagnose_network: "診斷網路",
-  diagnosing_network: "診斷網路中",
-  copy_session_token: "複製會話令牌",
-  copy_web_service_token: "複製Web服務令牌",
-  copy_bullet_token: "複製Bullet令牌",
-  copied_to_clipboard: "已復製到剪貼板",
   export_database: "匯出資料庫",
   privacy_policy: "私隱政策",
   acknowledgments: "致謝",
@@ -100,12 +58,6 @@ const zhHant = {
   source_code_repository: "源代碼庫",
   auto_refresh_enabled: "已啟用自動刷新",
   auto_refresh_disabled: "已停用自動刷新",
-  notification_notice:
-    "當法螺灣運行於背景時，法螺灣將定期載入記錄。請允許法螺灣傳送通知以提醒您載入狀況。",
-  ok: "OK",
-  failed_to_enable_background_refresh: "未能啟用背景重新整理 (%{error})",
-  new_results: "新記錄",
-  loaded_n_results_in_the_background: "法螺灣已在背景載入%{n}項記錄，請打開應用以確認。",
   sorry: "抱歉",
   sorry_notice:
     "法螺灣遇到了一些問題，請檢查應用更新並重新啟動應用。如果您持續遇到這一問題，請聯繫我們。",
@@ -116,18 +68,6 @@ const zhHant = {
   export_results: "匯出記錄",
   // Shop.
   gesotown: "魷魚鬚商城",
-  show_owned_gears: "顯示持有的裝備",
-  loading_owned_gears: "載入持有的裝備中",
-  failed_to_load_owned_gears: "未能載入持有的裝備 (%{error})",
-  headgear: "頭部裝備",
-  clothes: "服裝",
-  shoes: "鞋子",
-  shop_notice: "您可以通過主頁下方的魷魚圈3預訂裝備。",
-  // Friend.
-  playing: "比賽中",
-  working: "打工中",
-  online: "線上",
-  offline: "離線",
   // Filter.
   filter: "篩選",
   modes: "模式",
@@ -170,6 +110,7 @@ const zhHant = {
   hide_player_names: "隱藏玩家名稱",
   show_player_names: "顯示玩家名稱",
   show_raw_data: "顯示原始數據",
+  copied_to_clipboard: "已復製到剪貼板",
   self: "自己",
   team: "團隊",
   // Stats.

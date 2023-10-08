@@ -1,39 +1,13 @@
-import base from "./base";
 import generated from "./zh-Hans.json";
 
 const zhHans = {
-  ...base,
   ...generated,
   // API.
   lang: "zh-CN",
   // UI.
-  log_in: "登录",
-  log_in_warning:
-    "法螺湾并不会盗用您的账号或导致您的个人信息泄漏，您可以对开放源代码进行审查。但介于任天堂持续对第三方应用的消极态度，您需要自负使用法螺湾的风险。",
-  log_in_notice:
-    "您可以在不登录的情况下使用法螺湾查看日程与鱿鱼须商城，导入记录并通过统计与趋势分析。登录将允许您加载记录、好友与目录，显示持有的装备以及访问鱿鱼圈3。登录需要向任天堂以外的imink或nxapi发送非识别信息，这些信息不会被记录或存储，请参阅隐私政策以获取更多信息。",
-  log_in_continue: "我已阅读并理解",
-  alternative_log_in_notice:
-    "如果您拥有会话令牌并希望跳过由法螺湾获取会话令牌，您也可以复制会话令牌并完成登录。",
-  log_in_with_session_token: "通过会话令牌登录",
-  logging_in: "获取令牌中",
-  failed_to_acquire_session_token: "未能获取会话令牌 (%{error})",
-  log_out_notice:
-    "登出后，您将无法加载记录、好友与目录，显示持有的装备以及访问鱿鱼圈3。法螺湾已存储的记录不会被清除。",
-  log_out_continue: "登出",
-  logging_out: "登出中",
   upgrading_database: "升级数据库中",
-  reacquiring_tokens: "重新获取令牌中",
-  failed_to_acquire_web_service_token: "未能获取Web服务令牌 (%{error})",
-  failed_to_acquire_bullet_token: "未能获取Bullet令牌 (%{error})",
   failed_to_update_schedules: "未能更新日程 (%{error})",
   failed_to_update_splatnet_shop: "未能更新鱿鱼须商城 (%{error})",
-  failed_to_check_api_update: "未能检查API更新 (%{error})",
-  failed_to_load_friends: "未能加载好友 (%{error})",
-  failed_to_load_friends_splatfest_voting: "未能加载好友的祭典投票情况 (%{error})",
-  failed_to_check_splatfest: "未能检查祭典 (%{error})",
-  failed_to_load_summary: "未能加载总览 (%{error})",
-  failed_to_load_catalog: "未能加载目录 (%{error})",
   failed_to_load_battle_results: "未能加载对战记录 (%{error})",
   failed_to_load_salmon_run_results: "未能加载鲑鱼跑记录 (%{error})",
   loading_n_results: "加载%{n}项记录中",
@@ -52,26 +26,16 @@ const zhHans = {
   this_month: "本月",
   this_season: "本赛季",
   all_results: "全部记录",
-  splatnet: "鱿鱼圈",
-  splatnet_3: "鱿鱼圈3",
   export: "导出",
   exporting: "导出中",
   disclaimer: "本应用是使用鱿鱼圈3的信息的非官方应用，与任天堂有限公司无关。",
   update: "更新",
   support: "支持",
-  preference_notice:
-    "您可以根据自己的喜好自定义法螺湾。例如，您可以允许法螺湾在后台加载记录或是优先显示鲑鱼跑的相关信息。",
-  background_refresh_enabled: "后台刷新 (%{enabled})",
+  preference_notice: "您可以根据自己的喜好自定义法螺湾。例如，您可以优先显示鲑鱼跑的相关信息。",
   salmon_run_friendly_mode_enabled: "鲑鱼跑友好模式 (%{enabled})",
   enabled: "已启用",
   disabled: "已停用",
-  language_notice:
-    "如果您的游戏语言与显示语言不一致，您可以在此修改。这将使法螺湾加载对应语言的记录与鱿鱼圈3。",
-  change_game_language_language: "修改游戏语言 (%{language})",
-  change_display_language_language: "修改显示语言 (%{language})",
-  relog_in_notice: "如果法螺湾无法获取令牌，您可以重新登录。",
-  relog_in: "重新登录",
-  relog_in_with_session_token: "通过会话令牌重新登录",
+  change_display_language: "修改显示语言",
   resource_notice:
     "如果法螺湾无法加载图像，您可以清除缓存或预加载资源。请注意，由于鱿鱼圈3的限制，法螺湾仅能预加载部分图片。",
   clear_cache: "清除缓存",
@@ -85,12 +49,6 @@ const zhHans = {
   clear_database: "清除数据库",
   clearing_database: "清除数据库中",
   debug_notice: "以下信息仅用于调试。请不要与他人分享。",
-  diagnose_network: "诊断网络",
-  diagnosing_network: "诊断网络中",
-  copy_session_token: "复制会话令牌",
-  copy_web_service_token: "复制Web服务令牌",
-  copy_bullet_token: "复制Bullet令牌",
-  copied_to_clipboard: "已复制到剪贴板",
   export_database: "导出数据库",
   privacy_policy: "隐私政策",
   acknowledgments: "致谢",
@@ -100,12 +58,6 @@ const zhHans = {
   source_code_repository: "源代码库",
   auto_refresh_enabled: "已启用自动刷新",
   auto_refresh_disabled: "已停用自动刷新",
-  notification_notice:
-    "当法螺湾运行于后台时，法螺湾将定期加载记录。请允许法螺湾发送通知以提醒您加载状况。",
-  ok: "OK",
-  failed_to_enable_background_refresh: "未能启用后台刷新 (%{error})",
-  new_results: "新记录",
-  loaded_n_results_in_the_background: "法螺湾已在后台加载%{n}项记录，请打开应用以确认。",
   sorry: "抱歉",
   sorry_notice:
     "法螺湾遇到了一些问题，请检查应用更新并重新启动应用。如果您持续遇到这一问题，请联系我们。",
@@ -116,18 +68,6 @@ const zhHans = {
   export_results: "导出记录",
   // Shop.
   gesotown: "鱿鱼须商城",
-  show_owned_gears: "显示持有的装备",
-  loading_owned_gears: "加载持有的装备中",
-  failed_to_load_owned_gears: "未能加载持有的装备 (%{error})",
-  headgear: "头部装备",
-  clothes: "服装",
-  shoes: "鞋子",
-  shop_notice: "您可以通过主页下方的鱿鱼圈3预订装备。",
-  // Friend.
-  playing: "比赛中",
-  working: "打工中",
-  online: "线上",
-  offline: "离线",
   // Filter.
   filter: "筛选",
   modes: "模式",
@@ -170,6 +110,7 @@ const zhHans = {
   hide_player_names: "隐藏玩家名称",
   show_player_names: "显示玩家名称",
   show_raw_data: "显示原始数据",
+  copied_to_clipboard: "已复制到剪贴板",
   self: "自己",
   team: "团队",
   // Stats.

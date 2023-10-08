@@ -1,39 +1,13 @@
-import base from "./base";
 import generated from "./ja.json";
 
 const ja = {
-  ...base,
   ...generated,
   // API.
   lang: "ja-JP",
   // UI.
-  log_in: "ログイン",
-  log_in_notice:
-    "ホラガイベイを使用すると、ログインせずにスケジュールとゲソタウンの表示、リザルトのインポート、統計とトレンドの分析を行うことができます。ログインすると、リザルト、フレンドとカタログの読み込み、持つギアの表示、イカリング3へのアクセスが可能になります。ログインするには、任天堂外部のiminkまたはnxapiに非識別情報を送信する必要があります。この情報はログする、記録または保存されません。詳しくは、プライバシーポリシーを参照してください。",
-  log_in_warning:
-    "ホラガイベイによってアカウントが不正使用されたり、個人情報が漏洩したりすることはありません。オープンソースコードをレビューできます。ただし、任天堂はサードパーティアプリに対して引き続き否定的な姿勢をとっているため、ホラガイベイは自己責任で使してください。",
-  log_in_continue: "読んで理解しました",
-  alternative_log_in_notice:
-    "セッショントークンを持っていて、ホラガイベイによるセッショントークンの取得をスキップしたい場合は、代わりにセッショントークンをコピーしてログインを完了することもできます。",
-  log_in_with_session_token: "セッショントークンでログイン",
-  logging_in: "トークン取得中",
-  failed_to_acquire_session_token: "セッショントークンを取得できません (%{error})",
-  log_out_notice:
-    "ログアウト後はリザルト、フレンドとカタログの読み込み、持つギアの表示、イカリング3へのアクセスができなくなります。ホラガイベイに保存されているリザルトは消去されません。",
-  log_out_continue: "ログアウト",
-  logging_out: "ログアウト中",
   upgrading_database: "データベースをアップグレード中",
-  reacquiring_tokens: "トークン再取得中",
-  failed_to_acquire_web_service_token: "Webサービストークンを取得できません (%{error})",
-  failed_to_acquire_bullet_token: "ブレットトークンを取得できません (%{error})",
   failed_to_update_schedules: "スケジュールを更新できません (%{error})",
   failed_to_update_splatnet_shop: "ゲソタウンを更新できません (%{error})",
-  failed_to_check_api_update: "APIのアップデートを確認できません (%{error})",
-  failed_to_load_friends: "フレンドを読み込めません (%{error})",
-  failed_to_load_friends_splatfest_voting: "フレンドのフェス投票状況を読み込めません (%{error})",
-  failed_to_check_splatfest: "フェスを確認できません (%{error})",
-  failed_to_load_summary: "サマリーを読み込めません (%{error})",
-  failed_to_load_catalog: "カタログを読み込めません (%{error})",
   failed_to_load_battle_results: "バトルのリザルトを読み込めません (%{error})",
   failed_to_load_salmon_run_results: "サーモンランのリザルトを読み込めません (%{error})",
   loading_n_results: "%{n}件のリザルトを読み込む中",
@@ -53,8 +27,6 @@ const ja = {
   this_month: "今月",
   this_season: "今シーズン",
   all_results: "すべてのリザルト",
-  splatnet: "イカリング",
-  splatnet_3: "イカリング3",
   export: "エクスポート",
   exporting: "エクスポート中",
   disclaimer:
@@ -62,18 +34,11 @@ const ja = {
   update: "アップデート",
   support: "サポート",
   preference_notice:
-    "ホラガイベイを自分好みにカスタマイズできます。例えば、ホラガイベイがバックグラウンドでリザルトを読み込むことを許可したり、サーモンランに関する情報を優先的に表示したりできます。",
-  background_refresh_enabled: "バックグラウンド更新 (%{enabled})",
+    "ホラガイベイを自分好みにカスタマイズできます。例えば、サーモンランに関する情報を優先的に表示できます。",
   salmon_run_friendly_mode_enabled: "サーモンランフレンドリーモード (%{enabled})",
   enabled: "有効",
   disabled: "無効",
-  language_notice:
-    "ゲームの言語が表示言語と一致しない場合は、ここで変更できます。これにより、ホラガイベイは対応する言語でリザルトとイカリング3を読み込むことができます。",
-  change_game_language_language: "ゲームの言語を変更 (%{language})",
-  change_display_language_language: "表示言語を変更 (%{language})",
-  relog_in_notice: "ホラガイベイがトークンを取得できない場合は、再ログインできます。",
-  relog_in: "再ログイン",
-  relog_in_with_session_token: "セッショントークンで再ログイン",
+  change_display_language: "表示言語を変更",
   resource_notice:
     "ホラガイベイが画像を読み込めない場合は、キャッシュを消去するか、リソースを読み込むことができます。イカリング3の制限により、ホラガイベイは一部の画像しか事前に読み込むできないことに注意してください。",
   clear_cache: "キャッシュを消去",
@@ -89,12 +54,6 @@ const ja = {
   clear_database: "データーベースを消去",
   clearing_database: "データーベースを消去中",
   debug_notice: "次の情報はデバッグ専用です。他の人と共有しないでください。",
-  diagnose_network: "ネットワークを診断",
-  diagnosing_network: "ネットワークを診断中",
-  copy_session_token: "セッショントークンをコピー",
-  copy_web_service_token: "Webサービストークンをコピー",
-  copy_bullet_token: "ブレットトークンをコピー",
-  copied_to_clipboard: "クリップボードにコピーされました",
   export_database: "データーベースをエクスポート",
   privacy_policy: "プライバシーポリシー",
   acknowledgments: "謝辞",
@@ -104,13 +63,6 @@ const ja = {
   source_code_repository: "ソースコードリポジトリ",
   auto_refresh_enabled: "自動更新が有効になりました",
   auto_refresh_disabled: "自動更新が無効になりました",
-  notification_notice:
-    "ホラガイベイがバックグラウンドで実行されている場合、ホラガイベイは定期的にリザルトを読み込みます。ホラガイベイが読み込みステータスを通知する通知を送信できるようにしてください。",
-  ok: "OK",
-  failed_to_enable_background_refresh: "バックグラウンド更新を有効できません (%{error})",
-  new_results: "新しいリザルト",
-  loaded_n_results_in_the_background:
-    "ホラガイベイはバックグラウンドで%{n}件のリザルトを読み込みました。アプリを開いてご確認ください。",
   sorry: "ごめんなさい",
   sorry_notice:
     "ホラかいベイでエラーが発生しました。アプリの更新を確認して、アプリを再起動してください。このエラーが引き続き発生する場合は、ご連絡ください。",
@@ -121,18 +73,6 @@ const ja = {
   export_results: "リザルトをエクスポート",
   // Shop.
   gesotown: "ゲソタウン",
-  show_owned_gears: "持つギアを表示",
-  loading_owned_gears: "持つギアを読み込む中",
-  failed_to_load_owned_gears: "持つギアを読み込めません (%{error})",
-  headgear: "アタマ",
-  clothes: "フク",
-  shoes: "クツ",
-  shop_notice: "ギアはホームページ下のイカリング3から注文できます。",
-  // Friend.
-  playing: "試合中",
-  working: "バイト中",
-  online: "オンライン",
-  offline: "オフライン",
   // Filter.
   filter: "フィルター",
   modes: "モード",
@@ -175,6 +115,7 @@ const ja = {
   hide_player_names: "プレイヤー名を隠す",
   show_player_names: "プレイヤー名を表示",
   show_raw_data: "生データを表示",
+  copied_to_clipboard: "クリップボードにコピーされました",
   self: "自分",
   team: "チーム",
   // Stats.
