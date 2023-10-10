@@ -69,6 +69,8 @@ const fetchGraphQl = async <T>(headers: Record<string, string>, hash: string, va
     },
     variables: variables ?? {},
   };
+  const str = JSON.stringify(body);
+  headers["Content-Length"] = str.length.toString();
   await sleep(Math.floor(Math.random() * 100));
   const res = await axios.post("https://api.lp1.av5ja.srv.nintendo.net/api/graphql", body, {
     headers,
