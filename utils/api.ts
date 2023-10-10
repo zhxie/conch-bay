@@ -2,13 +2,11 @@ import axios from "axios";
 import Constants, { AppOwnership } from "expo-constants";
 import {
   BankaraBattleHistoriesResult,
-  CatalogResult,
   CoopHistoryDetailResult,
   CoopHistoryDetailVariables,
   CoopHistoryResult,
   EventBattleHistoriesResult,
   GraphQLSuccessResponse,
-  HistoryRecordResult,
   LatestBattleHistoriesResult,
   PrivateBattleHistoriesResult,
   RegularBattleHistoriesResult,
@@ -76,22 +74,6 @@ const fetchGraphQl = async <T>(headers: Record<string, string>, hash: string, va
     headers,
   });
   return res;
-};
-export const fetchSummary = async (headers: Record<string, string>) => {
-  const res = await fetchGraphQl(headers, RequestId.HistoryRecordQuery);
-  const summary = res.data as GraphQLSuccessResponse<HistoryRecordResult>;
-  if (summary.errors) {
-    throw new Error(summary.errors[0].message);
-  }
-  return summary.data;
-};
-export const fetchCatalog = async (headers: Record<string, string>) => {
-  const res = await fetchGraphQl(headers, RequestId.CatalogQuery);
-  const catalog = res.data as GraphQLSuccessResponse<CatalogResult>;
-  if (catalog.errors) {
-    throw new Error(catalog.errors[0].message);
-  }
-  return catalog.data;
 };
 
 export const fetchLatestBattleHistories = async (headers: Record<string, string>) => {
