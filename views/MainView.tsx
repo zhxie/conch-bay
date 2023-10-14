@@ -1493,6 +1493,9 @@ const MainView = () => {
         case ModulesCore.PermissionStatus.GRANTED:
         case ModulesCore.PermissionStatus.DENIED:
           await setBackgroundRefresh(true);
+          await registerBackgroundTask().catch((e) => {
+            showBanner(BannerLevel.Warn, t("failed_to_enable_background_refresh", { error: e }));
+          });
           break;
         case ModulesCore.PermissionStatus.UNDETERMINED:
           setNotification(true);
