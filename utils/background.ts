@@ -15,7 +15,7 @@ import {
 import { Key } from "./async-storage";
 import { decode64String, encode64String } from "./codec";
 import * as Database from "./database";
-import { ok } from "./promise";
+import { ok, sleep } from "./promise";
 
 const BACKGROUND_REFRESH_RESULTS_TASK = "background-refresh-results";
 
@@ -103,16 +103,18 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
           const existed = await Promise.all(ids.map((id) => Database.isExist(id)));
           const newIds = ids.filter((_, i) => !existed[i]);
           let results = 0;
-          for (const id of newIds) {
-            await ok(
-              fetchVsHistoryDetail(webServiceToken!, bulletToken, language, id).then(
-                async (detail) => {
-                  await Database.addBattle(detail);
-                  results += 1;
-                }
+          await Promise.all(
+            newIds.map((id, i) =>
+              ok(
+                sleep(i * 500)
+                  .then(() => fetchVsHistoryDetail(webServiceToken!, bulletToken, language, id))
+                  .then((detail) => Database.addBattle(detail))
+                  .then(() => {
+                    results += 1;
+                  })
               )
-            );
-          }
+            )
+          );
           return results;
         })
         .catch((e) => {
@@ -131,16 +133,18 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
           const existed = await Promise.all(ids.map((id) => Database.isExist(id)));
           const newIds = ids.filter((_, i) => !existed[i]);
           let results = 0;
-          for (const id of newIds) {
-            await ok(
-              fetchCoopHistoryDetail(webServiceToken!, bulletToken, language, id).then(
-                async (detail) => {
-                  await Database.addCoop(detail);
-                  results += 1;
-                }
+          await Promise.all(
+            newIds.map((id, i) =>
+              ok(
+                sleep(i * 500)
+                  .then(() => fetchCoopHistoryDetail(webServiceToken!, bulletToken, language, id))
+                  .then((detail) => Database.addCoop(detail))
+                  .then(() => {
+                    results += 1;
+                  })
               )
-            );
-          }
+            )
+          );
           return results;
         })
         .catch((e) => {

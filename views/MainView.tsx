@@ -908,9 +908,9 @@ const MainView = () => {
             newIds.map((id, i) =>
               sleep(i * 500)
                 .then(() => fetchVsHistoryDetail(webServiceToken, bulletToken, language, id))
-                .then(async (detail) => {
+                .then((detail) => {
                   setProgress((progress) => progress + 1);
-                  await Database.addBattle(detail);
+                  return Database.addBattle(detail);
                 })
                 .catch((e) => {
                   if (!error) {
@@ -959,9 +959,9 @@ const MainView = () => {
             newIds.map((id, i) =>
               sleep(i * 500)
                 .then(() => fetchCoopHistoryDetail(webServiceToken, bulletToken, language, id))
-                .then(async (detail) => {
+                .then((detail) => {
                   setProgress((progress) => progress + 1);
-                  await Database.addCoop(detail);
+                  return Database.addCoop(detail);
                 })
                 .catch((e) => {
                   if (!error) {
