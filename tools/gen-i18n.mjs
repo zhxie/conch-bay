@@ -2,7 +2,7 @@ import { Buffer } from "buffer";
 import { createHash } from "crypto";
 import { createWriteStream } from "fs";
 
-const VERSION = "500";
+const VERSION = "510";
 
 const writeOut = (path, obj) => {
   const file = createWriteStream(path, "utf-8");

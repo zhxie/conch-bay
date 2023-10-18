@@ -5,7 +5,7 @@ import json
 import requests
 import sys
 
-VERSION = "500"
+VERSION = "510"
 DUMMY_NPLN_USER_ID = "statinksalmonrunjson"
 WATER_LEVEL_MAP = {"low": 0, "normal": 1, "high": 2}
 EVENT_WAVE_MAP = {
