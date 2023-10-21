@@ -11,10 +11,10 @@ const en = {
   log_in_notice:
     "You can use Conch Bay to view schedules and SplatNet Shop, import results, and analyze stats and trends without logging in. Logging in will allow you to load results, friends and catalog, display owned gears, and access SplatNet 3. Logging in involves sending non-identifying information to non-Nintendo imink or nxapi. This information will not be logged or stored, please see the privacy policy for more information.",
   log_in_warning:
-    "Conch Bay will not cause your account to be compromised or your personal information to be leaked. You can review the open-source code. However, due to Nintendo's continued negative attitude towards 3rd party apps, you should use Conch Bay at your own risk.",
+    "Conch Bay will not cause your account to be compromised or your personal information to be leaked. However, due to Nintendo's continued negative attitude towards 3rd party apps, you should use Conch Bay at your own risk.",
   log_in_continue: "I have read and understand",
   alternative_log_in_notice:
-    "If you have a session token and want to skip acquiring session token by Conch Bay, you can also copy the session token and complete logging in alternatively.",
+    "If you have a session token and want to skip acquiring session token by Conch Bay, you can copy the session token and log in with session token.",
   log_in_with_session_token: "Log In with Session Token",
   logging_in: "Acquiring tokens",
   failed_to_acquire_session_token: "Failed to acquire session token (%{error})",
@@ -236,7 +236,7 @@ const en = {
     "Please backup as JSON in Salmonia3+ and import it. Please note, some information may be missing since the Salmonia3+ backup does not contain all the data of results.",
   random: "Random",
   split_and_import_notice:
-    "Conch Bay requires a lot of memory to import records. If Conch Bay cannot import records, you can split and import them. Please note, splitting and importing takes several minutes to tens of minutes. Besides, you can contact us for assistance through Support at the bottom of the homepage.",
+    "Conch Bay requires a lot of memory to import records. If Conch Bay cannot import records, you can split and import them. Please note, splitting and importing takes several minutes to tens of minutes.",
   split_and_import: "Split and Import",
   // Modes.
   battle: "Battle",
