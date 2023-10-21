@@ -1859,6 +1859,9 @@ const MainView = () => {
   const onNotificationContinue = async () => {
     await Notifications.requestPermissionsAsync();
     await setBackgroundRefresh(true);
+    await registerBackgroundTask().catch((e) => {
+      showBanner(BannerLevel.Warn, t("failed_to_enable_background_refresh", { error: e }));
+    });
     setNotification(false);
   };
   const onAcknowledgmentsPress = () => {
