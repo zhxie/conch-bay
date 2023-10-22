@@ -1,3 +1,4 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAppState } from "@react-native-community/hooks";
 import { AxiosError } from "axios";
 import dayjs from "dayjs";
@@ -1845,6 +1846,16 @@ const MainView = () => {
       showBanner(BannerLevel.Info, t("copied_to_clipboard"));
     }
   };
+  const onCopyConfigurationAndState = async () => {
+    const keys = await AsyncStorage.getAllKeys();
+    const pairs = await AsyncStorage.multiGet(keys);
+    const result = {};
+    for (const pair of pairs) {
+      result[pair[0]] = pair[1];
+    }
+    await Clipboard.setStringAsync(JSON.stringify(result));
+    showBanner(BannerLevel.Info, t("copied_to_clipboard"));
+  };
   const onExportDatabasePress = async () => {
     const uri = FileSystem.documentDirectory + "SQLite/conch-bay.db";
     try {
@@ -2390,6 +2401,15 @@ const MainView = () => {
                   </Button>
                 </VStack>
               )}
+              <Button
+                style={[ViewStyles.mb2, ViewStyles.accent]}
+                textStyle={theme.reverseTextStyle}
+                onPress={onCopyConfigurationAndState}
+              >
+                <Marquee style={theme.reverseTextStyle}>
+                  {t("copy_configuration_and_state")}
+                </Marquee>
+              </Button>
               <Button style={ViewStyles.accent} onPress={onExportDatabasePress}>
                 <Marquee style={theme.reverseTextStyle}>{t("export_database")}</Marquee>
               </Button>

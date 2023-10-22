@@ -95,6 +95,7 @@ const ja = {
   copy_web_service_token: "Webサービストークンをコピー",
   copy_bullet_token: "ブレットトークンをコピー",
   copied_to_clipboard: "クリップボードにコピーされました",
+  copy_configuration_and_state: "設定とステートをコピー",
   export_database: "データーベースをエクスポート",
   privacy_policy: "プライバシーポリシー",
   acknowledgments: "謝辞",
