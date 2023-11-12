@@ -3912,10 +3912,10 @@ expo-font@~11.4.0:
   dependencies:
     fontfaceobserver "^2.1.0"
 
-expo-image@~1.3.4:
-  version "1.3.4"
-  resolved "https://registry.yarnpkg.com/expo-image/-/expo-image-1.3.4.tgz#50f8468b118972698a4382853773db2f39e46190"
-  integrity sha512-2N6etMJA5OWbbvL9IdPVchNoJd18kVo5gcN4uC9Xtv1VM/ik6PRB3Tz+qP/0Uglkzh/yyJjw7aDTqWozj5nLZw==
+expo-image@~1.3.5:
+  version "1.3.5"
+  resolved "https://registry.yarnpkg.com/expo-image/-/expo-image-1.3.5.tgz#426deca8cc9a8a3e72a649e9d98c5019efde0d37"
+  integrity sha512-yrIR2mnfIKbKcguoqWK3U5m3zvLPnonvSCabB2ErVGhws8zQs7ILYf+7T08j8U6eFcohjw0CoAFJ6RWNsX2EhA==
 
 expo-intent-launcher@~10.7.0:
   version "10.7.0"
