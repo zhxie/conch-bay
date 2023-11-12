@@ -6,6 +6,7 @@ const zhHant = {
   ...generated,
   // API.
   lang: "zh-TW",
+  region: "AP",
   // UI.
   log_in: "登入",
   log_in_warning:
@@ -66,8 +67,13 @@ const zhHant = {
   enabled: "已啟用",
   disabled: "已停用",
   language_notice:
-    "如果您的遊戲語言與顯示語言不一致，您可以在此修改。這將使法螺灣載入對應語言的記錄與魷魚圈3。",
+    "您可以修改您的地區與語言，以便於法螺灣加載對應地區與語言的祭典、記錄與魷魚圈3。",
   change_game_language_language: "修改遊戲語言 (%{language})",
+  change_splatfest_region: "修改祭典地區 (%{region})",
+  japan: "日本",
+  the_americas_australia_new_zealand: "美洲大陸、澳洲、新西蘭",
+  europe: "歐洲",
+  hong_kong_south_korea: "香港、韓國",
   change_display_language_language: "修改顯示語言 (%{language})",
   relog_in_notice: "如果法螺灣無法取得令牌，您可以重新登入。",
   relog_in: "重新登入",

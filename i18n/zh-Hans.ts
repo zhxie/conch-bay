@@ -6,6 +6,7 @@ const zhHans = {
   ...generated,
   // API.
   lang: "zh-CN",
+  region: "AP",
   // UI.
   log_in: "登录",
   log_in_warning:
@@ -66,8 +67,13 @@ const zhHans = {
   enabled: "已启用",
   disabled: "已停用",
   language_notice:
-    "如果您的游戏语言与显示语言不一致，您可以在此修改。这将使法螺湾加载对应语言的记录与鱿鱼圈3。",
+    "您可以修改您的地区与语言，以便于法螺湾加载对应地区与语言的祭典、记录与鱿鱼圈3。",
   change_game_language_language: "修改游戏语言 (%{language})",
+  change_splatfest_region: "修改祭典地区 (%{region})",
+  japan: "日本",
+  the_americas_australia_new_zealand: "美洲大陆、澳大利亚、新西兰",
+  europe: "欧洲",
+  hong_kong_south_korea: "香港、韩国",
   change_display_language_language: "修改显示语言 (%{language})",
   relog_in_notice: "如果法螺湾无法获取令牌，您可以重新登录。",
   relog_in: "重新登录",

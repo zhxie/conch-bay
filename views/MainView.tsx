@@ -186,6 +186,10 @@ const MainView = () => {
     Key.Language,
     t("lang")
   );
+  const [region, setRegion, clearRegion, regionReady] = useStringAsyncStorage(
+    Key.Region,
+    t("region")
+  );
 
   const [icon, setIcon, clearIcon] = useStringAsyncStorage(Key.Icon);
   const [catalogLevel, setCatalogLevel, clearCatalogLevel] = useStringAsyncStorage(
@@ -266,6 +270,7 @@ const MainView = () => {
       webServiceTokenReady &&
       bulletTokenReady &&
       languageReady &&
+      regionReady &&
       filterReady
     ) {
       (async () => {
@@ -286,7 +291,14 @@ const MainView = () => {
         }
       })();
     }
-  }, [sessionTokenReady, webServiceTokenReady, bulletTokenReady, languageReady, filterReady]);
+  }, [
+    sessionTokenReady,
+    webServiceTokenReady,
+    bulletTokenReady,
+    languageReady,
+    regionReady,
+    filterReady,
+  ]);
   useEffect(() => {
     if (ready) {
       Animated.timing(fade, {
@@ -676,7 +688,7 @@ const MainView = () => {
                   .catch((e) => {
                     showBanner(BannerLevel.Warn, t("failed_to_load_friends", { error: e }));
                   }),
-              fetchSplatfests()
+              fetchSplatfests(region)
                 .then(async (splatfests) => {
                   if (splatfests.festRecords.nodes[0]?.isVotable) {
                     await fetchDetailVotingStatus(
@@ -1477,6 +1489,13 @@ const MainView = () => {
       await clearLanguage();
     } else {
       await setLanguage(language);
+    }
+  };
+  const onSplatfestRegionSelected = async (region: string) => {
+    if (language === t("region")) {
+      await clearRegion();
+    } else {
+      await setRegion(region);
     }
   };
   const onChangeDisplayLanguagePress = () => {
@@ -2318,6 +2337,18 @@ const MainView = () => {
                   { key: "zh-TW", value: t("zh-TW") },
                 ]}
                 onSelected={onGameLanguageSelected}
+                style={ViewStyles.mb2}
+              />
+              <Picker
+                disabled={refreshing}
+                title={t("change_splatfest_region", { region: t(region) })}
+                items={[
+                  { key: "JP", value: t("japan") },
+                  { key: "NA", value: t("the_americas_australia_new_zealand") },
+                  { key: "EU", value: t("europe") },
+                  { key: "AP", value: t("hong_kong_south_korea") },
+                ]}
+                onSelected={onSplatfestRegionSelected}
                 style={ViewStyles.mb2}
               />
               <Button

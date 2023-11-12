@@ -6,6 +6,7 @@ const ja = {
   ...generated,
   // API.
   lang: "ja-JP",
+  region: "JP",
   // UI.
   log_in: "ログイン",
   log_in_notice:
@@ -68,8 +69,13 @@ const ja = {
   enabled: "有効",
   disabled: "無効",
   language_notice:
-    "ゲームの言語が表示言語と一致しない場合は、ここで変更できます。これにより、ホラガイベイは対応する言語でリザルトとイカリング3を読み込むことができます。",
+    "ホラガイベイが対応する地域と言語のフェス、リザルト、イカリング3をロードできるように、地域と言語を変更できます。",
   change_game_language_language: "ゲームの言語を変更 (%{language})",
+  change_splatfest_region: "フェス地域を変更 (%{region})",
+  japan: "日本",
+  the_americas_australia_new_zealand: "アメリカ大陸、オーストラリア、ニュージーランド",
+  europe: "ヨーロッパ",
+  hong_kong_south_korea: "香港、韓国",
   change_display_language_language: "表示言語を変更 (%{language})",
   relog_in_notice: "ホラガイベイがトークンを取得できない場合は、再ログインできます。",
   relog_in: "再ログイン",

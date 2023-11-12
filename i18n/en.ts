@@ -6,6 +6,7 @@ const en = {
   ...generated,
   // API.
   lang: "en-US",
+  region: "NA",
   // UI.
   log_in: "Log In",
   log_in_notice:
@@ -67,8 +68,13 @@ const en = {
   enabled: "Enabled",
   disabled: "Disabled",
   language_notice:
-    "If your game language is inconsistent with the display one, you can change it here. This will allow Conch Bay to load results and SplatNet 3 with the corresponding language.",
+    "You can change your region and language so that Conch Bay can load Splatfest, results and SplatNet 3 in the corresponding region and language.",
   change_game_language_language: "Change Game Language (%{language})",
+  change_splatfest_region: "Change Splatfest Region (%{region})",
+  japan: "Japan",
+  the_americas_australia_new_zealand: "The Americas, Australia, New Zealand",
+  europe: "Europe",
+  hong_kong_south_korea: "Hong Kong, South Korea",
   change_display_language_language: "Change Display Language (%{language})",
   relog_in_notice: "If Conch Bay cannot acquire tokens, you can relog in.",
   relog_in: "Relog in",

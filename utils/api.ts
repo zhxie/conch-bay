@@ -61,12 +61,12 @@ export const fetchShop = async () => {
   const json = await res.json();
   return (json as ShopQuery).data;
 };
-export const fetchSplatfests = async () => {
+export const fetchSplatfests = async (region: string) => {
   const res = await fetch("https://splatoon3.ink/data/festivals.json", {
     headers: { "User-Agent": USER_AGENT },
   });
   const json = await res.json();
-  return (json as FestivalsQuery).US.data;
+  return (json as FestivalsQuery)[region].data;
 };
 
 let NSO_VERSION = versions.NSO_VERSION;

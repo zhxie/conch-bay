@@ -6,6 +6,7 @@ export enum Key {
   WebServiceToken = "webServiceToken2",
   BulletToken = "bulletToken2",
   Language = "language",
+  Region = "region",
   Icon = "icon",
   CatalogLevel = "catalogLevel",
   Level = "level",
