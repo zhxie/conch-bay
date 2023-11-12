@@ -141,6 +141,13 @@ enum TimeRange {
   AllResults = "all_results",
 }
 
+enum Region {
+  JP = "japan",
+  NA = "the_americas_australia_new_zealand",
+  EU = "europe",
+  AP = "hong_kong_south_korea",
+}
+
 let autoRefreshTimeout: NodeJS.Timeout | undefined;
 
 const MainView = () => {
@@ -2341,7 +2348,7 @@ const MainView = () => {
               />
               <Picker
                 disabled={refreshing}
-                title={t("change_splatfest_region", { region: t(region) })}
+                title={t("change_splatfest_region", { region: t(Region[region]) })}
                 items={[
                   { key: "JP", value: t("japan") },
                   { key: "NA", value: t("the_americas_australia_new_zealand") },
