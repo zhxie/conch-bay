@@ -5,7 +5,7 @@ import json
 import requests
 import sys
 
-VERSION = "510"
+VERSION = "520"
 ENEMY_MAP = [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17, 20]
 
 BACKGROUND_IMAGE = {}
