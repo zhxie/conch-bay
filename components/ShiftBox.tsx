@@ -17,6 +17,7 @@ interface ScheduleBoxProps {
   rule: string;
   time: string;
   stage: Stage;
+  boss: string;
   weapons: WeaponProps[];
   style?: StyleProp<ViewStyle>;
 }
@@ -56,7 +57,7 @@ const ShiftBox = (props: ScheduleBoxProps) => {
                 />
               ))}
             </HStack>
-            <Text> </Text>
+            <Marquee>{props.boss}</Marquee>
           </VStack>
         </HStack>
       </VStack>

@@ -488,7 +488,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
               <ScheduleButton
                 color={isScheduleStarted(bigRunShifts[0]) ? Color.BigRun : undefined}
                 rule={t("big_run")}
-                stages={[td(bigRunShifts[0].setting!.coopStage)]}
+                stages={[td(bigRunShifts[0].setting!.coopStage), td(bigRunShifts[0].setting!.boss)]}
                 onPress={onBigRunShiftPress}
                 style={ViewStyles.mr2}
               />
@@ -506,7 +506,10 @@ const ScheduleView = (props: ScheduleViewProps) => {
               <ScheduleButton
                 color={isScheduleStarted(regularShifts[0]) ? Color.SalmonRun : undefined}
                 rule={t("salmon_run")}
-                stages={[td(regularShifts[0].setting!.coopStage)]}
+                stages={[
+                  td(regularShifts[0].setting!.coopStage),
+                  td(regularShifts[0].setting!.boss),
+                ]}
                 onPress={onRegularShiftPress}
                 style={!!props.children && ViewStyles.mr2}
               />
@@ -570,6 +573,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
                   rule={scheduleList.title}
                   time={formatScheduleTimeRange(shift, true)}
                   stage={formatStage(shift.setting!.coopStage)}
+                  boss={shift.setting!.boss?.name ?? ""}
                   weapons={shift.setting!.weapons.map(formatWeapon)}
                   style={i !== shifts.length - 1 ? ViewStyles.mb2 : undefined}
                 />
