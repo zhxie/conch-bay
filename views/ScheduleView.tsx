@@ -573,7 +573,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
                   rule={scheduleList.title}
                   time={formatScheduleTimeRange(shift, true)}
                   stage={formatStage(shift.setting!.coopStage)}
-                  boss={shift.setting!.boss?.name ?? ""}
+                  boss={shift.setting!.boss ? t(shift.setting!.boss.id) : ""}
                   weapons={shift.setting!.weapons.map(formatWeapon)}
                   style={i !== shifts.length - 1 ? ViewStyles.mb2 : undefined}
                 />

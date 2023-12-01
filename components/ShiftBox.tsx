@@ -43,7 +43,7 @@ const ShiftBox = (props: ScheduleBoxProps) => {
             <Marquee>{props.stage.title}</Marquee>
           </VStack>
           <VStack flex center>
-            <HStack center>
+            <HStack center style={ViewStyles.mb1}>
               {props.weapons.map((weapon, i, weapons) => (
                 <Image
                   key={i}
