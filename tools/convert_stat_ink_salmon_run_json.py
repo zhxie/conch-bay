@@ -5,7 +5,7 @@ import json
 import requests
 import sys
 
-VERSION = "520"
+VERSION = "600"
 DUMMY_NPLN_USER_ID = "statinksalmonrunjson"
 WATER_LEVEL_MAP = {"low": 0, "normal": 1, "high": 2}
 EVENT_WAVE_MAP = {
@@ -26,6 +26,7 @@ SPECIAL_WEAPON_MAP = {
     "kanitank": 20012,
     "sameride": 20013,
     "tripletornado": 20014,
+    "ultra_chakuchi": 20018,
 }
 
 UNIFORM_IMAGE = {}
@@ -53,6 +54,7 @@ ENEMY_IMAGE = {
     20: "https://api.lp1.av5ja.srv.nintendo.net/resources/prod/v2/coop_enemy_img/f0dd8c7eb5c2e96f347564cac71affe055f6c45a3339145ecc81287f800759d2_0.png",
     23: "https://api.lp1.av5ja.srv.nintendo.net/resources/prod/v2/coop_enemy_img/75f39ca054c76c0c33cd71177780708e679d088c874a66101e9b76b001df8254_0.png",
     24: "https://api.lp1.av5ja.srv.nintendo.net/resources/prod/v2/coop_enemy_img/0ee5853c43ebbef00ee2faecbd6c74f8a2d5e5b62b2cfa96d3838894b71381cb_0.png",
+    25: "https://api.lp1.av5ja.srv.nintendo.net/resources/prod/v2/coop_enemy_img/82905ebab16b4790142de406c78b1bf68a84056b366d9e19ae3360fb432fe0a9_0.png",
 }
 COOP_STAGE_IMAGE = {}
 

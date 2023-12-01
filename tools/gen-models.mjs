@@ -2,7 +2,7 @@ import { Buffer } from "buffer";
 import { createHash } from "crypto";
 import { createWriteStream } from "fs";
 
-const VERSION = "520";
+const VERSION = "600";
 
 const writeOut = (path, obj) => {
   const file = createWriteStream(path, "utf-8");
@@ -216,6 +216,7 @@ const getSalmonidMap = async () => {
     SakeBigMouth: 20,
     SakelienGiant: 23,
     SakeRope: 24,
+    SakeJaw: 25,
   };
   const res = await fetch(
     `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${VERSION}/CoopEnemyInfo.json`
