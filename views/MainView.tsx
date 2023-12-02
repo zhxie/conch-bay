@@ -178,8 +178,8 @@ const MainView = () => {
   const [preloadingResources, setPreloadingResources] = useState(false);
   const [clearingDatabase, setClearingDatabase] = useState(false);
   const [diagnosingNetwork, setDiagnosingNetwork] = useState(false);
-  const [acknowledgments, setAcknowledgments] = useState(false);
   const [notification, setNotification] = useState(false);
+  const [acknowledgments, setAcknowledgments] = useState(false);
   const [fault, setFault] = useState<Error>();
 
   const [sessionToken, setSessionToken, clearSessionToken, sessionTokenReady] =
