@@ -182,6 +182,8 @@ const MainView = () => {
   const [acknowledgments, setAcknowledgments] = useState(false);
   const [fault, setFault] = useState<Error>();
 
+  const [noLoggingIn, setNoLoggingIn] = useBooleanAsyncStorage(Key.NoLoggingIn);
+
   const [sessionToken, setSessionToken, clearSessionToken, sessionTokenReady] =
     useStringAsyncStorage(Key.SessionToken);
   const [webServiceToken, setWebServiceToken, clearWebServiceToken, webServiceTokenReady] =
@@ -282,6 +284,9 @@ const MainView = () => {
     ) {
       (async () => {
         try {
+          if (sessionToken.length > 0) {
+            await clearSessionToken();
+          }
           await requestMemory();
           const upgrade = await Database.open();
           if (upgrade !== undefined) {
@@ -1074,6 +1079,7 @@ const MainView = () => {
       onShowMorePress();
     }
   };
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const onLogInPress = () => {
     setLogIn(true);
   };
@@ -1910,6 +1916,9 @@ const MainView = () => {
   const onAcknowledgmentsClose = () => {
     setAcknowledgments(false);
   };
+  const onNoLoggingInClose = async () => {
+    await setNoLoggingIn(true);
+  };
   const onSplatoon3InkPress = () => {
     WebBrowser.openBrowserAsync("https://splatoon3.ink/");
   };
@@ -1973,13 +1982,6 @@ const MainView = () => {
                 style={[ViewStyles.mt2, { alignItems: "center" }]}
                 onLayout={onHeaderLayout}
               >
-                {!sessionToken && (
-                  <Center flex style={[ViewStyles.px4, ViewStyles.mb4]}>
-                    <Button style={ViewStyles.accent} onPress={onLogInPress}>
-                      <Marquee style={theme.reverseTextStyle}>{t("log_in")}</Marquee>
-                    </Button>
-                  </Center>
-                )}
                 {sessionToken.length > 0 && (
                   <VStack center style={[ViewStyles.px4, ViewStyles.mb4]}>
                     <AvatarButton
@@ -2528,6 +2530,13 @@ const MainView = () => {
               </Text>
             </VStack>
           </VStack>
+        </Modal>
+        <Modal isVisible={ready && !noLoggingIn} style={ViewStyles.modal1d}>
+          <Dialog icon="frown" text={t("no_logging_in_notice")}>
+            <Button style={ViewStyles.accent} onPress={onNoLoggingInClose}>
+              <Marquee style={theme.reverseTextStyle}>{t("ok")}</Marquee>
+            </Button>
+          </Dialog>
         </Modal>
       </VStack>
     </SalmonRunSwitcherContext.Provider>

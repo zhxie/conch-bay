@@ -2,6 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
 
 export enum Key {
+  NoLoggingIn = "noLoggingIn",
   SessionToken = "sessionToken2",
   WebServiceToken = "webServiceToken2",
   BulletToken = "bulletToken2",

@@ -110,6 +110,8 @@ const ja = {
   license: "ライセンス",
   oss_licenses: "オープンソースソフトウェアライセンス",
   source_code_repository: "ソースコードリポジトリ",
+  no_logging_in_notice:
+    "ホラガイベイはログインをサポートしなくなりました。ホラガイベイ経由でリザルト、フレンドとカタログの読み込み、持つギアの表示、イカリング3へのアクセスができなくなります。ホームページの下にある謝辞にあるソースコードリポジトリから詳細情報を入手したり、ベータ版に参加したりできます。",
   auto_refresh_enabled: "自動更新が有効になりました",
   auto_refresh_disabled: "自動更新が無効になりました",
   notification_notice:
