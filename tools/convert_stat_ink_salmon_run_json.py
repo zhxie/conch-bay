@@ -26,6 +26,7 @@ SPECIAL_WEAPON_MAP = {
     "kanitank": 20012,
     "sameride": 20013,
     "tripletornado": 20014,
+    "teioika": 20017,
     "ultra_chakuchi": 20018,
 }
 
