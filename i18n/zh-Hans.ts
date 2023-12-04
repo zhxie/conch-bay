@@ -107,7 +107,7 @@ const zhHans = {
   oss_licenses: "开源软件许可",
   source_code_repository: "源代码库",
   no_logging_in_notice:
-    "法螺湾现已不再支持登录。您将无法通过法螺湾加载记录、好友与目录，显示持有的装备以及访问鱿鱼圈3。您可以通过主页下方致谢中的源代码库获取更多信息或加入Beta版本。",
+    "法螺湾现已不再支持登录。您将无法通过法螺湾加载记录、好友与目录，显示持有的装备以及访问鱿鱼圈3。您可以通过主页下方致谢中的源代码库获取更多信息或在支持中加入Beta版本。",
   auto_refresh_enabled: "已启用自动刷新",
   auto_refresh_disabled: "已停用自动刷新",
   notification_notice:

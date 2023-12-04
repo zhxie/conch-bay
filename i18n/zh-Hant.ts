@@ -107,7 +107,7 @@ const zhHant = {
   oss_licenses: "開源軟體許可",
   source_code_repository: "原始碼庫",
   no_logging_in_notice:
-    "法螺灣現已不再支援登入。您將無法通過法螺灣載入記錄、好友與目錄，顯示持有的裝備以及造訪魷魚圈3。您可以透過主頁下方致謝中的原始碼庫取得更多資訊或加入Beta版本。",
+    "法螺灣現已不再支援登入。您將無法通過法螺灣載入記錄、好友與目錄，顯示持有的裝備以及造訪魷魚圈3。您可以透過主頁下方致謝中的原始碼庫取得更多資訊或在支援中加入Beta版本。",
   auto_refresh_enabled: "已啟用自動刷新",
   auto_refresh_disabled: "已停用自動刷新",
   notification_notice:

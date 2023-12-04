@@ -110,7 +110,7 @@ const en = {
   oss_licenses: "Open-Source Softwares Licenses",
   source_code_repository: "Source Code Repository",
   no_logging_in_notice:
-    "Conch Bay no longer supports logging in. You will not be able to load results, friends and catalog, display owned gears, and access SplatNet 3 through Conch Bay. You can get more information or join the beta version through the source code repository in the acknowledgments below the homepage.",
+    "Conch Bay no longer supports logging in. You will not be able to load results, friends and catalog, display owned gears, and access SplatNet 3 through Conch Bay. You can get more information through the source code repository in the acknowledgments or join the beta version in support below the homepage.",
   auto_refresh_enabled: "Auto refresh enabled",
   auto_refresh_disabled: "Auto refresh disabled",
   notification_notice:
