@@ -87,6 +87,7 @@ const zhHans = {
   feedback_notice: "如果您在使用法螺湾时遇到任何问题或有任何建议，请随时分享您的反馈。",
   create_a_github_issue: "创建GitHub Issue",
   send_a_mail: "发送邮件",
+  join_the_beta_version: "加入Beta版本",
   database_notice: "如果您想清除数据库，请长按清除数据库。请在继续之前完成备份。",
   clear_database: "清除数据库",
   clearing_database: "清除数据库中",

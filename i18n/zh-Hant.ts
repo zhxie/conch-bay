@@ -87,6 +87,7 @@ const zhHant = {
   feedback_notice: "如果您在使用法螺灣時遇到任何問題或有任何建議，請隨時分享您的回饋。",
   create_a_github_issue: "創建GitHub Issue",
   send_a_mail: "傳送郵件",
+  join_the_beta_version: "加入Beta版本",
   database_notice: "如果您想清除資料庫，請長按清除資料庫。請在繼續之前完成備份。",
   clear_database: "清除資料庫",
   clearing_database: "清除資料庫中",

@@ -1799,6 +1799,9 @@ const MainView = () => {
       Linking.openURL("mailto:conch-bay@outlook.com");
     }
   };
+  const onJoinTheBetaVersionPress = () => {
+    WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay/wiki/Join-the-Beta-Version");
+  };
   const onClearDatabasePress = async () => {
     setClearingDatabase(true);
     await Database.clear();
@@ -2395,8 +2398,11 @@ const MainView = () => {
               >
                 <Marquee style={theme.reverseTextStyle}>{t("create_a_github_issue")}</Marquee>
               </Button>
-              <Button style={ViewStyles.accent} onPress={onSendAMailPress}>
+              <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onSendAMailPress}>
                 <Marquee style={theme.reverseTextStyle}>{t("send_a_mail")}</Marquee>
+              </Button>
+              <Button style={ViewStyles.accent} onPress={onJoinTheBetaVersionPress}>
+                <Marquee style={theme.reverseTextStyle}>{t("join_the_beta_version")}</Marquee>
               </Button>
             </DialogSection>
             <DialogSection text={t("database_notice")} style={ViewStyles.mb4}>
