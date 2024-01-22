@@ -133,7 +133,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest]
+        os: [macos-13, ubuntu-latest]
 
     runs-on: ${{ matrix.os }}
 
@@ -177,7 +177,7 @@ jobs:
             ${{ runner.os }}-build-node-modules-
 
       - name: Cache CocoaPods
-        if: matrix.os == 'macos-latest'
+        if: matrix.os == 'macos-13'
         uses: actions/cache@v3
         with:
           path: /Users/runner/Library/Caches/CocoaPods
