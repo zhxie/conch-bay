@@ -1,8 +1,7 @@
-import * as SQLite from "expo-sqlite";
+import * as SQLite from "expo-sqlite/next";
 import { CoopHistoryDetailResult, VsHistoryDetailResult } from "../models/types";
 import weaponList from "../models/weapons.json";
 import { decode64Index } from "./codec";
-import { BATCH_SIZE } from "./memory";
 import { countBattle, countCoop } from "./stats";
 import { getImageHash, getVsSelfPlayer } from "./ui";
 
@@ -14,18 +13,16 @@ export const open = async () => {
   if (db) {
     return undefined;
   }
-  db = SQLite.openDatabase("conch-bay.db");
+  db = await SQLite.openDatabaseAsync("conch-bay.db");
 
   // Initialize database.
-  await exec(
-    "CREATE TABLE IF NOT EXISTS result ( id TEXT PRIMARY KEY, time INT NOT NULL, mode TEXT NOT NULL, rule TEXT NOT NULL, weapon TEXT NOT NULL, players TEXT NOT NULL, detail TEXT NOT NULL )",
-    [],
-    false
+  await db!.execAsync(
+    "CREATE TABLE IF NOT EXISTS result ( id TEXT PRIMARY KEY, time INT NOT NULL, mode TEXT NOT NULL, rule TEXT NOT NULL, weapon TEXT NOT NULL, players TEXT NOT NULL, detail TEXT NOT NULL )"
   );
 
   // Check database version.
-  const record = await exec("PRAGMA user_version", [], true);
-  const version = record.rows[0]["user_version"] as number;
+  const record = (await db!.getFirstAsync<{ user_version: number }>("PRAGMA user_version"))!;
+  const version = record.user_version;
   if (version < VERSION) {
     return await count();
   }
@@ -36,44 +33,28 @@ export const open = async () => {
   return undefined;
 };
 export const upgrade = async () => {
-  const record = await exec("PRAGMA user_version", [], true);
-  const version = record.rows[0]["user_version"] as number;
+  const record = (await db!.getFirstAsync<{ user_version: number }>("PRAGMA user_version"))!;
+  const version = record.user_version;
   if (version < 1) {
     await beginTransaction();
     try {
-      await exec('ALTER TABLE result ADD COLUMN stage TEXT NOT NULL DEFAULT ""', [], false);
-      let batch = 0;
-      while (true) {
-        const records = await queryDetail(batch * BATCH_SIZE, BATCH_SIZE);
-        await Promise.all(
-          records.map((record) => {
-            if (record.mode === "salmon_run") {
-              return exec(
-                "UPDATE result SET stage = ? WHERE id = ?",
-                [
-                  (JSON.parse(record.detail) as CoopHistoryDetailResult).coopHistoryDetail!
-                    .coopStage.id,
-                  record.id,
-                ],
-                false
-              );
-            }
-            return exec(
-              "UPDATE result SET stage = ? WHERE id = ?",
-              [
-                (JSON.parse(record.detail) as VsHistoryDetailResult).vsHistoryDetail!.vsStage.id,
-                record.id,
-              ],
-              false
-            );
-          })
-        );
-        if (records.length < BATCH_SIZE) {
-          break;
+      await db!.execAsync('ALTER TABLE result ADD COLUMN stage TEXT NOT NULL DEFAULT ""');
+      for await (const row of queryDetailEach()) {
+        if (row.mode === "salmon_run") {
+          await db!.runAsync(
+            "UPDATE result SET stage = ? WHERE id = ?",
+            (JSON.parse(row.detail) as CoopHistoryDetailResult).coopHistoryDetail!.coopStage.id,
+            row.id
+          );
+        } else {
+          await db!.runAsync(
+            "UPDATE result SET stage = ? WHERE id = ?",
+            (JSON.parse(row.detail) as VsHistoryDetailResult).vsHistoryDetail!.vsStage.id,
+            row.id
+          );
         }
-        batch += 1;
       }
-      await exec("PRAGMA user_version=1", [], false);
+      await db!.execAsync("PRAGMA user_version=1");
       await commit();
     } catch (e) {
       await rollback();
@@ -83,38 +64,26 @@ export const upgrade = async () => {
   if (version < 2) {
     await beginTransaction();
     try {
-      let batch = 0;
-      while (true) {
-        const records = await exec(
-          `SELECT * FROM result WHERE mode = "salmon_run" AND weapon = "" LIMIT ${BATCH_SIZE} OFFSET ${
-            batch * BATCH_SIZE
-          }`,
-          [],
-          true
+      const statement = await db!.prepareAsync("UPDATE result SET weapon = ? WHERE id = ?");
+      for await (const row of db!.getEachAsync<{
+        id: string;
+        time: number;
+        mode: string;
+        rule: string;
+        players: string;
+        detail: string;
+        stage: string;
+      }>('SELECT * FROM result WHERE mode = "salmon_run" AND weapon = ""')) {
+        const detail = JSON.parse(row.detail) as CoopHistoryDetailResult;
+        await statement.executeAsync(
+          detail
+            .coopHistoryDetail!.myResult.weapons.map((weapon) => getImageHash(weapon.image.url))
+            .join(","),
+          detail.coopHistoryDetail!.id
         );
-        await Promise.all(
-          records.rows.map((row) => {
-            const detail = JSON.parse(row["detail"]) as CoopHistoryDetailResult;
-            return exec(
-              "UPDATE result SET weapon = ? WHERE id = ?",
-              [
-                detail
-                  .coopHistoryDetail!.myResult.weapons.map((weapon) =>
-                    getImageHash(weapon.image.url)
-                  )
-                  .join(","),
-                detail.coopHistoryDetail!.id,
-              ],
-              false
-            );
-          })
-        );
-        if (records.rows.length < BATCH_SIZE) {
-          break;
-        }
-        batch += 1;
       }
-      await exec("PRAGMA user_version=2", [], false);
+      await statement.finalizeAsync();
+      await db!.execAsync("PRAGMA user_version=2");
       await commit();
     } catch (e) {
       await rollback();
@@ -124,28 +93,16 @@ export const upgrade = async () => {
   if (version < 3) {
     await beginTransaction();
     try {
-      await exec('ALTER TABLE result ADD COLUMN stats TEXT NOT NULL DEFAULT ""', [], false);
-      let batch = 0;
-      while (true) {
-        const records = await queryDetail(batch * BATCH_SIZE, BATCH_SIZE, {
-          modes: ["salmon_run"],
-          inverted: true,
-        });
-        await Promise.all(
-          records.map((record) =>
-            exec(
-              "UPDATE result SET stats = ? WHERE id = ?",
-              [JSON.stringify(countBattle(JSON.parse(record.detail))), record.id],
-              false
-            )
-          )
-        );
-        if (records.length < BATCH_SIZE) {
-          break;
-        }
-        batch += 1;
+      await db!.execAsync('ALTER TABLE result ADD COLUMN stats TEXT NOT NULL DEFAULT ""');
+      const statement = await db!.prepareAsync("UPDATE result SET stats = ? WHERE id = ?");
+      for await (const row of queryDetailEach({
+        modes: ["salmon_run"],
+        inverted: true,
+      })) {
+        await statement.executeAsync(JSON.stringify(countBattle(JSON.parse(row.detail))), row.id);
       }
-      await exec("PRAGMA user_version=3", [], false);
+      await statement.finalizeAsync();
+      await db!.execAsync("PRAGMA user_version=3");
       await commit();
     } catch (e) {
       await rollback();
@@ -155,26 +112,12 @@ export const upgrade = async () => {
   if (version < 6) {
     await beginTransaction();
     try {
-      let batch = 0;
-      while (true) {
-        const records = await queryDetail(batch * BATCH_SIZE, BATCH_SIZE, {
-          modes: ["salmon_run"],
-        });
-        await Promise.all(
-          records.map((record) =>
-            exec(
-              "UPDATE result SET stats = ? WHERE id = ?",
-              [JSON.stringify(countCoop(JSON.parse(record.detail))), record.id],
-              false
-            )
-          )
-        );
-        if (records.length < BATCH_SIZE) {
-          break;
-        }
-        batch += 1;
+      const statement = await db!.prepareAsync("UPDATE result SET stats = ? WHERE id = ?");
+      for await (const row of queryDetailEach({ modes: ["salmon_run"] })) {
+        await statement.executeAsync(JSON.stringify(countCoop(JSON.parse(row.detail))), row.id);
       }
-      await exec("PRAGMA user_version=6", [], false);
+      await statement.finalizeAsync();
+      await db!.execAsync("PRAGMA user_version=6");
       await commit();
     } catch (e) {
       await rollback();
@@ -184,31 +127,16 @@ export const upgrade = async () => {
   if (version < 7) {
     await beginTransaction();
     try {
-      let batch = 0;
-      while (true) {
-        const records = await queryDetail(batch * BATCH_SIZE, BATCH_SIZE);
-        await Promise.all(
-          records.map((record) => {
-            if (record.mode === "salmon_run") {
-              return exec(
-                "UPDATE result SET stats = ? WHERE id = ?",
-                [JSON.stringify(countCoop(JSON.parse(record.detail))), record.id],
-                false
-              );
-            }
-            return exec(
-              "UPDATE result SET stats = ? WHERE id = ?",
-              [JSON.stringify(countBattle(JSON.parse(record.detail))), record.id],
-              false
-            );
-          })
-        );
-        if (records.length < BATCH_SIZE) {
-          break;
+      const statement = await db!.prepareAsync("UPDATE result SET stats = ? WHERE id = ?");
+      for await (const row of queryDetailEach()) {
+        if (row.mode === "salmon_run") {
+          await statement.executeAsync(JSON.stringify(countCoop(JSON.parse(row.detail))), row.id);
+        } else {
+          await statement.executeAsync(JSON.stringify(countBattle(JSON.parse(row.detail))), row.id);
         }
-        batch += 1;
       }
-      await exec("PRAGMA user_version=7", [], false);
+      await statement.finalizeAsync();
+      await db!.execAsync("PRAGMA user_version=7");
       await commit();
     } catch (e) {
       await rollback();
@@ -219,27 +147,14 @@ export const upgrade = async () => {
 export const close = () => {
   db!.closeAsync();
 };
-const exec = async (sql: string, args: any[], readonly: boolean): Promise<SQLite.ResultSet> => {
-  return await new Promise((resolve, reject) => {
-    db!.exec([{ sql: sql, args: args }], readonly, (err, res) => {
-      if (err) {
-        return reject(err);
-      }
-      if (res![0]["error"]) {
-        return reject(res![0]["error"]);
-      }
-      resolve(res![0] as SQLite.ResultSet);
-    });
-  });
-};
 const beginTransaction = async () => {
-  return await exec("begin transaction", [], false);
+  await db!.execAsync("begin transaction");
 };
 const commit = async () => {
-  return await exec("commit", [], false);
+  await db!.execAsync("commit");
 };
 const rollback = async () => {
-  return await exec("rollback", [], false);
+  await db!.execAsync("rollback");
 };
 
 export interface FilterProps {
@@ -313,38 +228,40 @@ const convertFilter = (filter?: FilterProps, from?: number) => {
   return `WHERE ${condition}`;
 };
 
-export const queryDetail = async (offset: number, limit: number, filter?: FilterProps) => {
+export const queryDetailAll = async (offset: number, limit: number, filter?: FilterProps) => {
   let condition: string = "";
   if (filter) {
     condition = convertFilter(filter);
   }
-  const sql = `SELECT id, mode, detail FROM result ${condition} ORDER BY time DESC LIMIT ${limit} OFFSET ${offset}`;
-  const record = await exec(sql, [], true);
-  const result = record.rows.map((row) => ({
-    id: row["id"],
-    mode: row["mode"],
-    detail: row["detail"],
-  }));
-  return result;
+  const record = await db!.getAllAsync<{ id: string; mode: string; detail: string }>(
+    `SELECT id, mode, detail FROM result ${condition} ORDER BY time DESC LIMIT ${limit} OFFSET ${offset}`
+  );
+  return record;
+};
+export const queryDetailEach = (filter?: FilterProps) => {
+  let condition: string = "";
+  if (filter) {
+    condition = convertFilter(filter);
+  }
+  return db!.getEachAsync<{ id: string; mode: string; detail: string }>(
+    `SELECT id, mode, detail FROM result ${condition} ORDER BY time DESC`
+  );
 };
 export const queryStats = async (filter?: FilterProps) => {
   let condition: string = "";
   if (filter) {
     condition = convertFilter(filter);
   }
-  const sql = `SELECT id, mode, stats FROM result ${condition} ORDER BY time DESC`;
-  const record = await exec(sql, [], true);
-  const result = record.rows.map((row) => ({
-    id: row["id"],
-    mode: row["mode"],
-    stats: row["stats"],
-  }));
-  return result;
+  const record = await db!.getAllAsync<{ id: string; mode: string; stats: string }>(
+    `SELECT id, mode, stats FROM result ${condition} ORDER BY time DESC`
+  );
+  return record;
 };
 export const queryLatestTime = async () => {
-  const sql = `SELECT time FROM result ORDER BY time DESC LIMIT 1`;
-  const record = await exec(sql, [], true);
-  return record.rows[0]?.time;
+  const record = await db!.getFirstAsync<{ time: number }>(
+    "SELECT time FROM result ORDER BY time DESC LIMIT 1"
+  );
+  return record?.time;
 };
 export const queryFilterOptions = async () => {
   const modeSql = "SELECT DISTINCT mode FROM result";
@@ -353,13 +270,13 @@ export const queryFilterOptions = async () => {
   const weaponSql = "SELECT DISTINCT weapon FROM result";
 
   const [modeRecord, ruleRecord, stageRecord, weaponRecord] = await Promise.all([
-    exec(modeSql, [], true),
-    exec(ruleSql, [], true),
-    exec(stageSql, [], true),
-    exec(weaponSql, [], true),
+    db!.getAllAsync<{ mode: string }>(modeSql),
+    db!.getAllAsync<{ rule: string }>(ruleSql),
+    db!.getAllAsync<{ stage: string }>(stageSql),
+    db!.getAllAsync<{ weapon: string }>(weaponSql),
   ]);
   const weaponSet = new Set<string>();
-  for (const row of weaponRecord.rows) {
+  for (const row of weaponRecord) {
     const weapon = row["weapon"];
     for (const w of weapon.split(",")) {
       if (w.length > 0) {
@@ -368,7 +285,7 @@ export const queryFilterOptions = async () => {
     }
   }
   return {
-    modes: modeRecord.rows
+    modes: modeRecord
       .map((row) => row["mode"])
       .filter((mode) => mode !== "")
       .sort((a, b) => {
@@ -390,7 +307,7 @@ export const queryFilterOptions = async () => {
         }
         return aId - bId;
       }),
-    rules: ruleRecord.rows
+    rules: ruleRecord
       .map((row) => row["rule"])
       .filter((rule) => rule !== "")
       .sort((a, b) => {
@@ -415,7 +332,7 @@ export const queryFilterOptions = async () => {
         }
         return a.localeCompare(b);
       }),
-    stages: stageRecord.rows
+    stages: stageRecord
       .map((row) => row["stage"])
       .filter((stage) => stage !== "")
       .sort((a, b) => {
@@ -456,13 +373,14 @@ export const count = async (filter?: FilterProps, from?: number) => {
   if (filter || from) {
     condition = convertFilter(filter, from);
   }
-  const sql = `SELECT COUNT(1) FROM result ${condition}`;
-  const record = await exec(sql, [], true);
-  return record.rows[0]["COUNT(1)"] as number;
+  const record = (await db!.getFirstAsync<{ "COUNT(1)": number }>(
+    `SELECT COUNT(1) FROM result ${condition}`
+  ))!;
+  return record["COUNT(1)"];
 };
 export const isExist = async (id: string) => {
-  const record = await exec("SELECT * FROM result WHERE id = ?", [id], true);
-  return record.rows.length > 0;
+  const record = await db!.getFirstAsync<{ id: string }>("SELECT id FROM result WHERE id = ?", id);
+  return record !== null;
 };
 export const add = async (
   id: string,
@@ -475,10 +393,17 @@ export const add = async (
   stage: string,
   stats: string
 ) => {
-  await exec(
+  await db!.runAsync(
     "INSERT INTO result VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-    [id, time, mode, rule, weapon, players.join(","), detail, stage, stats],
-    false
+    id,
+    time,
+    mode,
+    rule,
+    weapon,
+    players.join(","),
+    detail,
+    stage,
+    stats
   );
 };
 export const addBattle = async (battle: VsHistoryDetailResult) => {
@@ -520,13 +445,13 @@ export const addCoop = async (coop: CoopHistoryDetailResult) => {
   );
 };
 export const remove = async (id: string) => {
-  await exec("DELETE FROM result WHERE id = ?", [id], false);
+  await db!.runAsync("DELETE FROM result WHERE id = ?", id);
 };
 export const clear = async () => {
-  await exec("DELETE FROM result", [], false);
-  await exec("VACUUM result", [], false);
+  await db!.execAsync("DELETE FROM result");
+  await db!.execAsync("VACUUM result");
 };
 export const drop = async () => {
-  await exec("PRAGMA user_version=0", [], false);
-  await exec("DROP TABLE result", [], false);
+  await db!.execAsync("PRAGMA user_version=0");
+  await db!.execAsync("DROP TABLE result");
 };

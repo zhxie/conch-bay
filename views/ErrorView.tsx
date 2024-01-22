@@ -17,7 +17,6 @@ import {
 } from "../components";
 import t from "../i18n";
 import * as Database from "../utils/database";
-import { BATCH_SIZE } from "../utils/memory";
 
 interface ErrorViewProps {
   error: Error;
@@ -59,20 +58,12 @@ const ErrorView = (props: ErrorViewProps) => {
     if (Constants.appOwnership === AppOwnership.Expo) {
       let battles = "";
       let coops = "";
-      let batch = 0;
-      while (true) {
-        const records = await Database.queryDetail(BATCH_SIZE * batch, BATCH_SIZE);
-        for (const record of records) {
-          if (record.mode === "salmon_run") {
-            coops += `${record.detail},`;
-          } else {
-            battles += `${record.detail},`;
-          }
+      for await (const row of Database.queryDetailEach()) {
+        if (row.mode === "salmon_run") {
+          coops += `${row.detail},`;
+        } else {
+          battles += `${row.detail},`;
         }
-        if (records.length < BATCH_SIZE) {
-          break;
-        }
-        batch += 1;
       }
 
       if (battles.endsWith(",")) {
@@ -91,46 +82,28 @@ const ErrorView = (props: ErrorViewProps) => {
       await FileSystem.writeAsStringAsync(uri, '{"battles":[', {
         encoding: FileSystem.EncodingType.UTF8,
       });
-      let batch = 0;
-      while (true) {
-        let result = "";
-        const records = await Database.queryDetail(BATCH_SIZE * batch, BATCH_SIZE, {
-          modes: ["salmon_run"],
-          inverted: true,
-        });
-        for (let i = 0; i < records.length; i++) {
-          result += `,${records[i].detail}`;
-        }
-        if (batch === 0) {
-          await FileAccess.FileSystem.appendFile(uri, result.slice(1), "utf8");
+      let battleStarted = false;
+      for await (const row of Database.queryDetailEach({
+        modes: ["salmon_run"],
+        inverted: true,
+      })) {
+        if (!battleStarted) {
+          await FileAccess.FileSystem.appendFile(uri, row.detail, "utf8");
+          battleStarted = true;
         } else {
-          await FileAccess.FileSystem.appendFile(uri, result, "utf8");
+          await FileAccess.FileSystem.appendFile(uri, `,${row.detail}`, "utf8");
         }
-        if (records.length < BATCH_SIZE) {
-          break;
-        }
-        batch += 1;
       }
       // Export coops.
       await FileAccess.FileSystem.appendFile(uri, '],"coops":[', "utf8");
-      batch = 0;
-      while (true) {
-        let result = "";
-        const records = await Database.queryDetail(BATCH_SIZE * batch, BATCH_SIZE, {
-          modes: ["salmon_run"],
-        });
-        for (let i = 0; i < records.length; i++) {
-          result += `,${records[i].detail}`;
-        }
-        if (batch === 0) {
-          await FileAccess.FileSystem.appendFile(uri, result.slice(1), "utf8");
+      let coopStarted = false;
+      for await (const row of Database.queryDetailEach({ modes: ["salmon_run"] })) {
+        if (!coopStarted) {
+          await FileAccess.FileSystem.appendFile(uri, row.detail, "utf8");
+          coopStarted = true;
         } else {
-          await FileAccess.FileSystem.appendFile(uri, result, "utf8");
+          await FileAccess.FileSystem.appendFile(uri, `,${row.detail}`, "utf8");
         }
-        if (records.length < BATCH_SIZE) {
-          break;
-        }
-        batch += 1;
       }
       await FileAccess.FileSystem.appendFile(uri, "]}", "utf8");
     }

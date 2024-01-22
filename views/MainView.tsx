@@ -111,7 +111,7 @@ import {
 } from "../utils/background";
 import { decode64String, encode64String } from "../utils/codec";
 import * as Database from "../utils/database";
-import { BATCH_SIZE, requestMemory } from "../utils/memory";
+import { requestMemory } from "../utils/memory";
 import { ok, sleep } from "../utils/promise";
 import { Stats } from "../utils/stats";
 import {
@@ -515,24 +515,13 @@ const MainView = () => {
 
     // Query results and merge into groups.
     const details: Result[] = [];
-    let read = 0;
-    while (read < limit) {
-      const records = await Database.queryDetail(
-        offset + read,
-        Math.min(BATCH_SIZE, limit - read),
-        filterRef.current
-      );
-      for (const record of records) {
-        if (record.mode === "salmon_run") {
-          details.push({ coop: JSON.parse(record.detail) as CoopHistoryDetailResult });
-        } else {
-          details.push({ battle: JSON.parse(record.detail) as VsHistoryDetailResult });
-        }
+    const records = await Database.queryDetailAll(offset, limit, filterRef.current);
+    for (const record of records) {
+      if (record.mode === "salmon_run") {
+        details.push({ coop: JSON.parse(record.detail) as CoopHistoryDetailResult });
+      } else {
+        details.push({ battle: JSON.parse(record.detail) as VsHistoryDetailResult });
       }
-      if (records.length < Math.min(BATCH_SIZE, limit - read)) {
-        break;
-      }
-      read += records.length;
     }
     const newGroups: ResultGroup[] = [];
     let group: ResultGroup = {};
@@ -1397,20 +1386,12 @@ const MainView = () => {
       if (Constants.appOwnership === AppOwnership.Expo) {
         let battles = "";
         let coops = "";
-        let batch = 0;
-        while (true) {
-          const records = await Database.queryDetail(BATCH_SIZE * batch, BATCH_SIZE);
-          for (const record of records) {
-            if (record.mode === "salmon_run") {
-              coops += `${record.detail},`;
-            } else {
-              battles += `${record.detail},`;
-            }
+        for await (const row of Database.queryDetailEach()) {
+          if (row.mode === "salmon_run") {
+            coops += `${row.detail},`;
+          } else {
+            battles += `${row.detail},`;
           }
-          if (records.length < BATCH_SIZE) {
-            break;
-          }
-          batch += 1;
         }
 
         if (battles.endsWith(",")) {
@@ -1429,46 +1410,28 @@ const MainView = () => {
         await FileSystem.writeAsStringAsync(uri, '{"battles":[', {
           encoding: FileSystem.EncodingType.UTF8,
         });
-        let batch = 0;
-        while (true) {
-          let result = "";
-          const records = await Database.queryDetail(BATCH_SIZE * batch, BATCH_SIZE, {
-            modes: ["salmon_run"],
-            inverted: true,
-          });
-          for (let i = 0; i < records.length; i++) {
-            result += `,${records[i].detail}`;
-          }
-          if (batch === 0) {
-            await FileAccess.FileSystem.appendFile(uri, result.slice(1), "utf8");
+        let battleStarted = false;
+        for await (const row of Database.queryDetailEach({
+          modes: ["salmon_run"],
+          inverted: true,
+        })) {
+          if (!battleStarted) {
+            await FileAccess.FileSystem.appendFile(uri, row.detail, "utf8");
+            battleStarted = true;
           } else {
-            await FileAccess.FileSystem.appendFile(uri, result, "utf8");
+            await FileAccess.FileSystem.appendFile(uri, `,${row.detail}`, "utf8");
           }
-          if (records.length < BATCH_SIZE) {
-            break;
-          }
-          batch += 1;
         }
         // Export coops.
         await FileAccess.FileSystem.appendFile(uri, '],"coops":[', "utf8");
-        batch = 0;
-        while (true) {
-          let result = "";
-          const records = await Database.queryDetail(BATCH_SIZE * batch, BATCH_SIZE, {
-            modes: ["salmon_run"],
-          });
-          for (let i = 0; i < records.length; i++) {
-            result += `,${records[i].detail}`;
-          }
-          if (batch === 0) {
-            await FileAccess.FileSystem.appendFile(uri, result.slice(1), "utf8");
+        let coopStarted = false;
+        for await (const row of Database.queryDetailEach({ modes: ["salmon_run"] })) {
+          if (!coopStarted) {
+            await FileAccess.FileSystem.appendFile(uri, row.detail, "utf8");
+            coopStarted = true;
           } else {
-            await FileAccess.FileSystem.appendFile(uri, result, "utf8");
+            await FileAccess.FileSystem.appendFile(uri, `,${row.detail}`, "utf8");
           }
-          if (records.length < BATCH_SIZE) {
-            break;
-          }
-          batch += 1;
         }
         await FileAccess.FileSystem.appendFile(uri, "]}", "utf8");
       }
@@ -1556,56 +1519,122 @@ const MainView = () => {
     try {
       // Preload images from saved results.
       const resources = new Map<string, string>();
-      let batch = 0;
-      while (true) {
-        const records = await Database.queryDetail(BATCH_SIZE * batch, BATCH_SIZE);
-        for (const record of records) {
-          if (record.mode === "salmon_run") {
-            const coop = JSON.parse(record.detail) as CoopHistoryDetailResult;
-            for (const memberResult of [
-              coop.coopHistoryDetail!.myResult,
-              ...coop.coopHistoryDetail!.memberResults,
-            ]) {
-              // Weapons.
-              for (const weapon of memberResult.weapons) {
-                const cacheKey = getImageCacheKey(weapon.image.url);
-                if (!resources.has(cacheKey) && !isImageExpired(weapon.image.url)) {
-                  resources.set(cacheKey, weapon.image.url);
+      for await (const row of Database.queryDetailEach()) {
+        if (row.mode === "salmon_run") {
+          const coop = JSON.parse(row.detail) as CoopHistoryDetailResult;
+          for (const memberResult of [
+            coop.coopHistoryDetail!.myResult,
+            ...coop.coopHistoryDetail!.memberResults,
+          ]) {
+            // Weapons.
+            for (const weapon of memberResult.weapons) {
+              const cacheKey = getImageCacheKey(weapon.image.url);
+              if (!resources.has(cacheKey) && !isImageExpired(weapon.image.url)) {
+                resources.set(cacheKey, weapon.image.url);
+              }
+            }
+            if (memberResult.specialWeapon) {
+              const cacheKey = getImageCacheKey(memberResult.specialWeapon.image.url);
+              if (
+                !resources.has(cacheKey) &&
+                !isImageExpired(memberResult.specialWeapon.image.url)
+              ) {
+                resources.set(cacheKey, memberResult.specialWeapon.image.url);
+              }
+            }
+
+            // Work suits.
+            const uniformCacheKey = getImageCacheKey(memberResult.player.uniform.image.url);
+            if (
+              !resources.has(uniformCacheKey) &&
+              !isImageExpired(memberResult.player.uniform.image.url)
+            ) {
+              resources.set(uniformCacheKey, memberResult.player.uniform.image.url);
+            }
+
+            // Splashtags.
+            const backgroundCacheKey = getImageCacheKey(
+              memberResult.player.nameplate!.background.image.url
+            );
+            if (
+              !resources.has(backgroundCacheKey) &&
+              !isImageExpired(memberResult.player.nameplate!.background.image.url)
+            ) {
+              resources.set(
+                backgroundCacheKey,
+                memberResult.player.nameplate!.background.image.url
+              );
+            }
+            for (const badge of memberResult.player.nameplate!.badges) {
+              if (badge) {
+                const cacheKey = getImageCacheKey(badge.image.url);
+                if (!resources.has(cacheKey) && !isImageExpired(badge.image.url)) {
+                  resources.set(getImageCacheKey(badge.image.url), badge.image.url);
                 }
               }
-              if (memberResult.specialWeapon) {
-                const cacheKey = getImageCacheKey(memberResult.specialWeapon.image.url);
-                if (
-                  !resources.has(cacheKey) &&
-                  !isImageExpired(memberResult.specialWeapon.image.url)
-                ) {
-                  resources.set(cacheKey, memberResult.specialWeapon.image.url);
-                }
+            }
+          }
+        } else {
+          const battle = JSON.parse(row.detail) as VsHistoryDetailResult;
+          for (const team of [
+            battle.vsHistoryDetail!.myTeam,
+            ...battle.vsHistoryDetail!.otherTeams,
+          ]) {
+            for (const player of team.players) {
+              // Weapons.
+              const weaponCacheKey = getImageCacheKey(player.weapon.image2d.url);
+              if (!resources.has(weaponCacheKey) && !isImageExpired(player.weapon.image2d.url)) {
+                resources.set(weaponCacheKey, player.weapon.image2d.url);
+              }
+              const subWeaponCacheKey = getImageCacheKey(player.weapon.subWeapon.image.url);
+              if (
+                !resources.has(subWeaponCacheKey) &&
+                !isImageExpired(player.weapon.subWeapon.image.url)
+              ) {
+                resources.set(subWeaponCacheKey, player.weapon.subWeapon.image.url);
+              }
+              const specialWeaponCacheKey = getImageCacheKey(player.weapon.specialWeapon.image.url);
+              if (
+                !resources.has(specialWeaponCacheKey) &&
+                !isImageExpired(player.weapon.specialWeapon.image.url)
+              ) {
+                resources.set(specialWeaponCacheKey, player.weapon.specialWeapon.image.url);
               }
 
-              // Work suits.
-              const uniformCacheKey = getImageCacheKey(memberResult.player.uniform.image.url);
-              if (
-                !resources.has(uniformCacheKey) &&
-                !isImageExpired(memberResult.player.uniform.image.url)
-              ) {
-                resources.set(uniformCacheKey, memberResult.player.uniform.image.url);
+              // Gears.
+              for (const gear of [player.headGear, player.clothingGear, player.shoesGear]) {
+                const gearCacheKey = getImageCacheKey(gear.originalImage.url);
+                if (!resources.has(gearCacheKey) && !isImageExpired(gear.originalImage.url)) {
+                  resources.set(gearCacheKey, gear.originalImage.url);
+                }
+                const brandCacheKey = getImageCacheKey(gear.brand.image.url);
+                if (!resources.has(brandCacheKey) && !isImageExpired(gear.brand.image.url)) {
+                  resources.set(brandCacheKey, gear.brand.image.url);
+                }
+                const primaryGearPowerCacheKey = getImageCacheKey(gear.primaryGearPower.image.url);
+                if (
+                  !resources.has(primaryGearPowerCacheKey) &&
+                  !isImageExpired(gear.primaryGearPower.image.url)
+                ) {
+                  resources.set(primaryGearPowerCacheKey, gear.primaryGearPower.image.url);
+                }
+                for (const gearPower of gear.additionalGearPowers) {
+                  const cacheKey = getImageCacheKey(gearPower.image.url);
+                  if (!resources.has(cacheKey) && !isImageExpired(gearPower.image.url)) {
+                    resources.set(cacheKey, gearPower.image.url);
+                  }
+                }
               }
 
               // Splashtags.
-              const backgroundCacheKey = getImageCacheKey(
-                memberResult.player.nameplate!.background.image.url
-              );
+              const backgroundCacheKey = getImageCacheKey(player.nameplate!.background.image.url);
               if (
                 !resources.has(backgroundCacheKey) &&
-                !isImageExpired(memberResult.player.nameplate!.background.image.url)
+                !isImageExpired(player.nameplate!.background.image.url)
               ) {
-                resources.set(
-                  backgroundCacheKey,
-                  memberResult.player.nameplate!.background.image.url
-                );
+                resources.set(backgroundCacheKey, player.nameplate!.background.image.url);
               }
-              for (const badge of memberResult.player.nameplate!.badges) {
+              for (const badge of player.nameplate!.badges) {
                 if (badge) {
                   const cacheKey = getImageCacheKey(badge.image.url);
                   if (!resources.has(cacheKey) && !isImageExpired(badge.image.url)) {
@@ -1614,86 +1643,8 @@ const MainView = () => {
                 }
               }
             }
-          } else {
-            const battle = JSON.parse(record.detail) as VsHistoryDetailResult;
-            for (const team of [
-              battle.vsHistoryDetail!.myTeam,
-              ...battle.vsHistoryDetail!.otherTeams,
-            ]) {
-              for (const player of team.players) {
-                // Weapons.
-                const weaponCacheKey = getImageCacheKey(player.weapon.image2d.url);
-                if (!resources.has(weaponCacheKey) && !isImageExpired(player.weapon.image2d.url)) {
-                  resources.set(weaponCacheKey, player.weapon.image2d.url);
-                }
-                const subWeaponCacheKey = getImageCacheKey(player.weapon.subWeapon.image.url);
-                if (
-                  !resources.has(subWeaponCacheKey) &&
-                  !isImageExpired(player.weapon.subWeapon.image.url)
-                ) {
-                  resources.set(subWeaponCacheKey, player.weapon.subWeapon.image.url);
-                }
-                const specialWeaponCacheKey = getImageCacheKey(
-                  player.weapon.specialWeapon.image.url
-                );
-                if (
-                  !resources.has(specialWeaponCacheKey) &&
-                  !isImageExpired(player.weapon.specialWeapon.image.url)
-                ) {
-                  resources.set(specialWeaponCacheKey, player.weapon.specialWeapon.image.url);
-                }
-
-                // Gears.
-                for (const gear of [player.headGear, player.clothingGear, player.shoesGear]) {
-                  const gearCacheKey = getImageCacheKey(gear.originalImage.url);
-                  if (!resources.has(gearCacheKey) && !isImageExpired(gear.originalImage.url)) {
-                    resources.set(gearCacheKey, gear.originalImage.url);
-                  }
-                  const brandCacheKey = getImageCacheKey(gear.brand.image.url);
-                  if (!resources.has(brandCacheKey) && !isImageExpired(gear.brand.image.url)) {
-                    resources.set(brandCacheKey, gear.brand.image.url);
-                  }
-                  const primaryGearPowerCacheKey = getImageCacheKey(
-                    gear.primaryGearPower.image.url
-                  );
-                  if (
-                    !resources.has(primaryGearPowerCacheKey) &&
-                    !isImageExpired(gear.primaryGearPower.image.url)
-                  ) {
-                    resources.set(primaryGearPowerCacheKey, gear.primaryGearPower.image.url);
-                  }
-                  for (const gearPower of gear.additionalGearPowers) {
-                    const cacheKey = getImageCacheKey(gearPower.image.url);
-                    if (!resources.has(cacheKey) && !isImageExpired(gearPower.image.url)) {
-                      resources.set(cacheKey, gearPower.image.url);
-                    }
-                  }
-                }
-
-                // Splashtags.
-                const backgroundCacheKey = getImageCacheKey(player.nameplate!.background.image.url);
-                if (
-                  !resources.has(backgroundCacheKey) &&
-                  !isImageExpired(player.nameplate!.background.image.url)
-                ) {
-                  resources.set(backgroundCacheKey, player.nameplate!.background.image.url);
-                }
-                for (const badge of player.nameplate!.badges) {
-                  if (badge) {
-                    const cacheKey = getImageCacheKey(badge.image.url);
-                    if (!resources.has(cacheKey) && !isImageExpired(badge.image.url)) {
-                      resources.set(getImageCacheKey(badge.image.url), badge.image.url);
-                    }
-                  }
-                }
-              }
-            }
           }
         }
-        if (records.length < BATCH_SIZE) {
-          break;
-        }
-        batch += 1;
       }
 
       // Attempt to preload weapon images from API.
