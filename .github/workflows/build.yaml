@@ -159,7 +159,6 @@ jobs:
         with:
           distribution: temurin
           java-version: "17"
-          cache: gradle
 
       - name: Setup Expo
         uses: expo/expo-github-action@v7
