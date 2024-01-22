@@ -63,7 +63,7 @@
     "react-native-webview": "13.6.4",
     "react-native-zip-archive": "^6.1.0",
     "semver": "^7.5.4",
-    "splatnet3-types": "0.2.20230830134457"
+    "splatnet3-types": "0.2.20231119210145"
   },
   "devDependencies": {
     "@babel/core": "^7.19.3",
