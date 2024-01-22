@@ -153,6 +153,14 @@ jobs:
           node-version: "18"
           cache: "yarn"
 
+      - name: Use Java 17
+        if: matrix.os == 'ubuntu-latest'
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: gradle
+
       - name: Setup Expo
         uses: expo/expo-github-action@v7
         with:
