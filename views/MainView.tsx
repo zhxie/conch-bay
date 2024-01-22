@@ -768,7 +768,7 @@ const MainView = () => {
     let error: Error | undefined;
     const [battleFail, coopFail] = await Promise.all([
       Promise.all([
-        fetchLatestBattleHistories(webServiceToken, bulletToken, language),
+        latestOnly ? fetchLatestBattleHistories(webServiceToken, bulletToken, language) : undefined,
         latestOnly ? undefined : fetchXBattleHistories(webServiceToken, bulletToken, language),
       ])
         .then(async ([latestBattleHistories, xBattleHistoriesAttempt]) => {
@@ -793,54 +793,63 @@ const MainView = () => {
 
           // Fetch more battle histories if needed.
           const ids: string[] = [];
-          let regularId: string | undefined,
-            anarchyId: string | undefined,
-            xId: string | undefined,
-            challengeId: string | undefined,
-            privateId: string | undefined;
-          for (const historyGroup of latestBattleHistories.latestBattleHistories.historyGroups
-            .nodes) {
-            for (const historyDetail of historyGroup.historyDetails.nodes) {
-              const id = decode64String(historyDetail.id);
-              let encodedId = "";
-              switch (historyDetail.vsMode.id) {
-                case "VnNNb2RlLTE=":
-                case "VnNNb2RlLTY=":
-                case "VnNNb2RlLTc=":
-                case "VnNNb2RlLTg=":
-                  encodedId = encode64String(id.replace("RECENT", "REGULAR"));
-                  regularId = encodedId;
-                  break;
-                case "VnNNb2RlLTI=":
-                case "VnNNb2RlLTUx":
-                  encodedId = encode64String(id.replace("RECENT", "BANKARA"));
-                  anarchyId = encodedId;
-                  break;
-                case "VnNNb2RlLTM=":
-                  encodedId = encode64String(id.replace("RECENT", "XMATCH"));
-                  xId = encodedId;
-                  break;
-                case "VnNNb2RlLTQ=":
-                  encodedId = encode64String(id.replace("RECENT", "LEAGUE"));
-                  challengeId = encodedId;
-                  break;
-                case "VnNNb2RlLTU=":
-                  encodedId = encode64String(id.replace("RECENT", "PRIVATE"));
-                  privateId = encodedId;
-                  break;
-                default:
-                  continue;
+          let [skipRegular, skipAnarchy, skipX, skipChallenge, skipPrivate] = [
+            false,
+            false,
+            false,
+            false,
+            false,
+          ];
+          if (latestBattleHistories) {
+            let regularId: string | undefined,
+              anarchyId: string | undefined,
+              xId: string | undefined,
+              challengeId: string | undefined,
+              privateId: string | undefined;
+            for (const historyGroup of latestBattleHistories.latestBattleHistories.historyGroups
+              .nodes) {
+              for (const historyDetail of historyGroup.historyDetails.nodes) {
+                const id = decode64String(historyDetail.id);
+                let encodedId = "";
+                switch (historyDetail.vsMode.id) {
+                  case "VnNNb2RlLTE=":
+                  case "VnNNb2RlLTY=":
+                  case "VnNNb2RlLTc=":
+                  case "VnNNb2RlLTg=":
+                    encodedId = encode64String(id.replace("RECENT", "REGULAR"));
+                    regularId = encodedId;
+                    break;
+                  case "VnNNb2RlLTI=":
+                  case "VnNNb2RlLTUx":
+                    encodedId = encode64String(id.replace("RECENT", "BANKARA"));
+                    anarchyId = encodedId;
+                    break;
+                  case "VnNNb2RlLTM=":
+                    encodedId = encode64String(id.replace("RECENT", "XMATCH"));
+                    xId = encodedId;
+                    break;
+                  case "VnNNb2RlLTQ=":
+                    encodedId = encode64String(id.replace("RECENT", "LEAGUE"));
+                    challengeId = encodedId;
+                    break;
+                  case "VnNNb2RlLTU=":
+                    encodedId = encode64String(id.replace("RECENT", "PRIVATE"));
+                    privateId = encodedId;
+                    break;
+                  default:
+                    continue;
+                }
+                ids.push(encodedId);
               }
-              ids.push(encodedId);
             }
+            [skipRegular, skipAnarchy, skipX, skipChallenge, skipPrivate] = await Promise.all([
+              regularId ? Database.isExist(regularId!) : false,
+              anarchyId ? Database.isExist(anarchyId!) : false,
+              xId ? Database.isExist(xId!) : false,
+              challengeId ? Database.isExist(challengeId!) : false,
+              privateId ? Database.isExist(privateId!) : false,
+            ]);
           }
-          const [skipRegular, skipAnarchy, skipX, skipChallenge, skipPrivate] = await Promise.all([
-            regularId ? Database.isExist(regularId!) : false,
-            anarchyId ? Database.isExist(anarchyId!) : false,
-            xId ? Database.isExist(xId!) : false,
-            challengeId ? Database.isExist(challengeId!) : false,
-            privateId ? Database.isExist(privateId!) : false,
-          ]);
           const [
             regularBattleHistories,
             anarchyBattleHistories,
