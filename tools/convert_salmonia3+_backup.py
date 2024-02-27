@@ -5,7 +5,7 @@ import json
 import requests
 import sys
 
-VERSION = "600"
+VERSION = "700"
 ENEMY_MAP = [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17, 20]
 
 BACKGROUND_IMAGE = {}
@@ -94,9 +94,11 @@ def construct_member_result(result, player):
             "nameplate": {
                 "badges": list(
                     map(
-                        lambda x: construct_image_obj("Badge", x, BADGE_IMAGE[x], False)
-                        if x != None
-                        else None,
+                        lambda x: (
+                            construct_image_obj("Badge", x, BADGE_IMAGE[x], False)
+                            if x != None
+                            else None
+                        ),
                         player["badges"],
                     )
                 ),
@@ -235,9 +237,11 @@ def main():
                                 result["play_time"],
                                 result["uuid"],
                             ),
-                            "afterGrade": construct_obj("CoopGrade", result["grade_id"])
-                            if result["grade_id"] != None
-                            else None,
+                            "afterGrade": (
+                                construct_obj("CoopGrade", result["grade_id"])
+                                if result["grade_id"] != None
+                                else None
+                            ),
                             "myResult": construct_member_result(
                                 result, result["players"][0]
                             ),
@@ -247,27 +251,31 @@ def main():
                                     result["players"][1:],
                                 )
                             ),
-                            "bossResult": {
-                                "boss": construct_image_obj(
-                                    "CoopEnemy",
-                                    result["boss_id"],
-                                    ENEMY_IMAGE[result["boss_id"]],
-                                ),
-                                "hasDefeatBoss": result["is_boss_defeated"],
-                            }
-                            if result["boss_id"] != None
-                            else None,
+                            "bossResult": (
+                                {
+                                    "boss": construct_image_obj(
+                                        "CoopEnemy",
+                                        result["boss_id"],
+                                        ENEMY_IMAGE[result["boss_id"]],
+                                    ),
+                                    "hasDefeatBoss": result["is_boss_defeated"],
+                                }
+                                if result["boss_id"] != None
+                                else None
+                            ),
                             "enemyResults": enemyResults,
                             "waveResults": list(
                                 map(
                                     lambda x: {
                                         "waveNumber": x["id"],
                                         "waterLevel": x["water_level"],
-                                        "eventWave": construct_obj(
-                                            "CoopEventWave", x["event_type"]
-                                        )
-                                        if x["event_type"] != 0
-                                        else None,
+                                        "eventWave": (
+                                            construct_obj(
+                                                "CoopEventWave", x["event_type"]
+                                            )
+                                            if x["event_type"] != 0
+                                            else None
+                                        ),
                                         "deliverNorm": x["quota_num"],
                                         "goldenPopCount": x["golden_ikura_pop_num"],
                                         "teamDeliverCount": x["golden_ikura_num"],
@@ -276,9 +284,11 @@ def main():
                                     result["waves"],
                                 )
                             ),
-                            "resultWave": result["failure_wave"]
-                            if result["failure_wave"] != None
-                            else 0,
+                            "resultWave": (
+                                result["failure_wave"]
+                                if result["failure_wave"] != None
+                                else 0
+                            ),
                             "playedTime": result["play_time"],
                             "rule": schedule["rule"],
                             "coopStage": construct_image_obj(
@@ -296,13 +306,15 @@ def main():
                                 )
                             ),
                             "afterGradePoint": result["grade_point"],
-                            "scale": {
-                                "gold": result["scale"][2],
-                                "silver": result["scale"][1],
-                                "bronze": result["scale"][0],
-                            }
-                            if result["scale"][0] != None
-                            else None,
+                            "scale": (
+                                {
+                                    "gold": result["scale"][2],
+                                    "silver": result["scale"][1],
+                                    "bronze": result["scale"][0],
+                                }
+                                if result["scale"][0] != None
+                                else None
+                            ),
                             "jobPoint": result["kuma_point"],
                             "jobScore": result["job_score"],
                             "jobRate": result["job_rate"],

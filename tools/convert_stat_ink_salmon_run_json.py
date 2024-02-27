@@ -5,7 +5,7 @@ import json
 import requests
 import sys
 
-VERSION = "600"
+VERSION = "700"
 DUMMY_NPLN_USER_ID = "statinksalmonrunjson"
 WATER_LEVEL_MAP = {"low": 0, "normal": 1, "high": 2}
 EVENT_WAVE_MAP = {
@@ -144,9 +144,11 @@ def construct_member_result(result, player):
         },
         "weapons": list(
             map(
-                lambda x: construct_weapon(WEAPON_IMAGE[get_id_in_aliases(x)])
-                if x != None
-                else construct_weapon(WEAPON_IMAGE[-1]),
+                lambda x: (
+                    construct_weapon(WEAPON_IMAGE[get_id_in_aliases(x)])
+                    if x != None
+                    else construct_weapon(WEAPON_IMAGE[-1])
+                ),
                 player["weapons"],
             )
         ),
@@ -244,12 +246,14 @@ def main():
                             result["start_at"]["time"],
                             result["uuid"],
                         ),
-                        "afterGrade": construct_obj(
-                            "CoopGrade",
-                            get_id_in_aliases(result["title_after"]),
-                        )
-                        if result["title_after"] != None
-                        else None,
+                        "afterGrade": (
+                            construct_obj(
+                                "CoopGrade",
+                                get_id_in_aliases(result["title_after"]),
+                            )
+                            if result["title_after"] != None
+                            else None
+                        ),
                         "myResult": construct_member_result(
                             result, result["players"][0]
                         ),
@@ -259,44 +263,52 @@ def main():
                                 result["players"][1:],
                             )
                         ),
-                        "bossResult": {
-                            "boss": construct_image_obj(
-                                "CoopEnemy",
-                                get_id_in_aliases(result["king_salmonid"]),
-                                ENEMY_IMAGE[get_id_in_aliases(result["king_salmonid"])],
-                            ),
-                            "hasDefeatBoss": result["clear_extra"],
-                        }
-                        if result["king_salmonid"] != None
-                        else None,
-                        "enemyResults": list(
-                            map(
-                                lambda x: {
-                                    "defeatCount": x["defeated_by_me"],
-                                    "teamDefeatCount": x["defeated"],
-                                    "popCount": x["appearances"],
-                                    "enemy": construct_image_obj(
-                                        "CoopEnemy",
-                                        get_id_in_aliases(x["boss"]),
-                                        ENEMY_IMAGE[get_id_in_aliases(x["boss"])],
-                                    ),
-                                },
-                                result["bosses"].values(),
+                        "bossResult": (
+                            {
+                                "boss": construct_image_obj(
+                                    "CoopEnemy",
+                                    get_id_in_aliases(result["king_salmonid"]),
+                                    ENEMY_IMAGE[
+                                        get_id_in_aliases(result["king_salmonid"])
+                                    ],
+                                ),
+                                "hasDefeatBoss": result["clear_extra"],
+                            }
+                            if result["king_salmonid"] != None
+                            else None
+                        ),
+                        "enemyResults": (
+                            list(
+                                map(
+                                    lambda x: {
+                                        "defeatCount": x["defeated_by_me"],
+                                        "teamDefeatCount": x["defeated"],
+                                        "popCount": x["appearances"],
+                                        "enemy": construct_image_obj(
+                                            "CoopEnemy",
+                                            get_id_in_aliases(x["boss"]),
+                                            ENEMY_IMAGE[get_id_in_aliases(x["boss"])],
+                                        ),
+                                    },
+                                    result["bosses"].values(),
+                                )
                             )
-                        )
-                        if type(result["bosses"]) is dict
-                        else [],
+                            if type(result["bosses"]) is dict
+                            else []
+                        ),
                         "waveResults": list(
                             map(
                                 lambda x: {
                                     "waveNumber": x[0] + 1,
                                     "waterLevel": WATER_LEVEL_MAP[x[1]["tide"]["key"]],
-                                    "eventWave": construct_obj(
-                                        "CoopEventWave",
-                                        EVENT_WAVE_MAP[x[1]["event"]["key"]],
-                                    )
-                                    if x[1]["event"] != None
-                                    else None,
+                                    "eventWave": (
+                                        construct_obj(
+                                            "CoopEventWave",
+                                            EVENT_WAVE_MAP[x[1]["event"]["key"]],
+                                        )
+                                        if x[1]["event"] != None
+                                        else None
+                                    ),
                                     "deliverNorm": x[1]["golden_quota"],
                                     "goldenPopCount": x[1]["golden_appearances"],
                                     "teamDeliverCount": x[1]["golden_delivered"],
@@ -306,42 +318,50 @@ def main():
                             )
                         ),
                         "resultWave": (
-                            result["clear_waves"] + 1
-                            if result["clear_waves"]
-                            is not (3 if not result.get("eggstra_work") else 5)
-                            else 0
-                        )
-                        if not result["players"][0]["disconnected"]
-                        else -1,
+                            (
+                                result["clear_waves"] + 1
+                                if result["clear_waves"]
+                                is not (3 if not result.get("eggstra_work") else 5)
+                                else 0
+                            )
+                            if not result["players"][0]["disconnected"]
+                            else -1
+                        ),
                         "playedTime": result["start_at"]["iso8601"].replace(
                             "+00:00", "Z"
                         ),
-                        "rule": "TEAM_CONTEST"
-                        if result.get("eggstra_work")
-                        else ("BIG_RUN" if result["big_run"] else "REGULAR"),
+                        "rule": (
+                            "TEAM_CONTEST"
+                            if result.get("eggstra_work")
+                            else ("BIG_RUN" if result["big_run"] else "REGULAR")
+                        ),
                         "coopStage": construct_image_obj(
                             "CoopStage",
                             get_id_in_aliases(result["stage"]),
                             COOP_STAGE_IMAGE[get_id_in_aliases(result["stage"])],
                         ),
                         "dangerRate": (
-                            result["danger_rate"] / 100
-                            if result["danger_rate"] != None
-                            else result["waves"][-1]["danger_rate"] / 100
-                        )
-                        if not result["players"][0]["disconnected"]
-                        else 0,
+                            (
+                                result["danger_rate"] / 100
+                                if result["danger_rate"] != None
+                                else result["waves"][-1]["danger_rate"] / 100
+                            )
+                            if not result["players"][0]["disconnected"]
+                            else 0
+                        ),
                         "scenarioCode": None,
                         "smellMeter": result["king_smell"],
                         "weapons": [],
                         "afterGradePoint": result["title_exp_after"],
-                        "scale": {
-                            "gold": result["gold_scale"],
-                            "silver": result["silver_scale"],
-                            "bronze": result["bronze_scale"],
-                        }
-                        if result["gold_scale"] != None
-                        else None,
+                        "scale": (
+                            {
+                                "gold": result["gold_scale"],
+                                "silver": result["silver_scale"],
+                                "bronze": result["bronze_scale"],
+                            }
+                            if result["gold_scale"] != None
+                            else None
+                        ),
                         "jobPoint": result["job_point"],
                         "jobScore": result["job_score"],
                         "jobRate": result["job_rate"],
