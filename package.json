@@ -27,7 +27,7 @@
     "axios": "^1.4.0",
     "base64-js": "^1.5.1",
     "dayjs": "^1.11.6",
-    "expo": "~50.0.7",
+    "expo": "~50.0.8",
     "expo-background-fetch": "~11.8.1",
     "expo-blur": "~12.9.2",
     "expo-clipboard": "~5.0.1",
