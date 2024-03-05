@@ -97,7 +97,9 @@ const en = {
     "If you want to clear the database, please long press on Clear Database. Please complete a backup before proceeding.",
   clear_database: "Clear Database",
   clearing_database: "Clearing Database",
-  debug_notice: "The following information is for debugging only. Please do NOT share with others.",
+  debug_notice:
+    "The leakage of debugging information may cause your account to be compromised or your personal information to be leaked. If you need to debug, please do not share debugging information with others.",
+  debug_continue: "I understand",
   diagnose_network: "Diagnose Network",
   diagnosing_network: "Diagnosing Network",
   copy_session_token: "Copy Session Token",

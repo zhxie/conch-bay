@@ -176,6 +176,7 @@ const MainView = () => {
   const [clearingCache, setClearingCache] = useState(false);
   const [preloadingResources, setPreloadingResources] = useState(false);
   const [clearingDatabase, setClearingDatabase] = useState(false);
+  const [debug, setDebug] = useState(false);
   const [diagnosingNetwork, setDiagnosingNetwork] = useState(false);
   const [notification, setNotification] = useState(false);
   const [acknowledgments, setAcknowledgments] = useState(false);
@@ -1744,6 +1745,9 @@ const MainView = () => {
     setClearingDatabase(false);
     setSupport(false);
   };
+  const onDebugPress = () => {
+    setDebug(true);
+  };
   const onDiagnoseNetworkPress = async () => {
     setDiagnosingNetwork(true);
     const versions = getCurrentVersions();
@@ -2375,46 +2379,61 @@ const MainView = () => {
               </Button>
             </DialogSection>
             <DialogSection text={t("debug_notice")}>
-              <Button
-                loading={diagnosingNetwork}
-                loadingText={t("diagnosing_network")}
-                style={[ViewStyles.mb2, ViewStyles.accent]}
-                textStyle={theme.reverseTextStyle}
-                onPress={onDiagnoseNetworkPress}
-              >
-                <Marquee style={theme.reverseTextStyle}>{t("diagnose_network")}</Marquee>
-              </Button>
-              {sessionToken.length > 0 && (
-                <VStack style={ViewStyles.mb2}>
+              {!debug && (
+                <Button
+                  style={ViewStyles.accent}
+                  textStyle={theme.reverseTextStyle}
+                  onPress={onDebugPress}
+                >
+                  <Marquee style={theme.reverseTextStyle}>{t("debug_continue")}</Marquee>
+                </Button>
+              )}
+              {debug && (
+                <VStack>
+                  <Button
+                    loading={diagnosingNetwork}
+                    loadingText={t("diagnosing_network")}
+                    style={[ViewStyles.mb2, ViewStyles.accent]}
+                    textStyle={theme.reverseTextStyle}
+                    onPress={onDiagnoseNetworkPress}
+                  >
+                    <Marquee style={theme.reverseTextStyle}>{t("diagnose_network")}</Marquee>
+                  </Button>
+                  {sessionToken.length > 0 && (
+                    <VStack style={ViewStyles.mb2}>
+                      <Button
+                        style={[ViewStyles.mb2, ViewStyles.accent]}
+                        onPress={onCopySessionTokenPress}
+                      >
+                        <Marquee style={theme.reverseTextStyle}>{t("copy_session_token")}</Marquee>
+                      </Button>
+                      <Button
+                        style={[ViewStyles.mb2, ViewStyles.accent]}
+                        onPress={onCopyWebServiceTokenPress}
+                      >
+                        <Marquee style={theme.reverseTextStyle}>
+                          {t("copy_web_service_token")}
+                        </Marquee>
+                      </Button>
+                      <Button style={ViewStyles.accent} onPress={onCopyBulletTokenPress}>
+                        <Marquee style={theme.reverseTextStyle}>{t("copy_bullet_token")}</Marquee>
+                      </Button>
+                    </VStack>
+                  )}
                   <Button
                     style={[ViewStyles.mb2, ViewStyles.accent]}
-                    onPress={onCopySessionTokenPress}
+                    textStyle={theme.reverseTextStyle}
+                    onPress={onCopyConfigurationAndState}
                   >
-                    <Marquee style={theme.reverseTextStyle}>{t("copy_session_token")}</Marquee>
+                    <Marquee style={theme.reverseTextStyle}>
+                      {t("copy_configuration_and_state")}
+                    </Marquee>
                   </Button>
-                  <Button
-                    style={[ViewStyles.mb2, ViewStyles.accent]}
-                    onPress={onCopyWebServiceTokenPress}
-                  >
-                    <Marquee style={theme.reverseTextStyle}>{t("copy_web_service_token")}</Marquee>
-                  </Button>
-                  <Button style={ViewStyles.accent} onPress={onCopyBulletTokenPress}>
-                    <Marquee style={theme.reverseTextStyle}>{t("copy_bullet_token")}</Marquee>
+                  <Button style={ViewStyles.accent} onPress={onExportDatabasePress}>
+                    <Marquee style={theme.reverseTextStyle}>{t("export_database")}</Marquee>
                   </Button>
                 </VStack>
               )}
-              <Button
-                style={[ViewStyles.mb2, ViewStyles.accent]}
-                textStyle={theme.reverseTextStyle}
-                onPress={onCopyConfigurationAndState}
-              >
-                <Marquee style={theme.reverseTextStyle}>
-                  {t("copy_configuration_and_state")}
-                </Marquee>
-              </Button>
-              <Button style={ViewStyles.accent} onPress={onExportDatabasePress}>
-                <Marquee style={theme.reverseTextStyle}>{t("export_database")}</Marquee>
-              </Button>
             </DialogSection>
           </CustomDialog>
           <Modal isVisible={notification} onClose={onNotificationClose} style={ViewStyles.modal1d}>

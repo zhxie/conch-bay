@@ -94,7 +94,9 @@ const zhHans = {
   database_notice: "如果您想清除数据库，请长按清除数据库。请在继续之前完成备份。",
   clear_database: "清除数据库",
   clearing_database: "清除数据库中",
-  debug_notice: "以下信息仅用于调试。请不要与他人分享。",
+  debug_notice:
+    "调试信息的泄漏可能导致您的账号被盗用或个人信息泄漏。如果您需要调试，请不要与他人分享调试信息。",
+  debug_continue: "我已理解",
   diagnose_network: "诊断网络",
   diagnosing_network: "诊断网络中",
   copy_session_token: "复制会话令牌",
