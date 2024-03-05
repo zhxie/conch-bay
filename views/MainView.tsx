@@ -747,28 +747,8 @@ const MainView = () => {
     const [battleFail, coopFail] = await Promise.all([
       Promise.all([
         latestOnly ? fetchLatestBattleHistories(webServiceToken, bulletToken, language) : undefined,
-        latestOnly ? undefined : fetchXBattleHistories(webServiceToken, bulletToken, language),
       ])
-        .then(async ([latestBattleHistories, xBattleHistoriesAttempt]) => {
-          if (xBattleHistoriesAttempt) {
-            setSplatZonesXPower(
-              xBattleHistoriesAttempt.xBattleHistories.summary.xPowerAr?.lastXPower?.toString() ??
-                "0"
-            );
-            setTowerControlXPower(
-              xBattleHistoriesAttempt.xBattleHistories.summary.xPowerLf?.lastXPower?.toString() ??
-                "0"
-            );
-            setRainmakerXPower(
-              xBattleHistoriesAttempt.xBattleHistories.summary.xPowerGl?.lastXPower?.toString() ??
-                "0"
-            );
-            setClamBlitzXPower(
-              xBattleHistoriesAttempt.xBattleHistories.summary.xPowerCl?.lastXPower?.toString() ??
-                "0"
-            );
-          }
-
+        .then(async ([latestBattleHistories]) => {
           // Fetch more battle histories if needed.
           const ids: string[] = [];
           let [skipRegular, skipAnarchy, skipX, skipChallenge, skipPrivate] = [
@@ -821,11 +801,12 @@ const MainView = () => {
               }
             }
             [skipRegular, skipAnarchy, skipX, skipChallenge, skipPrivate] = await Promise.all([
-              regularId ? Database.isExist(regularId!) : false,
-              anarchyId ? Database.isExist(anarchyId!) : false,
-              xId ? Database.isExist(xId!) : false,
-              challengeId ? Database.isExist(challengeId!) : false,
-              privateId ? Database.isExist(privateId!) : false,
+              regularId ? Database.isExist(regularId) : false,
+              anarchyId ? Database.isExist(anarchyId) : false,
+              // X matches have X powers which should also be updated.
+              xId && latestOnly ? Database.isExist(xId) : false,
+              challengeId ? Database.isExist(challengeId) : false,
+              privateId ? Database.isExist(privateId) : false,
             ]);
           }
           const [
@@ -843,8 +824,7 @@ const MainView = () => {
               : fetchAnarchyBattleHistories(webServiceToken, bulletToken, language),
             skipX
               ? undefined
-              : xBattleHistoriesAttempt ||
-                fetchXBattleHistories(webServiceToken, bulletToken, language).then(
+              : fetchXBattleHistories(webServiceToken, bulletToken, language).then(
                   (historyDetail) => {
                     setSplatZonesXPower(
                       historyDetail.xBattleHistories.summary.xPowerAr?.lastXPower?.toString() ?? "0"
