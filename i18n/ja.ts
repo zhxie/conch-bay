@@ -285,6 +285,7 @@ const ja = {
   VnNTdGFnZS0tOTk5: "",
   "Q29vcFN0YWdlLS05OTk=": "",
   "TGVhZ3VlTWF0Y2hFdmVudC1Ob3RGb3VuZA==": "",
+  Q29vcEVuZW15LTMx: "ランダム",
 };
 
 export default ja;
