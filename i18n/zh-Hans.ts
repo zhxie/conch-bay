@@ -57,8 +57,11 @@ const zhHans = {
   splatnet_3: "鱿鱼圈3",
   export: "导出",
   exporting: "导出中",
+  update_notice: "法螺湾有更新。请参阅发行说明以获取更多信息。",
+  go_to_app_store: "前往App Store",
+  go_to_google_play: "前往Google Play",
+  release_notes: "发行说明",
   disclaimer: "本应用是使用鱿鱼圈3的信息的非官方应用，与任天堂有限公司无关。",
-  update: "更新",
   support: "支持",
   preference_notice:
     "您可以根据自己的喜好自定义法螺湾。例如，您可以允许法螺湾在后台加载记录或是优先显示鲑鱼跑的相关信息。",

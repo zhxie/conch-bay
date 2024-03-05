@@ -57,9 +57,12 @@ const en = {
   splatnet_3: "SplatNet 3",
   export: "Export",
   exporting: "Exporting",
+  update_notice: "Conch Bay has an update. Please see the release notes for more information.",
+  go_to_app_store: "Go to App Store",
+  go_to_google_play: "Go to Google Play",
+  release_notes: "Release Notes",
   disclaimer:
     "This app is an unofficial app which uses the information of SplatNet 3, and is not related to Nintendo Co., Ltd.",
-  update: "Update",
   support: "Support",
   preference_notice:
     "You can customize Conch Bay to your liking. For example, you can allow Conch Bay to load results in the background or prioritize showing Salmon Run-related information.",

@@ -34,12 +34,6 @@ const AXIOS_TIMEOUT = 10000;
 const AXIOS_TOKEN_TIMEOUT = 15000;
 const USER_AGENT = `ConchBay/${Constants.expoConfig!.version!}`;
 
-export const fetchAppStoreVersion = async () => {
-  const res = await axios.get("https://itunes.apple.com/lookup?id=1659268579", {
-    timeout: AXIOS_TIMEOUT,
-  });
-  return res.data["results"][0]["version"];
-};
 export const fetchReleaseVersion = async () => {
   const res = await axios.get("https://api.github.com/repos/zhxie/conch-bay/releases", {
     timeout: AXIOS_TIMEOUT,

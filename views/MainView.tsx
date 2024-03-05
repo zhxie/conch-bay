@@ -69,7 +69,6 @@ import {
 } from "../models/types";
 import {
   fetchAnarchyBattleHistories,
-  fetchAppStoreVersion,
   fetchCatalog,
   fetchChallengeHistories,
   fetchCoopHistoryDetail,
@@ -318,23 +317,13 @@ const MainView = () => {
           refresh();
           if (Constants.appOwnership !== AppOwnership.Expo) {
             const current = Application.nativeApplicationVersion!;
-            if (Platform.OS === "ios") {
-              ok(
-                fetchAppStoreVersion().then((version) => {
-                  if (semver.compare(version, current) > 0) {
-                    setUpdate(true);
-                  }
-                })
-              );
-            } else {
-              ok(
-                fetchReleaseVersion().then((version) => {
-                  if (semver.compare(version.replace("v", ""), current) > 0) {
-                    setUpdate(true);
-                  }
-                })
-              );
-            }
+            ok(
+              fetchReleaseVersion().then((version) => {
+                if (semver.compare(version.replace("v", ""), current) > 0) {
+                  setUpdate(true);
+                }
+              })
+            );
           }
         }, 100);
       });
@@ -1072,6 +1061,21 @@ const MainView = () => {
       onShowMorePress();
     }
   };
+  const onUpdateClose = () => {
+    setUpdate(false);
+  };
+  const onGoToAppStore = () => {
+    Linking.openURL("https://apps.apple.com/us/app/conch-bay/id1659268579");
+  };
+  const onGoToGooglePlay = () => {
+    IntentLauncher.startActivityAsync("android.intent.action.VIEW", {
+      data: "https://play.google.com/store/apps/details?id=name.sketch.conch_bay",
+      packageName: "com.android.vending",
+    });
+  };
+  const onReleaseNotesPress = () => {
+    WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay/releases/latest");
+  };
   const onLogInPress = () => {
     setLogIn(true);
   };
@@ -1444,16 +1448,6 @@ const MainView = () => {
     // Clean up.
     await FileSystem.deleteAsync(uri, { idempotent: true });
     setExporting(false);
-  };
-  const onUpdatePress = () => {
-    if (Platform.OS === "ios") {
-      Linking.openURL("https://apps.apple.com/us/app/conch-bay/id1659268579");
-    } else {
-      IntentLauncher.startActivityAsync("android.intent.action.VIEW", {
-        data: "https://play.google.com/store/apps/details?id=name.sketch.conch_bay",
-        packageName: "com.android.vending",
-      });
-    }
   };
   const onSupportPress = () => {
     setSupport(true);
@@ -2095,13 +2089,8 @@ const MainView = () => {
                   <VStack center>
                     <HStack center>
                       <Text
-                        style={[update && ViewStyles.mr1, TextStyles.subtle]}
+                        style={TextStyles.subtle}
                       >{`${Application.applicationName} ${Application.nativeApplicationVersion} (${Application.nativeBuildVersion})`}</Text>
-                      {update && (
-                        <Text style={[TextStyles.link, TextStyles.subtle]} onPress={onUpdatePress}>
-                          {t("update")}
-                        </Text>
-                      )}
                     </HStack>
                     <HStack center>
                       <Text
@@ -2175,6 +2164,34 @@ const MainView = () => {
             />
           )}
         </Animated.View>
+        <Modal isVisible={update} onClose={onUpdateClose} style={ViewStyles.modal1d}>
+          <Dialog icon="sparkles" text={t("update_notice")}>
+            {Platform.OS === "ios" && (
+              <Button
+                style={[ViewStyles.mb2, ViewStyles.accent]}
+                textStyle={theme.reverseTextStyle}
+                onPress={onGoToAppStore}
+              >
+                <Marquee style={theme.reverseTextStyle}>{t("go_to_app_store")}</Marquee>
+              </Button>
+            )}
+            {Platform.OS === "android" && (
+              <Button
+                style={[ViewStyles.mb2, ViewStyles.accent]}
+                textStyle={theme.reverseTextStyle}
+                onPress={onGoToGooglePlay}
+              >
+                <Marquee style={theme.reverseTextStyle}>{t("go_to_google_play")}</Marquee>
+              </Button>
+            )}
+            <Button
+              style={[{ borderColor: Color.AccentColor, borderWidth: 1.5 }, theme.backgroundStyle]}
+              onPress={onReleaseNotesPress}
+            >
+              <Marquee>{t("release_notes")}</Marquee>
+            </Button>
+          </Dialog>
+        </Modal>
         <Modal isVisible={logIn} onClose={onLogInClose} style={ViewStyles.modal1d}>
           <CustomDialog icon="alert-circle">
             <Text

@@ -58,9 +58,13 @@ const ja = {
   splatnet_3: "イカリング3",
   export: "エクスポート",
   exporting: "エクスポート中",
+  update_notice:
+    "ホラガイベイがアップデートされました。詳しくは、リリースノートを参照してください。",
+  go_to_app_store: "App Storeへ",
+  go_to_google_play: "Google Playへ",
+  release_notes: "リリースノート",
   disclaimer:
     "当アプリは、イカリング3の情報を利用した非公式アプリであり、任天堂株式会社とは一切関係はございません。",
-  update: "アップデート",
   support: "サポート",
   preference_notice:
     "ホラガイベイを自分好みにカスタマイズできます。例えば、ホラガイベイがバックグラウンドでリザルトを読み込むことを許可したり、サーモンランに関する情報を優先的に表示したりできます。",

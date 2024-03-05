@@ -57,8 +57,11 @@ const zhHant = {
   splatnet_3: "魷魚圈3",
   export: "匯出",
   exporting: "匯出中",
+  update_notice: "法螺灣有更新。請參閱發行說明以獲取更多資訊。",
+  go_to_app_store: "前往App Store",
+  go_to_google_play: "前往Google Play",
+  release_notes: "發行說明",
   disclaimer: "本應用是使用魷魚圈3的資訊的非官方應用，與任天堂有限公司無關。",
-  update: "更新",
   support: "支援",
   preference_notice:
     "您可以根據自己的喜好自訂法螺灣。例如，您可以允許法螺灣在背景載入記錄或是優先顯示鮭魚跑的相關資訊。",
