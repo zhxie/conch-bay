@@ -218,7 +218,7 @@ const MainView = () => {
     "0"
   );
   const [grade, setGrade, clearGrade] = useStringAsyncStorage(Key.Grade);
-  const [playedTime, setPlayedTime] = useNumberAsyncStorage(Key.PlayedTime);
+  const [playedTime, setPlayedTime, clearPlayedTime] = useNumberAsyncStorage(Key.PlayedTime);
 
   const [filter, setFilter, clearFilter, filterReady] = useAsyncStorage<Database.FilterProps>(
     Key.Filter
@@ -1739,6 +1739,7 @@ const MainView = () => {
   const onClearDatabasePress = async () => {
     setClearingDatabase(true);
     await Database.clear();
+    await clearPlayedTime();
     loadResults(20);
     setClearingDatabase(false);
     setSupport(false);
