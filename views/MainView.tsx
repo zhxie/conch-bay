@@ -645,7 +645,7 @@ const MainView = () => {
             let newWebServiceToken: WebServiceToken | undefined = undefined;
             let newBulletToken = "";
             let friendsAttempt: FriendListResult | undefined;
-            if (webServiceToken && bulletToken.length > 0) {
+            if (apiUpdated && webServiceToken && bulletToken.length > 0) {
               try {
                 friendsAttempt = await fetchFriends(webServiceToken, bulletToken, language);
                 setFriends(friendsAttempt);
@@ -1188,7 +1188,7 @@ const MainView = () => {
       let newWebServiceToken: WebServiceToken | undefined = undefined;
       let newBulletToken = "";
       let equipmentsAttempt: MyOutfitCommonDataEquipmentsResult | undefined;
-      if (webServiceToken && bulletToken.length > 0) {
+      if (apiUpdated && webServiceToken && bulletToken.length > 0) {
         try {
           equipmentsAttempt = await fetchEquipments(webServiceToken, bulletToken, language);
           newWebServiceToken = webServiceToken;
@@ -1648,7 +1648,7 @@ const MainView = () => {
           let newWebServiceToken: WebServiceToken | undefined = undefined;
           let newBulletToken = "";
           let weaponRecordsAttempt: WeaponRecordResult | undefined;
-          if (webServiceToken && bulletToken.length > 0) {
+          if (apiUpdated && webServiceToken && bulletToken.length > 0) {
             try {
               weaponRecordsAttempt = await fetchWeaponRecords(
                 webServiceToken,

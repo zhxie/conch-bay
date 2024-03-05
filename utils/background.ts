@@ -11,6 +11,8 @@ import {
   fetchVsHistoryDetail,
   getBulletToken,
   getWebServiceToken,
+  updateNsoVersion,
+  updateSplatnetVersion,
 } from "./api";
 import { Key } from "./async-storage";
 import { decode64String, encode64String } from "./codec";
@@ -24,6 +26,9 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
     return BackgroundFetch.BackgroundFetchResult.Failed;
   }
   try {
+    // Update versions.
+    await ok(Promise.all([updateNsoVersion(), updateSplatnetVersion()]));
+
     // Check previous token.
     const language = (await AsyncStorage.getItem(Key.Language)) || t("lang");
     let webServiceToken: WebServiceToken | undefined = undefined;
