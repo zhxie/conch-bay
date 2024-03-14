@@ -718,16 +718,6 @@ const MainView = () => {
                 }),
               ok(refreshResults(newWebServiceToken!, newBulletToken, false)),
             ]);
-
-            // Background refresh.
-            if (backgroundRefresh && !(await isBackgroundTaskRegistered())) {
-              await registerBackgroundTask().catch((e) => {
-                showBanner(
-                  BannerLevel.Warn,
-                  t("failed_to_enable_background_refresh", { error: e })
-                );
-              });
-            }
           }
         })(),
       ]);
@@ -1465,12 +1455,12 @@ const MainView = () => {
     } else {
       switch ((await Notifications.getPermissionsAsync()).status) {
         case ModulesCore.PermissionStatus.GRANTED:
-        case ModulesCore.PermissionStatus.DENIED:
           await setBackgroundRefresh(true);
           await registerBackgroundTask().catch((e) => {
             showBanner(BannerLevel.Warn, t("failed_to_enable_background_refresh", { error: e }));
           });
           break;
+        case ModulesCore.PermissionStatus.DENIED:
         case ModulesCore.PermissionStatus.UNDETERMINED:
           setNotification(true);
           break;
