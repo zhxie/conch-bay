@@ -79,6 +79,16 @@ Run the following command to validate a results JSON.
 python3 tools/validate.py <PATH_TO_JSON>
 ```
 
+### Export data to s3s and upload to stat.ink
+
+Run the following command to convert a results JSON into s3s outputs and upload them to stat.ink.
+
+```sh
+python3 tools/export_s3s_outputs.py <PATH_TO_JSON>
+python3 <PATH_TO_S3S>/s3s.py -i exports/results exports/overview.json
+python3 <PATH_TO_S3S>/s3s.py -i exports/coop_results exports/overview.json
+```
+
 ## License
 
 Conch Bay is licensed under [the MIT License](/LICENSE).
