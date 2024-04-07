@@ -646,72 +646,91 @@ const ImportView = (props: ImportViewProps) => {
       const coops: CoopHistoryDetailResult[] = [];
       const Zip = await import("react-native-zip-archive");
       await Zip.unzip(uri, `${FileSystem.cacheDirectory!}/salmdroidNW`);
-      const data = JSON.parse(
-        await FileSystem.readAsStringAsync(`${FileSystem.cacheDirectory!}/salmdroidNW/1`)
+      const summary = JSON.parse(
+        await FileSystem.readAsStringAsync(`${FileSystem.cacheDirectory!}/salmdroidNW/summary`)
       );
-      const results = JSON.parse(data["results"]);
-      const n = results.length;
+      const n = summary["results"];
       showBanner(BannerLevel.Info, t("loading_n_results", { n }));
-      for (const result of results) {
-        const coop = {
-          coopHistoryDetail: JSON.parse(result["coopHistory"]),
-        } as CoopHistoryDetailResult;
-        for (const memberResult of [
-          coop.coopHistoryDetail!.myResult,
-          ...coop.coopHistoryDetail!.memberResults,
-        ]) {
-          for (const badge of memberResult.player.nameplate!.badges) {
-            if (badge) {
-              formatSalmdroidnwImageUrl(badge.image, "badge_img");
-            }
-          }
-          formatSalmdroidnwImageUrl(memberResult.player.nameplate!.background.image, "npl_img");
-          formatSalmdroidnwImageUrl(memberResult.player.uniform.image, "coop_skin_img");
-          for (const weapon of memberResult.weapons) {
-            let useSplatoon3ink = true;
-            const id = weaponList.images[getImageHash(weapon.image.url)];
-            if (weaponList.coopRareWeapons.find((w) => w === id)) {
-              useSplatoon3ink = false;
-            }
-            formatSalmdroidnwImageUrl(weapon.image, "weapon_illust", useSplatoon3ink);
-          }
-          if (memberResult.specialWeapon) {
-            if (!coopSpecialWeaponList.images[getImageHash(memberResult.specialWeapon.image.url)]) {
-              formatSalmdroidnwImageUrl(memberResult.specialWeapon.image, "ui_img", true);
-            } else {
-              formatSalmdroidnwImageUrl(memberResult.specialWeapon.image, "special_img/blue");
-            }
-          }
-        }
-        if (coop.coopHistoryDetail!.bossResult) {
-          formatSalmdroidnwImageUrl(
-            coop.coopHistoryDetail!.bossResult.boss.image,
-            "coop_enemy_img"
-          );
-        }
-        for (const enemyResult of coop.coopHistoryDetail!.enemyResults) {
-          formatSalmdroidnwImageUrl(enemyResult.enemy.image, "coop_enemy_img");
-        }
-        for (const waveResult of coop.coopHistoryDetail!.waveResults) {
-          for (const specialWeapon of waveResult.specialWeapons) {
-            formatSalmdroidnwImageUrl(specialWeapon.image, "special_img/blue");
-          }
-        }
-        formatSalmdroidnwImageUrl(
-          coop.coopHistoryDetail!.coopStage.image,
-          "stage_img/banner/high_resolution",
-          false
+      let skip = 0,
+        fail = 0;
+      let error: Error | undefined;
+      for (
+        let n = 1;
+        (await FileSystem.getInfoAsync(`${FileSystem.cacheDirectory!}/salmdroidNW/${n}`)).exists;
+        n++
+      ) {
+        const data = JSON.parse(
+          await FileSystem.readAsStringAsync(`${FileSystem.cacheDirectory!}/salmdroidNW/${n}`)
         );
-        for (const weapon of coop.coopHistoryDetail!.weapons) {
-          if (!weaponList.images[getImageHash(weapon.image.url)]) {
-            formatSalmdroidnwImageUrl(weapon.image, "ui_img", true);
-          } else {
-            formatSalmdroidnwImageUrl(weapon.image, "weapon_illust", true);
+        const results = JSON.parse(data["results"]);
+        for (const result of results) {
+          const coop = {
+            coopHistoryDetail: JSON.parse(result["coopHistory"]),
+          } as CoopHistoryDetailResult;
+          for (const memberResult of [
+            coop.coopHistoryDetail!.myResult,
+            ...coop.coopHistoryDetail!.memberResults,
+          ]) {
+            for (const badge of memberResult.player.nameplate!.badges) {
+              if (badge) {
+                formatSalmdroidnwImageUrl(badge.image, "badge_img");
+              }
+            }
+            formatSalmdroidnwImageUrl(memberResult.player.nameplate!.background.image, "npl_img");
+            formatSalmdroidnwImageUrl(memberResult.player.uniform.image, "coop_skin_img");
+            for (const weapon of memberResult.weapons) {
+              let useSplatoon3ink = true;
+              const id = weaponList.images[getImageHash(weapon.image.url)];
+              if (weaponList.coopRareWeapons.find((w) => w === id)) {
+                useSplatoon3ink = false;
+              }
+              formatSalmdroidnwImageUrl(weapon.image, "weapon_illust", useSplatoon3ink);
+            }
+            if (memberResult.specialWeapon) {
+              if (
+                !coopSpecialWeaponList.images[getImageHash(memberResult.specialWeapon.image.url)]
+              ) {
+                formatSalmdroidnwImageUrl(memberResult.specialWeapon.image, "ui_img", true);
+              } else {
+                formatSalmdroidnwImageUrl(memberResult.specialWeapon.image, "special_img/blue");
+              }
+            }
           }
+          if (coop.coopHistoryDetail!.bossResult) {
+            formatSalmdroidnwImageUrl(
+              coop.coopHistoryDetail!.bossResult.boss.image,
+              "coop_enemy_img"
+            );
+          }
+          for (const enemyResult of coop.coopHistoryDetail!.enemyResults) {
+            formatSalmdroidnwImageUrl(enemyResult.enemy.image, "coop_enemy_img");
+          }
+          for (const waveResult of coop.coopHistoryDetail!.waveResults) {
+            for (const specialWeapon of waveResult.specialWeapons) {
+              formatSalmdroidnwImageUrl(specialWeapon.image, "special_img/blue");
+            }
+          }
+          formatSalmdroidnwImageUrl(
+            coop.coopHistoryDetail!.coopStage.image,
+            "stage_img/banner/high_resolution",
+            false
+          );
+          for (const weapon of coop.coopHistoryDetail!.weapons) {
+            if (!weaponList.images[getImageHash(weapon.image.url)]) {
+              formatSalmdroidnwImageUrl(weapon.image, "ui_img", true);
+            } else {
+              formatSalmdroidnwImageUrl(weapon.image, "weapon_illust", true);
+            }
+          }
+          coops.push(coop);
         }
-        coops.push(coop);
+        const result = await props.onResults([], coops);
+        skip += result.skip;
+        fail += result.fail;
+        if (!error) {
+          error = result.error;
+        }
       }
-      const { skip, fail, error } = await props.onResults([], coops);
       showResultBanner(n, skip, fail, error);
       imported = n - fail - skip;
     } catch (e) {

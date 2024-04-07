@@ -1,5 +1,6 @@
 from hashlib import sha256
 import json
+import os
 import requests
 import sys
 import tempfile
@@ -68,32 +69,35 @@ def main():
         f.extractall(dir)
 
     coops = []
-    with open(f"{dir}/1", encoding="utf-8") as f:
-        data = json.loads(f.read())
-        results = json.loads(data["results"])
-        for result in results:
-            obj = json.loads(result["coopHistory"])
+    n = 1
+    while os.path.exists(f"{dir}/{n}"):
+        with open(f"{dir}/{n}", encoding="utf-8") as f:
+            data = json.loads(f.read())
+            results = json.loads(data["results"])
+            for result in results:
+                obj = json.loads(result["coopHistory"])
 
-            format_member_result(obj["myResult"])
-            for member_result in obj["memberResults"]:
-                format_member_result(member_result)
-            if obj["bossResult"] != None:
-                decorate_image_obj(obj["bossResult"]["boss"], "coop_enemy_img")
-            for enemy_result in obj["enemyResults"]:
-                decorate_image_obj(enemy_result["enemy"], "coop_enemy_img")
-            for wave_result in obj["waveResults"]:
-                for special_weapon in wave_result["specialWeapons"]:
-                    decorate_image_obj(special_weapon, "special_img/blue")
-            decorate_image_obj(
-                obj["coopStage"], "stage_img/banner/high_resolution", False
-            )
-            for weapon in obj["weapons"]:
-                if weapon["image"]["url"] in RANDOM_IMAGE:
-                    decorate_image_obj(weapon, "ui_img", True)
-                else:
-                    decorate_image_obj(weapon, "weapon_illust", True)
+                format_member_result(obj["myResult"])
+                for member_result in obj["memberResults"]:
+                    format_member_result(member_result)
+                if obj["bossResult"] != None:
+                    decorate_image_obj(obj["bossResult"]["boss"], "coop_enemy_img")
+                for enemy_result in obj["enemyResults"]:
+                    decorate_image_obj(enemy_result["enemy"], "coop_enemy_img")
+                for wave_result in obj["waveResults"]:
+                    for special_weapon in wave_result["specialWeapons"]:
+                        decorate_image_obj(special_weapon, "special_img/blue")
+                decorate_image_obj(
+                    obj["coopStage"], "stage_img/banner/high_resolution", False
+                )
+                for weapon in obj["weapons"]:
+                    if weapon["image"]["url"] in RANDOM_IMAGE:
+                        decorate_image_obj(weapon, "ui_img", True)
+                    else:
+                        decorate_image_obj(weapon, "weapon_illust", True)
 
-            coops.append({"coopHistoryDetail": obj})
+                coops.append({"coopHistoryDetail": obj})
+        n += 1
 
     results = {"battles": [], "coops": coops}
     with open("conch-bay-import.json", "w", encoding="utf-8") as f:
