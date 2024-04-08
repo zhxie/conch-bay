@@ -7019,11 +7019,6 @@ react-native-progress@^5.0.0:
   dependencies:
     prop-types "^15.7.2"
 
-react-native-quick-sqlite@^8.0.4:
-  version "8.0.4"
-  resolved "https://registry.yarnpkg.com/react-native-quick-sqlite/-/react-native-quick-sqlite-8.0.4.tgz#b3920208dd38e69a11490636452e215f7ae61b0d"
-  integrity sha512-cdIkZl9pCOuEoUwUs2oekWV4YzKpigvlnaOuCovix3pmKd7cRK3buoidRqUkBYuUpObV28Xy7Mhj0BeDQI9mSA==
-
 react-native-responsive-linechart@^5.7.1:
   version "5.7.1"
   resolved "https://registry.yarnpkg.com/react-native-responsive-linechart/-/react-native-responsive-linechart-5.7.1.tgz#20aaa9f46983f9abff660fead5518830c2a8e0e9"

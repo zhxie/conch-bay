@@ -3,6 +3,7 @@ import dayjs from "dayjs";
 import Constants, { AppOwnership } from "expo-constants";
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
+import * as SQLite from "expo-sqlite/next";
 import * as WebBrowser from "expo-web-browser";
 import { useState } from "react";
 import { StyleProp, ViewStyle } from "react-native";
@@ -166,7 +167,7 @@ class ImportStreamParser {
   };
 }
 
-const parseFleece = (bytes: number[], sharedKeys?: string[], index?: number, wide?: boolean) => {
+const parseFleece = (bytes: Uint8Array, sharedKeys?: string[], index?: number, wide?: boolean) => {
   if (index === undefined) {
     index = bytes.length - 2;
   }
@@ -517,81 +518,89 @@ const ImportView = (props: ImportViewProps) => {
         await FileSystem.readAsStringAsync(`${FileSystem.cacheDirectory}/ikawidget3/account.json`)
       );
       const accountId = account["id"];
+
       await Promise.all([
         FileSystem.copyAsync({
           from: `${FileSystem.cacheDirectory!}/ikawidget3/${accountId}/vsResult.cblite2/db.sqlite3`,
-          to: `${FileSystem.documentDirectory!}ikawidget3-battle.db`,
+          to: `${FileSystem.documentDirectory!}SQLite/ikawidget3-battle.db`,
         }),
         FileSystem.copyAsync({
           from: `${FileSystem.cacheDirectory!}/ikawidget3/${accountId}/coopResult.cblite2/db.sqlite3`,
-          to: `${FileSystem.documentDirectory!}ikawidget3-coop.db`,
+          to: `${FileSystem.documentDirectory!}SQLite/ikawidget3-coop.db`,
         }),
       ]);
-      const SQLite = await import("react-native-quick-sqlite");
 
-      const battleDb = SQLite.open({ name: "ikawidget3-battle.db" });
-      const coopDb = SQLite.open({ name: "ikawidget3-coop.db" });
+      const battleDb = await SQLite.openDatabaseAsync("ikawidget3-battle.db");
+      const coopDb = await SQLite.openDatabaseAsync("ikawidget3-coop.db");
       const counts = await Promise.all([
-        battleDb.executeAsync("SELECT COUNT(1) FROM kv_default"),
-        coopDb.executeAsync("SELECT COUNT(1) FROM kv_default"),
+        battleDb.getFirstAsync<{ "COUNT(1)": number }>("SELECT COUNT(1) FROM kv_default"),
+        coopDb.getFirstAsync<{ "COUNT(1)": number }>("SELECT COUNT(1) FROM kv_default"),
       ]);
-      const n = counts[0].rows!.item(0)["COUNT(1)"] + counts[1].rows!.item(0)["COUNT(1)"];
+      const n = counts[0]!["COUNT(1)"] + counts[1]!["COUNT(1)"];
       showBanner(BannerLevel.Info, t("loading_n_results", { n }));
-      let batch = 0;
       let skip = 0,
         fail = 0;
       let error: Error | undefined;
-      const battleInfo = await battleDb.executeAsync("SELECT body FROM kv_info WHERE `key` = ?", [
-        "SharedKeys",
-      ]);
-      const battleSharedKeys = parseFleece(battleInfo.rows!.item(0)["body"]);
-      while (true) {
-        const battles: VsHistoryDetailResult[] = [];
-        const record = await battleDb.executeAsync(
-          `SELECT body FROM kv_default LIMIT ${BATCH_SIZE} OFFSET ${BATCH_SIZE * batch}`
-        );
-        const results = record.rows!._array;
-        for (const row of results) {
-          const result = parseFleece(row["body"], battleSharedKeys);
-          battles.push({ vsHistoryDetail: result });
+      const battleInfo = await battleDb.getFirstAsync<{ body: Uint8Array }>(
+        "SELECT body FROM kv_info WHERE `key` = ?",
+        "SharedKeys"
+      );
+      const battleSharedKeys = parseFleece(battleInfo!.body);
+      let battles: VsHistoryDetailResult[] = [];
+      for await (const row of battleDb.getEachAsync<{ body: Uint8Array }>(
+        "SELECT body FROM kv_default"
+      )) {
+        const battle = parseFleece(row.body, battleSharedKeys);
+        battles.push({ vsHistoryDetail: battle });
+        if (battles.length >= BATCH_SIZE) {
+          const result = await props.onResults(battles, []);
+          skip += result.skip;
+          fail += result.fail;
+          if (!error) {
+            error = result.error;
+          }
+          battles = [];
         }
+      }
+      if (battles.length > 0) {
         const result = await props.onResults(battles, []);
         skip += result.skip;
         fail += result.fail;
         if (!error) {
           error = result.error;
         }
-        if (results.length < BATCH_SIZE) {
-          break;
-        }
-        batch += 1;
+        battles = [];
       }
-      batch = 0;
-      const coopInfo = await coopDb.executeAsync("SELECT body FROM kv_info WHERE `key` = ?", [
-        "SharedKeys",
-      ]);
-      const coopSharedKeys = parseFleece(coopInfo.rows!.item(0)["body"]);
-      while (true) {
-        const coops: CoopHistoryDetailResult[] = [];
-        const record = await coopDb.executeAsync(
-          `SELECT body FROM kv_default LIMIT ${BATCH_SIZE} OFFSET ${BATCH_SIZE * batch}`
-        );
-        const results = record.rows!._array;
-        for (const row of results) {
-          const result = parseFleece(row["body"], coopSharedKeys);
-          coops.push({ coopHistoryDetail: result });
+      const coopInfo = await coopDb.getFirstAsync<{ body: Uint8Array }>(
+        "SELECT body FROM kv_info WHERE `key` = ?",
+        "SharedKeys"
+      );
+      const coopSharedKeys = parseFleece(coopInfo!.body);
+      let coops: CoopHistoryDetailResult[] = [];
+      for await (const row of coopDb.getEachAsync<{ body: Uint8Array }>(
+        "SELECT body FROM kv_default"
+      )) {
+        const coop = parseFleece(row.body, coopSharedKeys);
+        coops.push({ coopHistoryDetail: coop });
+        if (coops.length >= BATCH_SIZE) {
+          const result = await props.onResults([], coops);
+          skip += result.skip;
+          fail += result.fail;
+          if (!error) {
+            error = result.error;
+          }
+          coops = [];
         }
+      }
+      if (coops.length > 0) {
         const result = await props.onResults([], coops);
         skip += result.skip;
         fail += result.fail;
         if (!error) {
           error = result.error;
         }
-        if (results.length < BATCH_SIZE) {
-          break;
-        }
-        batch += 1;
       }
+      await Promise.all([battleDb.closeAsync(), coopDb.closeAsync()]);
       showResultBanner(n, skip, fail, error);
       imported = n - fail - skip;
     } catch (e) {
@@ -602,22 +611,22 @@ const ImportView = (props: ImportViewProps) => {
     await Promise.all([
       FileSystem.deleteAsync(uri, { idempotent: true }),
       FileSystem.deleteAsync(`${FileSystem.cacheDirectory!}/ikawidget3`, { idempotent: true }),
-      FileSystem.deleteAsync(`${FileSystem.documentDirectory!}ikawidget3-battle.db`, {
+      FileSystem.deleteAsync(`${FileSystem.documentDirectory!}SQLite/ikawidget3-battle.db`, {
         idempotent: true,
       }),
-      FileSystem.deleteAsync(`${FileSystem.documentDirectory!}ikawidget3-battle.db-shm`, {
+      FileSystem.deleteAsync(`${FileSystem.documentDirectory!}SQLite/ikawidget3-battle.db-shm`, {
         idempotent: true,
       }),
-      FileSystem.deleteAsync(`${FileSystem.documentDirectory!}ikawidget3-battle.db-wal`, {
+      FileSystem.deleteAsync(`${FileSystem.documentDirectory!}SQLite/ikawidget3-battle.db-wal`, {
         idempotent: true,
       }),
-      FileSystem.deleteAsync(`${FileSystem.documentDirectory!}ikawidget3-coop.db`, {
+      FileSystem.deleteAsync(`${FileSystem.documentDirectory!}SQLite/ikawidget3-coop.db`, {
         idempotent: true,
       }),
-      FileSystem.deleteAsync(`${FileSystem.documentDirectory!}ikawidget3-coop.db-shm`, {
+      FileSystem.deleteAsync(`${FileSystem.documentDirectory!}SQLite/ikawidget3-coop.db-shm`, {
         idempotent: true,
       }),
-      FileSystem.deleteAsync(`${FileSystem.documentDirectory!}ikawidget3-coop.db-wal`, {
+      FileSystem.deleteAsync(`${FileSystem.documentDirectory!}SQLite/ikawidget3-coop.db-wal`, {
         idempotent: true,
       }),
     ]);
