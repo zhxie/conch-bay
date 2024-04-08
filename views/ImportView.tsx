@@ -566,6 +566,7 @@ const ImportView = (props: ImportViewProps) => {
         }
         batch += 1;
       }
+      batch = 0;
       const coopInfo = await coopDb.executeAsync("SELECT body FROM kv_info WHERE `key` = ?", [
         "SharedKeys",
       ]);
