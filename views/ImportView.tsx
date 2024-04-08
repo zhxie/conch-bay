@@ -31,8 +31,14 @@ import unknownList from "../models/unknowns.json";
 import weaponList from "../models/weapons.json";
 import workSuitList from "../models/workSuits.json";
 import { decode64, encode64String } from "../utils/codec";
-import { BATCH_SIZE } from "../utils/memory";
 import { getImageHash } from "../utils/ui";
+
+// Assuming 64MB limitation and 16kB for each result for DB-DB importing, 4 times about the result
+// size. The actual usage may lower then that.
+const DB_BATCH_SIZE = 4096;
+// Assuming 64MB limitation for JSON-DB importing. The limitation may be easily reached since there
+// is a lot of string-string and string-object conversions.
+const FILE_READ_SIZE = 64 * 1024 * 1024;
 
 enum ImportStreamMode {
   Unknown,
@@ -370,7 +376,6 @@ const ImportView = (props: ImportViewProps) => {
     let imported = 0;
     try {
       props.onBegin();
-      const importReadSize = Math.floor((BATCH_SIZE / 10) * 1024 * 1024);
       const parser = new ImportStreamParser();
       let n = 0,
         skip = 0,
@@ -380,8 +385,8 @@ const ImportView = (props: ImportViewProps) => {
       while (true) {
         const encoded = await FileSystem.readAsStringAsync(uri, {
           encoding: "base64",
-          length: importReadSize,
-          position: importReadSize * batch,
+          length: FILE_READ_SIZE,
+          position: FILE_READ_SIZE * batch,
         });
         const text = decode64(encoded);
         const results = parser.parse(text);
@@ -393,7 +398,7 @@ const ImportView = (props: ImportViewProps) => {
           error = result.error;
         }
 
-        if (text.length < importReadSize) {
+        if (text.length < FILE_READ_SIZE) {
           break;
         }
         batch += 1;
@@ -552,7 +557,7 @@ const ImportView = (props: ImportViewProps) => {
       )) {
         const battle = parseFleece(row.body, battleSharedKeys);
         battles.push({ vsHistoryDetail: battle });
-        if (battles.length >= BATCH_SIZE) {
+        if (battles.length >= DB_BATCH_SIZE) {
           const result = await props.onResults(battles, []);
           skip += result.skip;
           fail += result.fail;
@@ -582,7 +587,7 @@ const ImportView = (props: ImportViewProps) => {
       )) {
         const coop = parseFleece(row.body, coopSharedKeys);
         coops.push({ coopHistoryDetail: coop });
-        if (coops.length >= BATCH_SIZE) {
+        if (coops.length >= DB_BATCH_SIZE) {
           const result = await props.onResults([], coops);
           skip += result.skip;
           fail += result.fail;
@@ -1012,8 +1017,7 @@ const ImportView = (props: ImportViewProps) => {
       }
       uri = doc.assets[0].uri;
       const info = await FileSystem.getInfoAsync(uri, { size: true });
-      const importReadSize = Math.floor((BATCH_SIZE / 10) * 1024 * 1024);
-      if (info["size"] > importReadSize) {
+      if (info["size"] > FILE_READ_SIZE) {
         setUri(uri);
       } else {
         importDirectly(uri);

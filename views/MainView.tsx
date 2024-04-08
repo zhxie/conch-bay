@@ -110,7 +110,6 @@ import {
 } from "../utils/background";
 import { decode64String, encode64String } from "../utils/codec";
 import * as Database from "../utils/database";
-import { requestMemory } from "../utils/memory";
 import { ok, sleep } from "../utils/promise";
 import { Stats } from "../utils/stats";
 import {
@@ -282,7 +281,6 @@ const MainView = () => {
     ) {
       (async () => {
         try {
-          await requestMemory();
           const upgrade = await Database.open();
           if (upgrade !== undefined) {
             if (upgrade > 0) {
