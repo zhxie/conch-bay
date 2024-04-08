@@ -186,7 +186,7 @@ const parseFleece = (bytes: number[], sharedKeys?: string[], index?: number, wid
     let value = 0;
     for (let i = 0; i < count; i++) {
       if (!unsigned && i === count - 1) {
-        const symbol = (bytes[index + 1 + i] & 10000000) >> 7 ? true : false;
+        const symbol = (bytes[index + 1 + i] & 0b10000000) >> 7 ? true : false;
         value += (bytes[index + 1 + i] & 0b1111111) << (8 * i);
         if (symbol) {
           throw new Error("long integer with symbol set is not supported");

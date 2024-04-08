@@ -26,12 +26,12 @@ def parseFleece(blob, shared=None, i=None, w=False):
         while j < count:
             if (not unsigned) and j == count - 1:
                 symbol = True if (blob[i + 1 + j] & 0b10000000) >> 7 else False
-                value = value + (blob[i + 1 + j] & 0b1111111) << 8 * j
+                value = value + ((blob[i + 1 + j] & 0b1111111) << 8 * j)
                 if symbol:
                     # Long integer with symbol set is not supported.
                     raise NotImplementedError()
             else:
-                value = value + blob[i + 1 + j] << 8 * j
+                value = value + (blob[i + 1 + j] << 8 * j)
             j = j + 1
         return value
     elif blob[i] < 0b110000:
