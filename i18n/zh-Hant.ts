@@ -12,7 +12,7 @@ const zhHant = {
   log_in_warning:
     "法螺灣並不會盜用您的帳號或導致您的個人資料外洩。但介於任天堂持續對第三方應用的負面態度，您需要自負使用法螺灣的風險。",
   log_in_notice:
-    "您可以在不登入的情況下使用法螺灣查看時間表與魷魚須商城，匯入記錄並透過統計與趨勢分析。登入將允許您載入記錄、好友與目錄，顯示持有的裝備以及造訪魷魚圈3。登入需要向任天堂以外的imink或nxapi發送非識別訊息，這些資訊不會被記錄或存儲，請參閱私隱政策以取得更多資訊。",
+    "您可以在不登入的情況下使用法螺灣查看時間表與魷魚須商城，匯入記錄並透過統計與趨勢分析。登入將允許您載入記錄與好友，顯示持有的裝備以及造訪魷魚圈3。登入需要向任天堂以外的imink或nxapi發送非識別訊息，這些資訊不會被記錄或存儲，請參閱私隱政策以取得更多資訊。",
   log_in_continue: "我已閱讀並瞭解",
   alternative_log_in_notice:
     "如果您擁有會話令牌並希望跳過由法螺灣取得會話令牌，您可以複製會話令牌並透過會話令牌登入。",
@@ -20,7 +20,7 @@ const zhHant = {
   logging_in: "取得令牌中",
   failed_to_acquire_session_token: "未能取得會話令牌 (%{error})",
   log_out_notice:
-    "登出後，您將無法載入記錄、好友與目錄，顯示持有的裝備以及造訪魷魚圈3。法螺灣已儲存的記錄不會被清除。",
+    "登出後，您將無法載入記錄與好友，顯示持有的裝備以及造訪魷魚圈3。法螺灣已儲存的記錄不會被清除。",
   log_out_continue: "登出",
   logging_out: "登出中",
   upgrading_database: "升級資料庫中",
@@ -34,7 +34,6 @@ const zhHant = {
   failed_to_load_friends_splatfest_voting: "未能載入朋友的祭典投票狀況 (%{error})",
   failed_to_check_splatfest: "未能檢查祭典 (%{error})",
   failed_to_load_summary: "未能載入總覽 (%{error})",
-  failed_to_load_catalog: "未能載入目錄 (%{error})",
   failed_to_load_battle_results: "未能載入對戰記錄 (%{error})",
   failed_to_load_salmon_run_results: "未能載入鮭魚跑記錄 (%{error})",
   loading_n_results: "載入%{n}項記錄中",

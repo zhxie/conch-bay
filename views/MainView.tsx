@@ -57,7 +57,6 @@ import {
 } from "../components";
 import t from "../i18n";
 import {
-  CatalogResult,
   CoopHistoryDetailResult,
   DetailVotingStatusResult,
   FriendListResult,
@@ -69,7 +68,6 @@ import {
 } from "../models/types";
 import {
   fetchAnarchyBattleHistories,
-  fetchCatalog,
   fetchChallengeHistories,
   fetchCoopHistoryDetail,
   fetchCoopResult,
@@ -118,7 +116,6 @@ import {
   getUserIconCacheSource,
   isImageExpired,
 } from "../utils/ui";
-import CatalogView from "./CatalogView";
 import FilterView from "./FilterView";
 import FriendView from "./FriendView";
 import ImportView from "./ImportView";
@@ -198,9 +195,6 @@ const MainView = () => {
   );
 
   const [icon, setIcon, clearIcon] = useStringAsyncStorage(Key.Icon);
-  const [catalogLevel, setCatalogLevel, clearCatalogLevel] = useStringAsyncStorage(
-    Key.CatalogLevel
-  );
   const [level, setLevel, clearLevel] = useStringAsyncStorage(Key.Level);
   const [rank, setRank, clearRank] = useStringAsyncStorage(Key.Rank);
   const [splatZonesXPower, setSplatZonesXPower, clearSplatZonesXPower] = useStringAsyncStorage(
@@ -238,7 +232,6 @@ const MainView = () => {
   const [shop, setShop] = useState<Shop>();
   const [friends, setFriends] = useState<FriendListResult>();
   const [voting, setVoting] = useState<DetailVotingStatusResult>();
-  const [catalog, setCatalog] = useState<CatalogResult>();
   const [groups, setGroups] = useState<ResultGroup[]>();
   const [filtered, setFiltered] = useState(0);
   const [total, setTotal] = useState(0);
@@ -662,7 +655,7 @@ const MainView = () => {
               newBulletToken = res.bulletToken;
             }
 
-            // Fetch friends, voting, summary, catalog and results.
+            // Fetch friends, voting, summary and results.
             await Promise.all([
               friendsAttempt ||
                 fetchFriends(newWebServiceToken!, newBulletToken, language)
@@ -704,15 +697,6 @@ const MainView = () => {
                 })
                 .catch((e) => {
                   showBanner(BannerLevel.Warn, t("failed_to_load_summary", { error: e }));
-                }),
-              fetchCatalog(newWebServiceToken!, newBulletToken, language)
-                .then(async (catalog) => {
-                  setCatalog(catalog);
-                  const catalogLevel = String(catalog.catalog.progress?.level ?? 0);
-                  await setCatalogLevel(catalogLevel);
-                })
-                .catch((e) => {
-                  showBanner(BannerLevel.Warn, t("failed_to_load_catalog", { error: e }));
                 }),
               ok(refreshResults(newWebServiceToken!, newBulletToken, false)),
             ]);
@@ -1116,14 +1100,12 @@ const MainView = () => {
       setLoggingOut(true);
       setFriends(undefined);
       setVoting(undefined);
-      setCatalog(undefined);
       await Promise.all([
         clearSessionToken(),
         clearWebServiceToken(),
         clearBulletToken(),
         clearAutoRefresh(),
         clearIcon(),
-        clearCatalogLevel(),
         clearLevel(),
         clearRank(),
         clearSplatZonesXPower(),
@@ -1915,13 +1897,6 @@ const MainView = () => {
                     />
                     {/* HACK: withdraw 4px margin in the last badge. */}
                     <HStack style={{ marginRight: -ViewStyles.mr1.marginRight }}>
-                      {catalogLevel.length > 0 && (
-                        <CatalogView
-                          catalogLevel={catalogLevel}
-                          catalog={catalog}
-                          style={ViewStyles.mr1}
-                        />
-                      )}
                       {level.length > 0 && (
                         <Badge color={Color.RegularBattle} title={level} style={ViewStyles.mr1} />
                       )}

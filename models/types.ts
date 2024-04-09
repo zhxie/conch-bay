@@ -9,7 +9,6 @@ import {
   VsHistoryDetailQuery_cd82f2a,
 } from "splatnet3-types/dist/generated/types";
 import {
-  CatalogResult,
   Friend_friendList,
   MyOutfitCommonDataEquipmentsResult,
 } from "splatnet3-types/dist/splatnet3";
@@ -19,7 +18,6 @@ export {
   AwardRank,
   BankaraBattleHistoriesResult,
   BankaraMatchMode,
-  CatalogResult,
   CoopHistoryDetailVariables,
   CoopHistoryResult,
   CoopRule,
@@ -56,7 +54,6 @@ export type Enum<T extends Record<string, any>> = T | keyof T;
 export type BankaraMatchSetting = NotNullable<
   SchedulesQuery["data"]["bankaraSchedules"]["nodes"][0]["bankaraMatchSettings"]
 >[0];
-export type CatalogReward = NotNullable<CatalogResult["catalog"]["progress"]>["rewards"][0];
 export type EventMatchSetting = VsEventSchedule["leagueMatchSetting"];
 export type EventMatchTimePeriod = VsEventSchedule["timePeriods"][0];
 export type CoopGroupingSchedule =

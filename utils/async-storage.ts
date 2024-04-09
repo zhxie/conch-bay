@@ -8,7 +8,6 @@ export enum Key {
   Language = "language",
   Region = "region",
   Icon = "icon",
-  CatalogLevel = "catalogLevel",
   Level = "level",
   Rank = "rank",
   SplatZonesXPower = "splatZonesXPower",

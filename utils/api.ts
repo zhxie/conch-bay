@@ -3,7 +3,6 @@ import Constants, { AppOwnership } from "expo-constants";
 import * as Crypto from "expo-crypto";
 import {
   BankaraBattleHistoriesResult,
-  CatalogResult,
   CoopHistoryDetailResult,
   CoopHistoryDetailVariables,
   CoopHistoryResult,
@@ -425,18 +424,6 @@ export const fetchSummary = async (
     throw new Error(summary.errors[0].message);
   }
   return summary.data;
-};
-export const fetchCatalog = async (
-  webServiceToken: WebServiceToken,
-  bulletToken: string,
-  language: string
-) => {
-  const res = await fetchGraphQl(webServiceToken, bulletToken, language, RequestId.CatalogQuery);
-  const catalog = res.data as GraphQLSuccessResponse<CatalogResult>;
-  if (catalog.errors) {
-    throw new Error(catalog.errors[0].message);
-  }
-  return catalog.data;
 };
 
 export const fetchWeaponRecords = async (

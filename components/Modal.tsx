@@ -1,4 +1,4 @@
-import { FlashList, ListRenderItem, MasonryFlashList } from "@shopify/flash-list";
+import { FlashList, ListRenderItem } from "@shopify/flash-list";
 import {
   LayoutChangeEvent,
   NativeScrollEvent,
@@ -132,43 +132,6 @@ const FlashModal = <T,>(props: FlashModalProps<T>) => {
   );
 };
 
-interface MasonryFlashModalProps<T> extends FlashModalProps<T> {
-  column: number;
-}
-
-const MasonryFlashModal = <T,>(props: MasonryFlashModalProps<T>) => {
-  const theme = useTheme();
-
-  const onScrollEndDrag = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    if (!!props.onClose && event.nativeEvent.contentOffset.y < -80) {
-      props.onClose();
-    }
-  };
-
-  return (
-    <ModalBase isVisible={props.isVisible} onClose={props.onClose} onModalHide={props.onModalHide}>
-      <VStack style={[styles.panel, theme.backgroundStyle, props.style]}>
-        <MasonryFlashList
-          showsHorizontalScrollIndicator={false}
-          data={props.data}
-          numColumns={props.column}
-          keyExtractor={props.keyExtractor}
-          renderItem={props.renderItem}
-          estimatedItemSize={props.estimatedItemSize}
-          ListHeaderComponent={
-            <VStack>
-              <View style={styles.padding} />
-              {props.ListHeaderComponent}
-            </VStack>
-          }
-          ListFooterComponent={<View style={styles.padding} />}
-          onScrollEndDrag={onScrollEndDrag}
-        />
-      </VStack>
-    </ModalBase>
-  );
-};
-
 const styles = StyleSheet.create({
   panel: {
     ...ViewStyles.r2,
@@ -179,4 +142,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export { Modal, FullscreenModal, FlashModal, MasonryFlashModal };
+export { Modal, FullscreenModal, FlashModal };

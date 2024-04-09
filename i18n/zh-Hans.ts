@@ -12,7 +12,7 @@ const zhHans = {
   log_in_warning:
     "法螺湾并不会盗用您的账号或导致您的个人信息泄漏。但介于任天堂持续对第三方应用的消极态度，您需要自负使用法螺湾的风险。",
   log_in_notice:
-    "您可以在不登录的情况下使用法螺湾查看日程与鱿鱼须商城，导入记录并通过统计与趋势分析。登录将允许您加载记录、好友与目录，显示持有的装备以及访问鱿鱼圈3。登录需要向任天堂以外的imink或nxapi发送非识别信息，这些信息不会被记录或存储，请参阅隐私政策以获取更多信息。",
+    "您可以在不登录的情况下使用法螺湾查看日程与鱿鱼须商城，导入记录并通过统计与趋势分析。登录将允许您加载记录与好友，显示持有的装备以及访问鱿鱼圈3。登录需要向任天堂以外的imink或nxapi发送非识别信息，这些信息不会被记录或存储，请参阅隐私政策以获取更多信息。",
   log_in_continue: "我已阅读并理解",
   alternative_log_in_notice:
     "如果您拥有会话令牌并希望跳过由法螺湾获取会话令牌，您可以复制会话令牌并通过会话令牌登录。",
@@ -20,7 +20,7 @@ const zhHans = {
   logging_in: "获取令牌中",
   failed_to_acquire_session_token: "未能获取会话令牌 (%{error})",
   log_out_notice:
-    "登出后，您将无法加载记录、好友与目录，显示持有的装备以及访问鱿鱼圈3。法螺湾已存储的记录不会被清除。",
+    "登出后，您将无法加载记录与好友，显示持有的装备以及访问鱿鱼圈3。法螺湾已存储的记录不会被清除。",
   log_out_continue: "登出",
   logging_out: "登出中",
   upgrading_database: "升级数据库中",
@@ -34,7 +34,6 @@ const zhHans = {
   failed_to_load_friends_splatfest_voting: "未能加载好友的祭典投票情况 (%{error})",
   failed_to_check_splatfest: "未能检查祭典 (%{error})",
   failed_to_load_summary: "未能加载总览 (%{error})",
-  failed_to_load_catalog: "未能加载目录 (%{error})",
   failed_to_load_battle_results: "未能加载对战记录 (%{error})",
   failed_to_load_salmon_run_results: "未能加载鲑鱼跑记录 (%{error})",
   loading_n_results: "加载%{n}项记录中",
