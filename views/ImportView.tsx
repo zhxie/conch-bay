@@ -658,7 +658,6 @@ const ImportView = (props: ImportViewProps) => {
 
       setSalmdroidnw(false);
       props.onBegin();
-      const coops: CoopHistoryDetailResult[] = [];
       const Zip = await import("react-native-zip-archive");
       await Zip.unzip(uri, `${FileSystem.cacheDirectory!}/salmdroidNW`);
       const summary = JSON.parse(
@@ -674,6 +673,7 @@ const ImportView = (props: ImportViewProps) => {
         (await FileSystem.getInfoAsync(`${FileSystem.cacheDirectory!}/salmdroidNW/${n}`)).exists;
         n++
       ) {
+        const coops: CoopHistoryDetailResult[] = [];
         const data = JSON.parse(
           await FileSystem.readAsStringAsync(`${FileSystem.cacheDirectory!}/salmdroidNW/${n}`)
         );
