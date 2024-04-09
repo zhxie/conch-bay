@@ -260,7 +260,12 @@ const ResultView = (props: ResultViewProps) => {
     }
     return roundPower(power);
   };
-  const formatName = (name: string, species: Enum<typeof Species>, isSelf: boolean) => {
+  const formatName = (
+    name: string,
+    byname: string,
+    species: Enum<typeof Species>,
+    isSelf: boolean
+  ) => {
     if (hidePlayerNames && !isSelf) {
       switch (species as Species) {
         case Species.INKLING:
@@ -268,6 +273,9 @@ const ResultView = (props: ResultViewProps) => {
         case Species.OCTOLING:
           return "( Ꙭ )三( Ꙭ )✧‧˚";
       }
+    }
+    if (name.length > 10) {
+      return formatByname(byname);
     }
     return name;
   };
@@ -813,7 +821,12 @@ const ResultView = (props: ResultViewProps) => {
                         last={i === players.length - 1}
                         team={getColor(team.color)}
                         self={player.isMyself}
-                        name={formatName(player.name, player.species, player.isMyself)}
+                        name={formatName(
+                          player.name,
+                          player.byname,
+                          player.species,
+                          player.isMyself
+                        )}
                         weapon={getImageCacheSource(player.weapon.image2d.url)}
                         subWeapon={getImageCacheSource(player.weapon.subWeapon.image.url)}
                         specialWeapon={getImageCacheSource(player.weapon.specialWeapon.image.url)}
@@ -996,7 +1009,7 @@ const ResultView = (props: ResultViewProps) => {
                   <VStack center>
                     <Splashtag
                       color={getColor(battlePlayer.nameplate!.background.textColor)}
-                      name={battlePlayer.name}
+                      name={battlePlayer.name.length > 10 ? "???" : battlePlayer.name}
                       nameId={battlePlayer.nameId}
                       title={formatByname(battlePlayer.byname)}
                       banner={getImageCacheSource(battlePlayer.nameplate!.background.image.url)}
@@ -1177,6 +1190,7 @@ const ResultView = (props: ResultViewProps) => {
                         last={i === memberResults.length - 1}
                         name={formatName(
                           memberResult.player.name,
+                          memberResult.player.byname,
                           memberResult.player.species,
                           i === 0
                         )}
@@ -1336,7 +1350,7 @@ const ResultView = (props: ResultViewProps) => {
                   <VStack center>
                     <Splashtag
                       color={getColor(coopPlayer.player.nameplate!.background.textColor)}
-                      name={coopPlayer.player.name}
+                      name={coopPlayer.player.name.length > 10 ? "???" : coopPlayer.player.name}
                       nameId={coopPlayer.player.nameId}
                       title={formatByname(coopPlayer.player.byname)}
                       banner={getImageCacheSource(
