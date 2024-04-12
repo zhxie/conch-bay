@@ -1,12 +1,13 @@
 import { Buffer } from "buffer";
 import dayjs from "dayjs";
 import Constants, { AppOwnership } from "expo-constants";
+import * as Device from "expo-device";
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
 import * as SQLite from "expo-sqlite/next";
 import * as WebBrowser from "expo-web-browser";
 import { useState } from "react";
-import { StyleProp, ViewStyle } from "react-native";
+import { Platform, StyleProp, ViewStyle } from "react-native";
 import {
   BannerLevel,
   Button,
@@ -38,7 +39,14 @@ import { getImageHash } from "../utils/ui";
 const DB_BATCH_SIZE = 4096;
 // Assuming 64MB limitation for JSON-DB importing. The limitation may be easily reached since there
 // is a lot of string-string and string-object conversions.
-const FILE_READ_SIZE = 64 * 1024 * 1024;
+// A much stricter limitation of 16MB limitation per GB memory will be applied to Android devices.
+let FILE_READ_SIZE = 64 * 1024 * 1024;
+const requestFileReadSize = async () => {
+  if (Platform.OS === "android") {
+    const maxMemory = await Device.getMaxMemoryAsync();
+    FILE_READ_SIZE = Math.floor(maxMemory / 1024) * 16;
+  }
+};
 
 enum ImportStreamMode {
   Unknown,
@@ -1010,6 +1018,7 @@ const ImportView = (props: ImportViewProps) => {
     setImporting(true);
     let uri = "";
     try {
+      await requestFileReadSize();
       const doc = await DocumentPicker.getDocumentAsync({ copyToCacheDirectory: true });
       if (doc.canceled) {
         setImporting(false);
