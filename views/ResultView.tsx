@@ -219,13 +219,6 @@ const ResultView = (props: ResultViewProps) => {
     }
     return wave + 1 < coop.coopHistoryDetail!.resultWave;
   };
-  const isCoopSpecialWeaponPadding = (coop: CoopHistoryDetailResult) => {
-    return (
-      coop.coopHistoryDetail!.waveResults.filter(
-        (waveResult) => waveResult.specialWeapons.length > 0
-      ).length > 0
-    );
-  };
 
   const formatJudgement = (battle: VsHistoryDetailResult) => {
     switch (battle.vsHistoryDetail!.judgement as Judgement) {
@@ -1093,42 +1086,36 @@ const ResultView = (props: ResultViewProps) => {
               <VStack style={ViewStyles.wf}>
                 <VStack style={ViewStyles.mb2}>
                   {result.coop.coopHistoryDetail!.waveResults.length > 0 && (
-                    <ScrollView
-                      horizontal
-                      showsHorizontalScrollIndicator={false}
-                      style={ViewStyles.mb2}
-                    >
-                      <HStack center style={ViewStyles.px4}>
-                        {result.coop.coopHistoryDetail!.waveResults.map(
-                          (waveResult, i, waveResults) => (
-                            <WaveBox
-                              key={i}
-                              color={
-                                isCoopWaveClear(result.coop!, i)
-                                  ? getCoopRuleColor(result.coop!.coopHistoryDetail!.rule)!
-                                  : undefined
-                              }
-                              isKingSalmonid={!waveResult.deliverNorm}
-                              waterLevel={formatWaterLevel(waveResult)!}
-                              eventWave={
-                                waveResult.deliverNorm
-                                  ? formatEventWave(waveResult)
-                                  : td(result.coop!.coopHistoryDetail!.bossResult!.boss)
-                              }
-                              deliver={
-                                waveResult.teamDeliverCount ??
-                                (result.coop!.coopHistoryDetail!.bossResult!.hasDefeatBoss ? 1 : 0)
-                              }
-                              quota={waveResult.deliverNorm ?? 1}
-                              appearance={waveResult.goldenPopCount}
-                              specialWeapons={formatWaveSpecialWeapons(result.coop!, waveResult)}
-                              specialWeaponPadding={isCoopSpecialWeaponPadding(result.coop!)}
-                              style={i !== waveResults.length - 1 ? ViewStyles.mr2 : undefined}
-                            />
-                          )
-                        )}
-                      </HStack>
-                    </ScrollView>
+                    <VStack center style={[ViewStyles.px4, ViewStyles.mb2]}>
+                      {result.coop.coopHistoryDetail!.waveResults.map(
+                        (waveResult, i, waveResults) => (
+                          <WaveBox
+                            key={i}
+                            color={
+                              isCoopWaveClear(result.coop!, i)
+                                ? getCoopRuleColor(result.coop!.coopHistoryDetail!.rule)!
+                                : undefined
+                            }
+                            first={i === 0}
+                            last={i === waveResults.length - 1}
+                            isKingSalmonid={!waveResult.deliverNorm}
+                            waterLevel={formatWaterLevel(waveResult)!}
+                            eventWave={
+                              waveResult.deliverNorm
+                                ? formatEventWave(waveResult)
+                                : td(result.coop!.coopHistoryDetail!.bossResult!.boss)
+                            }
+                            deliver={
+                              waveResult.teamDeliverCount ??
+                              (result.coop!.coopHistoryDetail!.bossResult!.hasDefeatBoss ? 1 : 0)
+                            }
+                            quota={waveResult.deliverNorm ?? 1}
+                            appearance={waveResult.goldenPopCount}
+                            specialWeapons={formatWaveSpecialWeapons(result.coop!, waveResult)}
+                          />
+                        )
+                      )}
+                    </VStack>
                   )}
                   {(result.coop.coopHistoryDetail!.enemyResults.length > 0 ||
                     result.coop.coopHistoryDetail!.bossResult !== null) && (
