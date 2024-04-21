@@ -10,9 +10,11 @@ interface WaveBoxProps {
   color?: string;
   first?: boolean;
   last?: boolean;
-  isKingSalmonid?: boolean;
   waterLevel: string;
   eventWave: string;
+  goldScale?: number;
+  silverScale?: number;
+  bronzeScale?: number;
   deliver: number;
   quota: number;
   appearance: number;
@@ -52,18 +54,34 @@ const WaveBox = (props: WaveBoxProps) => {
           <HStack flex center style={ViewStyles.mr1}>
             <Marquee>{props.eventWave}</Marquee>
           </HStack>
-          <HStack center>
-            <Circle
-              size={10}
-              color={props.isKingSalmonid ? Color.KillAndRescue : Color.GoldenEgg}
-              style={ViewStyles.mr1}
-            />
-            <Text numberOfLines={1} style={ViewStyles.mr1}>
-              {`${props.deliver} / ${props.quota}`}
-            </Text>
-            <Circle size={10} color={Color.Special} style={ViewStyles.mr1} />
-            <Text numberOfLines={1}>{props.appearance}</Text>
-          </HStack>
+          {props.bronzeScale !== undefined && (
+            <HStack center>
+              <Circle size={10} color={Color.GoldScale} style={ViewStyles.mr1} />
+              <Text numberOfLines={1} style={ViewStyles.mr1}>
+                {props.goldScale}
+              </Text>
+              <Circle size={10} color={Color.SilverScale} style={ViewStyles.mr1} />
+              <Text numberOfLines={1} style={ViewStyles.mr1}>
+                {props.silverScale}
+              </Text>
+              <Circle size={10} color={Color.BronzeScale} style={ViewStyles.mr1} />
+              <Text numberOfLines={1} style={ViewStyles.mr1}>
+                {props.bronzeScale}
+              </Text>
+              <Circle size={10} color={Color.Special} style={ViewStyles.mr1} />
+              <Text numberOfLines={1}>{props.appearance}</Text>
+            </HStack>
+          )}
+          {props.bronzeScale === undefined && (
+            <HStack center>
+              <Circle size={10} color={Color.GoldenEgg} style={ViewStyles.mr1} />
+              <Text numberOfLines={1} style={ViewStyles.mr1}>
+                {`${props.deliver} / ${props.quota}`}
+              </Text>
+              <Circle size={10} color={Color.Special} style={ViewStyles.mr1} />
+              <Text numberOfLines={1}>{props.appearance}</Text>
+            </HStack>
+          )}
         </HStack>
         {props.specialWeapons.length > 0 && (
           <HStack flex center justify>

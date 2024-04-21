@@ -1098,12 +1098,26 @@ const ResultView = (props: ResultViewProps) => {
                             }
                             first={i === 0}
                             last={i === waveResults.length - 1}
-                            isKingSalmonid={!waveResult.deliverNorm}
                             waterLevel={formatWaterLevel(waveResult)!}
                             eventWave={
                               waveResult.deliverNorm
                                 ? formatEventWave(waveResult)
                                 : td(result.coop!.coopHistoryDetail!.bossResult!.boss)
+                            }
+                            goldScale={
+                              i === waveResults.length - 1
+                                ? result.coop!.coopHistoryDetail!.scale?.gold
+                                : undefined
+                            }
+                            silverScale={
+                              i === waveResults.length - 1
+                                ? result.coop!.coopHistoryDetail!.scale?.silver
+                                : undefined
+                            }
+                            bronzeScale={
+                              i === waveResults.length - 1
+                                ? result.coop!.coopHistoryDetail!.scale?.bronze
+                                : undefined
                             }
                             deliver={
                               waveResult.teamDeliverCount ??
@@ -1117,13 +1131,52 @@ const ResultView = (props: ResultViewProps) => {
                       )}
                     </VStack>
                   )}
+                  <VStack
+                    style={[
+                      ViewStyles.px4,
+                      (result.coop.coopHistoryDetail!.enemyResults.length > 0 ||
+                        result.coop.coopHistoryDetail!.bossResult !== null) &&
+                        ViewStyles.mb2,
+                    ]}
+                  >
+                    {[
+                      result.coop.coopHistoryDetail!.myResult,
+                      ...result.coop.coopHistoryDetail!.memberResults,
+                    ].map((memberResult, i, memberResults) => (
+                      <CoopPlayerButton
+                        key={i}
+                        first={i === 0}
+                        last={i === memberResults.length - 1}
+                        name={formatName(
+                          memberResult.player.name,
+                          memberResult.player.byname,
+                          memberResult.player.species,
+                          i === 0
+                        )}
+                        subtitle={`${t("boss_salmonids")} x${memberResult.defeatEnemyCount}`}
+                        mainWeapons={memberResult.weapons.map((weapon) =>
+                          getImageCacheSource(weapon.image.url)
+                        )}
+                        specialWeapon={
+                          memberResult.specialWeapon
+                            ? getImageCacheSource(memberResult.specialWeapon.image.url)
+                            : undefined
+                        }
+                        deliverGoldenEgg={memberResult.goldenDeliverCount}
+                        assistGoldenEgg={memberResult.goldenAssistCount}
+                        powerEgg={memberResult.deliverCount}
+                        rescue={memberResult.rescueCount}
+                        rescued={memberResult.rescuedCount}
+                        onPress={() => {
+                          setCoopPlayer(memberResult);
+                          setDisplayCoopPlayer(true);
+                        }}
+                      />
+                    ))}
+                  </VStack>
                   {(result.coop.coopHistoryDetail!.enemyResults.length > 0 ||
                     result.coop.coopHistoryDetail!.bossResult !== null) && (
-                    <ScrollView
-                      horizontal
-                      showsHorizontalScrollIndicator={false}
-                      style={ViewStyles.mb2}
-                    >
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                       <HStack center style={ViewStyles.px4}>
                         {result.coop.coopHistoryDetail!.bossResult !== null && (
                           <KingSalmonidBox
@@ -1166,42 +1219,6 @@ const ResultView = (props: ResultViewProps) => {
                       </HStack>
                     </ScrollView>
                   )}
-                  <VStack style={ViewStyles.px4}>
-                    {[
-                      result.coop.coopHistoryDetail!.myResult,
-                      ...result.coop.coopHistoryDetail!.memberResults,
-                    ].map((memberResult, i, memberResults) => (
-                      <CoopPlayerButton
-                        key={i}
-                        first={i === 0}
-                        last={i === memberResults.length - 1}
-                        name={formatName(
-                          memberResult.player.name,
-                          memberResult.player.byname,
-                          memberResult.player.species,
-                          i === 0
-                        )}
-                        subtitle={`${t("boss_salmonids")} x${memberResult.defeatEnemyCount}`}
-                        mainWeapons={memberResult.weapons.map((weapon) =>
-                          getImageCacheSource(weapon.image.url)
-                        )}
-                        specialWeapon={
-                          memberResult.specialWeapon
-                            ? getImageCacheSource(memberResult.specialWeapon.image.url)
-                            : undefined
-                        }
-                        deliverGoldenEgg={memberResult.goldenDeliverCount}
-                        assistGoldenEgg={memberResult.goldenAssistCount}
-                        powerEgg={memberResult.deliverCount}
-                        rescue={memberResult.rescueCount}
-                        rescued={memberResult.rescuedCount}
-                        onPress={() => {
-                          setCoopPlayer(memberResult);
-                          setDisplayCoopPlayer(true);
-                        }}
-                      />
-                    ))}
-                  </VStack>
                 </VStack>
                 <VStack style={[ViewStyles.mb2, ViewStyles.px4]}>
                   <AccordionDisplay
