@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { ForwardedRef, forwardRef, useImperativeHandle, useState } from "react";
 import { StyleProp, ViewStyle } from "react-native";
 import Icon, { IconName } from "./Icon";
 import Marquee from "./Marquee";
@@ -51,36 +51,54 @@ const Display = (props: DisplayProps) => {
   );
 };
 
+interface AccordionDisplayHandle {
+  expand: () => void;
+  collapse: () => void;
+}
+
 interface AccordionDisplayProps extends DisplayProps {
   expand?: boolean;
   subChildren?: React.ReactNode;
 }
 
-const AccordionDisplay = (props: AccordionDisplayProps) => {
-  const { subChildren, last, ...rest } = props;
+const AccordionDisplay = forwardRef(
+  (props: AccordionDisplayProps, ref: ForwardedRef<AccordionDisplayHandle>) => {
+    const { subChildren, last, ...rest } = props;
 
-  const [expand, setExpand] = useState(props.expand ?? false);
+    useImperativeHandle(ref, () => {
+      return {
+        expand: () => {
+          setExpand(true);
+        },
+        collapse: () => {
+          setExpand(false);
+        },
+      };
+    });
 
-  const onPress = () => {
-    setExpand(!expand);
-  };
+    const [expand, setExpand] = useState(props.expand ?? false);
 
-  if (subChildren === undefined || React.Children.count(subChildren) === 0) {
-    return <Display {...props} />;
+    const onPress = () => {
+      setExpand(!expand);
+    };
+
+    if (subChildren === undefined || React.Children.count(subChildren) === 0) {
+      return <Display {...props} />;
+    }
+
+    return (
+      <VStack>
+        <Pressable onPress={onPress} style={{ backgroundColor: "transparent" }}>
+          <Display
+            last={last && !expand}
+            icon={expand ? "chevron-down" : "chevron-right"}
+            {...rest}
+          />
+        </Pressable>
+        {expand && subChildren}
+      </VStack>
+    );
   }
+);
 
-  return (
-    <VStack>
-      <Pressable onPress={onPress} style={{ backgroundColor: "transparent" }}>
-        <Display
-          last={last && !expand}
-          icon={expand ? "chevron-down" : "chevron-right"}
-          {...rest}
-        />
-      </Pressable>
-      {expand && subChildren}
-    </VStack>
-  );
-};
-
-export { Display, AccordionDisplay };
+export { Display, AccordionDisplay, AccordionDisplayHandle };

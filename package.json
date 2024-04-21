@@ -60,6 +60,7 @@
     "react-native-svg": "14.1.0",
     "react-native-text-ticker": "^1.14.0",
     "react-native-toast-banner": "^1.1.0",
+    "react-native-view-shot": "^3.8.0",
     "react-native-webview": "13.6.4",
     "react-native-zip-archive": "^6.1.0",
     "semver": "^7.5.4",

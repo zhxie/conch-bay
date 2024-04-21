@@ -186,6 +186,7 @@ const en = {
   scenario_code: "Scenario Code",
   hide_player_names: "Hide Player Names",
   show_player_names: "Show Player Names",
+  share_image: "Share Image",
   show_raw_data: "Show Raw Data",
   self: "Self",
   team: "Team",

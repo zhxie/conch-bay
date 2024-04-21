@@ -181,6 +181,7 @@ const zhHant = {
   scenario_code: "劇本代碼",
   hide_player_names: "隱藏玩家名稱",
   show_player_names: "顯示玩家名稱",
+  share_image: "分享圖片",
   show_raw_data: "顯示原始數據",
   self: "自己",
   team: "團隊",

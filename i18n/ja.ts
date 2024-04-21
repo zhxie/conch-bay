@@ -187,6 +187,7 @@ const ja = {
   scenario_code: "シナリオコード",
   hide_player_names: "プレイヤー名を隠す",
   show_player_names: "プレイヤー名を表示",
+  share_image: "写真をシェア",
   show_raw_data: "生データを表示",
   self: "自分",
   team: "チーム",

@@ -181,6 +181,7 @@ const zhHans = {
   scenario_code: "剧本代码",
   hide_player_names: "隐藏玩家名称",
   show_player_names: "显示玩家名称",
+  share_image: "分享图片",
   show_raw_data: "显示原始数据",
   self: "自己",
   team: "团队",

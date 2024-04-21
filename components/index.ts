@@ -14,7 +14,7 @@ export { default as CoopPlayerButton } from "./CoopPlayerButton";
 export { default as CoopRotationButton } from "./CoopRotationButton";
 export { default as CoopWeaponBox } from "./CoopWeaponBox";
 export { default as Dialog, CustomDialog, DialogSection } from "./Dialog";
-export { Display, AccordionDisplay } from "./Display";
+export { Display, AccordionDisplay, AccordionDisplayHandle } from "./Display";
 export { FilterButton, ColorFilterButton } from "./FilterButton";
 export { default as FloatingActionButton } from "./FloatingActionButton";
 export { default as GearBox } from "./GearBox";
