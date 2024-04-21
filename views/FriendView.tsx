@@ -136,7 +136,6 @@ const FriendView = (props: FriendViewProps) => {
       <AvatarButton
         size={48}
         image={getUserIconCacheSource(friend.item.userIcon.url)}
-        recyclingKey={friend.item.id}
         badge={{
           color: getFriendColor(friend.item) ?? friend.extraData,
           outline: getFriendOutline(friend.item),

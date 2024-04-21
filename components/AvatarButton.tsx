@@ -8,7 +8,6 @@ interface AvatarButtonProps {
   size: number;
   disabled?: boolean;
   image?: ImageSource;
-  recyclingKey?: string;
   badge?: BadgeProps;
   style?: StyleProp<ViewStyle>;
   imageStyle?: StyleProp<ImageStyle>;
@@ -26,13 +25,7 @@ const AvatarButton = (props: AvatarButtonProps) => {
       onLongPress={props.onLongPress}
       style={[circle, props.style]}
     >
-      {props.image && (
-        <Image
-          source={props.image}
-          recyclingKey={props.recyclingKey}
-          style={[circle, props.imageStyle]}
-        />
-      )}
+      {props.image && <Image source={props.image} style={[circle, props.imageStyle]} />}
       {props.badge && (
         <Circle
           size={12}

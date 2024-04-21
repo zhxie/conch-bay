@@ -61,7 +61,6 @@ const CoopRotationButton = <T,>(props: CoopRotationButtonProps<T>) => {
           <Image
             key={i}
             source={weapon}
-            recyclingKey={weapon.cacheKey}
             style={[
               i !== weapons.length - 1 && ViewStyles.mr0_5,
               { width: 20, height: 20, backgroundColor: "transparent" },

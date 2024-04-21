@@ -5,7 +5,6 @@ import { useTheme } from "./Styles";
 interface ImageProps {
   source?: ImageSource;
   contentFit?: ImageContentFit;
-  recyclingKey?: string;
   style?: StyleProp<ImageStyle>;
 }
 
@@ -19,7 +18,7 @@ const Image = (props: ImageProps) => {
       // HACK: forcly cast.
       style={[theme.territoryStyle, props.style as any]}
       transition={300}
-      recyclingKey={props.recyclingKey}
+      recyclingKey={props.source?.cacheKey}
     />
   );
 };

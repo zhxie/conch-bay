@@ -15,7 +15,6 @@ interface GearBoxProps {
   brand?: string;
   primaryAbility: ImageSource;
   additionalAbility: ImageSource[];
-  recyclingKey?: string;
   paddingTo: number;
   style?: StyleProp<ViewStyle>;
 }
@@ -43,14 +42,9 @@ const GearBox = (props: GearBoxProps) => {
         <HStack flex center style={ViewStyles.mr1}>
           {/* HACK: the right margin looks wider than the left one due to optical illusion. */}
           <Center style={ViewStyles.mr2}>
-            <Image
-              source={props.image}
-              recyclingKey={props.recyclingKey}
-              style={{ width: 32, height: 32 }}
-            />
+            <Image source={props.image} style={{ width: 32, height: 32 }} />
             <Image
               source={props.brandImage}
-              recyclingKey={props.recyclingKey}
               style={[
                 ViewStyles.transparent,
                 { width: 12, height: 12, position: "absolute", left: 0, top: 0 },
@@ -69,7 +63,6 @@ const GearBox = (props: GearBoxProps) => {
             <Circle size={30} color={Color.DarkBackground} />
             <Image
               source={props.primaryAbility}
-              recyclingKey={props.recyclingKey}
               style={[ViewStyles.transparent, { width: 26, height: 26, position: "absolute" }]}
             />
           </Center>
@@ -78,7 +71,6 @@ const GearBox = (props: GearBoxProps) => {
               <Circle size={20} color={Color.DarkBackground} />
               <Image
                 source={gearPower}
-                recyclingKey={props.recyclingKey}
                 style={[ViewStyles.transparent, { width: 18, height: 18, position: "absolute" }]}
               />
             </Center>
