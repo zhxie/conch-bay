@@ -1144,6 +1144,11 @@ const ResultView = (props: ResultViewProps) => {
                         key={i}
                         first={i === 0}
                         last={i === memberResults.length - 1}
+                        self={
+                          i === 0
+                            ? getCoopRuleColor(result.coop!.coopHistoryDetail!.rule)
+                            : undefined
+                        }
                         name={formatName(
                           memberResult.player.name,
                           memberResult.player.byname,

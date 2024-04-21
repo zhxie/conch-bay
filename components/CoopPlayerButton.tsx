@@ -9,6 +9,7 @@ import Text from "./Text";
 interface CoopPlayerButtonProps {
   first?: boolean;
   last?: boolean;
+  self?: string;
   name: string;
   subtitle: string;
   mainWeapons: ImageSource[];
@@ -33,6 +34,7 @@ const CoopPlayerButton = (props: CoopPlayerButtonProps) => {
     <ResultButton
       first={props.first}
       last={props.last}
+      tag={props.self}
       title={props.name}
       subtitle={props.subtitle}
       subChildren={
