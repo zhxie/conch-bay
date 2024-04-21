@@ -9,7 +9,6 @@ import {
   NativeScrollEvent,
   NativeSyntheticEvent,
   RefreshControlProps,
-  ScrollView,
   StyleProp,
   ViewStyle,
   useWindowDimensions,
@@ -33,7 +32,6 @@ import {
   GroupButton,
   HStack,
   Image,
-  KingSalmonidBox,
   Marquee,
   Modal,
   PureIconButton,
@@ -50,8 +48,9 @@ import {
   WorkSuitBox,
   useBanner,
   useTheme,
+  EmptyBossSalmonidBox,
 } from "../components";
-import t, { ScopeWithDefaultValue, td } from "../i18n";
+import t, { td } from "../i18n";
 import awardList from "../models/awards.json";
 import titleList from "../models/titles.json";
 import {
@@ -1134,9 +1133,7 @@ const ResultView = (props: ResultViewProps) => {
                   <VStack
                     style={[
                       ViewStyles.px4,
-                      (result.coop.coopHistoryDetail!.enemyResults.length > 0 ||
-                        result.coop.coopHistoryDetail!.bossResult !== null) &&
-                        ViewStyles.mb2,
+                      result.coop.coopHistoryDetail!.enemyResults.length > 0 && ViewStyles.mb2,
                     ]}
                   >
                     {[
@@ -1174,50 +1171,61 @@ const ResultView = (props: ResultViewProps) => {
                       />
                     ))}
                   </VStack>
-                  {(result.coop.coopHistoryDetail!.enemyResults.length > 0 ||
-                    result.coop.coopHistoryDetail!.bossResult !== null) && (
-                    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                      <HStack center style={ViewStyles.px4}>
-                        {result.coop.coopHistoryDetail!.bossResult !== null && (
-                          <KingSalmonidBox
-                            color={
-                              result.coop.coopHistoryDetail!.bossResult.hasDefeatBoss
-                                ? getCoopRuleColor(result.coop.coopHistoryDetail!.rule)!
-                                : undefined
-                            }
-                            name={td(
-                              result.coop.coopHistoryDetail!.bossResult
-                                .boss as ScopeWithDefaultValue
-                            )}
-                            bronzeScale={result.coop.coopHistoryDetail!.scale!.bronze}
-                            silverScale={result.coop.coopHistoryDetail!.scale!.silver}
-                            goldScale={result.coop.coopHistoryDetail!.scale!.gold}
-                            style={
-                              result.coop.coopHistoryDetail!.enemyResults.length > 0
-                                ? ViewStyles.mr2
-                                : undefined
-                            }
-                          />
-                        )}
-                        {result.coop.coopHistoryDetail!.enemyResults.map(
-                          (enemyResult, i, enemyResults) => (
-                            <BossSalmonidBox
-                              key={i}
-                              color={
-                                enemyResult.teamDefeatCount === enemyResult.popCount
-                                  ? getCoopRuleColor(result.coop!.coopHistoryDetail!.rule)!
-                                  : undefined
-                              }
-                              name={td(enemyResult.enemy)}
-                              defeat={enemyResult.defeatCount}
-                              teamDefeat={enemyResult.teamDefeatCount}
-                              appearance={enemyResult.popCount}
-                              style={i !== enemyResults.length - 1 ? ViewStyles.mr2 : undefined}
-                            />
-                          )
-                        )}
-                      </HStack>
-                    </ScrollView>
+                  {result.coop.coopHistoryDetail!.enemyResults.length > 0 && (
+                    <VStack style={ViewStyles.px4}>
+                      {new Array(
+                        Math.floor((result.coop.coopHistoryDetail!.enemyResults.length + 2) / 3)
+                      )
+                        .fill(0)
+                        .map((_, i, rows) => (
+                          <HStack key={i}>
+                            {new Array(3)
+                              .fill(0)
+                              .map((_, j, columns) =>
+                                3 * i + j >= result.coop!.coopHistoryDetail!.enemyResults.length ? (
+                                  <EmptyBossSalmonidBox
+                                    key={j}
+                                    firstRow={i === 0}
+                                    lastRow={i === rows.length - 1}
+                                    firstColumn={j === 0}
+                                    lastColumn={j === columns.length - 1}
+                                  />
+                                ) : (
+                                  <BossSalmonidBox
+                                    key={j}
+                                    firstRow={i === 0}
+                                    lastRow={i === rows.length - 1}
+                                    firstColumn={j === 0}
+                                    lastColumn={j === columns.length - 1}
+                                    color={
+                                      result.coop!.coopHistoryDetail!.enemyResults[i * 3 + j]
+                                        .teamDefeatCount ===
+                                      result.coop!.coopHistoryDetail!.enemyResults[i * 3 + j]
+                                        .popCount
+                                        ? getCoopRuleColor(result.coop!.coopHistoryDetail!.rule)!
+                                        : undefined
+                                    }
+                                    name={td(
+                                      result.coop!.coopHistoryDetail!.enemyResults[i * 3 + j].enemy
+                                    )}
+                                    defeat={
+                                      result.coop!.coopHistoryDetail!.enemyResults[i * 3 + j]
+                                        .defeatCount
+                                    }
+                                    teamDefeat={
+                                      result.coop!.coopHistoryDetail!.enemyResults[i * 3 + j]
+                                        .teamDefeatCount
+                                    }
+                                    appearance={
+                                      result.coop!.coopHistoryDetail!.enemyResults[i * 3 + j]
+                                        .popCount
+                                    }
+                                  />
+                                )
+                              )}
+                          </HStack>
+                        ))}
+                    </VStack>
                   )}
                 </VStack>
                 <VStack style={[ViewStyles.mb2, ViewStyles.px4]}>

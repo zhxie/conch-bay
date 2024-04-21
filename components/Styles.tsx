@@ -256,6 +256,18 @@ export const ViewStyles = StyleSheet.create({
     borderTopRightRadius: 8,
     borderBottomRightRadius: 8,
   },
+  rtl2: {
+    borderTopLeftRadius: 8,
+  },
+  rtr2: {
+    borderTopRightRadius: 8,
+  },
+  rbl2: {
+    borderBottomLeftRadius: 8,
+  },
+  rbr2: {
+    borderBottomRightRadius: 8,
+  },
   s1: {
     shadowColor: "black",
     shadowOffset: { width: 0, height: 1 },
@@ -403,6 +415,30 @@ export const ViewStyles = StyleSheet.create({
   },
   py4: {
     paddingVertical: 16,
+  },
+  pt1: {
+    paddingTop: 4,
+  },
+  pt2: {
+    paddingTop: 8,
+  },
+  pt3: {
+    paddingTop: 12,
+  },
+  pt4: {
+    paddingTop: 16,
+  },
+  pb1: {
+    paddingBottom: 4,
+  },
+  pb2: {
+    paddingBottom: 8,
+  },
+  pb3: {
+    paddingBottom: 12,
+  },
+  pb4: {
+    paddingBottom: 16,
   },
 });
 

@@ -1,11 +1,69 @@
 import { StyleProp, ViewStyle } from "react-native";
 import Marquee from "./Marquee";
-import { Circle } from "./Shape";
 import { HStack, VStack } from "./Stack";
-import { Color, TextStyles, ViewStyles, useTheme } from "./Styles";
+import { TextStyles, ViewStyles, useTheme } from "./Styles";
 import Text from "./Text";
 
-interface BossSalmonidBoxProps {
+interface EmptyBossSalmonidBoxProps {
+  firstRow: boolean;
+  lastRow: boolean;
+  firstColumn: boolean;
+  lastColumn: boolean;
+  style?: StyleProp<ViewStyle>;
+  children?: React.ReactNode;
+}
+
+const EmptyBossSalmonidBox = (props: EmptyBossSalmonidBoxProps) => {
+  const theme = useTheme();
+
+  return (
+    <VStack
+      flex
+      style={[
+        props.firstRow && props.firstColumn && ViewStyles.rtl2,
+        props.firstRow && props.lastColumn && ViewStyles.rtr2,
+        props.lastRow && props.firstColumn && ViewStyles.rbl2,
+        props.lastRow && props.lastColumn && ViewStyles.rbr2,
+        theme.territoryStyle,
+        props.style,
+      ]}
+    >
+      <VStack
+        flex
+        style={[
+          props.firstRow && ViewStyles.pt2,
+          props.lastRow && ViewStyles.pb2,
+          props.firstColumn && ViewStyles.pl2,
+          props.lastColumn && ViewStyles.pr2,
+        ]}
+      >
+        <VStack
+          flex
+          center
+          justify
+          style={[
+            !props.firstRow && ViewStyles.pt2,
+            !props.lastRow && ViewStyles.pb2,
+            !props.firstColumn && ViewStyles.pl2,
+            !props.lastColumn && ViewStyles.pr2,
+            !props.firstRow && ViewStyles.sept,
+            !props.lastRow && ViewStyles.sepb,
+            !props.firstColumn && ViewStyles.sepl,
+            !props.lastColumn && ViewStyles.sepr,
+          ]}
+        >
+          {props.children}
+        </VStack>
+      </VStack>
+    </VStack>
+  );
+};
+
+interface BossSalmonidBoxProps extends EmptyBossSalmonidBoxProps {
+  firstRow: boolean;
+  lastRow: boolean;
+  firstColumn: boolean;
+  lastColumn: boolean;
   color?: string;
   name: string;
   defeat: number;
@@ -15,43 +73,25 @@ interface BossSalmonidBoxProps {
 }
 
 const BossSalmonidBox = (props: BossSalmonidBoxProps) => {
-  const theme = useTheme();
+  const { color, name, defeat, teamDefeat, appearance, ...rest } = props;
 
-  const defeat =
-    props.defeat > 0 ? `${props.teamDefeat}(${props.defeat})` : String(props.teamDefeat);
+  const formattedDefeat = defeat > 0 ? `${teamDefeat}(${defeat})` : String(teamDefeat);
 
   return (
-    <VStack
-      style={[
-        ViewStyles.r2,
-        ViewStyles.p2,
-        { width: 110, height: 70 },
-        theme.territoryStyle,
-        props.style,
-      ]}
-    >
-      <VStack flex justify>
-        <Marquee
-          style={[
-            ViewStyles.mb1,
-            TextStyles.h2,
-            TextStyles.subtle,
-            !!props.color && { color: props.color },
-          ]}
-        >
-          {props.name}
-        </Marquee>
-        <HStack center>
-          <Circle size={10} color={Color.KillAndRescue} style={ViewStyles.mr1} />
-          <Text numberOfLines={1} style={ViewStyles.mr1}>
-            {defeat}
-          </Text>
-          <Circle size={10} color={Color.Special} style={ViewStyles.mr1} />
-          <Text numberOfLines={1}>{props.appearance}</Text>
-        </HStack>
-      </VStack>
-    </VStack>
+    <EmptyBossSalmonidBox {...rest}>
+      <Marquee
+        style={[ViewStyles.mb2, TextStyles.h2, TextStyles.subtle, !!color && { color: color }]}
+      >
+        {name}
+      </Marquee>
+      <HStack center>
+        <Text numberOfLines={1}>
+          {formattedDefeat} / {appearance}
+        </Text>
+      </HStack>
+    </EmptyBossSalmonidBox>
   );
 };
 
+export { EmptyBossSalmonidBox };
 export default BossSalmonidBox;
