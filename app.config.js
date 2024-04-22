@@ -1,8 +1,10 @@
 import withAndroidLocalizedName from "@mmomtchev/expo-android-localized-app-name";
 import withAndroidLargeHeap from "./plugins/withAndroidLargeHeap";
 
+const IS_DEV = process.env.APP_VARIANT === "development";
+
 const config = {
-  name: "Conch Bay",
+  name: IS_DEV ? "Conch Bay (Dev)" : "Conch Bay",
   slug: "conch-bay",
   version: "2.1.0",
   orientation: "portrait",
@@ -12,10 +14,10 @@ const config = {
     fallbackToCacheTimeout: 0,
   },
   locales: {
-    en: "./i18n/locales/en.json",
-    ja: "./i18n/locales/ja.json",
-    "zh-Hans": "./i18n/locales/zh-Hans.json",
-    "zh-Hant": "./i18n/locales/zh-Hant.json",
+    en: IS_DEV ? "./i18n/locales/en-dev.json" : "./i18n/locales/en.json",
+    ja: IS_DEV ? "./i18n/locales/ja-dev.json" : "./i18n/locales/ja.json",
+    "zh-Hans": IS_DEV ? "./i18n/locales/zh-Hans-dev.json" : "./i18n/locales/zh-Hans.json",
+    "zh-Hant": IS_DEV ? "./i18n/locales/zh-Hant-dev.json" : "./i18n/locales/zh-Hant.json",
   },
   assetBundlePatterns: ["**/*"],
   plugins: [withAndroidLargeHeap, withAndroidLocalizedName, "expo-localization"],
@@ -24,7 +26,7 @@ const config = {
     backgroundColor: "#FAFAFA",
   },
   ios: {
-    bundleIdentifier: "name.sketch.ConchBay",
+    bundleIdentifier: IS_DEV ? "name.sketch.ConchBay.dev" : "name.sketch.ConchBay",
     buildNumber: "146",
     config: {
       usesNonExemptEncryption: false,
@@ -64,7 +66,7 @@ const config = {
     },
   },
   android: {
-    package: "name.sketch.conch_bay",
+    package: IS_DEV ? "name.sketch.conch_bay.dev" : "name.sketch.conch_bay",
     versionCode: 146,
     adaptiveIcon: {
       foregroundImage: "./assets/adaptive-icon.png",

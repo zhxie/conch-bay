@@ -1,6 +1,5 @@
 import { Buffer } from "buffer";
 import dayjs from "dayjs";
-import Constants, { AppOwnership } from "expo-constants";
 import * as Device from "expo-device";
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
@@ -8,6 +7,7 @@ import * as SQLite from "expo-sqlite/next";
 import * as WebBrowser from "expo-web-browser";
 import { useState } from "react";
 import { Platform, StyleProp, ViewStyle } from "react-native";
+import Zip from "react-native-zip-archive";
 import {
   BannerLevel,
   Button,
@@ -525,7 +525,6 @@ const ImportView = (props: ImportViewProps) => {
 
       setIkawidget3(false);
       props.onBegin();
-      const Zip = await import("react-native-zip-archive");
       await Zip.unzip(uri, `${FileSystem.cacheDirectory!}/ikawidget3`);
       const account = JSON.parse(
         await FileSystem.readAsStringAsync(`${FileSystem.cacheDirectory}/ikawidget3/account.json`)
@@ -666,7 +665,6 @@ const ImportView = (props: ImportViewProps) => {
 
       setSalmdroidnw(false);
       props.onBegin();
-      const Zip = await import("react-native-zip-archive");
       await Zip.unzip(uri, `${FileSystem.cacheDirectory!}/salmdroidNW`);
       const summary = JSON.parse(
         await FileSystem.readAsStringAsync(`${FileSystem.cacheDirectory!}/salmdroidNW/summary`)
@@ -1075,9 +1073,7 @@ const ImportView = (props: ImportViewProps) => {
             <Marquee>{t("convert_stat_ink_salmon_run_json")}</Marquee>
           </Button>
           <Button
-            disabled={
-              Constants.appOwnership === AppOwnership.Expo || (props.disabled && !importing)
-            }
+            disabled={props.disabled && !importing}
             loading={importing}
             loadingText={t("importing")}
             style={[ViewStyles.mb2, ViewStyles.accent]}
@@ -1124,7 +1120,7 @@ const ImportView = (props: ImportViewProps) => {
         >
           <Dialog icon="info" text={t("import_ikawidget3_ikax3_notice")}>
             <Button
-              disabled={Constants.appOwnership === AppOwnership.Expo || importing}
+              disabled={importing}
               style={ViewStyles.accent}
               textStyle={theme.reverseTextStyle}
               onPress={onImportIkawidget3Ikax3ContinuePress}
@@ -1140,7 +1136,7 @@ const ImportView = (props: ImportViewProps) => {
         >
           <Dialog icon="info" text={t("import_salmdroidnw_backup_notice")}>
             <Button
-              disabled={Constants.appOwnership === AppOwnership.Expo || importing}
+              disabled={importing}
               style={ViewStyles.accent}
               textStyle={theme.reverseTextStyle}
               onPress={onImportSalmdroidnwBackupContinuePress}

@@ -5,7 +5,6 @@ import dayjs from "dayjs";
 import * as Application from "expo-application";
 import { BlurView } from "expo-blur";
 import * as Clipboard from "expo-clipboard";
-import Constants, { AppOwnership } from "expo-constants";
 import * as FileSystem from "expo-file-system";
 import { Image } from "expo-image";
 import * as IntentLauncher from "expo-intent-launcher";
@@ -28,6 +27,7 @@ import {
   ScrollView,
   useWindowDimensions,
 } from "react-native";
+import FileAccess from "react-native-file-access";
 import * as Progress from "react-native-progress";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import semver from "semver";
@@ -307,16 +307,14 @@ const MainView = () => {
         // HACK: avoid animation racing.
         setTimeout(() => {
           refresh();
-          if (Constants.appOwnership !== AppOwnership.Expo) {
-            const current = Application.nativeApplicationVersion!;
-            ok(
-              fetchReleaseVersion().then((version) => {
-                if (semver.compare(version.replace("v", ""), current) > 0) {
-                  setUpdate(true);
-                }
-              })
-            );
-          }
+          const current = Application.nativeApplicationVersion!;
+          ok(
+            fetchReleaseVersion().then((version) => {
+              if (semver.compare(version.replace("v", ""), current) > 0) {
+                setUpdate(true);
+              }
+            })
+          );
         }, 100);
       });
     }
@@ -1338,58 +1336,33 @@ const MainView = () => {
     setExporting(true);
     const uri = FileSystem.cacheDirectory + `conch-bay-export.json`;
     try {
-      if (Constants.appOwnership === AppOwnership.Expo) {
-        let battles = "";
-        let coops = "";
-        for await (const row of Database.queryDetailEach()) {
-          if (row.mode === "salmon_run") {
-            coops += `${row.detail},`;
-          } else {
-            battles += `${row.detail},`;
-          }
+      await FileSystem.writeAsStringAsync(uri, '{"battles":[', {
+        encoding: FileSystem.EncodingType.UTF8,
+      });
+      let battleStarted = false;
+      for await (const row of Database.queryDetailEach({
+        modes: ["salmon_run"],
+        inverted: true,
+      })) {
+        if (!battleStarted) {
+          await FileAccess.FileSystem.appendFile(uri, row.detail, "utf8");
+          battleStarted = true;
+        } else {
+          await FileAccess.FileSystem.appendFile(uri, `,${row.detail}`, "utf8");
         }
-
-        if (battles.endsWith(",")) {
-          battles = battles.substring(0, battles.length - 1);
-        }
-        if (coops.endsWith(",")) {
-          coops = coops.substring(0, coops.length - 1);
-        }
-        await FileSystem.writeAsStringAsync(uri, `{"battles":[${battles}],"coops":[${coops}]}`, {
-          encoding: FileSystem.EncodingType.UTF8,
-        });
-      } else {
-        // HACK: dynamic import the library.
-        const FileAccess = await import("react-native-file-access");
-        // Export battles.
-        await FileSystem.writeAsStringAsync(uri, '{"battles":[', {
-          encoding: FileSystem.EncodingType.UTF8,
-        });
-        let battleStarted = false;
-        for await (const row of Database.queryDetailEach({
-          modes: ["salmon_run"],
-          inverted: true,
-        })) {
-          if (!battleStarted) {
-            await FileAccess.FileSystem.appendFile(uri, row.detail, "utf8");
-            battleStarted = true;
-          } else {
-            await FileAccess.FileSystem.appendFile(uri, `,${row.detail}`, "utf8");
-          }
-        }
-        // Export coops.
-        await FileAccess.FileSystem.appendFile(uri, '],"coops":[', "utf8");
-        let coopStarted = false;
-        for await (const row of Database.queryDetailEach({ modes: ["salmon_run"] })) {
-          if (!coopStarted) {
-            await FileAccess.FileSystem.appendFile(uri, row.detail, "utf8");
-            coopStarted = true;
-          } else {
-            await FileAccess.FileSystem.appendFile(uri, `,${row.detail}`, "utf8");
-          }
-        }
-        await FileAccess.FileSystem.appendFile(uri, "]}", "utf8");
       }
+      // Export coops.
+      await FileAccess.FileSystem.appendFile(uri, '],"coops":[', "utf8");
+      let coopStarted = false;
+      for await (const row of Database.queryDetailEach({ modes: ["salmon_run"] })) {
+        if (!coopStarted) {
+          await FileAccess.FileSystem.appendFile(uri, row.detail, "utf8");
+          coopStarted = true;
+        } else {
+          await FileAccess.FileSystem.appendFile(uri, `,${row.detail}`, "utf8");
+        }
+      }
+      await FileAccess.FileSystem.appendFile(uri, "]}", "utf8");
 
       await Sharing.shareAsync(uri, { UTI: "public.json" });
     } catch (e) {

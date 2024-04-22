@@ -7,16 +7,15 @@
   ],
   "license": "MIT",
   "scripts": {
-    "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
-    "eject": "expo eject",
-    "postinstall": "patch-package && node tools/gen-lucide-glyphmap.mjs && node tools/gen-models.mjs && node tools/gen-i18n.mjs",
+    "start": "APP_VARIANT=development expo start",
+    "android": "APP_VARIANT=development expo start --android",
+    "ios": "APP_VARIANT=development expo start --ios",
     "doctor": "expo-doctor",
     "compile": "tsc --noEmit",
     "lint": "eslint . --ext .tsx --ext .ts",
     "format": "prettier --check .",
-    "license": "node tools/gen-oss-licenses-md.mjs"
+    "license": "node tools/gen-oss-licenses-md.mjs",
+    "postinstall": "patch-package && node tools/gen-lucide-glyphmap.mjs && node tools/gen-models.mjs && node tools/gen-i18n.mjs"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "1.21.0",
