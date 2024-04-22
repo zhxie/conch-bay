@@ -1,5 +1,4 @@
 import withAndroidLocalizedName from "@mmomtchev/expo-android-localized-app-name";
-import withExpoLocalization from "expo-localization/plugin/build/withExpoLocalization";
 import withAndroidLargeHeap from "./plugins/withAndroidLargeHeap";
 
 const config = {
@@ -19,7 +18,7 @@ const config = {
     "zh-Hant": "./i18n/locales/zh-Hant.json",
   },
   assetBundlePatterns: ["**/*"],
-  plugins: [withAndroidLargeHeap, withAndroidLocalizedName, withExpoLocalization],
+  plugins: [withAndroidLargeHeap, withAndroidLocalizedName, "expo-localization"],
   splash: {
     image: "./assets/splash.png",
     backgroundColor: "#FAFAFA",

@@ -27,23 +27,23 @@
     "axios": "^1.4.0",
     "base64-js": "^1.5.1",
     "dayjs": "^1.11.6",
-    "expo": "~50.0.15",
+    "expo": "~50.0.17",
     "expo-background-fetch": "~11.8.1",
     "expo-blur": "~12.9.2",
     "expo-clipboard": "~5.0.1",
     "expo-crypto": "~12.8.1",
     "expo-dev-client": "~3.3.11",
-    "expo-device": "~5.9.3",
+    "expo-device": "~5.9.4",
     "expo-document-picker": "~11.10.1",
     "expo-image": "~1.10.6",
     "expo-intent-launcher": "~10.11.0",
-    "expo-localization": "~14.8.3",
+    "expo-localization": "~14.8.4",
     "expo-mail-composer": "~12.7.1",
-    "expo-notifications": "~0.27.6",
+    "expo-notifications": "~0.27.7",
     "expo-sharing": "~11.10.0",
     "expo-sqlite": "~13.4.0",
     "expo-status-bar": "~1.11.1",
-    "expo-system-ui": "~2.9.3",
+    "expo-system-ui": "~2.9.4",
     "expo-web-browser": "~12.8.2",
     "i18n-js": "4.2.0",
     "react": "18.2.0",
@@ -86,7 +86,7 @@
     "typescript": "^5.3.0"
   },
   "resolutions": {
-    "@expo/config-plugins": "~7.8.0"
+    "@expo/config-plugins": "~7.9.1"
   },
   "author": "Sketch",
   "private": true
