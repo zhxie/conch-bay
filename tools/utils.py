@@ -13,7 +13,7 @@ def write_out(path, battles, coops):
     os.mkdir(f"{dir}/battles")
     for battle in battles:
         date = datetime.datetime.fromisoformat(battle["vsHistoryDetail"]["playedTime"])
-        time = int(date.timestamp() * 1000)
+        time = int(date.timestamp())
         if last_time == time:
             duplicate += 1
         else:
@@ -26,7 +26,7 @@ def write_out(path, battles, coops):
     os.mkdir(f"{dir}/coops")
     for coop in coops:
         date = datetime.datetime.fromisoformat(coop["coopHistoryDetail"]["playedTime"])
-        time = int(date.timestamp() * 1000)
+        time = int(date.timestamp())
         if last_time == time:
             duplicate += 1
         else:

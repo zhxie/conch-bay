@@ -1345,14 +1345,15 @@ const MainView = () => {
         modes: ["salmon_run"],
         inverted: true,
       })) {
-        if (row.time == lastTime) {
+        const time = row.time / 1000;
+        if (time == lastTime) {
           duplicate++;
         } else {
           duplicate = 0;
         }
-        lastTime = row.time;
+        lastTime = time;
         await FileSystem.writeAsStringAsync(
-          `${dir}/battles/${row.time}${duplicate ? `-${duplicate}` : ""}.json`,
+          `${dir}/battles/${time}${duplicate ? `-${duplicate}` : ""}.json`,
           row.detail
         );
       }
@@ -1360,14 +1361,15 @@ const MainView = () => {
       lastTime = 0;
       duplicate = 0;
       for await (const row of Database.queryDetailEach({ modes: ["salmon_run"] })) {
-        if (row.time == lastTime) {
+        const time = row.time / 1000;
+        if (time == lastTime) {
           duplicate++;
         } else {
           duplicate = 0;
         }
-        lastTime = row.time;
+        lastTime = time;
         await FileSystem.writeAsStringAsync(
-          `${dir}/coops/${row.time}${duplicate ? `-${duplicate}` : ""}.json`,
+          `${dir}/coops/${time}${duplicate ? `-${duplicate}` : ""}.json`,
           row.detail
         );
       }
