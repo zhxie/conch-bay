@@ -4,7 +4,7 @@ import * as MailComposer from "expo-mail-composer";
 import * as Sharing from "expo-sharing";
 import { useState } from "react";
 import { Linking } from "react-native";
-import FileAccess from "react-native-file-access";
+import Zip from "react-native-zip-archive";
 import {
   Button,
   Center,
@@ -54,40 +54,51 @@ const ErrorView = (props: ErrorViewProps) => {
   const onExportResultsPress = async () => {
     setExporting(true);
     // TODO: reuse export codes.
-    const uri = FileSystem.cacheDirectory + `conch-bay-export.json`;
-    // Export battles.
-    await FileSystem.writeAsStringAsync(uri, '{"battles":[', {
-      encoding: FileSystem.EncodingType.UTF8,
-    });
-    let battleStarted = false;
+    const dir = FileSystem.cacheDirectory + "conch-bay-export";
+    const uri = FileSystem.cacheDirectory + "conch-bay-export.zip";
+    await FileSystem.makeDirectoryAsync(dir, { intermediates: true });
+    await FileSystem.makeDirectoryAsync(`${dir}/battles`, { intermediates: true });
+    let lastTime = 0;
+    let duplicate = 0;
     for await (const row of Database.queryDetailEach({
       modes: ["salmon_run"],
       inverted: true,
     })) {
-      if (!battleStarted) {
-        await FileAccess.FileSystem.appendFile(uri, row.detail, "utf8");
-        battleStarted = true;
+      if (row.time == lastTime) {
+        duplicate++;
       } else {
-        await FileAccess.FileSystem.appendFile(uri, `,${row.detail}`, "utf8");
+        duplicate = 0;
       }
+      lastTime = row.time;
+      await FileSystem.writeAsStringAsync(
+        `${dir}/battles/${row.time}${duplicate ? `-${duplicate}` : ""}.json`,
+        row.detail
+      );
     }
-    // Export coops.
-    await FileAccess.FileSystem.appendFile(uri, '],"coops":[', "utf8");
-    let coopStarted = false;
+    await FileSystem.makeDirectoryAsync(`${dir}/coops`, { intermediates: true });
+    lastTime = 0;
+    duplicate = 0;
     for await (const row of Database.queryDetailEach({ modes: ["salmon_run"] })) {
-      if (!coopStarted) {
-        await FileAccess.FileSystem.appendFile(uri, row.detail, "utf8");
-        coopStarted = true;
+      if (row.time == lastTime) {
+        duplicate++;
       } else {
-        await FileAccess.FileSystem.appendFile(uri, `,${row.detail}`, "utf8");
+        duplicate = 0;
       }
+      lastTime = row.time;
+      await FileSystem.writeAsStringAsync(
+        `${dir}/coops/${row.time}${duplicate ? `-${duplicate}` : ""}.json`,
+        row.detail
+      );
     }
-    await FileAccess.FileSystem.appendFile(uri, "]}", "utf8");
+    await Zip.zip(dir, uri);
 
-    await Sharing.shareAsync(uri, { UTI: "public.json" });
+    await Sharing.shareAsync(uri, { UTI: "public.zip-archive" });
 
     // Clean up.
-    await FileSystem.deleteAsync(uri, { idempotent: true });
+    await Promise.all([
+      FileSystem.deleteAsync(uri, { idempotent: true }),
+      FileSystem.deleteAsync(dir, { idempotent: true }),
+    ]);
     setExporting(false);
   };
   const onExportDatabasePress = async () => {

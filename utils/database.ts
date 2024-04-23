@@ -233,8 +233,8 @@ export const queryDetailAll = async (offset: number, limit: number, filter?: Fil
   if (filter) {
     condition = convertFilter(filter);
   }
-  const record = await db!.getAllAsync<{ id: string; mode: string; detail: string }>(
-    `SELECT id, mode, detail FROM result ${condition} ORDER BY time DESC LIMIT ${limit} OFFSET ${offset}`
+  const record = await db!.getAllAsync<{ id: string; time: number; mode: string; detail: string }>(
+    `SELECT id, time, mode, detail FROM result ${condition} ORDER BY time DESC LIMIT ${limit} OFFSET ${offset}`
   );
   return record;
 };
@@ -243,8 +243,8 @@ export const queryDetailEach = (filter?: FilterProps) => {
   if (filter) {
     condition = convertFilter(filter);
   }
-  return db!.getEachAsync<{ id: string; mode: string; detail: string }>(
-    `SELECT id, mode, detail FROM result ${condition} ORDER BY time DESC`
+  return db!.getEachAsync<{ id: string; time: number; mode: string; detail: string }>(
+    `SELECT id, time, mode, detail FROM result ${condition} ORDER BY time DESC`
   );
 };
 export const queryStats = async (filter?: FilterProps) => {

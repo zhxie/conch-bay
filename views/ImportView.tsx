@@ -37,6 +37,9 @@ import { getImageHash } from "../utils/ui";
 // Assuming 64MB limitation and 16kB for each result for DB-DB importing, 4 times about the result
 // size. The actual usage may lower then that.
 const DB_BATCH_SIZE = 4096;
+// Assuming 64MB limitation and 64kB for each result for DB-DB importing, 16 times about the result
+// size. The actual usage may lower then that.
+const FILE_BATCH_SIZE = 1024;
 // Assuming 64MB limitation for JSON-DB importing. The limitation may be easily reached since there
 // is a lot of string-string and string-object conversions.
 // A much stricter limitation of 16MB limitation per GB memory will be applied to Android devices.
@@ -181,7 +184,12 @@ class ImportStreamParser {
   };
 }
 
-const parseFleece = (bytes: Uint8Array, sharedKeys?: string[], index?: number, wide?: boolean) => {
+const parseFleece = (
+  bytes: Uint8Array,
+  sharedKeys?: string[],
+  index?: number,
+  wide?: boolean
+): any => {
   if (index === undefined) {
     index = bytes.length - 2;
   }
@@ -361,6 +369,93 @@ const ImportView = (props: ImportViewProps) => {
     let imported = 0;
     try {
       props.onBegin();
+      await Zip.unzip(uri, `${FileSystem.cacheDirectory!}/conch-bay-import`);
+      const [battleUris, coopUris] = await Promise.all([
+        FileSystem.readDirectoryAsync(`${FileSystem.cacheDirectory!}/conch-bay-import/battles`),
+        FileSystem.readDirectoryAsync(`${FileSystem.cacheDirectory!}/conch-bay-import/coops`),
+      ]);
+      const n = battleUris.length + coopUris.length;
+      showBanner(BannerLevel.Info, t("loading_n_results", { n }));
+      let skip = 0,
+        fail = 0;
+      let error: Error | undefined;
+      let battles: VsHistoryDetailResult[] = [];
+      for (const uri of battleUris) {
+        const battle = JSON.parse(
+          await FileSystem.readAsStringAsync(
+            `${FileSystem.cacheDirectory!}/conch-bay-import/battles/${uri}`
+          )
+        );
+        battles.push(battle);
+        if (battles.length >= FILE_BATCH_SIZE) {
+          const result = await props.onResults(battles, []);
+          skip += result.skip;
+          fail += result.fail;
+          if (!error) {
+            error = result.error;
+          }
+          battles = [];
+        }
+      }
+      if (battles.length > 0) {
+        const result = await props.onResults(battles, []);
+        skip += result.skip;
+        fail += result.fail;
+        if (!error) {
+          error = result.error;
+        }
+        battles = [];
+      }
+      let coops: CoopHistoryDetailResult[] = [];
+      for (const uri of coopUris) {
+        const coop = JSON.parse(
+          await FileSystem.readAsStringAsync(
+            `${FileSystem.cacheDirectory!}/conch-bay-import/coops/${uri}`
+          )
+        );
+        coops.push(coop);
+        if (coops.length >= FILE_BATCH_SIZE) {
+          const result = await props.onResults([], coops);
+          skip += result.skip;
+          fail += result.fail;
+          if (!error) {
+            error = result.error;
+          }
+          coops = [];
+        }
+      }
+      if (coops.length > 0) {
+        const result = await props.onResults([], coops);
+        skip += result.skip;
+        fail += result.fail;
+        if (!error) {
+          error = result.error;
+        }
+        coops = [];
+      }
+      showResultBanner(n, skip, fail, error);
+      imported = n - fail - skip;
+    } catch (e) {
+      showBanner(BannerLevel.Error, e);
+    }
+
+    // Clean up.
+    await Promise.all([
+      FileSystem.deleteAsync(uri, { idempotent: true }),
+      FileSystem.deleteAsync(`${FileSystem.cacheDirectory!}/conch-bay-import`, {
+        idempotent: true,
+      }),
+    ]);
+    props.onComplete(imported);
+    setImporting(false);
+    if (imported >= 0) {
+      setImport(false);
+    }
+  };
+  const importRawDirectly = async (uri: string) => {
+    let imported = 0;
+    try {
+      props.onBegin();
       const results = JSON.parse(await FileSystem.readAsStringAsync(uri));
       const n = results["battles"].length + results["coops"].length;
       showBanner(BannerLevel.Info, t("loading_n_results", { n }));
@@ -380,7 +475,7 @@ const ImportView = (props: ImportViewProps) => {
       setImport(false);
     }
   };
-  const splitAndImport = async (uri: string) => {
+  const splitAndImportRaw = async (uri: string) => {
     let imported = 0;
     try {
       props.onBegin();
@@ -415,7 +510,6 @@ const ImportView = (props: ImportViewProps) => {
       imported = n - skip - fail;
     } catch (e) {
       showBanner(BannerLevel.Error, e);
-      imported = -1;
     }
 
     // Clean up.
@@ -1023,11 +1117,15 @@ const ImportView = (props: ImportViewProps) => {
         return;
       }
       uri = doc.assets[0].uri;
+      if (uri.endsWith("zip")) {
+        importDirectly(uri);
+        return;
+      }
       const info = await FileSystem.getInfoAsync(uri, { size: true });
       if (info["size"] > FILE_READ_SIZE) {
         setUri(uri);
       } else {
-        importDirectly(uri);
+        importRawDirectly(uri);
       }
       return;
     } catch (e) {
@@ -1040,11 +1138,11 @@ const ImportView = (props: ImportViewProps) => {
   };
   const onImportContinueContinuePress = () => {
     setUri("");
-    importDirectly(uri);
+    importRawDirectly(uri);
   };
   const onSplitAndImportPress = () => {
     setUri("");
-    splitAndImport(uri);
+    splitAndImportRaw(uri);
   };
 
   return (
