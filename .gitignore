@@ -10,6 +10,7 @@ npm-debug.*
 web-build/
 .vscode
 .DS_Store
+__pycache__/
 
 assets/fonts/
 models/*.json

@@ -1,5 +1,8 @@
 import json
+import os
 import sys
+import tempfile
+import zipfile
 
 
 def main():
@@ -7,29 +10,35 @@ def main():
         print(f'Please specify the results JSON with "python3 {sys.argv[0]} <PATH>".')
         return
 
+    dir = tempfile.mkdtemp()
+    with zipfile.ZipFile(sys.argv[1], "r") as f:
+        f.extractall(dir)
+
     ids = set()
     battles = 0
     valid_battles = 0
     coops = 0
     valid_coops = 0
-    with open(sys.argv[1], encoding="utf-8") as f:
-        data = json.loads(f.read())
-        battles = len(data["battles"])
-        coops = len(data["coops"])
-        for battle in data["battles"]:
+    for path in os.listdir(f"{dir}/battles"):
+        with open(f"{dir}/battles/{path}", "r", encoding="utf-8") as f:
+            battle = json.loads(f.read())
+            battles += 1
             try:
                 id = battle["vsHistoryDetail"]["id"]
                 if id not in ids:
                     ids.add(id)
-                    valid_battles = valid_battles + 1
+                    valid_battles += 1
             except:
                 pass
-        for coop in data["coops"]:
+    for path in os.listdir(f"{dir}/coops"):
+        with open(f"{dir}/coops/{path}", "r", encoding="utf-8") as f:
+            coop = json.loads(f.read())
+            coops += 1
             try:
                 id = coop["coopHistoryDetail"]["id"]
                 if id not in ids:
                     ids.add(id)
-                    valid_coops = valid_coops + 1
+                    valid_coops += 1
             except:
                 pass
 

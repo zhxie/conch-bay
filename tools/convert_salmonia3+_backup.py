@@ -4,6 +4,7 @@ from hashlib import sha256
 import json
 import requests
 import sys
+import utils
 
 VERSION = "700"
 ENEMY_MAP = [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17, 20]
@@ -325,10 +326,8 @@ def main():
                     }
                 )
 
-    results = {"battles": [], "coops": coops}
-    with open("conch-bay-import.json", "w", encoding="utf-8") as f:
-        json.dump(results, f, ensure_ascii=False)
-    print(f'Export {len(coops)} coops to "conch-bay-import.json".')
+    utils.write_out("conch-bay-import", [], coops)
+    print(f'Export {len(coops)} coops to "conch-bay-import.zip".')
 
 
 if __name__ == "__main__":

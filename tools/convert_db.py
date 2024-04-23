@@ -1,6 +1,7 @@
 import json
 import sqlite3
 import sys
+import utils
 
 
 def main():
@@ -21,10 +22,8 @@ def main():
                 else:
                     battles.append(json.loads(row[2]))
 
-    results = {"battles": battles, "coops": coops}
-    with open("conch-bay-import.json", "w", encoding="utf-8") as f:
-        json.dump(results, f, ensure_ascii=False)
-    print(f'Export {len(ids)} results to "conch-bay-import.json".')
+    utils.write_out("conch-bay-import", battles, coops)
+    print(f'Export {len(ids)} results to "conch-bay-import.zip".')
 
 
 if __name__ == "__main__":

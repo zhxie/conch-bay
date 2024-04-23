@@ -4,6 +4,7 @@ import struct
 import sys
 import tempfile
 import zipfile
+import utils
 
 
 def parseFleece(blob, shared=None, i=None, w=False):
@@ -158,10 +159,8 @@ def main():
             coops.append({"coopHistoryDetail": coop})
             count = count + 1
 
-    results = {"battles": battles, "coops": coops}
-    with open("conch-bay-import.json", "w", encoding="utf-8") as f:
-        json.dump(results, f, ensure_ascii=False)
-    print(f'Export {count} results to "conch-bay-import.json".')
+    utils.write_out("conch-bay-import", battles, coops)
+    print(f'Export {count} results to "conch-bay-import.zip".')
 
 
 if __name__ == "__main__":

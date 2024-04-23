@@ -5,6 +5,7 @@ import requests
 import sys
 import tempfile
 import zipfile
+import utils
 
 VERSION = "700"
 RANDOM_IMAGE = [
@@ -99,10 +100,8 @@ def main():
                 coops.append({"coopHistoryDetail": obj})
         n += 1
 
-    results = {"battles": [], "coops": coops}
-    with open("conch-bay-import.json", "w", encoding="utf-8") as f:
-        json.dump(results, f, ensure_ascii=False)
-    print(f'Export {len(coops)} coops to "conch-bay-import.json".')
+    utils.write_out("conch-bay-import", [], coops)
+    print(f'Export {len(coops)} coops to "conch-bay-import.zip".')
 
 
 if __name__ == "__main__":
