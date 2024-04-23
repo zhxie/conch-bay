@@ -6,7 +6,6 @@ import requests
 import sys
 import utils
 
-VERSION = "720"
 DUMMY_NPLN_USER_ID = "statinksalmonrunjson"
 WATER_LEVEL_MAP = {"low": 0, "normal": 1, "high": 2}
 EVENT_WAVE_MAP = {
@@ -177,23 +176,27 @@ def format_map(map, obj, path, is_splatoon3_ink=False, name_decorator=lambda x: 
     )
 
 
-def fetch_resource(path):
+def fetch_resource(version, path):
     return requests.get(
-        f"https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/{VERSION}/{path}.json"
+        f"https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/{version}/{path}.json"
     ).json()
 
 
 def warmup():
     global UNIFORM_IMAGE, WEAPON_IMAGE, SPECIAL_WEAPON_IMAGE, COOP_STAGE_IMAGE
-    uniforms = fetch_resource("CoopSkinInfo")
+    version = requests.get(
+        "https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/latest"
+    ).text
+
+    uniforms = fetch_resource(version, "CoopSkinInfo")
     for uniform in uniforms:
         format_map(UNIFORM_IMAGE, uniform, "coop_skin_img")
 
-    weapons = fetch_resource("WeaponInfoMain")
+    weapons = fetch_resource(version, "WeaponInfoMain")
     for weapon in weapons:
         format_map(WEAPON_IMAGE, weapon, "weapon_illust", not weapon["IsCoopRare"])
 
-    special_weapons = fetch_resource("WeaponInfoSpecial")
+    special_weapons = fetch_resource(version, "WeaponInfoSpecial")
     for special_weapon in special_weapons:
         format_map(
             SPECIAL_WEAPON_IMAGE,
@@ -202,7 +205,7 @@ def warmup():
             name_decorator=lambda x: x.replace("_Coop", ""),
         )
 
-    coop_stages = fetch_resource("CoopSceneInfo")
+    coop_stages = fetch_resource(version, "CoopSceneInfo")
     for coop_stage in coop_stages:
         format_map(
             COOP_STAGE_IMAGE, coop_stage, "stage_img/banner/high_resolution", False

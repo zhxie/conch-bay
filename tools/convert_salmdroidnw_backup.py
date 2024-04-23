@@ -7,7 +7,6 @@ import tempfile
 import zipfile
 import utils
 
-VERSION = "720"
 RANDOM_IMAGE = [
     "473fffb2442075078d8bb7125744905abdeae651b6a5b7453ae295582e45f7d1_0.png",
     "9d7272733ae2f2282938da17d69f13419a935eef42239132a02fcf37d8678f10_0.png",
@@ -46,8 +45,11 @@ def format_member_result(member_result):
 
 def warmup():
     global GRIZZCO_WEAPON_IMAGE
+    version = requests.get(
+        "https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/latest"
+    ).text
     weapons = requests.get(
-        f"https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/{VERSION}/WeaponInfoMain.json"
+        f"https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/{version}/WeaponInfoMain.json"
     ).json()
     coop_weapons = [
         sha256(weapon["__RowId"].encode("utf-8")).hexdigest()

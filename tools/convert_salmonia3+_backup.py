@@ -6,7 +6,6 @@ import requests
 import sys
 import utils
 
-VERSION = "720"
 ENEMY_MAP = [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17, 20]
 
 BACKGROUND_IMAGE = {}
@@ -147,31 +146,35 @@ def format_map(map, obj, path, is_splatoon3_ink=False, name_decorator=lambda x: 
     )
 
 
-def fetch_resource(path):
+def fetch_resource(version, path):
     return requests.get(
-        f"https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/{VERSION}/{path}.json"
+        f"https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/{version}/{path}.json"
     ).json()
 
 
 def warmup():
     global BACKGROUND_IMAGE, BADGE_IMAGE, UNIFORM_IMAGE, WEAPON_IMAGE, SPECIAL_WEAPON_IMAGE, COOP_STAGE_IMAGE
-    backgrounds = fetch_resource("NamePlateBgInfo")
+    version = requests.get(
+        "https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/latest"
+    ).text
+
+    backgrounds = fetch_resource(version, "NamePlateBgInfo")
     for background in backgrounds:
         format_map(BACKGROUND_IMAGE, background, "npl_img")
 
-    badges = fetch_resource("BadgeInfo")
+    badges = fetch_resource(version, "BadgeInfo")
     for badge in badges:
         BADGE_IMAGE[badge["Id"]] = format_image("badge_img", badge["Name"])
 
-    uniforms = fetch_resource("CoopSkinInfo")
+    uniforms = fetch_resource(version, "CoopSkinInfo")
     for uniform in uniforms:
         format_map(UNIFORM_IMAGE, uniform, "coop_skin_img")
 
-    weapons = fetch_resource("WeaponInfoMain")
+    weapons = fetch_resource(version, "WeaponInfoMain")
     for weapon in weapons:
         format_map(WEAPON_IMAGE, weapon, "weapon_illust", not weapon["IsCoopRare"])
 
-    special_weapons = fetch_resource("WeaponInfoSpecial")
+    special_weapons = fetch_resource(version, "WeaponInfoSpecial")
     for special_weapon in special_weapons:
         format_map(
             SPECIAL_WEAPON_IMAGE,
@@ -180,7 +183,7 @@ def warmup():
             name_decorator=lambda x: x.replace("_Coop", ""),
         )
 
-    coop_stages = fetch_resource("CoopSceneInfo")
+    coop_stages = fetch_resource(version, "CoopSceneInfo")
     for coop_stage in coop_stages:
         format_map(
             COOP_STAGE_IMAGE, coop_stage, "stage_img/banner/high_resolution", False

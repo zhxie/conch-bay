@@ -2,11 +2,14 @@ import { Buffer } from "buffer";
 import { createHash } from "crypto";
 import { createWriteStream } from "fs";
 
-const VERSION = "720";
-
 const writeOut = (path, obj) => {
   const file = createWriteStream(path, "utf-8");
   file.write(JSON.stringify(obj, undefined, 2) + "\n");
+};
+
+const getVersion = async () => {
+  const res = await fetch("https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/latest");
+  return await res.text();
 };
 
 const getLanguage = async (language) => {
@@ -70,9 +73,9 @@ const genRuleLocales = (languages) => {
   }
   return maps;
 };
-const getChallengeLocales = async (languages) => {
+const getChallengeLocales = async (version, languages) => {
   const res = await fetch(
-    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${VERSION}/LeagueTypeInfo.json`
+    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/LeagueTypeInfo.json`
   );
   const json = await res.json();
   const maps = [];
@@ -91,9 +94,9 @@ const getChallengeLocales = async (languages) => {
   }
   return maps;
 };
-const getStageLocales = async (languages) => {
+const getStageLocales = async (version, languages) => {
   const res = await fetch(
-    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${VERSION}/VersusSceneInfo.json`
+    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/VersusSceneInfo.json`
   );
   const json = await res.json();
   const maps = [];
@@ -110,9 +113,9 @@ const getStageLocales = async (languages) => {
   }
   return maps;
 };
-const getCoopStageLocales = async (languages) => {
+const getCoopStageLocales = async (version, languages) => {
   const res = await fetch(
-    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${VERSION}/CoopSceneInfo.json`
+    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/CoopSceneInfo.json`
   );
   const json = await res.json();
   const maps = [];
@@ -129,9 +132,9 @@ const getCoopStageLocales = async (languages) => {
   }
   return maps;
 };
-const getWeaponLocales = async (languages) => {
+const getWeaponLocales = async (version, languages) => {
   const res = await fetch(
-    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${VERSION}/WeaponInfoMain.json`
+    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/WeaponInfoMain.json`
   );
   const json = await res.json();
   const maps = [];
@@ -149,9 +152,9 @@ const getWeaponLocales = async (languages) => {
   }
   return maps;
 };
-const getCoopSpecialWeaponLocales = async (languages) => {
+const getCoopSpecialWeaponLocales = async (version, languages) => {
   const res = await fetch(
-    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${VERSION}/WeaponInfoSpecial.json`
+    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/WeaponInfoSpecial.json`
   );
   const json = await res.json();
   const maps = [];
@@ -237,9 +240,9 @@ const getBrandLocales = (languages) => {
   }
   return maps;
 };
-const getHeadgearLocales = async (languages) => {
+const getHeadgearLocales = async (version, languages) => {
   const res = await fetch(
-    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${VERSION}/GearInfoHead.json`
+    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/GearInfoHead.json`
   );
   const json = await res.json();
   const maps = [];
@@ -256,9 +259,9 @@ const getHeadgearLocales = async (languages) => {
   }
   return maps;
 };
-const getClothesLocales = async (languages) => {
+const getClothesLocales = async (version, languages) => {
   const res = await fetch(
-    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${VERSION}/GearInfoClothes.json`
+    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/GearInfoClothes.json`
   );
   const json = await res.json();
   const maps = [];
@@ -275,9 +278,9 @@ const getClothesLocales = async (languages) => {
   }
   return maps;
 };
-const getShoesLocales = async (languages) => {
+const getShoesLocales = async (version, languages) => {
   const res = await fetch(
-    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${VERSION}/GearInfoShoes.json`
+    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/GearInfoShoes.json`
   );
   const json = await res.json();
   const maps = [];
@@ -328,7 +331,7 @@ const getGradeLocales = (languages) => {
   }
   return maps;
 };
-const getEventLocales = async (languages) => {
+const getEventLocales = async (version, languages) => {
   const map = {
     EventRush: 1,
     EventGeyser: 2,
@@ -340,7 +343,7 @@ const getEventLocales = async (languages) => {
     EventTamaire: 8,
   };
   const res = await fetch(
-    `https://raw.githubusercontent.com/Leanny/splat3/main/data/parameter/${VERSION}/misc/spl__CoopLevelsConfig.spl__CoopLevelsConfig.json`
+    `https://raw.githubusercontent.com/Leanny/splat3/main/data/parameter/${version}/misc/spl__CoopLevelsConfig.spl__CoopLevelsConfig.json`
   );
   const json = await res.json();
   const maps = [];
@@ -358,7 +361,7 @@ const getEventLocales = async (languages) => {
   }
   return maps;
 };
-const getSalmonidLocales = async (languages) => {
+const getSalmonidLocales = async (version, languages) => {
   const map = {
     SakelienBomber: 4,
     SakelienCupTwins: 5,
@@ -379,7 +382,7 @@ const getSalmonidLocales = async (languages) => {
     SakeJaw: 25,
   };
   const res = await fetch(
-    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${VERSION}/CoopEnemyInfo.json`
+    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/CoopEnemyInfo.json`
   );
   const json = await res.json();
   const maps = [];
@@ -397,9 +400,9 @@ const getSalmonidLocales = async (languages) => {
   }
   return maps;
 };
-const getWorkSuitLocales = async (languages) => {
+const getWorkSuitLocales = async (version, languages) => {
   const res = await fetch(
-    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${VERSION}/CoopSkinInfo.json`
+    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/CoopSkinInfo.json`
   );
   const json = await res.json();
   const maps = [];
@@ -416,6 +419,7 @@ const getWorkSuitLocales = async (languages) => {
   return maps;
 };
 
+const version = await getVersion();
 const languages = await Promise.all([
   getLanguage("USen"),
   getLanguage("JPja"),
@@ -443,21 +447,21 @@ const [
 ] = await Promise.all([
   getModeLocales(languages),
   genRuleLocales(languages),
-  getChallengeLocales(languages),
-  getStageLocales(languages),
-  getCoopStageLocales(languages),
-  getWeaponLocales(languages),
-  getCoopSpecialWeaponLocales(languages),
+  getChallengeLocales(version, languages),
+  getStageLocales(version, languages),
+  getCoopStageLocales(version, languages),
+  getWeaponLocales(version, languages),
+  getCoopSpecialWeaponLocales(version, languages),
   getTitleLocales(languages),
   getBrandLocales(languages),
-  getHeadgearLocales(languages),
-  getClothesLocales(languages),
-  getShoesLocales(languages),
+  getHeadgearLocales(version, languages),
+  getClothesLocales(version, languages),
+  getShoesLocales(version, languages),
   getGradeLocales(languages),
   getAwardLocales(languages),
-  getEventLocales(languages),
-  getSalmonidLocales(languages),
-  getWorkSuitLocales(languages),
+  getEventLocales(version, languages),
+  getSalmonidLocales(version, languages),
+  getWorkSuitLocales(version, languages),
 ]);
 const paths = ["i18n/en.json", "i18n/ja.json", "i18n/zh-Hans.json", "i18n/zh-Hant.json"];
 for (let i = 0; i < paths.length; i++) {

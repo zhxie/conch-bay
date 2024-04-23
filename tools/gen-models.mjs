@@ -2,8 +2,6 @@ import { Buffer } from "buffer";
 import { createHash } from "crypto";
 import { createWriteStream } from "fs";
 
-const VERSION = "720";
-
 const writeOut = (path, obj) => {
   const file = createWriteStream(path, "utf-8");
   file.write(JSON.stringify(obj, undefined, 2) + "\n");
@@ -26,6 +24,11 @@ const buildTrie = (array) => {
   return trie;
 };
 
+const getVersion = async () => {
+  const res = await fetch("https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/latest");
+  return await res.text();
+};
+
 const getNsoVersion = async () => {
   const res = await fetch(
     "https://raw.githubusercontent.com/nintendoapis/nintendo-app-versions/main/data/coral-google-play.json"
@@ -41,9 +44,9 @@ const getSplatnetVersion = async () => {
   return json["web_app_ver"];
 };
 
-const getCoopStageMap = async () => {
+const getCoopStageMap = async (version) => {
   const res = await fetch(
-    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${VERSION}/CoopSceneInfo.json`
+    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/CoopSceneInfo.json`
   );
   const json = await res.json();
   const coopStages = {};
@@ -58,9 +61,9 @@ const getCoopStageMap = async () => {
   }
   return { coopStages, bigRunStages };
 };
-const getWeaponMap = async () => {
+const getWeaponMap = async (version) => {
   const res = await fetch(
-    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${VERSION}/WeaponInfoMain.json`
+    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/WeaponInfoMain.json`
   );
   const json = await res.json();
   const weapons = {};
@@ -79,9 +82,9 @@ const getWeaponMap = async () => {
   }
   return { weapons, images, coopRareWeapons };
 };
-const getCoopSpecialWeaponMap = async () => {
+const getCoopSpecialWeaponMap = async (version) => {
   const res = await fetch(
-    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${VERSION}/WeaponInfoSpecial.json`
+    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/WeaponInfoSpecial.json`
   );
   const json = await res.json();
   const specialWeapons = {};
@@ -98,9 +101,9 @@ const getCoopSpecialWeaponMap = async () => {
   }
   return { specialWeapons, images };
 };
-const getBackgroundMap = async () => {
+const getBackgroundMap = async (version) => {
   const res = await fetch(
-    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${VERSION}/NamePlateBgInfo.json`
+    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/NamePlateBgInfo.json`
   );
   const json = await res.json();
   const backgrounds = {};
@@ -111,9 +114,9 @@ const getBackgroundMap = async () => {
   }
   return { backgrounds };
 };
-const getBadgeMap = async () => {
+const getBadgeMap = async (version) => {
   const res = await fetch(
-    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${VERSION}/BadgeInfo.json`
+    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/BadgeInfo.json`
   );
   const json = await res.json();
   const badges = {};
@@ -198,7 +201,7 @@ const getAwardMap = async () => {
   }
   return { awards };
 };
-const getSalmonidMap = async () => {
+const getSalmonidMap = async (version) => {
   const map = {
     SakelienBomber: 4,
     SakelienCupTwins: 5,
@@ -219,7 +222,7 @@ const getSalmonidMap = async () => {
     SakeJaw: 25,
   };
   const res = await fetch(
-    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${VERSION}/CoopEnemyInfo.json`
+    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/CoopEnemyInfo.json`
   );
   const json = await res.json();
   const salmonids = {};
@@ -232,9 +235,9 @@ const getSalmonidMap = async () => {
   }
   return { salmonids };
 };
-const getWorkSuitMap = async () => {
+const getWorkSuitMap = async (version) => {
   const res = await fetch(
-    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${VERSION}/CoopSkinInfo.json`
+    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/CoopSkinInfo.json`
   );
   const json = await res.json();
   const workSuits = {};
@@ -249,6 +252,7 @@ const getWorkSuitMap = async () => {
 const [nso_version, splatnet_version] = await Promise.all([getNsoVersion(), getSplatnetVersion()]);
 writeOut("models/versions.json", { NSO_VERSION: nso_version, SPLATNET_VERSION: splatnet_version });
 
+const version = await getVersion();
 const [
   coopStageMap,
   weaponMap,
@@ -260,15 +264,15 @@ const [
   salmonidMap,
   workSuitMap,
 ] = await Promise.all([
-  getCoopStageMap(),
-  getWeaponMap(),
-  getCoopSpecialWeaponMap(),
-  getBackgroundMap(),
-  getBadgeMap(),
+  getCoopStageMap(version),
+  getWeaponMap(version),
+  getCoopSpecialWeaponMap(version),
+  getBackgroundMap(version),
+  getBadgeMap(version),
   getTitleMap(),
   getAwardMap(),
-  getSalmonidMap(),
-  getWorkSuitMap(),
+  getSalmonidMap(version),
+  getWorkSuitMap(version),
 ]);
 writeOut("models/coopStages.json", coopStageMap);
 writeOut("models/weapons.json", weaponMap);
