@@ -9,7 +9,7 @@ const config = {
   version: "2.1.0",
   orientation: "portrait",
   userInterfaceStyle: "automatic",
-  icon: "./assets/icon.png",
+  icon: IS_DEV ? "./assets/icon-dev.png" : "./assets/icon.png",
   updates: {
     fallbackToCacheTimeout: 0,
   },
