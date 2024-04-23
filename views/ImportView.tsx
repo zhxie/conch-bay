@@ -750,7 +750,10 @@ const ImportView = (props: ImportViewProps) => {
     let uri = "";
     let imported = 0;
     try {
-      const doc = await DocumentPicker.getDocumentAsync({ copyToCacheDirectory: true });
+      const doc = await DocumentPicker.getDocumentAsync({
+        type: "application/zip",
+        copyToCacheDirectory: true,
+      });
       if (doc.canceled) {
         setImporting(false);
         return;
@@ -874,7 +877,10 @@ const ImportView = (props: ImportViewProps) => {
     let uri = "";
     let imported = 0;
     try {
-      const doc = await DocumentPicker.getDocumentAsync({ copyToCacheDirectory: true });
+      const doc = await DocumentPicker.getDocumentAsync({
+        type: "application/json",
+        copyToCacheDirectory: true,
+      });
       if (doc.canceled) {
         setImporting(false);
         return;
@@ -1111,7 +1117,10 @@ const ImportView = (props: ImportViewProps) => {
     let uri = "";
     try {
       await requestFileReadSize();
-      const doc = await DocumentPicker.getDocumentAsync({ copyToCacheDirectory: true });
+      const doc = await DocumentPicker.getDocumentAsync({
+        type: ["application/json", "application/zip"],
+        copyToCacheDirectory: true,
+      });
       if (doc.canceled) {
         setImporting(false);
         return;
