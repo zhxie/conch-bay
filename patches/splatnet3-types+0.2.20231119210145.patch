@@ -37,6 +37,19 @@ index d1b0171..c480925 100644
      CoopHistoryDetailRefetchQuery = "4bf516ccfd9a3f4efc32b215c59ae42c2a06dd2d8f73de95c2676dea6db74446",
      CoopHistoryQuery = "0f8c33970a425683bb1bdecca50a0ca4fb3c3641c0b2a1237aedfde9c0cb2b8f",
      RefetchableCoopHistory_CoopResultQuery = "bdb796803793ada1ee2ea28e2034a31f5c231448e80f5c992e94b021807f40f8",
+diff --git a/node_modules/splatnet3-types/dist/graphql.js b/node_modules/splatnet3-types/dist/graphql.js
+index 810aa77..ee651fb 100644
+--- a/node_modules/splatnet3-types/dist/graphql.js
++++ b/node_modules/splatnet3-types/dist/graphql.js
+@@ -34,7 +34,7 @@ export var RequestId;
+     RequestId["JourneyQuery"] = "c0cd04d2f0b00444853bae0d7e7f1ac534dfd7ff593c738ab9ba4456b1e85f8a";
+     RequestId["JourneyRefetchQuery"] = "d5fc5dd3a144139e89815b9e3af6499f58e5fc5185876840dd6edadb0ca214b4";
+     RequestId["CheckinQuery"] = "6dfce83d02761395758ae21454cb46924e81c22c3f151f91330b0602278a060e";
+-    RequestId["CoopHistoryDetailQuery"] = "824a1e22c4ad4eece7ad94a9a0343ecd76784be4f77d8f6f563c165afc8cf602";
++    RequestId["CoopHistoryDetailQuery"] = "42262d241291d7324649e21413b29da88c0314387d8fdf5f6637a2d9d29954ae";
+     RequestId["CoopHistoryDetailRefetchQuery"] = "4bf516ccfd9a3f4efc32b215c59ae42c2a06dd2d8f73de95c2676dea6db74446";
+     RequestId["CoopHistoryQuery"] = "0f8c33970a425683bb1bdecca50a0ca4fb3c3641c0b2a1237aedfde9c0cb2b8f";
+     RequestId["RefetchableCoopHistory_CoopResultQuery"] = "bdb796803793ada1ee2ea28e2034a31f5c231448e80f5c992e94b021807f40f8";
 diff --git a/node_modules/splatnet3-types/dist/splatnet3.d.ts b/node_modules/splatnet3-types/dist/splatnet3.d.ts
 index 55d6bff..81d07a9 100644
 --- a/node_modules/splatnet3-types/dist/splatnet3.d.ts
