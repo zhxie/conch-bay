@@ -4,7 +4,7 @@ import * as MailComposer from "expo-mail-composer";
 import * as Sharing from "expo-sharing";
 import { useState } from "react";
 import { Linking } from "react-native";
-import Zip from "react-native-zip-archive";
+import { zip } from "react-native-zip-archive";
 import {
   Button,
   Center,
@@ -92,7 +92,7 @@ const ErrorView = (props: ErrorViewProps) => {
         row.detail
       );
     }
-    await Zip.zip(dir, uri);
+    await zip(dir, uri);
 
     await Sharing.shareAsync(uri, { UTI: "public.zip-archive" });
 

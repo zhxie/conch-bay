@@ -7,7 +7,7 @@ import * as SQLite from "expo-sqlite/next";
 import * as WebBrowser from "expo-web-browser";
 import { useState } from "react";
 import { Platform, StyleProp, ViewStyle } from "react-native";
-import Zip from "react-native-zip-archive";
+import { unzip } from "react-native-zip-archive";
 import {
   BannerLevel,
   Button,
@@ -369,7 +369,7 @@ const ImportView = (props: ImportViewProps) => {
     let imported = 0;
     try {
       props.onBegin();
-      await Zip.unzip(uri, `${FileSystem.cacheDirectory!}/conch-bay-import`);
+      await unzip(uri, `${FileSystem.cacheDirectory!}/conch-bay-import`);
       const [battleUris, coopUris] = await Promise.all([
         FileSystem.readDirectoryAsync(`${FileSystem.cacheDirectory!}/conch-bay-import/battles`),
         FileSystem.readDirectoryAsync(`${FileSystem.cacheDirectory!}/conch-bay-import/coops`),
@@ -619,7 +619,7 @@ const ImportView = (props: ImportViewProps) => {
 
       setIkawidget3(false);
       props.onBegin();
-      await Zip.unzip(uri, `${FileSystem.cacheDirectory!}/ikawidget3`);
+      await unzip(uri, `${FileSystem.cacheDirectory!}/ikawidget3`);
       const account = JSON.parse(
         await FileSystem.readAsStringAsync(`${FileSystem.cacheDirectory}/ikawidget3/account.json`)
       );
@@ -762,7 +762,7 @@ const ImportView = (props: ImportViewProps) => {
 
       setSalmdroidnw(false);
       props.onBegin();
-      await Zip.unzip(uri, `${FileSystem.cacheDirectory!}/salmdroidNW`);
+      await unzip(uri, `${FileSystem.cacheDirectory!}/salmdroidNW`);
       const summary = JSON.parse(
         await FileSystem.readAsStringAsync(`${FileSystem.cacheDirectory!}/salmdroidNW/summary`)
       );

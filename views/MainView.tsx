@@ -29,7 +29,7 @@ import {
 } from "react-native";
 import * as Progress from "react-native-progress";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
-import Zip from "react-native-zip-archive";
+import { zip } from "react-native-zip-archive";
 import semver from "semver";
 import {
   AvatarButton,
@@ -1373,7 +1373,7 @@ const MainView = () => {
           row.detail
         );
       }
-      await Zip.zip(dir, uri);
+      await zip(dir, uri);
 
       await Sharing.shareAsync(uri, { UTI: "public.zip-archive" });
     } catch (e) {
