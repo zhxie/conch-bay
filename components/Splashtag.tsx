@@ -1,5 +1,6 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useRef, useState } from "react";
 import {
+  Animated,
   Dimensions,
   LayoutChangeEvent,
   Platform,
@@ -10,8 +11,7 @@ import {
 } from "react-native";
 import Image, { ImageSource } from "./Image";
 import { Center, HStack } from "./Stack";
-import { TextStyles, ViewStyles } from "./Styles";
-import Text from "./Text";
+import { TextStyles, useTheme, ViewStyles } from "./Styles";
 
 const SplashtagContext = createContext({ splatfont: false });
 
@@ -28,10 +28,25 @@ interface SplashtagProps {
 const Splashtag = (props: SplashtagProps) => {
   const context = useContext(SplashtagContext);
 
+  const theme = useTheme();
+
   const [width, setWidth] = useState(Dimensions.get("window").width);
+
+  const colored = useRef(new Animated.Value(0)).current;
+  const color = colored.interpolate({
+    inputRange: [0, 1],
+    outputRange: [theme.textColor, props.color],
+  });
 
   const onLayout = (event: LayoutChangeEvent) => {
     setWidth(event.nativeEvent.layout.width);
+  };
+  const onLoad = () => {
+    Animated.timing(colored, {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: false,
+    }).start();
   };
 
   return (
@@ -39,6 +54,7 @@ const Splashtag = (props: SplashtagProps) => {
       <Image
         source={props.banner}
         style={[ViewStyles.r2, { width: "100%", aspectRatio: 700 / 200 }]}
+        onLoad={onLoad}
       />
       <HStack
         center
@@ -75,7 +91,7 @@ const Splashtag = (props: SplashtagProps) => {
           }
         })}
       </HStack>
-      <Text
+      <Animated.Text
         numberOfLines={1}
         // TODO: use Splatfont 2. In certain locales, Splatfont 2 is replaced with other fonts.
         style={[
@@ -85,7 +101,7 @@ const Splashtag = (props: SplashtagProps) => {
             position: "absolute",
             left: (10 / 284) * width,
             top: (5 / 284) * width,
-            color: props.color,
+            color: color,
             transform: [{ skewX: "-5deg" }],
           },
           // HACK: skew transform does not work on Android, using italic font style instead. Track
@@ -97,8 +113,8 @@ const Splashtag = (props: SplashtagProps) => {
         ]}
       >
         {props.title}
-      </Text>
-      <Text
+      </Animated.Text>
+      <Animated.Text
         numberOfLines={1}
         // TODO: use Splatfont 2. In certain locales, Splatfont 2 is replaced with other fonts.
         style={[
@@ -108,18 +124,18 @@ const Splashtag = (props: SplashtagProps) => {
             position: "absolute",
             left: (10 / 284) * width,
             bottom: (5 / 284) * width,
-            color: props.color,
+            color: color,
           },
         ]}
       >
         {props.nameId ? `#${props.nameId}` : ""}
-      </Text>
-      <Text
+      </Animated.Text>
+      <Animated.Text
         numberOfLines={1}
         style={[
           {
             position: "absolute",
-            color: props.color,
+            color: color,
             fontFamily: context.splatfont ? "Splatfont" : "MPLUSRounded1cExtraBold",
             fontSize: (26 / 284) * width,
           },
@@ -127,7 +143,7 @@ const Splashtag = (props: SplashtagProps) => {
         ]}
       >
         {props.name}
-      </Text>
+      </Animated.Text>
     </Center>
   );
 };
