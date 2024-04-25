@@ -1,5 +1,6 @@
 import { Image as EImage, ImageContentFit, ImageLoadEventData, ImageSource } from "expo-image";
 import { ImageStyle, StyleProp } from "react-native";
+import Placeholders from "../models/placeholders";
 import { useTheme } from "./Styles";
 
 interface ImageProps {
@@ -15,11 +16,13 @@ const Image = (props: ImageProps) => {
   return (
     <EImage
       source={props.source}
-      contentFit={props.contentFit}
+      contentFit={props.contentFit ?? "cover"}
       // HACK: forcly cast.
       style={[theme.territoryStyle, props.style as any]}
       transition={300}
       recyclingKey={props.source?.cacheKey}
+      placeholder={Placeholders[props.source?.cacheKey ?? ""]}
+      placeholderContentFit={props.contentFit ?? "cover"}
       onLoad={props.onLoad}
     />
   );

@@ -18,6 +18,7 @@
     "postinstall": "patch-package && node tools/gen-lucide-glyphmap.mjs && node tools/gen-models.mjs && node tools/gen-i18n.mjs"
   },
   "dependencies": {
+    "@hacceuee/s3-pixel-icons": "git+https://github.com/hacceuee/s3-pixel-icons.git#acdfa3e3fd5d4865a7a86ebf37736103e6cb074b",
     "@react-native-async-storage/async-storage": "1.21.0",
     "@react-native-community/hooks": "^3.0.0",
     "@react-native-cookies/cookies": "^6.2.1",
