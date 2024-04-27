@@ -217,6 +217,7 @@ const MainView = () => {
   const [filter, setFilter, clearFilter, filterReady] = useAsyncStorage<Database.FilterProps>(
     Key.Filter
   );
+  const filterRef = useRef(filter);
   const [backgroundRefresh, setBackgroundRefresh, clearBackgroundRefresh] = useBooleanAsyncStorage(
     Key.BackgroundRefresh
   );
@@ -235,7 +236,6 @@ const MainView = () => {
   const [groups, setGroups] = useState<ResultGroup[]>();
   const [filtered, setFiltered] = useState(0);
   const [total, setTotal] = useState(0);
-  const filterRef = useRef<Database.FilterProps>();
   const [filterOptions, setFilterOptions] = useState<Database.FilterProps>();
   const [stats, setStats] = useState<Stats[]>();
 
