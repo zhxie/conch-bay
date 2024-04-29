@@ -118,6 +118,7 @@ import {
 } from "../utils/ui";
 import FilterView from "./FilterView";
 import FriendView from "./FriendView";
+import GearsView from "./GearsView";
 import ImportView from "./ImportView";
 import ResultView, { ResultGroup, Result } from "./ResultView";
 import RotationsView from "./RotationsView";
@@ -1132,43 +1133,6 @@ const MainView = () => {
   const onSplatNetPress = () => {
     splatNetViewRef.current?.open();
   };
-  const onEquipmentsRefresh = async () => {
-    try {
-      let newWebServiceToken: WebServiceToken | undefined = undefined;
-      let newBulletToken = "";
-      let equipmentsAttempt: MyOutfitCommonDataEquipmentsResult | undefined;
-      if (apiUpdated && webServiceToken && bulletToken.length > 0) {
-        try {
-          equipmentsAttempt = await fetchEquipments(webServiceToken, bulletToken, language);
-          newWebServiceToken = webServiceToken;
-          newBulletToken = bulletToken;
-        } catch {
-          /* empty */
-        }
-      }
-
-      // Regenerate bullet token if necessary.
-      if (!newBulletToken) {
-        const res = await generateBulletToken();
-        newWebServiceToken = res.webServiceToken;
-        newBulletToken = res.bulletToken;
-      }
-
-      const equipments =
-        equipmentsAttempt ||
-        (await fetchEquipments(newWebServiceToken!, newBulletToken, language)
-          .then((equipments) => {
-            return equipments;
-          })
-          .catch((e) => {
-            showBanner(BannerLevel.Warn, t("failed_to_load_owned_gears", { error: e }));
-            return undefined;
-          }));
-      return equipments;
-    } catch (e) {
-      showBanner(BannerLevel.Error, e);
-    }
-  };
   const onChangeFilterPress = async (filter?: Database.FilterProps) => {
     if (filter) {
       await setFilter(filter);
@@ -1223,6 +1187,43 @@ const MainView = () => {
     setStats(results);
     setCounting(false);
     return results;
+  };
+  const onGearsPress = async () => {
+    try {
+      let newWebServiceToken: WebServiceToken | undefined = undefined;
+      let newBulletToken = "";
+      let equipmentsAttempt: MyOutfitCommonDataEquipmentsResult | undefined;
+      if (apiUpdated && webServiceToken && bulletToken.length > 0) {
+        try {
+          equipmentsAttempt = await fetchEquipments(webServiceToken, bulletToken, language);
+          newWebServiceToken = webServiceToken;
+          newBulletToken = bulletToken;
+        } catch {
+          /* empty */
+        }
+      }
+
+      // Regenerate bullet token if necessary.
+      if (!newBulletToken) {
+        const res = await generateBulletToken();
+        newWebServiceToken = res.webServiceToken;
+        newBulletToken = res.bulletToken;
+      }
+
+      const equipments =
+        equipmentsAttempt ||
+        (await fetchEquipments(newWebServiceToken!, newBulletToken, language)
+          .then((equipments) => {
+            return equipments;
+          })
+          .catch((e) => {
+            showBanner(BannerLevel.Warn, t("failed_to_load_gears", { error: e }));
+            return undefined;
+          }));
+      return equipments;
+    } catch (e) {
+      showBanner(BannerLevel.Error, e);
+    }
   };
   const onGetWebServiceToken = async () => {
     // Update versions.
@@ -1922,12 +1923,7 @@ const MainView = () => {
                   </VStack>
                 )}
                 <ScheduleView schedules={schedules} style={ViewStyles.mb4}>
-                  {shop && (
-                    <ShopView
-                      shop={shop}
-                      onRefresh={sessionToken.length > 0 ? onEquipmentsRefresh : undefined}
-                    />
-                  )}
+                  {shop && <ShopView shop={shop} />}
                 </ScheduleView>
                 {sessionToken.length > 0 &&
                   (friends === undefined || friends.friends.nodes.length > 0) && (
@@ -1990,6 +1986,13 @@ const MainView = () => {
                       onStats={onStatsPress}
                       style={ViewStyles.mr2}
                     />
+                    {sessionToken.length > 0 && (
+                      <GearsView
+                        disabled={refreshing || counting}
+                        onPress={onGearsPress}
+                        style={ViewStyles.mr2}
+                      />
+                    )}
                     {sessionToken.length > 0 && (
                       <SplatNetView
                         ref={splatNetViewRef}

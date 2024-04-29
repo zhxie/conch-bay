@@ -12,7 +12,7 @@ const zhHans = {
   log_in_warning:
     "法螺湾并不会盗用您的账号或导致您的个人信息泄漏。但介于任天堂持续对第三方应用的消极态度，您需要自负使用法螺湾的风险。",
   log_in_notice:
-    "您可以在不登录的情况下使用法螺湾查看日程与鱿鱼须商城，导入记录并通过统计与趋势分析。登录将允许您加载记录与好友，显示持有的装备以及访问鱿鱼圈3。登录需要向任天堂以外的imink或nxapi发送非识别信息，这些信息不会被记录或存储，请参阅隐私政策以获取更多信息。",
+    "您可以在不登录的情况下使用法螺湾查看日程与鱿鱼须商城，导入记录并通过统计与趋势分析。登录将允许您加载记录与好友，显示装备以及访问鱿鱼圈3。登录需要向任天堂以外的imink或nxapi发送非识别信息，这些信息不会被记录或存储，请参阅隐私政策以获取更多信息。",
   log_in_continue: "我已阅读并理解",
   alternative_log_in_notice:
     "如果您拥有会话令牌并希望跳过由法螺湾获取会话令牌，您可以复制会话令牌并通过会话令牌登录。",
@@ -20,7 +20,7 @@ const zhHans = {
   logging_in: "获取令牌中",
   failed_to_acquire_session_token: "未能获取会话令牌 (%{error})",
   log_out_notice:
-    "登出后，您将无法加载记录与好友，显示持有的装备以及访问鱿鱼圈3。法螺湾已存储的记录不会被清除。",
+    "登出后，您将无法加载记录与好友，显示装备以及访问鱿鱼圈3。法螺湾已存储的记录不会被清除。",
   log_out_continue: "登出",
   logging_out: "登出中",
   upgrading_database: "升级数据库中",
@@ -128,12 +128,6 @@ const zhHans = {
   export_results: "导出记录",
   // Shop.
   gesotown: "鱿鱼须商城",
-  show_owned_gears: "显示持有的装备",
-  loading_owned_gears: "加载持有的装备中",
-  failed_to_load_owned_gears: "未能加载持有的装备 (%{error})",
-  headgear: "头部装备",
-  clothes: "服装",
-  shoes: "鞋子",
   shop_notice: "您可以通过主页下方的鱿鱼圈3预订装备。",
   // Friend.
   playing: "比赛中",
@@ -224,6 +218,12 @@ const zhHans = {
   trends_notice2: "长按标签以显示团队平均值。",
   // Rotations.
   rotations: "场次",
+  // Gears.
+  gears: "装备",
+  failed_to_load_gears: "未能加载装备 (%{error})",
+  headgear: "头部装备",
+  clothes: "服装",
+  shoes: "鞋子",
   // Import.
   import: "导入",
   importing: "导入中",
