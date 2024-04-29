@@ -224,6 +224,9 @@ const zhHans = {
   headgear: "头部装备",
   clothes: "服装",
   shoes: "鞋子",
+  default: "默认",
+  brand: "品牌",
+  ability: "装备能力",
   // Import.
   import: "导入",
   importing: "导入中",

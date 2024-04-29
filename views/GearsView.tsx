@@ -14,6 +14,12 @@ enum GearType {
   ShoesGears = "shoesGears",
 }
 
+enum Sort {
+  Default = "default",
+  Brand = "brand",
+  Ability = "ability",
+}
+
 interface GearsViewProps {
   disabled?: boolean;
   onPress: () => Promise<MyOutfitCommonDataEquipmentsResult | undefined>;
@@ -22,26 +28,69 @@ interface GearsViewProps {
 
 const GearsView = (props: GearsViewProps) => {
   const [equipments, setEquipments] = useState<MyOutfitCommonDataEquipmentsResult>();
+  const [headgears, setHeadgears] = useState<MyGear[]>([]);
+  const [clothes, setClothes] = useState<MyGear[]>([]);
+  const [shoes, setShoes] = useState<MyGear[]>([]);
+  const [gears, setGears] = useState<MyGear[]>([]);
   const [loading, setLoading] = useState(false);
   const [display, setDisplay] = useState(false);
   const [filterIndex, setFilterIndex] = useState(0);
-  const [filter, setFilter] = useState(GearType.HeadGears);
+  const [sortIndex, setSortIndex] = useState(0);
 
   useEffect(() => {
+    const headgears: MyGear[] = [],
+      clothes: MyGear[] = [],
+      shoes: MyGear[] = [];
+    if (equipments) {
+      for (const headgear of equipments.headGears.nodes) {
+        headgears.push(headgear);
+      }
+      for (const cloth of equipments.clothingGears.nodes) {
+        clothes.push(cloth);
+      }
+      for (const shoe of equipments.shoesGears.nodes) {
+        shoes.push(shoe);
+      }
+      setHeadgears(headgears);
+      setClothes(clothes);
+      setShoes(shoes);
+    }
+  }, [equipments]);
+  useEffect(() => {
+    const gears: MyGear[] = [];
     switch (filterIndex) {
       case 0:
-        setFilter(GearType.HeadGears);
+        for (const headgear of headgears) {
+          gears.push(headgear);
+        }
         break;
       case 1:
-        setFilter(GearType.ClothingGears);
+        for (const cloth of clothes) {
+          gears.push(cloth);
+        }
         break;
       case 2:
-        setFilter(GearType.ShoesGears);
+        for (const shoe of shoes) {
+          gears.push(shoe);
+        }
         break;
       default:
         throw new Error(`unexpected filter index ${filterIndex}`);
     }
-  }, [filterIndex]);
+    switch (sortIndex) {
+      case 0:
+        break;
+      case 1:
+        gears.sort((a, b) => a.brand.id.localeCompare(b.brand.id));
+        break;
+      case 2:
+        gears.sort((a, b) => a.primaryGearPower.gearPowerId - b.primaryGearPower.gearPowerId);
+        break;
+      default:
+        throw new Error(`unexpected sort index ${filterIndex}`);
+    }
+    setGears(gears);
+  }, [headgears, clothes, shoes, filterIndex, sortIndex]);
 
   const formatGearTypeName = (type: GearType) => {
     switch (type) {
@@ -66,6 +115,9 @@ const GearsView = (props: GearsViewProps) => {
   const onFilterChange = (event: NativeSyntheticEvent<NativeSegmentedControlIOSChangeEvent>) => {
     setFilterIndex(event.nativeEvent.selectedSegmentIndex);
   };
+  const onSortChange = (event: NativeSyntheticEvent<NativeSegmentedControlIOSChangeEvent>) => {
+    setSortIndex(event.nativeEvent.selectedSegmentIndex);
+  };
   const onClose = () => {
     setDisplay(false);
   };
@@ -77,7 +129,7 @@ const GearsView = (props: GearsViewProps) => {
     <VStack style={ViewStyles.px4}>
       <GearBox
         first={gear.index === 0}
-        last={gear.index === equipments![filter].nodes.length - 1}
+        last={gear.index === gears.length - 1}
         image={getImageCacheSource(gear.item.image.url)}
         brandImage={getImageCacheSource(gear.item.brand.image.url)}
         name={t(getImageHash(gear.item.image.url), { defaultValue: gear.item.name })}
@@ -86,7 +138,7 @@ const GearsView = (props: GearsViewProps) => {
         additionalAbility={gear.item.additionalGearPowers.map((gearPower) =>
           getImageCacheSource(gearPower.image.url)
         )}
-        paddingTo={getGearPadding(equipments![filter].nodes)}
+        paddingTo={getGearPadding(gears)}
       />
     </VStack>
   );
@@ -102,7 +154,7 @@ const GearsView = (props: GearsViewProps) => {
       />
       <FlashModal
         isVisible={display}
-        data={equipments?.[filter].nodes ?? []}
+        data={gears}
         keyExtractor={(gear) => gear.name}
         renderItem={renderItem}
         estimatedItemSize={48}
@@ -112,6 +164,12 @@ const GearsView = (props: GearsViewProps) => {
               values={Object.values(GearType).map((type) => t(formatGearTypeName(type)))}
               selectedIndex={filterIndex}
               onChange={onFilterChange}
+              style={ViewStyles.mb1}
+            />
+            <SegmentedControl
+              values={Object.values(Sort).map((sort) => t(sort))}
+              selectedIndex={sortIndex}
+              onChange={onSortChange}
               style={ViewStyles.mb2}
             />
           </VStack>
@@ -121,7 +179,7 @@ const GearsView = (props: GearsViewProps) => {
         style={[
           ViewStyles.modal1d,
           // HACK: fixed height should be provided to FlashList.
-          { height: 72 + 48 * (equipments?.[filter].nodes.length ?? 0), paddingHorizontal: 0 },
+          { height: 72 + 48 * gears.length, paddingHorizontal: 0 },
         ]}
       />
     </Center>

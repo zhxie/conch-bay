@@ -232,6 +232,9 @@ const ja = {
   headgear: "アタマ",
   clothes: "フク",
   shoes: "クツ",
+  default: "デフォルト",
+  brand: "ブランド",
+  ability: "ギアパワー",
   // Import.
   import: "インポート",
   importing: "インポート中",

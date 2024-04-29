@@ -232,6 +232,9 @@ const en = {
   headgear: "Headgear",
   clothes: "Clothes",
   shoes: "Shoes",
+  default: "Default",
+  brand: "Brand",
+  ability: "Ability",
   // Import.
   import: "Import",
   importing: "Importing",

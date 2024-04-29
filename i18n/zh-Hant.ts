@@ -224,6 +224,9 @@ const zhHant = {
   headgear: "頭部裝備",
   clothes: "服裝",
   shoes: "鞋子",
+  default: "預設",
+  brand: "品牌",
+  ability: "裝備能力",
   // Import.
   import: "匯入",
   importing: "匯入中",
