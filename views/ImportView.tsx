@@ -1156,7 +1156,12 @@ const ImportView = (props: ImportViewProps) => {
 
   return (
     <Center style={props.style}>
-      <ToolButton icon="download" title={t("import")} onPress={onImportPress} />
+      <ToolButton
+        disabled={props.disabled}
+        icon="download"
+        title={t("import")}
+        onPress={onImportPress}
+      />
       <Modal isVisible={import_} onClose={onImportClose} style={ViewStyles.modal1d}>
         <Dialog icon="download" text={t("import_notice")}>
           <Button

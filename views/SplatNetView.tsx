@@ -11,6 +11,7 @@ interface SplatNetViewRef {
   open: () => void;
 }
 interface SplatNetViewProps {
+  disabled?: boolean;
   lang: string;
   style?: StyleProp<ViewStyle>;
   onGetWebServiceToken: () => Promise<WebServiceToken | undefined>;
@@ -67,7 +68,12 @@ const SplatNetView = (props: SplatNetViewProps, ref: ForwardedRef<SplatNetViewRe
 
   return (
     <Center style={props.style}>
-      <ToolButton icon="donut" title={t("splatnet_3")} onPress={onWebViewPress} />
+      <ToolButton
+        disabled={props.disabled}
+        icon="donut"
+        title={t("splatnet_3")}
+        onPress={onWebViewPress}
+      />
       {webView && webServiceToken && (
         <WebView
           source={{ uri: `https://api.lp1.av5ja.srv.nintendo.net/?lang=${props.lang}` }}

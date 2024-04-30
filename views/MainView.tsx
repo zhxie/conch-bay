@@ -167,7 +167,7 @@ const MainView = () => {
   const [progress, setProgress] = useState(0);
   const [progressTotal, setProgressTotal] = useState(0);
   const [loadingMore, setLoadingMore] = useState(false);
-  const [counting, setCounting] = useState(false);
+  const [processing, setProcessing] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [support, setSupport] = useState(false);
   const [clearingCache, setClearingCache] = useState(false);
@@ -1174,7 +1174,7 @@ const MainView = () => {
     if (stats) {
       return stats;
     }
-    setCounting(true);
+    setProcessing(true);
     const records = await Database.queryStats(filter);
     const results: Stats[] = [];
     for (const record of records) {
@@ -1185,11 +1185,12 @@ const MainView = () => {
       }
     }
     setStats(results);
-    setCounting(false);
+    setProcessing(false);
     return results;
   };
   const onGearsPress = async () => {
     try {
+      setProcessing(true);
       let newWebServiceToken: WebServiceToken | undefined = undefined;
       let newBulletToken = "";
       let equipmentsAttempt: MyOutfitCommonDataEquipmentsResult | undefined;
@@ -1220,8 +1221,10 @@ const MainView = () => {
             showBanner(BannerLevel.Warn, t("failed_to_load_gears", { error: e }));
             return undefined;
           }));
+      setProcessing(false);
       return equipments;
     } catch (e) {
+      setProcessing(false);
       showBanner(BannerLevel.Error, e);
     }
   };
@@ -1982,16 +1985,24 @@ const MainView = () => {
                   style={[ViewStyles.mb4, ViewStyles.wf]}
                 >
                   <HStack flex center style={ViewStyles.px4}>
-                    <StatsView disabled={counting} onStats={onStatsPress} style={ViewStyles.mr2} />
-                    <TrendsView disabled={counting} onStats={onStatsPress} style={ViewStyles.mr2} />
+                    <StatsView
+                      disabled={processing}
+                      onStats={onStatsPress}
+                      style={ViewStyles.mr2}
+                    />
+                    <TrendsView
+                      disabled={processing}
+                      onStats={onStatsPress}
+                      style={ViewStyles.mr2}
+                    />
                     <RotationsView
-                      disabled={counting}
+                      disabled={processing}
                       onStats={onStatsPress}
                       style={ViewStyles.mr2}
                     />
                     {sessionToken.length > 0 && (
                       <GearsView
-                        disabled={refreshing || counting}
+                        disabled={processing}
                         onPress={onGearsPress}
                         style={ViewStyles.mr2}
                       />
@@ -1999,13 +2010,14 @@ const MainView = () => {
                     {sessionToken.length > 0 && (
                       <SplatNetView
                         ref={splatNetViewRef}
+                        disabled={processing}
                         lang={language}
                         style={ViewStyles.mr2}
                         onGetWebServiceToken={onGetWebServiceToken}
                       />
                     )}
                     <ImportView
-                      disabled={refreshing}
+                      disabled={processing}
                       onBegin={onImportBegin}
                       onResults={onImportResults}
                       onComplete={onImportComplete}
@@ -2322,6 +2334,7 @@ const MainView = () => {
             </DialogSection>
             <DialogSection text={t("database_notice")} style={ViewStyles.mb4}>
               <Button
+                disabled={refreshing || loadingMore || exporting}
                 loading={clearingDatabase}
                 loadingText={t("clearing_database")}
                 style={ViewStyles.danger}
