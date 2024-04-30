@@ -182,6 +182,7 @@ const en = {
   show_player_names: "Show Player Names",
   share_image: "Share Image",
   show_raw_data: "Show Raw Data",
+  analyze_build: "Analyze Build",
   self: "Self",
   team: "Team",
   // Stats.

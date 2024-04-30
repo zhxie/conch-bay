@@ -177,6 +177,7 @@ const zhHans = {
   show_player_names: "显示玩家名称",
   share_image: "分享图片",
   show_raw_data: "显示原始数据",
+  analyze_build: "分析配装",
   self: "自己",
   team: "团队",
   // Stats.

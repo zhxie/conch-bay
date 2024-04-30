@@ -183,6 +183,7 @@ const ja = {
   show_player_names: "プレイヤー名を表示",
   share_image: "写真をシェア",
   show_raw_data: "生データを表示",
+  analyze_build: "ギア構成を分析",
   self: "自分",
   team: "チーム",
   // Stats.

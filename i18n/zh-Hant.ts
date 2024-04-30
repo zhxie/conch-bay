@@ -177,6 +177,7 @@ const zhHant = {
   show_player_names: "顯示玩家名稱",
   share_image: "分享圖片",
   show_raw_data: "顯示原始數據",
+  analyze_build: "分析配裝",
   self: "自己",
   team: "團隊",
   // Stats.

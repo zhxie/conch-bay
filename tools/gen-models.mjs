@@ -68,6 +68,7 @@ const getWeaponMap = async (version) => {
   const json = await res.json();
   const weapons = {};
   const images = {};
+  const imagesRaw = {};
   const coopRareWeapons = [];
   for (const weapon of json) {
     if (weapon["Type"] === "Versus" || (weapon["Type"] === "Coop" && weapon["IsCoopRare"])) {
@@ -75,12 +76,13 @@ const getWeaponMap = async (version) => {
       const image = createHash("sha256").update(weapon["__RowId"]).digest("hex");
       weapons[id] = image;
       images[image] = id;
+      imagesRaw[image] = weapon["Id"];
       if (weapon["IsCoopRare"]) {
         coopRareWeapons.push(id);
       }
     }
   }
-  return { weapons, images, coopRareWeapons };
+  return { weapons, images, imagesRaw, coopRareWeapons };
 };
 const getCoopSpecialWeaponMap = async (version) => {
   const res = await fetch(
@@ -247,6 +249,43 @@ const getWorkSuitMap = async (version) => {
     workSuits[id] = image;
   }
   return { workSuits };
+};
+const getAbilityMap = () => {
+  const map = {
+    MainInk_Save: "ISM",
+    SubInk_Save: "ISS",
+    InkRecovery_Up: "IRU",
+    HumanMove_Up: "RSU",
+    SquidMove_Up: "SSU",
+    SpecialIncrease_Up: "SCU",
+    RespawnSpecialGauge_Save: "SS",
+    SpecialSpec_Up: "SPU",
+    RespawnTime_Save: "QR",
+    JumpTime_Save: "QSJ",
+    SubSpec_Up: "BRU",
+    OpInkEffect_Reduction: "RES",
+    SubEffect_Reduction: "SRU",
+    Action_Up: "IA",
+    StartAllUp: "OG",
+    EndAllUp: "LDE",
+    MinorityUp: "T",
+    ComeBack: "CB",
+    SquidMoveSpatter_Reduction: "NS",
+    DeathMarking: "H",
+    ThermalInk: "TI",
+    Exorcist: "RP",
+    ExSkillDouble: "AD",
+    SuperJumpSign_Hide: "SJ",
+    ObjectEffect_Up: "OS",
+    SomersaultLanding: "DR",
+    None: "U",
+  };
+  const images = {};
+  for (const ability in map) {
+    const image = createHash("sha256").update(ability).digest("hex");
+    images[image] = map[ability];
+  }
+  return { images };
 };
 
 const getPlaceholderMap = async (version) => {
@@ -532,6 +571,7 @@ const [
   awardMap,
   salmonidMap,
   workSuitMap,
+  abilityMap,
   placeholderMap,
 ] = await Promise.all([
   getCoopStageMap(version),
@@ -543,6 +583,7 @@ const [
   getAwardMap(),
   getSalmonidMap(version),
   getWorkSuitMap(version),
+  getAbilityMap(),
   getPlaceholderMap(version),
 ]);
 writeOut("models/coopStages.json", coopStageMap);
@@ -554,6 +595,7 @@ writeOut("models/titles.json", titleMap);
 writeOut("models/awards.json", awardMap);
 writeOut("models/salmonids.json", salmonidMap);
 writeOut("models/workSuits.json", workSuitMap);
+writeOut("models/abilities.json", abilityMap);
 
 const file = createWriteStream("models/placeholders.ts", "utf-8");
 file.write("const Placeholders = {\n");

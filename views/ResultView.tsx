@@ -5,6 +5,7 @@ import { FlashList, ListRenderItemInfo } from "@shopify/flash-list";
 import dayjs from "dayjs";
 import * as Clipboard from "expo-clipboard";
 import * as Sharing from "expo-sharing";
+import * as WebBrowser from "expo-web-browser";
 import { useCallback, useMemo, useRef, useState } from "react";
 import {
   Animated,
@@ -19,6 +20,7 @@ import JSONTree from "react-native-json-tree";
 import ViewShot from "react-native-view-shot";
 import {
   AccordionDisplay,
+  AccordionDisplayHandle,
   BannerLevel,
   BattleButton,
   BattlePlayerButton,
@@ -31,9 +33,11 @@ import {
   CoopPlayerButton,
   CoopWeaponBox,
   Display,
+  EmptyBossSalmonidBox,
   GearBox,
   GroupButton,
   HStack,
+  Icon,
   Image,
   Marquee,
   Modal,
@@ -51,10 +55,9 @@ import {
   WorkSuitBox,
   useBanner,
   useTheme,
-  EmptyBossSalmonidBox,
-  AccordionDisplayHandle,
 } from "../components";
 import t, { td } from "../i18n";
+import abilityList from "../models/abilities.json";
 import awardList from "../models/awards.json";
 import titleList from "../models/titles.json";
 import {
@@ -75,17 +78,18 @@ import {
   VsPlayer,
   VsTeam,
 } from "../models/types";
+import weaponList from "../models/weapons.json";
 import { countBattle, countCoop } from "../utils/stats";
 import {
   getCoopRuleColor,
   getImageCacheSource,
+  getImageHash,
   getColor,
   getVsModeColor,
   getVsSelfPlayer,
   getGearPadding,
   getVsPower,
   roundPower,
-  getImageHash,
 } from "../utils/ui";
 import { StatsModal } from "./StatsView";
 
@@ -577,6 +581,27 @@ const ResultView = (props: ResultViewProps) => {
   const onCopyRawValue = async (value: any) => {
     await Clipboard.setStringAsync(value.toString());
     showBanner(BannerLevel.Info, t("copied_to_clipboard"));
+  };
+  const onAnalyzeBuildPress = () => {
+    const weapon = weaponList.imagesRaw[getImageHash(battlePlayer!.weapon.image.url)];
+    const abilities: string[] = [];
+    for (const type of ["headGear", "clothingGear", "shoesGear"]) {
+      abilities.push(
+        abilityList.images[getImageHash(battlePlayer![type].primaryGearPower.image.url)]
+      );
+      for (let i = 0; i < 3; i++) {
+        if (battlePlayer![type].additionalGearPowers.length > i) {
+          abilities.push(
+            abilityList.images[getImageHash(battlePlayer![type].additionalGearPowers[i].image.url)]
+          );
+        } else {
+          abilities.push("U");
+        }
+      }
+    }
+    WebBrowser.openBrowserAsync(
+      `https://sendou.ink/analyzer?weapon=${weapon}&build=${abilities.join(",")}`
+    );
   };
   const onModalHide = () => {
     if (willDisplayNext.current !== undefined) {
@@ -1074,31 +1099,45 @@ const ResultView = (props: ResultViewProps) => {
                     specialWeapon={getImageCacheSource(battlePlayer.weapon.specialWeapon.image.url)}
                     style={ViewStyles.mb2}
                   />
-                  {[battlePlayer.headGear, battlePlayer.clothingGear, battlePlayer.shoesGear].map(
-                    (gear, i, gears) => (
-                      // TODO: show brands with its favorite.
-                      <GearBox
-                        key={i}
-                        first={i === 0}
-                        last={i === gears.length - 1}
-                        image={getImageCacheSource(gear.originalImage.url)}
-                        brandImage={getImageCacheSource(gear.brand.image.url)}
-                        name={t(getImageHash(gear.originalImage.url), {
-                          defaultValue: gear.name,
-                        })}
-                        brand={t(gear.brand.id)}
-                        primaryAbility={getImageCacheSource(gear.primaryGearPower.image.url)}
-                        additionalAbility={gear.additionalGearPowers.map((gearPower) =>
-                          getImageCacheSource(gearPower.image.url)
-                        )}
-                        paddingTo={getGearPadding([
-                          battlePlayer.headGear,
-                          battlePlayer.clothingGear,
-                          battlePlayer.shoesGear,
-                        ])}
+                  <VStack style={[ViewStyles.wf, ViewStyles.mb2]}>
+                    {[battlePlayer.headGear, battlePlayer.clothingGear, battlePlayer.shoesGear].map(
+                      (gear, i, gears) => (
+                        // TODO: show brands with its favorite.
+                        <GearBox
+                          key={i}
+                          first={i === 0}
+                          last={i === gears.length - 1}
+                          image={getImageCacheSource(gear.originalImage.url)}
+                          brandImage={getImageCacheSource(gear.brand.image.url)}
+                          name={t(getImageHash(gear.originalImage.url), {
+                            defaultValue: gear.name,
+                          })}
+                          brand={t(gear.brand.id)}
+                          primaryAbility={getImageCacheSource(gear.primaryGearPower.image.url)}
+                          additionalAbility={gear.additionalGearPowers.map((gearPower) =>
+                            getImageCacheSource(gearPower.image.url)
+                          )}
+                          paddingTo={getGearPadding([
+                            battlePlayer.headGear,
+                            battlePlayer.clothingGear,
+                            battlePlayer.shoesGear,
+                          ])}
+                        />
+                      )
+                    )}
+                  </VStack>
+                  <VStack style={ViewStyles.wf}>
+                    <Button style={ViewStyles.accent} onPress={onAnalyzeBuildPress}>
+                      <Marquee style={[ViewStyles.mr1, theme.reverseTextStyle]}>
+                        {t("analyze_build")}
+                      </Marquee>
+                      <Icon
+                        name="external-link"
+                        size={TextStyles.h5.fontSize}
+                        color={theme.reverseTextStyle.color}
                       />
-                    )
-                  )}
+                    </Button>
+                  </VStack>
                 </VStack>
               )}
             </Modal>

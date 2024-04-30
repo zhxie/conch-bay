@@ -1819,6 +1819,9 @@ const MainView = () => {
   const onSplat3Press = () => {
     WebBrowser.openBrowserAsync("https://github.com/Leanny/splat3");
   };
+  const onSendouInkPress = () => {
+    WebBrowser.openBrowserAsync("https://sendou.ink/");
+  };
   const onOssLicensesPress = () => {
     WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay/wiki/OSS-Licenses");
   };
@@ -2441,6 +2444,9 @@ const MainView = () => {
               </Text>
               <Text style={[TextStyles.link, ViewStyles.mb1]} onPress={onSplat3Press}>
                 splat3
+              </Text>
+              <Text style={[TextStyles.link, ViewStyles.mb1]} onPress={onSendouInkPress}>
+                sendou.ink
               </Text>
               <Text style={TextStyles.link} onPress={onOssLicensesPress}>
                 {t("oss_licenses")}
