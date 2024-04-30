@@ -15,4 +15,5 @@ __pycache__/
 assets/fonts/
 models/*.json
 !models/unknowns.json
+models/placeholders.ts
 i18n/*.json

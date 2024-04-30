@@ -249,6 +249,275 @@ const getWorkSuitMap = async (version) => {
   return { workSuits };
 };
 
+const getPlaceholderMap = async (version) => {
+  const weaponMap = {
+    0: "Shooters/Sploosh-o-matic",
+    1: "Shooters/Neo Sploosh-o-matic",
+    10: "Shooters/Splattershot Jr",
+    11: "Shooters/Custom Splattershot Jr",
+    20: "Shooters/Splash-o-matic",
+    21: "Shooters/Neo Splash-o-matic",
+    30: "Shooters/Aerospray MG",
+    31: "Shooters/Aerospray RG",
+    40: "Shooters/Splattershot",
+    41: "Shooters/Tentatek Splattershot",
+    45: "Shooters/Hero Shot Replica",
+    46: "Shooters/Octo Shot Replica",
+    47: "Shooters/Order Shooter Replica",
+    50: "Shooters/52 Gal",
+    51: "Shooters/52 Gal Deco",
+    60: "Shooters/N-ZAP 85",
+    61: "Shooters/N-ZAP 89",
+    70: "Shooters/Splattershot Pro",
+    71: "Shooters/Forge Splattershot Pro",
+    80: "Shooters/96 Gal",
+    81: "Shooters/96 Gal Deco",
+    90: "Shooters/Jet Squelcher",
+    91: "Shooters/Custom Jet Squelcher",
+    100: "Shooters/Splattershot Nova",
+    101: "Shooters/Annaki Splattershot Nova",
+    200: "Blasters/Luna Blaster",
+    201: "Blasters/Luna Blaster Neo",
+    205: "Blasters/Order Blaster Replica",
+    210: "Blasters/Blaster",
+    211: "Blasters/Custom Blaster",
+    220: "Blasters/Range Blaster",
+    230: "Blasters/Clash Blaster",
+    231: "Blasters/Clash Blaster Neo",
+    240: "Blasters/Rapid Blaster",
+    241: "Blasters/Rapid Blaster Deco",
+    250: "Blasters/Rapid Blaster Pro",
+    251: "Blasters/Rapid Blaster Pro Deco",
+    260: "Blasters/S-BLAST '92",
+    261: "Blasters/S-BLAST '91",
+    300: "Shooters/L-3 Nozzlenose",
+    301: "Shooters/L-3 Nozzlenose D",
+    310: "Shooters/H-3 Nozzlenose",
+    311: "Shooters/H-3 Nozzlenose D",
+    400: "Shooters/Squeezer",
+    401: "Shooters/Foil Squeezer",
+    1000: "Rollers/Carbon Roller",
+    1001: "Rollers/Carbon Roller Deco",
+    1010: "Rollers/Splat Roller",
+    1011: "Rollers/Krak-On Splat Roller",
+    1015: "Rollers/Order Roller Replica",
+    1020: "Rollers/Dynamo Roller",
+    1021: "Rollers/Gold Dynamo Roller",
+    1030: "Rollers/Flingza Roller",
+    1031: "Rollers/Foil Flingza Roller",
+    1040: "Rollers/Big Swig Roller",
+    1041: "Rollers/Big Swig Roller Express",
+    1100: "Brushes/Inkbrush",
+    1101: "Brushes/Inkbrush Nouveau",
+    1110: "Brushes/Octobrush",
+    1111: "Brushes/Octobrush Nouveau",
+    1115: "Brushes/Orderbrush Replica",
+    1120: "Brushes/Painbrush",
+    1121: "Brushes/Painbrush Nouveau",
+    2000: "Chargers/Classic Squiffer",
+    2001: "Chargers/New Squiffer",
+    2010: "Chargers/Splat Charger",
+    2011: "Chargers/Z F Splat Charger",
+    2015: "Chargers/Order Charger Replica",
+    2020: "Chargers/Splatterscope",
+    2021: "Chargers/Z F Splatterscope",
+    2030: "Chargers/E-Liter 4k",
+    2031: "Chargers/Custom E-Liter 4k",
+    2040: "Chargers/E-Liter 4k Scope",
+    2041: "Chargers/Custom E-Liter 4k Scope",
+    2050: "Chargers/Bamboozler",
+    2060: "Chargers/Goo Tuber",
+    2061: "Chargers/Custom Goo Tuber",
+    2070: "Chargers/Snipewriter 5H",
+    2071: "Chargers/Snipewriter 5B",
+    3000: "Sloshers/Slosher",
+    3001: "Sloshers/Slosher Deco",
+    3005: "Sloshers/Order Slosher Replica",
+    3010: "Sloshers/Tri-Slosher",
+    3011: "Sloshers/Tri-Slosher Nouveau",
+    3020: "Sloshers/Sloshing Machine",
+    3021: "Sloshers/Sloshing Machine Neo",
+    3030: "Sloshers/Bloblobber",
+    3031: "Sloshers/Bloblobber Deco",
+    3040: "Sloshers/Explosher",
+    3041: "Sloshers/Custom Explosher",
+    3050: "Sloshers/Dread Wringer",
+    3051: "Sloshers/Dread Wringer D",
+    4000: "Splatlings/Mini Splatling",
+    4001: "Splatlings/Zink Mini Splatling",
+    4010: "Splatlings/Heavy Splatling",
+    4011: "Splatlings/Heavy Splatling Deco",
+    4015: "Splatlings/Order Splatling Replica",
+    4020: "Splatlings/Hydra Splatling",
+    4030: "Splatlings/Ballpoint Splatling",
+    4031: "Splatlings/Ballpoint Splatling Nouveau",
+    4040: "Splatlings/Nautilus 47",
+    4041: "Splatlings/Nautilus 79",
+    4050: "Splatlings/Heavy Edit Splatling",
+    5000: "Dualies/Dapple Dualies",
+    5001: "Dualies/Dapple Dualies Nouveau",
+    5010: "Dualies/Splat Dualies",
+    5011: "Dualies/Enperry Splat Dualies",
+    5015: "Dualies/Order Dualie Replicas",
+    5020: "Dualies/Glooga Dualies",
+    5021: "Dualies/Glooga Dualies Deco",
+    5030: "Dualies/Squelcher Dualies",
+    5031: "Dualies/Custom Squelcher Dualies",
+    5040: "Dualies/Dark Tetra Dualies",
+    5041: "Dualies/Light Tetra Dualies",
+    5050: "Dualies/Douser Dualies FF",
+    6000: "Brellas/Splat Brella",
+    6001: "Brellas/Sorella Brella",
+    6005: "Brellas/Order Brella Replica",
+    6010: "Brellas/Tenta Brella",
+    6011: "Brellas/Tenta Sorella Brella",
+    6020: "Brellas/Undercover Brella",
+    6021: "Brellas/Undercover Sorella Brella",
+    6030: "Brellas/Recycled Brella 24 Mk I",
+    7010: "Stringers/Tri-Stringer",
+    7011: "Stringers/Inkline Tri-Stringer",
+    7015: "Stringers/Order Stringer Replica",
+    7020: "Stringers/REEF-LUX 450",
+    7021: "Stringers/REEF-LUX 450 Deco",
+    8000: "Splatanas/Splatana Stamper",
+    8001: "Splatanas/Splatana Stamper Nouveau",
+    8005: "Splatanas/Order Splatana Replica",
+    8010: "Splatanas/Splatana Wiper",
+    8011: "Splatanas/Splatana Wiper Deco",
+    20900: "Grizzco/Grizzco Blaster",
+    22900: "Grizzco/Grizzco Charger",
+    23900: "Grizzco/Grizzco Slosher",
+    25900: "Grizzco/Grizzco Dualies",
+    26900: "Grizzco/Grizzco Brella",
+    27900: "Grizzco/Grizzco Stringer",
+    28900: "Grizzco/Grizzco Splatana",
+  };
+  const subWeaponMap = {
+    0: "Splat Bomb",
+    1: "Suction Bomb",
+    2: "Burst Bomb",
+    3: "Sprinkler",
+    4: "Splash Wall",
+    5: "Fizzy Bomb",
+    6: "Curling Bomb",
+    7: "Autobomb",
+    8: "Beakon",
+    9: "Point Sensor",
+    10: "Ink Mine",
+    11: "Toxic Mist",
+    12: "Line Marker",
+    13: "Torpedo",
+  };
+  const specialWeaponMap = {
+    1: "Trizooka",
+    2: "Big Bubbler",
+    3: "Zipcaster",
+    4: "Tenta Missles",
+    5: "Ink Storm",
+    6: "Booyah Bomb",
+    7: "Wave Breaker",
+    8: "Ink Vac",
+    9: "Killer Way 5-0",
+    10: "Inkjet",
+    11: "Ultra Stamp",
+    12: "Crab Tank",
+    13: "Reefslider",
+    14: "Triple Inkstrike",
+    15: "Tacticooler",
+    16: "Super Chump",
+    17: "Kraken",
+    18: "Triple Splashdown",
+    19: "Splattercolor Screen",
+  };
+  const abilityMap = {
+    MainInk_Save: "Main Saver",
+    SubInk_Save: "Sub Saver",
+    InkRecovery_Up: "Ink Recovery",
+    HumanMove_Up: "Run Speed Up",
+    SquidMove_Up: "Swim Speed Up",
+    SpecialIncrease_Up: "Special Charge Up",
+    RespawnSpecialGauge_Save: "Special Saver",
+    SpecialSpec_Up: "Special Power Up",
+    RespawnTime_Save: "Quick Respawn",
+    JumpTime_Save: "Quick Super Jump",
+    SubSpec_Up: "Sub Power Up",
+    OpInkEffect_Reduction: "Ink Resist",
+    SubEffect_Reduction: "Bomb Resist",
+    Action_Up: "Intensify Action",
+    StartAllUp: "Opening Gambit",
+    EndAllUp: "Last Ditch Effort",
+    MinorityUp: "Tenacity",
+    ComeBack: "Comeback",
+    SquidMoveSpatter_Reduction: "Ninja Squid",
+    DeathMarking: "Haunt",
+    ThermalInk: "Thermal Ink",
+    Exorcist: "Respawn Punisher",
+    ExSkillDouble: "2x Ability",
+    SuperJumpSign_Hide: "Stealth Jump",
+    ObjectEffect_Up: "Object Shredder",
+    SomersaultLanding: "Drop Roller",
+    None: "Unassigned",
+  };
+  const unknownMap = {
+    "473fffb2442075078d8bb7125744905abdeae651b6a5b7453ae295582e45f7d1":
+      "Weapons/Grizzco/Random Rotation",
+    "9d7272733ae2f2282938da17d69f13419a935eef42239132a02fcf37d8678f10":
+      "Weapons/Grizzco/Golden Rotation",
+  };
+  const res = await Promise.all([
+    fetch(
+      `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/WeaponInfoMain.json`
+    ),
+    fetch(
+      `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/WeaponInfoSub.json`
+    ),
+    fetch(
+      `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/WeaponInfoSpecial.json`
+    ),
+  ]);
+  const jsons = await Promise.all(res.map((r) => r.json()));
+  const result = {};
+  for (const weapon of jsons[0]) {
+    if (weapon["Type"] === "Versus" || (weapon["Type"] === "Coop" && weapon["IsCoopRare"])) {
+      const name = weaponMap[weapon["Id"]];
+      const image = createHash("sha256").update(weapon["__RowId"]).digest("hex");
+      result[
+        `/weapon_illust/${image}_0.png`
+      ] = `require("@hacceuee/s3-pixel-icons/Weapons/${name}.png")`;
+    }
+  }
+  for (const subWeapon of jsons[1]) {
+    if (subWeapon["Type"] === "Versus") {
+      const name = subWeaponMap[subWeapon["Id"]];
+      const image = createHash("sha256").update(subWeapon["__RowId"]).digest("hex");
+      result[
+        `/sub_img/blue/${image}_0.png`
+      ] = `require("@hacceuee/s3-pixel-icons/Subs & Specials/Sub - ${name}.png")`;
+    }
+  }
+  for (const specialWeapon of jsons[2]) {
+    if (specialWeapon["Type"] === "Versus" && specialWeapon["Id"] < 20) {
+      const name = specialWeaponMap[specialWeapon["Id"]];
+      const image = createHash("sha256").update(specialWeapon["__RowId"]).digest("hex");
+      result[
+        `/special_img/blue/${image}_0.png`
+      ] = `require("@hacceuee/s3-pixel-icons/Subs & Specials/Special - ${name}.png")`;
+    }
+  }
+  for (const ability in abilityMap) {
+    const image = createHash("sha256").update(ability).digest("hex");
+    result[
+      `/skill_img/${image}_0.png`
+    ] = `require("@hacceuee/s3-pixel-icons/Chunks Icons/No Frames/Chunk - ${abilityMap[ability]}.png")`;
+  }
+  for (const unknown in unknownMap) {
+    result[
+      `/ui_img/${unknown}_0.png`
+    ] = `require("@hacceuee/s3-pixel-icons/${unknownMap[unknown]}.png")`;
+  }
+  return result;
+};
+
 const [nso_version, splatnet_version] = await Promise.all([getNsoVersion(), getSplatnetVersion()]);
 writeOut("models/versions.json", { NSO_VERSION: nso_version, SPLATNET_VERSION: splatnet_version });
 
@@ -263,6 +532,7 @@ const [
   awardMap,
   salmonidMap,
   workSuitMap,
+  placeholderMap,
 ] = await Promise.all([
   getCoopStageMap(version),
   getWeaponMap(version),
@@ -273,6 +543,7 @@ const [
   getAwardMap(),
   getSalmonidMap(version),
   getWorkSuitMap(version),
+  getPlaceholderMap(version),
 ]);
 writeOut("models/coopStages.json", coopStageMap);
 writeOut("models/weapons.json", weaponMap);
@@ -283,3 +554,10 @@ writeOut("models/titles.json", titleMap);
 writeOut("models/awards.json", awardMap);
 writeOut("models/salmonids.json", salmonidMap);
 writeOut("models/workSuits.json", workSuitMap);
+
+const file = createWriteStream("models/placeholders.ts", "utf-8");
+file.write("const Placeholders = {\n");
+for (const key in placeholderMap) {
+  file.write(`  "${key}": ${placeholderMap[key]},\n`);
+}
+file.write("};\n\nexport default Placeholders;\n");
