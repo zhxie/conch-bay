@@ -10,6 +10,7 @@ import {
   IconButton,
   Marquee,
   Modal,
+  Notice,
   SalmonRunSwitcher,
   TextStyles,
   VStack,
@@ -301,7 +302,7 @@ const FilterView = (props: FilterViewProps) => {
               </HStack>
             </VStack>
           )}
-          <VStack style={[ViewStyles.wf, ViewStyles.pr2]}>
+          <VStack style={[ViewStyles.wf, ViewStyles.mb2, ViewStyles.pr2]}>
             <Button
               disabled={props.disabled}
               style={ViewStyles.accent}
@@ -309,6 +310,9 @@ const FilterView = (props: FilterViewProps) => {
             >
               <Marquee style={theme.reverseTextStyle}>{t("clear_filter")}</Marquee>
             </Button>
+          </VStack>
+          <VStack style={ViewStyles.wf}>
+            <Notice title={t("filter_notice")} />
           </VStack>
         </VStack>
       </Modal>

@@ -145,6 +145,7 @@ const en = {
   stages: "Stages",
   weapons: "Weapons",
   clear_filter: "Clear Filter",
+  filter_notice: "You can clear filters by long pressing on the filter button.",
   // Result.
   n_x_battle: "%{n}x Battle",
   n_win_strike: "%{n}-WIN STRIKE",

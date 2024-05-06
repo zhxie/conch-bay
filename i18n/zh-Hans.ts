@@ -141,6 +141,7 @@ const zhHans = {
   stages: "场地",
   weapons: "武器",
   clear_filter: "清除筛选",
+  filter_notice: "您可以通过长按筛选按钮清除筛选。",
   // Result.
   n_x_battle: "%{n}倍比赛",
   n_win_strike: "%{n}连胜",

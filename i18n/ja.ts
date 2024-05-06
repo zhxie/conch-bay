@@ -147,6 +147,7 @@ const ja = {
   stages: "ステージ",
   weapons: "ブキ",
   clear_filter: "フィルターを消す",
+  filter_notice: "フィルターボタンを長押しするとフィルターをクリアできます。",
   // Result.
   n_x_battle: "%{n}倍マッチ",
   n_win_strike: "%{n}連勝",
