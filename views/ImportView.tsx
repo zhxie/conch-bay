@@ -1274,7 +1274,7 @@ const ImportView = (props: ImportViewProps) => {
           </Dialog>
         </Modal>
         <Modal isVisible={uri.length > 0} style={ViewStyles.modal1d}>
-          <Dialog icon="alert-circle" text={t("split_and_import_notice")}>
+          <Dialog icon="circle-alert" text={t("split_and_import_notice")}>
             <Button
               style={[ViewStyles.mb2, ViewStyles.accent]}
               textStyle={theme.reverseTextStyle}

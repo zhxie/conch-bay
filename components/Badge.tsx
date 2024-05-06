@@ -1,11 +1,14 @@
 import { StyleProp, StyleSheet, ViewStyle } from "react-native";
+import { Lucide } from "../assets/fonts/Lucide";
+import Icon from "./Icon";
 import Pressable from "./Pressable";
-import { Center } from "./Stack";
+import { HStack } from "./Stack";
 import { TextStyles, ViewStyles, useTheme } from "./Styles";
 import Text from "./Text";
 
 interface BadgeProps {
   color: string;
+  icon?: Lucide;
   title: string;
   size?: "large" | "small";
   style?: StyleProp<ViewStyle>;
@@ -17,7 +20,8 @@ const Badge = (props: BadgeProps) => {
   const fontColor = theme.colorScheme === "light" ? props.color : "#ffffffaf";
 
   return (
-    <Center
+    <HStack
+      center
       style={[
         viewStyles[props.size ?? "large"],
         ViewStyles.r0_5,
@@ -25,8 +29,16 @@ const Badge = (props: BadgeProps) => {
         props.style,
       ]}
     >
+      {props.icon && (
+        <Icon
+          name={props.icon}
+          size={textStyles[props.size ?? "large"].fontSize}
+          color={fontColor}
+          style={ViewStyles.mr1}
+        />
+      )}
       <Text style={[textStyles[props.size ?? "large"], { color: fontColor }]}>{props.title}</Text>
-    </Center>
+    </HStack>
   );
 };
 

@@ -78,7 +78,7 @@ const ResultButton = (props: ResultButtonProps) => {
                 case Result.Lose:
                   return <Icon name="x" size={32} color={Color.MiddleTerritory} />;
                 case Result.ExemptedLose:
-                  return <Icon name="x-circle" size={28} color={Color.MiddleTerritory} />;
+                  return <Icon name="circle-x" size={28} color={Color.MiddleTerritory} />;
               }
             })()}
           </Center>

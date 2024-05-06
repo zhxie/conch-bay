@@ -115,6 +115,7 @@ import {
   getImageHash,
   getUserIconCacheSource,
   isImageExpired,
+  roundPower,
 } from "../utils/ui";
 import FilterView from "./FilterView";
 import FriendView from "./FriendView";
@@ -127,7 +128,6 @@ import ShopView from "./ShopView";
 import SplatNetView, { SplatNetViewRef } from "./SplatNetView";
 import StatsView from "./StatsView";
 import TrendsView from "./TrendsView";
-import XView from "./XView";
 
 enum TimeRange {
   Today = "today",
@@ -1890,27 +1890,68 @@ const MainView = () => {
                       style={ViewStyles.mb2}
                     />
                     {/* HACK: withdraw 4px margin in the last badge. */}
-                    <HStack style={{ marginRight: -ViewStyles.mr1.marginRight }}>
+                    <HStack
+                      style={[
+                        ViewStyles.c,
+                        {
+                          marginRight: -ViewStyles.mr1.marginRight,
+                          marginBottom: -ViewStyles.mb1.marginBottom,
+                        },
+                        { flexWrap: "wrap" },
+                      ]}
+                    >
                       {level.length > 0 && (
-                        <Badge color={Color.RegularBattle} title={level} style={ViewStyles.mr1} />
+                        <Badge
+                          color={Color.RegularBattle}
+                          title={level}
+                          style={[ViewStyles.mr1, ViewStyles.mb1]}
+                        />
                       )}
                       {rank.length > 0 && (
-                        <Badge color={Color.AnarchyBattle} title={rank} style={ViewStyles.mr1} />
+                        <Badge
+                          color={Color.AnarchyBattle}
+                          title={rank}
+                          style={[ViewStyles.mr1, ViewStyles.mb1]}
+                        />
                       )}
-                      {(splatZonesXPower.length > 1 ||
-                        towerControlXPower.length > 1 ||
-                        rainmakerXPower.length > 1 ||
-                        clamBlitzXPower.length > 1) && (
-                        <XView
-                          splatZones={parseFloat(splatZonesXPower)}
-                          towerControl={parseFloat(towerControlXPower)}
-                          rainmaker={parseFloat(rainmakerXPower)}
-                          clamBlitz={parseFloat(clamBlitzXPower)}
-                          style={ViewStyles.mr1}
+                      {splatZonesXPower.length > 1 && (
+                        <Badge
+                          color={Color.XBattle}
+                          icon={"land-plot"}
+                          title={roundPower(parseFloat(splatZonesXPower))}
+                          style={[ViewStyles.mr1, ViewStyles.mb1]}
+                        />
+                      )}
+                      {towerControlXPower.length > 1 && (
+                        <Badge
+                          color={Color.XBattle}
+                          icon={"tower-control"}
+                          title={roundPower(parseFloat(towerControlXPower))}
+                          style={[ViewStyles.mr1, ViewStyles.mb1]}
+                        />
+                      )}
+                      {rainmakerXPower.length > 1 && (
+                        <Badge
+                          color={Color.XBattle}
+                          icon={"fish"}
+                          title={roundPower(parseFloat(rainmakerXPower))}
+                          style={[ViewStyles.mr1, ViewStyles.mb1]}
+                        />
+                      )}
+                      {clamBlitzXPower.length > 1 && (
+                        <Badge
+                          color={Color.XBattle}
+                          icon={"dribbble"}
+                          title={roundPower(parseFloat(clamBlitzXPower))}
+                          style={[ViewStyles.mr1, ViewStyles.mb1]}
                         />
                       )}
                       {grade.length > 0 && (
-                        <Badge color={Color.SalmonRun} title={t(grade)} style={ViewStyles.mr1} />
+                        <Badge
+                          color={Color.SalmonRun}
+                          title={t(grade)}
+                          style={[ViewStyles.mr1, ViewStyles.mb1]}
+                        />
                       )}
                     </HStack>
                     {progressTotal > 0 && progress < progressTotal && (
@@ -2143,7 +2184,7 @@ const MainView = () => {
           </Dialog>
         </Modal>
         <Modal isVisible={logIn} onClose={onLogInClose} style={ViewStyles.modal1d}>
-          <CustomDialog icon="alert-circle">
+          <CustomDialog icon="circle-alert">
             <Text
               style={[
                 ViewStyles.mb2,
@@ -2191,7 +2232,7 @@ const MainView = () => {
           </CustomDialog>
         </Modal>
         <Modal isVisible={logOut} onClose={onLogOutClose} style={ViewStyles.modal1d}>
-          <CustomDialog icon="alert-circle">
+          <CustomDialog icon="circle-alert">
             <DialogSection text={t("relog_in_notice")} style={ViewStyles.mb4}>
               <Button
                 disabled={refreshing}
@@ -2229,7 +2270,7 @@ const MainView = () => {
           </CustomDialog>
         </Modal>
         <Modal isVisible={support} onClose={onSupportClose} style={ViewStyles.modal1d}>
-          <CustomDialog icon="help-circle">
+          <CustomDialog icon="circle-help">
             <DialogSection text={t("preference_notice")} style={ViewStyles.mb4}>
               <Button
                 style={[ViewStyles.mb2, ViewStyles.accent]}
