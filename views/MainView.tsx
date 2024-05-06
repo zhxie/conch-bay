@@ -5,6 +5,7 @@ import dayjs from "dayjs";
 import * as Application from "expo-application";
 import { BlurView } from "expo-blur";
 import * as Clipboard from "expo-clipboard";
+import * as DevClient from "expo-dev-client";
 import * as FileSystem from "expo-file-system";
 import { Image } from "expo-image";
 import * as IntentLauncher from "expo-intent-launcher";
@@ -631,6 +632,10 @@ const MainView = () => {
             showBanner(BannerLevel.Warn, t("failed_to_update_splatnet_shop", { error: e }));
           }),
         (async () => {
+          // Avoid refresh in development build by default.
+          if (DevClient.isDevelopmentBuild()) {
+            return;
+          }
           if (sessionToken) {
             // Attempt to friends.
             let newWebServiceToken: WebServiceToken | undefined = undefined;
