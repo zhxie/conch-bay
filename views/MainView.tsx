@@ -870,7 +870,7 @@ const MainView = () => {
           let results = 0;
           await Promise.all(
             newIds.map((id, i) =>
-              sleep(i * 500)
+              sleep(i * 750)
                 .then(() => fetchVsHistoryDetail(webServiceToken, bulletToken, language, id))
                 .then((detail) => {
                   setProgress((progress) => progress + 1);
@@ -921,7 +921,7 @@ const MainView = () => {
           let results = 0;
           await Promise.all(
             newIds.map((id, i) =>
-              sleep(i * 500)
+              sleep(i * 750)
                 .then(() => fetchCoopHistoryDetail(webServiceToken, bulletToken, language, id))
                 .then((detail) => {
                   setProgress((progress) => progress + 1);

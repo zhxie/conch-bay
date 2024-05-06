@@ -111,7 +111,7 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
           await Promise.all(
             newIds.map((id, i) =>
               ok(
-                sleep(i * 500)
+                sleep(i * 750)
                   .then(() => fetchVsHistoryDetail(webServiceToken!, bulletToken, language, id))
                   .then((detail) => Database.addBattle(detail))
                   .then(() => {
@@ -141,7 +141,7 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
           await Promise.all(
             newIds.map((id, i) =>
               ok(
-                sleep(i * 500)
+                sleep(i * 750)
                   .then(() => fetchCoopHistoryDetail(webServiceToken!, bulletToken, language, id))
                   .then((detail) => Database.addCoop(detail))
                   .then(() => {
