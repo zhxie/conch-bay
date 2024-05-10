@@ -270,17 +270,17 @@ const ResultView = (props: ResultViewProps) => {
     }
     return roundPower(power);
   };
-  const formatName = (name: string, species: Enum<typeof Species>, isSelf: boolean) => {
-    if (hidePlayerNames && !isSelf) {
-      switch (species as Species) {
-        case Species.INKLING:
-          return "ᔦꙬᔨ三ᔦꙬᔨ✧‧˚";
-        case Species.OCTOLING:
-          return "( Ꙭ )三( Ꙭ )✧‧˚";
-      }
+  const formatSpecies = (species: Enum<typeof Species>) => {
+    switch (species as Species) {
+      case Species.INKLING:
+        return "ᔦꙬᔨ三ᔦꙬᔨ✧‧˚";
+      case Species.OCTOLING:
+        return "( Ꙭ )三( Ꙭ )✧‧˚";
     }
-    if (name.length > 10) {
-      return "???";
+  };
+  const formatName = (name: string, species: Enum<typeof Species>, isSelf: boolean) => {
+    if ((hidePlayerNames && !isSelf) || name.length > 10) {
+      return formatSpecies(species);
     }
     return name;
   };
@@ -1115,7 +1115,11 @@ const ResultView = (props: ResultViewProps) => {
                 <VStack center>
                   <Splashtag
                     color={getColor(battlePlayer.nameplate!.background.textColor)}
-                    name={battlePlayer.name.length > 10 ? "???" : battlePlayer.name}
+                    name={
+                      battlePlayer.name.length > 10
+                        ? formatSpecies(battlePlayer.species)
+                        : battlePlayer.name
+                    }
                     nameId={battlePlayer.nameId}
                     title={formatByname(battlePlayer.byname)}
                     banner={getImageCacheSource(battlePlayer.nameplate!.background.image.url)}
@@ -1513,7 +1517,11 @@ const ResultView = (props: ResultViewProps) => {
                 <VStack center>
                   <Splashtag
                     color={getColor(coopPlayer.player.nameplate!.background.textColor)}
-                    name={coopPlayer.player.name.length > 10 ? "???" : coopPlayer.player.name}
+                    name={
+                      coopPlayer.player.name.length > 10
+                        ? formatSpecies(coopPlayer.player.species)
+                        : coopPlayer.player.name
+                    }
                     nameId={coopPlayer.player.nameId}
                     title={formatByname(coopPlayer.player.byname)}
                     banner={getImageCacheSource(coopPlayer.player.nameplate!.background.image.url)}
