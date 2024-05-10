@@ -24,6 +24,7 @@ import { FilterProps, isFilterEqual } from "../utils/database";
 interface FilterViewProps {
   disabled?: boolean;
   filter?: FilterProps;
+  players?: Record<string, string>;
   options?: FilterProps;
   onChange: (filter?: FilterProps) => Promise<void>;
   onLayout?: (event: LayoutChangeEvent) => void;
@@ -75,7 +76,7 @@ const FilterView = (props: FilterViewProps) => {
   };
   const onOptionPress = async (group: string, key: string) => {
     if (!props.filter) {
-      const filter = { modes: [], rules: [], stages: [], weapons: [] };
+      const filter = { players: [], modes: [], rules: [], stages: [], weapons: [] };
       filter[group].push(key);
       await props.onChange(filter);
     } else {
@@ -208,6 +209,25 @@ const FilterView = (props: FilterViewProps) => {
         style={[ViewStyles.modal2d, ViewStyles.pl4, ViewStyles.pr2]}
       >
         <VStack flex>
+          {(props.filter?.players?.length ?? 0) > 0 && (
+            <VStack flex>
+              <Marquee style={[TextStyles.h2, ViewStyles.mb2]}>{t("players")}</Marquee>
+              <HStack style={[ViewStyles.mb2, { flexWrap: "wrap" }]}>
+                {props.filter!.players!.map((player) => (
+                  <FilterButton
+                    key={player}
+                    disabled={props.disabled}
+                    textColor={Color.DarkText}
+                    title={props.players?.[player] ?? player}
+                    style={[ViewStyles.mr2, ViewStyles.mb2, ViewStyles.accent]}
+                    onPress={() => {
+                      onOptionPress("players", player);
+                    }}
+                  />
+                ))}
+              </HStack>
+            </VStack>
+          )}
           {(props.options?.modes?.length ?? 0) > 0 && (
             <VStack flex>
               <Marquee style={[TextStyles.h2, ViewStyles.mb2]}>{t("modes")}</Marquee>

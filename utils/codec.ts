@@ -43,3 +43,13 @@ export const decode64Index = (base64: string) => {
   const s = Buffer.from(data).toString();
   return parseInt(s.split("-")[1]);
 };
+export const decode64BattlePlayerId = (base64: string) => {
+  const data = decode64(base64);
+  const s = Buffer.from(data).toString();
+  return s.split(":")[3].split("-")[1];
+};
+export const decode64CoopPlayerId = (base64: string) => {
+  const data = decode64(base64);
+  const s = Buffer.from(data).toString();
+  return s.split(":")[2].split("-")[1];
+};

@@ -142,6 +142,7 @@ const ja = {
   offline: "オフライン",
   // Filter.
   filter: "フィルター",
+  players: "プレーヤー",
   modes: "モード",
   rules: "ルール",
   stages: "ステージ",
@@ -184,6 +185,7 @@ const ja = {
   show_player_names: "プレイヤー名を表示",
   share_image: "写真をシェア",
   show_raw_data: "生データを表示",
+  view_battles_and_jobs_with_this_player: "このプレイヤーとのバトルとバイトを表示",
   analyze_build: "ギア構成を分析",
   self: "自分",
   team: "チーム",

@@ -136,6 +136,7 @@ const zhHant = {
   offline: "離線",
   // Filter.
   filter: "篩選",
+  players: "玩家",
   modes: "模式",
   rules: "規則",
   stages: "場地",
@@ -178,6 +179,7 @@ const zhHant = {
   show_player_names: "顯示玩家名稱",
   share_image: "分享圖片",
   show_raw_data: "顯示原始數據",
+  view_battles_and_jobs_with_this_player: "查看與此玩家的戰鬥與打工",
   analyze_build: "分析配裝",
   self: "自己",
   team: "團隊",

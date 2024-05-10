@@ -1,13 +1,13 @@
 import * as SQLite from "expo-sqlite/next";
 import { CoopHistoryDetailResult, VsHistoryDetailResult } from "../models/types";
 import weaponList from "../models/weapons.json";
-import { decode64Index } from "./codec";
+import { decode64BattlePlayerId, decode64CoopPlayerId, decode64Index } from "./codec";
 import { countBattle, countCoop } from "./stats";
 import { getImageHash, getVsSelfPlayer } from "./ui";
 
 let db: SQLite.SQLiteDatabase | undefined = undefined;
 
-const VERSION = 7;
+const VERSION = 8;
 
 export const open = async () => {
   if (db) {
@@ -143,6 +143,41 @@ export const upgrade = async () => {
       throw e;
     }
   }
+  if (version < 8) {
+    await beginTransaction();
+    try {
+      const statement = await db!.prepareAsync("UPDATE result SET players = ? WHERE id = ?");
+      for await (const row of queryDetailEach()) {
+        if (row.mode === "salmon_run") {
+          const coop = JSON.parse(row.detail);
+          const players = coop
+            .coopHistoryDetail!.memberResults.map((memberResult) =>
+              decode64CoopPlayerId(memberResult.player.id)
+            )
+            .concat(decode64CoopPlayerId(coop.coopHistoryDetail!.myResult.player.id));
+          await statement.executeAsync(players.join(","), row.id);
+        } else {
+          const battle = JSON.parse(row.detail);
+          const players = battle
+            .vsHistoryDetail!.myTeam.players.map((player) => decode64BattlePlayerId(player.id))
+            .concat(
+              battle
+                .vsHistoryDetail!.otherTeams.map((otherTeam) =>
+                  otherTeam.players.map((player) => decode64BattlePlayerId(player.id))
+                )
+                .flat()
+            );
+          await statement.executeAsync(players.join(","), row.id);
+        }
+      }
+      await statement.finalizeAsync();
+      await db!.execAsync("PRAGMA user_version=8");
+      await commit();
+    } catch (e) {
+      await rollback();
+      throw e;
+    }
+  }
 };
 export const close = () => {
   db!.closeAsync();
@@ -158,6 +193,7 @@ const rollback = async () => {
 };
 
 export interface FilterProps {
+  players?: string[];
   modes?: string[];
   rules?: string[];
   stages?: string[];
@@ -172,7 +208,7 @@ export const isFilterEqual = (a?: FilterProps, b?: FilterProps) => {
   if (!a || !b) {
     return false;
   }
-  for (const group of ["modes", "rules", "stages", "weapons"]) {
+  for (const group of ["players", "modes", "rules", "stages", "weapons"]) {
     if ((a[group] ?? []).length !== (b[group] ?? []).length) {
       return false;
     }
@@ -188,6 +224,15 @@ export const isFilterEqual = (a?: FilterProps, b?: FilterProps) => {
 const convertFilter = (filter?: FilterProps, from?: number) => {
   const filters: string[] = [];
   if (filter) {
+    if ((filter.players ?? []).length > 0) {
+      filters.push(
+        `(${(filter.players ?? [])
+          .map((player) => {
+            return `instr(players, '${player}') > 0`;
+          })
+          .join(" OR ")})`
+      );
+    }
     if ((filter.modes ?? []).length > 0) {
       filters.push(`(${(filter.modes ?? []).map((mode) => `mode = '${mode}'`).join(" OR ")})`);
     }
@@ -414,11 +459,11 @@ export const addBattle = async (battle: VsHistoryDetailResult) => {
     battle.vsHistoryDetail!.vsRule.id,
     getVsSelfPlayer(battle).weapon.id,
     battle
-      .vsHistoryDetail!.myTeam.players.map((player) => player.id)
+      .vsHistoryDetail!.myTeam.players.map((player) => decode64BattlePlayerId(player.id))
       .concat(
         battle
           .vsHistoryDetail!.otherTeams.map((otherTeam) =>
-            otherTeam.players.map((player) => player.id)
+            otherTeam.players.map((player) => decode64BattlePlayerId(player.id))
           )
           .flat()
       ),
@@ -437,8 +482,10 @@ export const addCoop = async (coop: CoopHistoryDetailResult) => {
       .coopHistoryDetail!.myResult.weapons.map((weapon) => getImageHash(weapon.image.url))
       .join(","),
     coop
-      .coopHistoryDetail!.memberResults.map((memberResult) => memberResult.player.id)
-      .concat(coop.coopHistoryDetail!.myResult.player.id),
+      .coopHistoryDetail!.memberResults.map((memberResult) =>
+        decode64CoopPlayerId(memberResult.player.id)
+      )
+      .concat(decode64CoopPlayerId(coop.coopHistoryDetail!.myResult.player.id)),
     JSON.stringify(coop),
     coop.coopHistoryDetail!.coopStage.id,
     JSON.stringify(countCoop(coop))

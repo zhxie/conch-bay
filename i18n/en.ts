@@ -140,6 +140,7 @@ const en = {
   offline: "Offline",
   // Filter.
   filter: "Filter",
+  players: "Players",
   modes: "Modes",
   rules: "Rules",
   stages: "Stages",
@@ -183,6 +184,7 @@ const en = {
   show_player_names: "Show Player Names",
   share_image: "Share Image",
   show_raw_data: "Show Raw Data",
+  view_battles_and_jobs_with_this_player: "View Battles and Jobs with This Player",
   analyze_build: "Analyze Build",
   self: "Self",
   team: "Team",

@@ -238,6 +238,7 @@ const MainView = () => {
   const [groups, setGroups] = useState<ResultGroup[]>();
   const [filtered, setFiltered] = useState(0);
   const [total, setTotal] = useState(0);
+  const [players, setPlayers] = useState<Record<string, string>>();
   const [filterOptions, setFilterOptions] = useState<Database.FilterProps>();
   const [stats, setStats] = useState<Stats[]>();
 
@@ -276,6 +277,12 @@ const MainView = () => {
     ) {
       (async () => {
         try {
+          // Remove players filter since we do not have their names now.
+          if (filter?.players) {
+            const newFilter = JSON.parse(JSON.stringify(filter));
+            newFilter.players = [];
+            await setFilter(newFilter);
+          }
           const upgrade = await Database.open();
           if (upgrade !== undefined) {
             if (upgrade > 0) {
@@ -967,6 +974,25 @@ const MainView = () => {
   };
   const onFilterLayout = (event: LayoutChangeEvent) => {
     setFilterHeight(event.nativeEvent.layout.height);
+  };
+  const onFilterPlayer = async (id: string, name: string) => {
+    let newFilter: Database.FilterProps;
+    if (!filter) {
+      newFilter = { players: [], modes: [], rules: [], stages: [], weapons: [] };
+    } else {
+      if (!filter.players) {
+        filter.players = [];
+      }
+      newFilter = JSON.parse(JSON.stringify(filter));
+    }
+    newFilter.players!.push(id);
+    const promise = setFilter(newFilter);
+    if (players?.[id] !== name) {
+      const newPlayers = JSON.parse(JSON.stringify(players ?? {}));
+      newPlayers[id] = name;
+      setPlayers(newPlayers);
+    }
+    await promise;
   };
   const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     // HACK: onScrollToTop has a delay, use onScroll instead.
@@ -1984,6 +2010,7 @@ const MainView = () => {
                 <FilterView
                   disabled={loadingMore}
                   filter={filter}
+                  players={players}
                   options={filterOptions}
                   onChange={onChangeFilterPress}
                   onLayout={onFilterLayout}
@@ -2112,6 +2139,8 @@ const MainView = () => {
                 </VStack>
               </SafeAreaView>
             }
+            filterDisabled={loadingMore}
+            onFilterPlayer={onFilterPlayer}
             onScroll={onScroll}
             onScrollBeginDrag={onScrollBegin}
             onScrollEndDrag={onScrollEndDrag}

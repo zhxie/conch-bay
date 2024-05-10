@@ -79,6 +79,7 @@ import {
   VsTeam,
 } from "../models/types";
 import weaponList from "../models/weapons.json";
+import { decode64BattlePlayerId, decode64CoopPlayerId } from "../utils/codec";
 import { countBattle, countCoop } from "../utils/stats";
 import {
   getCoopRuleColor,
@@ -109,6 +110,8 @@ interface ResultViewProps {
   refreshControl: React.ReactElement<RefreshControlProps>;
   header: React.ReactElement;
   footer: React.ReactElement;
+  filterDisabled?: boolean;
+  onFilterPlayer: (id: string, name: string) => Promise<void>;
   onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
   onScrollBeginDrag?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
   onScrollEndDrag?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
@@ -581,6 +584,20 @@ const ResultView = (props: ResultViewProps) => {
   const onCopyRawValue = async (value: any) => {
     await Clipboard.setStringAsync(value.toString());
     showBanner(BannerLevel.Info, t("copied_to_clipboard"));
+  };
+  const onViewBattlesAndJobsWithThisPlayerPress = async () => {
+    if (displayBattlePlayer) {
+      await props.onFilterPlayer(decode64BattlePlayerId(battlePlayer!.id), battlePlayer!.name);
+      setDisplayBattlePlayer(false);
+      setDisplayBattle(false);
+    } else if (displayCoopPlayer) {
+      await props.onFilterPlayer(
+        decode64CoopPlayerId(coopPlayer!.player.id),
+        coopPlayer!.player.name
+      );
+      setDisplayCoopPlayer(false);
+      setDisplayCoop(false);
+    }
   };
   const onAnalyzeBuildPress = () => {
     const weapon = weaponList.imagesRaw[getImageHash(battlePlayer!.weapon.image.url)];
@@ -1127,6 +1144,15 @@ const ResultView = (props: ResultViewProps) => {
                     )}
                   </VStack>
                   <VStack style={ViewStyles.wf}>
+                    <Button
+                      disabled={props.filterDisabled}
+                      style={[ViewStyles.mb2, ViewStyles.accent]}
+                      onPress={onViewBattlesAndJobsWithThisPlayerPress}
+                    >
+                      <Marquee style={theme.reverseTextStyle}>
+                        {t("view_battles_and_jobs_with_this_player")}
+                      </Marquee>
+                    </Button>
                     <Button style={ViewStyles.accent} onPress={onAnalyzeBuildPress}>
                       <Marquee style={[ViewStyles.mr1, theme.reverseTextStyle]}>
                         {t("analyze_build")}
@@ -1493,7 +1519,19 @@ const ResultView = (props: ResultViewProps) => {
                   <WorkSuitBox
                     image={getImageCacheSource(coopPlayer.player.uniform.image.url)}
                     name={td(coopPlayer.player.uniform)}
+                    style={ViewStyles.mb2}
                   />
+                  <VStack style={ViewStyles.wf}>
+                    <Button
+                      disabled={props.filterDisabled}
+                      style={ViewStyles.accent}
+                      onPress={onViewBattlesAndJobsWithThisPlayerPress}
+                    >
+                      <Marquee style={theme.reverseTextStyle}>
+                        {t("view_battles_and_jobs_with_this_player")}
+                      </Marquee>
+                    </Button>
+                  </VStack>
                 </VStack>
               )}
             </Modal>
