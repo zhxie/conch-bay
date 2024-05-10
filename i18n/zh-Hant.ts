@@ -180,6 +180,7 @@ const zhHant = {
   share_image: "分享圖片",
   show_raw_data: "顯示原始數據",
   view_battles_and_jobs_with_this_player: "查看與此玩家的戰鬥與打工",
+  failed_to_view_battles_and_jobs_with_this_player: "未能查看與此玩家的戰鬥與打工",
   analyze_build: "分析配裝",
   self: "自己",
   team: "團隊",
@@ -242,7 +243,7 @@ const zhHant = {
   import_salmdroidnw_backup: "匯入salmdroidNW備份",
   "import_salmonia3+_backup": "匯入Salmonia3+备份",
   import_ikawidget3_ikax3_notice:
-    "請在ikawidget3中匯出並匯入。請注意，由於IKAX3包含加密數據，部分資訊可能有誤。",
+    "請在ikawidget3中匯出並匯入。請注意，由於IKAX3包含加密數據，部分資訊可能不準確。",
   import_salmdroidnw_backup_notice: "請在salmdroidNW中備份並匯入。",
   "import_salmonia3+_backup_notice":
     "請在Salmonia3+中備份為JSON並匯入。請注意，由於Salmonia3+備份並未包含記錄的所有數據，部分資訊可能缺失。",

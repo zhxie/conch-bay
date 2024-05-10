@@ -180,6 +180,7 @@ const zhHans = {
   share_image: "分享图片",
   show_raw_data: "显示原始数据",
   view_battles_and_jobs_with_this_player: "查看与此玩家的战斗与打工",
+  failed_to_view_battles_and_jobs_with_this_player: "未能查看与此玩家的战斗与打工",
   analyze_build: "分析配装",
   self: "自己",
   team: "团队",
@@ -242,7 +243,7 @@ const zhHans = {
   import_salmdroidnw_backup: "导入salmdroidNW备份",
   "import_salmonia3+_backup": "导入Salmonia3+备份",
   import_ikawidget3_ikax3_notice:
-    "请在ikawidget3中导出并导入。请注意，由于IKAX3包含加密数据，部分信息可能有误。",
+    "请在ikawidget3中导出并导入。请注意，由于IKAX3包含加密数据，部分信息可能不准确。",
   import_salmdroidnw_backup_notice: "请在salmdroidNW中备份并导入。",
   "import_salmonia3+_backup_notice":
     "请在Salmonia3+中备份为JSON并导入。请注意，由于Salmonia3+备份并未包含记录的所有数据，部分信息可能缺失。",

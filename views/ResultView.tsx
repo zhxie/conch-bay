@@ -587,14 +587,27 @@ const ResultView = (props: ResultViewProps) => {
   };
   const onViewBattlesAndJobsWithThisPlayerPress = async () => {
     if (displayBattlePlayer) {
-      await props.onFilterPlayer(decode64BattlePlayerId(battlePlayer!.id), battlePlayer!.name);
+      // HACK: we cannot parse encrypted IDs from ikawidget3.
+      let id: string;
+      try {
+        id = decode64BattlePlayerId(battlePlayer!.id);
+      } catch {
+        showBanner(BannerLevel.Warn, t("failed_to_view_battles_and_jobs_with_this_player"));
+        return;
+      }
+      await props.onFilterPlayer(id, battlePlayer!.name);
       setDisplayBattlePlayer(false);
       setDisplayBattle(false);
     } else if (displayCoopPlayer) {
-      await props.onFilterPlayer(
-        decode64CoopPlayerId(coopPlayer!.player.id),
-        coopPlayer!.player.name
-      );
+      // HACK: we cannot parse encrypted IDs from ikawidget3.
+      let id: string;
+      try {
+        id = decode64CoopPlayerId(coopPlayer!.player.id);
+      } catch {
+        showBanner(BannerLevel.Warn, t("failed_to_view_battles_and_jobs_with_this_player"));
+        return;
+      }
+      await props.onFilterPlayer(id, coopPlayer!.player.name);
       setDisplayCoopPlayer(false);
       setDisplayCoop(false);
     }

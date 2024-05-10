@@ -150,23 +150,47 @@ export const upgrade = async () => {
       for await (const row of queryDetailEach()) {
         if (row.mode === "salmon_run") {
           const coop = JSON.parse(row.detail);
+          let selfPlayer: string;
+          try {
+            selfPlayer = decode64CoopPlayerId(coop.coopHistoryDetail!.myResult.player.id);
+          } catch {
+            selfPlayer = "";
+          }
           const players = coop
-            .coopHistoryDetail!.memberResults.map((memberResult) =>
-              decode64CoopPlayerId(memberResult.player.id)
-            )
-            .concat(decode64CoopPlayerId(coop.coopHistoryDetail!.myResult.player.id));
+            .coopHistoryDetail!.memberResults.map((memberResult) => {
+              try {
+                return decode64CoopPlayerId(memberResult.player.id);
+              } catch {
+                return "";
+              }
+            })
+            .concat(selfPlayer)
+            .filter((player) => player);
           await statement.executeAsync(players.join(","), row.id);
         } else {
           const battle = JSON.parse(row.detail);
           const players = battle
-            .vsHistoryDetail!.myTeam.players.map((player) => decode64BattlePlayerId(player.id))
+            .vsHistoryDetail!.myTeam.players.map((player) => {
+              try {
+                return decode64BattlePlayerId(player.id);
+              } catch {
+                return "";
+              }
+            })
             .concat(
               battle
                 .vsHistoryDetail!.otherTeams.map((otherTeam) =>
-                  otherTeam.players.map((player) => decode64BattlePlayerId(player.id))
+                  otherTeam.players.map((player) => {
+                    try {
+                      return decode64BattlePlayerId(player.id);
+                    } catch {
+                      return "";
+                    }
+                  })
                 )
                 .flat()
-            );
+            )
+            .filter((player) => player);
           await statement.executeAsync(players.join(","), row.id);
         }
       }
@@ -459,20 +483,39 @@ export const addBattle = async (battle: VsHistoryDetailResult) => {
     battle.vsHistoryDetail!.vsRule.id,
     getVsSelfPlayer(battle).weapon.id,
     battle
-      .vsHistoryDetail!.myTeam.players.map((player) => decode64BattlePlayerId(player.id))
+      .vsHistoryDetail!.myTeam.players.map((player) => {
+        try {
+          return decode64BattlePlayerId(player.id);
+        } catch {
+          return "";
+        }
+      })
       .concat(
         battle
           .vsHistoryDetail!.otherTeams.map((otherTeam) =>
-            otherTeam.players.map((player) => decode64BattlePlayerId(player.id))
+            otherTeam.players.map((player) => {
+              try {
+                return decode64BattlePlayerId(player.id);
+              } catch {
+                return "";
+              }
+            })
           )
           .flat()
-      ),
+      )
+      .filter((player) => player),
     JSON.stringify(battle),
     battle.vsHistoryDetail!.vsStage.id,
     JSON.stringify(countBattle(battle))
   );
 };
 export const addCoop = async (coop: CoopHistoryDetailResult) => {
+  let selfPlayer: string;
+  try {
+    selfPlayer = decode64CoopPlayerId(coop.coopHistoryDetail!.myResult.player.id);
+  } catch {
+    selfPlayer = "";
+  }
   return await add(
     coop.coopHistoryDetail!.id,
     new Date(coop.coopHistoryDetail!.playedTime).valueOf(),
@@ -482,10 +525,15 @@ export const addCoop = async (coop: CoopHistoryDetailResult) => {
       .coopHistoryDetail!.myResult.weapons.map((weapon) => getImageHash(weapon.image.url))
       .join(","),
     coop
-      .coopHistoryDetail!.memberResults.map((memberResult) =>
-        decode64CoopPlayerId(memberResult.player.id)
-      )
-      .concat(decode64CoopPlayerId(coop.coopHistoryDetail!.myResult.player.id)),
+      .coopHistoryDetail!.memberResults.map((memberResult) => {
+        try {
+          return decode64CoopPlayerId(memberResult.player.id);
+        } catch {
+          return "";
+        }
+      })
+      .concat(selfPlayer)
+      .filter((player) => player),
     JSON.stringify(coop),
     coop.coopHistoryDetail!.coopStage.id,
     JSON.stringify(countCoop(coop))

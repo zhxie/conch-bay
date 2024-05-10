@@ -185,6 +185,8 @@ const en = {
   share_image: "Share Image",
   show_raw_data: "Show Raw Data",
   view_battles_and_jobs_with_this_player: "View Battles and Jobs with This Player",
+  failed_to_view_battles_and_jobs_with_this_player:
+    "Failed to view battles and jobs with this player",
   analyze_build: "Analyze Build",
   self: "Self",
   team: "Team",
@@ -250,7 +252,7 @@ const en = {
   import_salmdroidnw_backup: "Import salmdroidNW Backup",
   "import_salmonia3+_backup": "Import Salmonia3+ Backup",
   import_ikawidget3_ikax3_notice:
-    "Please export in ikawidget3 and import it. Please note, some information may be wrong since IKAX3 contains encrypted data.",
+    "Please export in ikawidget3 and import it. Please note, some information may not be accurate since IKAX3 contains encrypted data.",
   import_salmdroidnw_backup_notice: "Please backup in salmdroidNW and import it.",
   "import_salmonia3+_backup_notice":
     "Please backup as JSON in Salmonia3+ and import it. Please note, some information may be missing since the Salmonia3+ backup does not contain all the data of results.",

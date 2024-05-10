@@ -41,7 +41,7 @@ python3 tools/convert_stat_ink_salmon_run_json.py <PATH_TO_EXTRACTED_STAT_INK_SA
 
 ### Import data from ikawidget3
 
-Run the following command to extract and convert data from a ikawidget3 database IKAX3 into `conch-bay-import.zip`. You can then import it into Conch Bay. Notice that some information may be wrong since IKAX3 contains encrypted data.
+Run the following command to extract and convert data from a ikawidget3 database IKAX3 into `conch-bay-import.zip`. You can then import it into Conch Bay. Notice that some information may not be accurate since IKAX3 contains encrypted data.
 
 ```sh
 python3 tools/convert_ikax3.py <PATH_TO_IKAX3>

@@ -186,6 +186,8 @@ const ja = {
   share_image: "写真をシェア",
   show_raw_data: "生データを表示",
   view_battles_and_jobs_with_this_player: "このプレイヤーとのバトルとバイトを表示",
+  failed_to_view_battles_and_jobs_with_this_player:
+    "このプレイヤーとのバトルとバイトを表示できません",
   analyze_build: "ギア構成を分析",
   self: "自分",
   team: "チーム",
@@ -250,7 +252,7 @@ const ja = {
   import_salmdroidnw_backup: "salmdroidNWバックアップをインポート",
   "import_salmonia3+_backup": "Salmonia3+バックアップをインポート",
   import_ikawidget3_ikax3_notice:
-    "ikawidget3に書き出してインポートしてください。IKAX3には暗号化されたデータが含まれているため、一部の情報が間違っている可能性があることに注意してください。",
+    "ikawidget3に書き出してインポートしてください。IKAX3には暗号化されたデータが含まれているため、一部の情報が正確ではない可能性があることに注意してください。",
   import_salmdroidnw_backup_notice: "salmdroidNWにバックアップしてインポートしてください。",
   "import_salmonia3+_backup_notice":
     "Salmonia3+にJSONとしてバックアップしてインポートしてください。Salmonia3+のバックアップにはリザルトのすべてのデータが含まれていないため、一部の情報が欠落している可能性があることに注意してください。",
