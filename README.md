@@ -33,7 +33,9 @@ python3 tools/convert_s3s_outputs.py <PATH_TO_S3S>
 
 ### Import Salmon Run data from stat.ink
 
-Run the following command to extract and convert stat.ink [Salmon Run JSON](https://stat.ink/user/download3?type=salmon-json) into `conch-bay-import.zip`. You can then import it into Conch Bay. Notice that some fields (ID, banners and badges in Splashtags, etc.) were lost when uploaded to stat.ink which will be replaced with dummy ones.
+_Since many fields in stat.ink Salmon Run JSON are missing, importing Salmon Run data from stat.ink is not recommended._
+
+Run the following command to extract and convert stat.ink [Salmon Run JSON](https://stat.ink/user/download3?type=salmon-json) into `conch-bay-import.zip`. You can then import it into Conch Bay. Notice that some fields (ID, banners and badges in Splashtags, etc.) were missing when uploaded to stat.ink which will be replaced with dummy ones.
 
 ```sh
 python3 tools/convert_stat_ink_salmon_run_json.py <PATH_TO_EXTRACTED_STAT_INK_SALMON_RUN_JSON>
