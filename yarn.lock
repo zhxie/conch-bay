@@ -1493,9 +1493,9 @@
     nullthrows "^1.1.1"
 
 "@expo/config-plugins@8.0.4", "@expo/config-plugins@^4.1.5", "@expo/config-plugins@~8.0.0", "@expo/config-plugins@~8.0.0-beta.0":
-  version "8.0.3"
-  resolved "https://registry.yarnpkg.com/@expo/config-plugins/-/config-plugins-8.0.3.tgz#6b63b8f33c0f266de12257df928176599f85edaa"
-  integrity sha512-XZRpVGdBKS8p8JrGp9J7wX6oCGq3zwhrVMDXTXsGfZZTVJo/uX6NkXtnl/C3TlxG4Kv5kOuYBekSsnw+i3plRA==
+  version "8.0.4"
+  resolved "https://registry.yarnpkg.com/@expo/config-plugins/-/config-plugins-8.0.4.tgz#1e781cd971fab27409ed2f8d621db6d29cce3036"
+  integrity sha512-Hi+xuyNWE2LT4LVbGttHJgl9brnsdWAhEB42gWKb5+8ae86Nr/KwUBQJsJppirBYTeLjj5ZlY0glYnAkDa2jqw==
   dependencies:
     "@expo/config-types" "^51.0.0-unreleased"
     "@expo/json-file" "~8.3.0"
@@ -4083,9 +4083,9 @@ expo-intent-launcher@~11.0.1:
   integrity sha512-nUmTTa/HG4jUyRc5YHngdpP5bMyGSRZPi2RX9kpILd3vbMWQeVnwzqAfC+uI34W8uKhEk+9b9Dytzmm7bBND1Q==
 
 expo-json-utils@~0.13.0:
-  version "0.13.0"
-  resolved "https://registry.yarnpkg.com/expo-json-utils/-/expo-json-utils-0.13.0.tgz#a25fd4829459dc15e1f1b377187ce70ccd893ff0"
-  integrity sha512-+/I7ttUZcgCREB8qCoJsGbb8fO/sxOEkWJyrhlEgsXA4w8SQ1fLbs+Twr5GysBlDvg6zuknYjQPzCoF+CwoLRQ==
+  version "0.13.1"
+  resolved "https://registry.yarnpkg.com/expo-json-utils/-/expo-json-utils-0.13.1.tgz#e49b697198e11c573d346f08ab91c467095934a9"
+  integrity sha512-mlfaSArGVb+oJmUcR22jEONlgPp0wj4iNIHfQ2je9Q8WTOqMc0Ws9tUciz3JdJnhffdHqo/k8fpvf0IRmN5HPA==
 
 expo-keep-awake@~13.0.1:
   version "13.0.1"
@@ -4105,9 +4105,9 @@ expo-mail-composer@~13.0.1:
   integrity sha512-JmlQLS7Bk7vBf+xpdNIcG80/GzwLoFgk7ZmL4qD78CxRuolvb4jwH97nS54l6W/pKBa2TH1eUV1V8ZjKzQLf0A==
 
 expo-manifests@~0.14.0:
-  version "0.14.0"
-  resolved "https://registry.yarnpkg.com/expo-manifests/-/expo-manifests-0.14.0.tgz#f9ec362d0152f0cd2335699c963181fd6d580e3a"
-  integrity sha512-GQKP8aygBdrblmKzW1mVGdq9vmBjFNOqCjO1zyHslfyxwowRUxyEp6mro86h20FpU88+9Jye8AGYfzvdDkHdxg==
+  version "0.14.2"
+  resolved "https://registry.yarnpkg.com/expo-manifests/-/expo-manifests-0.14.2.tgz#431a235f21ca667ea8f8642819fbc414a8473174"
+  integrity sha512-hFrwIGr76/zGVhZ+vcjDZpOePd7uYNB6yCaiJcm7/bcrt2ne7cHyKQ8l+3n26/v1OuXfBfjxNH+PHIpkClszoQ==
   dependencies:
     "@expo/config" "~9.0.0-beta.0"
     expo-json-utils "~0.13.0"
