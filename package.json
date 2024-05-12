@@ -68,7 +68,7 @@
   "devDependencies": {
     "@babel/core": "^7.24.0",
     "@expo-google-fonts/m-plus-rounded-1c": "^0.2.3",
-    "@mmomtchev/expo-android-localized-app-name": "^1.0.1",
+    "@mmomtchev/expo-android-localized-app-name": "https://github.com/zhxie/expo-android-localized-app-name",
     "@trivago/prettier-plugin-sort-imports": "^4.0.0",
     "@types/color-convert": "^2.0.0",
     "@types/react": "~18.2.79",
@@ -83,9 +83,6 @@
     "patch-package": "^6.5.0",
     "prettier": "^2.8.1",
     "typescript": "~5.3.3"
-  },
-  "resolutions": {
-    "@expo/config-plugins": "~8.0.0"
   },
   "author": "Sketch",
   "private": true

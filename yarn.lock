@@ -1492,7 +1492,7 @@
     node-forge "^1.2.1"
     nullthrows "^1.1.1"
 
-"@expo/config-plugins@8.0.4", "@expo/config-plugins@^4.1.5", "@expo/config-plugins@~8.0.0", "@expo/config-plugins@~8.0.0-beta.0":
+"@expo/config-plugins@8.0.4", "@expo/config-plugins@>=4.1.5", "@expo/config-plugins@~8.0.0-beta.0":
   version "8.0.4"
   resolved "https://registry.yarnpkg.com/@expo/config-plugins/-/config-plugins-8.0.4.tgz#1e781cd971fab27409ed2f8d621db6d29cce3036"
   integrity sha512-Hi+xuyNWE2LT4LVbGttHJgl9brnsdWAhEB42gWKb5+8ae86Nr/KwUBQJsJppirBYTeLjj5ZlY0glYnAkDa2jqw==
@@ -1921,12 +1921,11 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
-"@mmomtchev/expo-android-localized-app-name@^1.0.1":
+"@mmomtchev/expo-android-localized-app-name@https://github.com/zhxie/expo-android-localized-app-name":
   version "1.0.1"
-  resolved "https://registry.npmjs.org/@mmomtchev/expo-android-localized-app-name/-/expo-android-localized-app-name-1.0.1.tgz"
-  integrity sha512-HD0azXKCHG1d/fQsIC+3JTKDB81rbdP/t7+e3q9shmMomK6EnQweqAN/UURKuwyh4QfJhrArGV0R7r3BuE0ibw==
+  resolved "https://github.com/zhxie/expo-android-localized-app-name#e1cd7d847c316310b01adb31eca05adb0de03849"
   dependencies:
-    "@expo/config-plugins" "^4.1.5"
+    "@expo/config-plugins" ">=4.1.5"
     xml2js "^0.4.23"
 
 "@nodelib/fs.scandir@2.1.5":
