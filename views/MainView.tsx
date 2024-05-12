@@ -2111,9 +2111,16 @@ const MainView = () => {
                   </Text>
                   <VStack center>
                     <HStack center>
-                      <Text
-                        style={TextStyles.subtle}
-                      >{`${Application.applicationName} ${Application.nativeApplicationVersion} (${Application.nativeBuildVersion})`}</Text>
+                      <Text style={TextStyles.subtle}>{`${t(
+                        Platform.OS === "ios" ? "CFBundleDisplayName" : "app_name",
+                        {
+                          // HACK: cannot trust Application.applicationName in iOS since it will not
+                          // return localized application name.
+                          defaultValue: Application.applicationName,
+                        }
+                      )} ${Application.nativeApplicationVersion} (${
+                        Application.nativeBuildVersion
+                      })`}</Text>
                     </HStack>
                     <HStack center>
                       <Text

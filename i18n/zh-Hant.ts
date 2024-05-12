@@ -1,9 +1,11 @@
 import base from "./base";
+import locale from "./locales/zh-Hant.json";
 import generated from "./zh-Hant.json";
 
 const zhHant = {
   ...base,
   ...generated,
+  ...locale,
   // API.
   lang: "zh-TW",
   region: "AP",

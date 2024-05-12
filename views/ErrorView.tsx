@@ -3,7 +3,7 @@ import * as FileSystem from "expo-file-system";
 import * as MailComposer from "expo-mail-composer";
 import * as Sharing from "expo-sharing";
 import { useState } from "react";
-import { Linking } from "react-native";
+import { Linking, Platform } from "react-native";
 import { zip } from "react-native-zip-archive";
 import {
   Button,
@@ -151,10 +151,14 @@ const ErrorView = (props: ErrorViewProps) => {
         <Button style={[ViewStyles.mb4, ViewStyles.accent]} onPress={onExportDatabasePress}>
           <Marquee style={theme.reverseTextStyle}>{t("export_database")}</Marquee>
         </Button>
-        <Text
-          center
-          style={TextStyles.subtle}
-        >{`${Application.applicationName} ${Application.nativeApplicationVersion} (${Application.nativeBuildVersion})`}</Text>
+        <Text center style={TextStyles.subtle}>{`${t(
+          Platform.OS === "ios" ? "CFBundleDisplayName" : "app_name",
+          {
+            // HACK: cannot trust Application.applicationName in iOS since it will not
+            // return localized application name.
+            defaultValue: Application.applicationName,
+          }
+        )} ${Application.nativeApplicationVersion} (${Application.nativeBuildVersion})`}</Text>
       </VStack>
     </Center>
   );

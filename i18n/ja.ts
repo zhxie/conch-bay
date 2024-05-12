@@ -1,9 +1,11 @@
 import base from "./base";
 import generated from "./ja.json";
+import locale from "./locales/ja.json";
 
 const ja = {
   ...base,
   ...generated,
+  ...locale,
   // API.
   lang: "ja-JP",
   region: "JP",
