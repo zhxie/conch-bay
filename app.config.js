@@ -4,7 +4,7 @@ import withAndroidLargeHeap from "./plugins/withAndroidLargeHeap";
 const IS_DEV = process.env.APP_VARIANT === "development";
 
 const config = {
-  name: IS_DEV ? "Conch Bay (Dev)" : "Conch Bay",
+  name: "Conch Bay",
   slug: "conch-bay",
   version: "2.1.0",
   orientation: "portrait",
@@ -14,10 +14,10 @@ const config = {
     fallbackToCacheTimeout: 0,
   },
   locales: {
-    en: IS_DEV ? "./i18n/locales/en-dev.json" : "./i18n/locales/en.json",
-    ja: IS_DEV ? "./i18n/locales/ja-dev.json" : "./i18n/locales/ja.json",
-    "zh-Hans": IS_DEV ? "./i18n/locales/zh-Hans-dev.json" : "./i18n/locales/zh-Hans.json",
-    "zh-Hant": IS_DEV ? "./i18n/locales/zh-Hant-dev.json" : "./i18n/locales/zh-Hant.json",
+    en: "./i18n/locales/en.json",
+    ja: "./i18n/locales/ja.json",
+    "zh-Hans": "./i18n/locales/zh-Hans.json",
+    "zh-Hant": "./i18n/locales/zh-Hant.json",
   },
   assetBundlePatterns: ["**/*"],
   plugins: [withAndroidLargeHeap, withAndroidLocalizedName, "expo-localization"],
@@ -70,7 +70,7 @@ const config = {
     versionCode: 150,
     adaptiveIcon: {
       foregroundImage: "./assets/adaptive-icon.png",
-      backgroundColor: "#6B84F5",
+      backgroundColor: IS_DEV ? "#FFFFFF" : "#6B84F5",
     },
     splash: {
       image: "./assets/splash.png",
