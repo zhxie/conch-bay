@@ -1,4 +1,4 @@
-import * as SQLite from "expo-sqlite/next";
+import * as SQLite from "expo-sqlite";
 import { CoopHistoryDetailResult, VsHistoryDetailResult } from "../models/types";
 import weaponList from "../models/weapons.json";
 import { decode64BattlePlayerId, decode64CoopPlayerId, decode64Index } from "./codec";

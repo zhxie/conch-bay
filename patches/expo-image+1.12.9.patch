@@ -1,40 +1,40 @@
 # Prefetch with certain cache keys after the hashtag of each URLs.
 diff --git a/node_modules/expo-image/android/src/main/java/expo/modules/image/ExpoImageModule.kt b/node_modules/expo-image/android/src/main/java/expo/modules/image/ExpoImageModule.kt
-index bd4710c..bec9762 100644
+index 95a9615..8ddb38f 100644
 --- a/node_modules/expo-image/android/src/main/java/expo/modules/image/ExpoImageModule.kt
 +++ b/node_modules/expo-image/android/src/main/java/expo/modules/image/ExpoImageModule.kt
-@@ -16,6 +16,7 @@ import com.facebook.react.uimanager.ViewProps
+@@ -17,6 +17,7 @@ import com.facebook.react.uimanager.ViewProps
  import com.facebook.yoga.YogaConstants
  import expo.modules.image.enums.ContentFit
  import expo.modules.image.enums.Priority
 +import expo.modules.image.okhttp.GlideUrlWithCustomCacheKey
  import expo.modules.image.records.CachePolicy
  import expo.modules.image.records.ContentPosition
- import expo.modules.image.records.ImageTransition
-@@ -37,9 +38,14 @@ class ExpoImageModule : Module() {
-       var failed = false
+ import expo.modules.image.records.DecodeFormat
+@@ -54,9 +55,14 @@ class ExpoImageModule : Module() {
+       } ?: Headers.DEFAULT
  
        urls.forEach {
-+        var url = GlideUrl(it)
++        var url = GlideUrl(it, headers)
 +        var separated = it.split("#")
 +        if (separated.size > 1) {
-+          url = GlideUrlWithCustomCacheKey(it, null, it.split("#")[1])
++          url = GlideUrlWithCustomCacheKey(it, headers, it.split("#")[1])
 +        }
          Glide
            .with(context)
--          .load(GlideUrl(it)) //  Use `load` instead of `download` to store the asset in the memory cache
+-          .load(GlideUrl(it, headers)) //  Use `load` instead of `download` to store the asset in the memory cache
 +          .load(url) //  Use `load` instead of `download` to store the asset in the memory cache
            // We added `quality` and `downsample` to create the same cache key as in final image load.
            .encodeQuality(100)
-           .downsample(NoopDownsampleStrategy())
+           .downsample(NoopDownsampleStrategy)
 diff --git a/node_modules/expo-image/ios/ImageModule.swift b/node_modules/expo-image/ios/ImageModule.swift
-index c914ad8..136289f 100644
+index ca6718b..88fc0d4 100644
 --- a/node_modules/expo-image/ios/ImageModule.swift
 +++ b/node_modules/expo-image/ios/ImageModule.swift
-@@ -111,6 +111,13 @@ public final class ImageModule: Module {
-     AsyncFunction("prefetch") { (urls: [URL], cachePolicy: ImageCachePolicy, promise: Promise) in
-       var context = SDWebImageContext()
-       context[.storeCacheType] = cachePolicy.toSdCacheType().rawValue
+@@ -115,6 +115,13 @@ public final class ImageModule: Module {
+       context[.storeCacheType] = SDImageCacheType.none.rawValue
+       context[.originalQueryCacheType] = sdCacheType
+       context[.originalStoreCacheType] = sdCacheType
 +      context[.cacheKeyFilter] = SDWebImageCacheKeyFilter { url in
 +        var components = url.absoluteString.components(separatedBy: "#")
 +        guard components.count > 1 else {

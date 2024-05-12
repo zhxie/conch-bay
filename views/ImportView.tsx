@@ -3,7 +3,7 @@ import dayjs from "dayjs";
 import * as Device from "expo-device";
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
-import * as SQLite from "expo-sqlite/next";
+import * as SQLite from "expo-sqlite";
 import * as WebBrowser from "expo-web-browser";
 import { useState } from "react";
 import { Platform, StyleProp, ViewStyle } from "react-native";
