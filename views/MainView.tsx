@@ -1727,6 +1727,12 @@ const MainView = () => {
     if (await MailComposer.isAvailableAsync()) {
       MailComposer.composeAsync({
         recipients: ["conch-bay@outlook.com"],
+        body: `> ${t("feedback_notice")}
+
+
+        > ${t("version")}
+        ${Application.nativeApplicationVersion} (${Application.nativeBuildVersion})
+        `,
       });
     } else {
       Linking.openURL("mailto:conch-bay@outlook.com");
