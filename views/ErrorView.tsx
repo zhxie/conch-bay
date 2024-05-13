@@ -2,6 +2,7 @@ import * as Application from "expo-application";
 import * as FileSystem from "expo-file-system";
 import * as MailComposer from "expo-mail-composer";
 import * as Sharing from "expo-sharing";
+import * as WebBrowser from "expo-web-browser";
 import { useState } from "react";
 import { Linking, Platform } from "react-native";
 import { zip } from "react-native-zip-archive";
@@ -39,9 +40,7 @@ const ErrorView = (props: ErrorViewProps) => {
 
 
         > ${t("version")}
-        ${Application.applicationName} ${Application.nativeApplicationVersion} (${
-          Application.nativeBuildVersion
-        })
+        ${Application.nativeApplicationVersion} (${Application.nativeBuildVersion})
 
         > ${t("error_information")}
         ${props.error.stack}
@@ -50,6 +49,9 @@ const ErrorView = (props: ErrorViewProps) => {
     } else {
       Linking.openURL("mailto:conch-bay@outlook.com");
     }
+  };
+  const onJoinTheBetaVersionPress = () => {
+    WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay/wiki/Join-the-Beta-Version");
   };
   const onExportResultsPress = async () => {
     setExporting(true);
@@ -138,6 +140,9 @@ const ErrorView = (props: ErrorViewProps) => {
         </Button>
         <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onSendAMailPress}>
           <Marquee style={theme.reverseTextStyle}>{t("send_a_mail")}</Marquee>
+        </Button>
+        <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onJoinTheBetaVersionPress}>
+          <Marquee style={theme.reverseTextStyle}>{t("join_the_beta_version")}</Marquee>
         </Button>
         <Button
           loading={exporting}
