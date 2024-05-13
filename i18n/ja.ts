@@ -40,15 +40,15 @@ const ja = {
   failed_to_load_salmon_run_results: "サーモンランのリザルトを読み込めません (%{error})",
   loading_n_results: "%{n}件のリザルトを読み込む中",
   loaded_n_results: "%{n}件のリザルトを読み込みました",
-  loaded_n_results_fail_failed: "%{n}件のリザルトを読み込み、%{fail}件は失敗しました (%{error})",
-  loaded_n_results_skip_skipped: "%{n}件のリザルトを読み込み、%{skip}件はスキップしました",
-  loaded_n_results_skip_skipped_fail_failed:
+  loaded_n_results_failed: "%{n}件のリザルトを読み込み、%{fail}件は失敗しました (%{error})",
+  loaded_n_results_skipped: "%{n}件のリザルトを読み込み、%{skip}件はスキップしました",
+  loaded_n_results_skipped_failed:
     "%{n}件のリザルトを読み込み、%{skip}件はスキップ、%{fail}件は失敗しました (%{error})",
   show_more: "もっと見る",
   loading_more: "もっと読み込む中",
   all_results_showed: "すべてのリザルトが表示されました",
-  n_total_results_showed: "%{n}/%{total}件のリザルトが表示されました",
-  n_filtered_total_filtered_results_showed:
+  n_results_showed: "%{n}/%{total}件のリザルトが表示されました",
+  n_filtered_results_showed:
     "%{n}/%{filtered} (%{total})件フィルタリングされたリザルトが表示されました",
   today: "今日",
   this_week: "今週",
@@ -69,19 +69,19 @@ const ja = {
   support: "サポート",
   preference_notice:
     "ホラガイベイを自分好みにカスタマイズできます。例えば、ホラガイベイがバックグラウンドでリザルトを読み込むことを許可したり、サーモンランに関する情報を優先的に表示したりできます。",
-  background_refresh_enabled: "バックグラウンド更新 (%{enabled})",
-  salmon_run_friendly_mode_enabled: "サーモンランフレンドリーモード (%{enabled})",
   enabled: "有効",
   disabled: "無効",
+  background_refresh: "バックグラウンド更新 (%{enabled})",
+  salmon_run_friendly_mode: "サーモンランフレンドリーモード (%{enabled})",
   language_notice:
     "ホラガイベイが対応する地域と言語のフェス、リザルト、イカリング3をロードできるように、地域と言語を変更できます。",
-  change_game_language_language: "ゲームの言語を変更 (%{language})",
+  change_game_language: "ゲームの言語を変更 (%{language})",
   change_splatfest_region: "フェス地域を変更 (%{region})",
   japan: "日本",
   the_americas_australia_new_zealand: "アメリカ大陸、オーストラリア、ニュージーランド",
   europe: "ヨーロッパ",
   hong_kong_south_korea: "香港、韓国",
-  change_display_language_language: "表示言語を変更 (%{language})",
+  change_display_language: "表示言語を変更 (%{language})",
   relog_in_notice: "ホラガイベイがトークンを取得できない場合は、再ログインできます。",
   relog_in: "再ログイン",
   relog_in_with_session_token: "セッショントークンで再ログイン",
@@ -154,7 +154,7 @@ const ja = {
   // Result.
   n_x_battle: "%{n}倍マッチ",
   n_win_strike: "%{n}連勝",
-  score_score: "%{score}カウント",
+  score_n: "%{score}カウント",
   knock_out: "ノックアウト！",
   no_contest: "無効試合になりました。",
   penalty: "正常に試合が終了しませんでした。",

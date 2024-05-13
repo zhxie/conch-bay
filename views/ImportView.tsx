@@ -352,14 +352,11 @@ const ImportView = (props: ImportViewProps) => {
 
   const showResultBanner = (n: number, skip: number, fail: number, error?: Error) => {
     if (fail > 0 && skip > 0) {
-      showBanner(
-        BannerLevel.Warn,
-        t("loaded_n_results_skip_skipped_fail_failed", { n, skip, fail, error })
-      );
+      showBanner(BannerLevel.Warn, t("loaded_n_results_skipped_failed", { n, skip, fail, error }));
     } else if (fail > 0) {
-      showBanner(BannerLevel.Warn, t("loaded_n_results_fail_failed", { n, fail, error }));
+      showBanner(BannerLevel.Warn, t("loaded_n_results_failed", { n, fail, error }));
     } else if (skip > 0) {
-      showBanner(BannerLevel.Success, t("loaded_n_results_skip_skipped", { n, skip }));
+      showBanner(BannerLevel.Success, t("loaded_n_results_skipped", { n, skip }));
     } else {
       showBanner(BannerLevel.Success, t("loaded_n_results", { n }));
     }

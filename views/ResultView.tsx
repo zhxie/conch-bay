@@ -447,7 +447,7 @@ const ResultView = (props: ResultViewProps) => {
         if (team.result.score === 100) {
           return t("knock_out");
         } else {
-          return t("score_score", { score: team.result.score });
+          return t("score_n", { score: team.result.score });
         }
       }
     }

@@ -955,7 +955,7 @@ const MainView = () => {
     if (n > 0) {
       const fail = battleFail + coopFail;
       if (fail > 0) {
-        showBanner(BannerLevel.Warn, t("loaded_n_results_fail_failed", { n, fail, error }));
+        showBanner(BannerLevel.Warn, t("loaded_n_results_failed", { n, fail, error }));
       } else {
         showBanner(BannerLevel.Success, t("loaded_n_results", { n }));
       }
@@ -2036,8 +2036,8 @@ const MainView = () => {
                       <VStack center>
                         <Marquee style={ViewStyles.mb2}>
                           {filtered === total
-                            ? t("n_total_results_showed", { n: count, total })
-                            : t("n_filtered_total_filtered_results_showed", {
+                            ? t("n_results_showed", { n: count, total })
+                            : t("n_filtered_results_showed", {
                                 n: count,
                                 filtered,
                                 total,
@@ -2319,7 +2319,7 @@ const MainView = () => {
                 onPress={onBackgroundRefreshPress}
               >
                 <Marquee style={theme.reverseTextStyle}>
-                  {t("background_refresh_enabled", {
+                  {t("background_refresh", {
                     enabled: backgroundRefresh ? t("enabled") : t("disabled"),
                   })}
                 </Marquee>
@@ -2330,7 +2330,7 @@ const MainView = () => {
                 onPress={onSalmonRunFriendlyModePress}
               >
                 <Marquee style={theme.reverseTextStyle}>
-                  {t("salmon_run_friendly_mode_enabled", {
+                  {t("salmon_run_friendly_mode", {
                     enabled: salmonRunFriendlyMode ? t("enabled") : t("disabled"),
                   })}
                 </Marquee>
@@ -2339,7 +2339,7 @@ const MainView = () => {
             <DialogSection text={t("language_notice")} style={ViewStyles.mb4}>
               <Picker
                 disabled={refreshing}
-                title={t("change_game_language_language", { language: t(language) })}
+                title={t("change_game_language", { language: t(language) })}
                 items={[
                   { key: "de-DE", value: t("de-DE") },
                   { key: "en-GB", value: t("en-GB") },
@@ -2376,7 +2376,7 @@ const MainView = () => {
                 onPress={onChangeDisplayLanguagePress}
               >
                 <Marquee style={theme.reverseTextStyle}>
-                  {t("change_display_language_language", { language: t(t("lang")) })}
+                  {t("change_display_language", { language: t(t("lang")) })}
                 </Marquee>
               </Button>
             </DialogSection>
