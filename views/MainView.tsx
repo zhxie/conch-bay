@@ -1430,22 +1430,14 @@ const MainView = () => {
       setSupport(false);
     }
   };
-  const onGameLanguageSelected = async (language: string) => {
-    if (language === t("lang")) {
-      await clearLanguage();
+  const onAutoRefreshPress = async () => {
+    if (!autoRefresh) {
+      showBanner(BannerLevel.Info, t("auto_refresh_enabled"));
+      await setAutoRefresh(true);
     } else {
-      await setLanguage(language);
+      showBanner(BannerLevel.Info, t("auto_refresh_disabled"));
+      await setAutoRefresh(false);
     }
-  };
-  const onSplatfestRegionSelected = async (region: string) => {
-    if (language === t("region")) {
-      await clearRegion();
-    } else {
-      await setRegion(region);
-    }
-  };
-  const onChangeDisplayLanguagePress = () => {
-    Linking.openSettings();
   };
   const onBackgroundRefreshPress = async () => {
     if (backgroundRefresh) {
@@ -1472,6 +1464,23 @@ const MainView = () => {
     } else {
       await setSalmonRunFriendlyMode(true);
     }
+  };
+  const onGameLanguageSelected = async (language: string) => {
+    if (language === t("lang")) {
+      await clearLanguage();
+    } else {
+      await setLanguage(language);
+    }
+  };
+  const onSplatfestRegionSelected = async (region: string) => {
+    if (language === t("region")) {
+      await clearRegion();
+    } else {
+      await setRegion(region);
+    }
+  };
+  const onChangeDisplayLanguagePress = () => {
+    Linking.openSettings();
   };
   const onClearCachePress = async () => {
     setClearingCache(true);
@@ -1861,15 +1870,6 @@ const MainView = () => {
   };
   const onSourceCodeRepositoryPress = () => {
     WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay");
-  };
-  const onAutoRefreshPress = async () => {
-    if (!autoRefresh) {
-      showBanner(BannerLevel.Info, t("auto_refresh_enabled"));
-      await setAutoRefresh(true);
-    } else {
-      showBanner(BannerLevel.Info, t("auto_refresh_disabled"));
-      await setAutoRefresh(false);
-    }
   };
 
   return (
@@ -2313,17 +2313,32 @@ const MainView = () => {
         <Modal isVisible={support} onClose={onSupportClose} style={ViewStyles.modal1d}>
           <CustomDialog icon="circle-help">
             <DialogSection text={t("preference_notice")} style={ViewStyles.mb4}>
-              <Button
-                style={[ViewStyles.mb2, ViewStyles.accent]}
-                textStyle={theme.reverseTextStyle}
-                onPress={onBackgroundRefreshPress}
-              >
-                <Marquee style={theme.reverseTextStyle}>
-                  {t("background_refresh", {
-                    enabled: backgroundRefresh ? t("enabled") : t("disabled"),
-                  })}
-                </Marquee>
-              </Button>
+              {sessionToken.length > 0 && (
+                <Button
+                  style={[ViewStyles.mb2, ViewStyles.accent]}
+                  textStyle={theme.reverseTextStyle}
+                  onPress={onAutoRefreshPress}
+                >
+                  <Marquee style={theme.reverseTextStyle}>
+                    {t("auto_refresh", {
+                      enable: autoRefresh ? t("enable") : t("disable"),
+                    })}
+                  </Marquee>
+                </Button>
+              )}
+              {sessionToken.length > 0 && (
+                <Button
+                  style={[ViewStyles.mb2, ViewStyles.accent]}
+                  textStyle={theme.reverseTextStyle}
+                  onPress={onBackgroundRefreshPress}
+                >
+                  <Marquee style={theme.reverseTextStyle}>
+                    {t("background_refresh", {
+                      enable: backgroundRefresh ? t("enable") : t("disable"),
+                    })}
+                  </Marquee>
+                </Button>
+              )}
               <Button
                 style={ViewStyles.accent}
                 textStyle={theme.reverseTextStyle}
@@ -2331,7 +2346,7 @@ const MainView = () => {
               >
                 <Marquee style={theme.reverseTextStyle}>
                   {t("salmon_run_friendly_mode", {
-                    enabled: salmonRunFriendlyMode ? t("enabled") : t("disabled"),
+                    enable: salmonRunFriendlyMode ? t("enable") : t("disable"),
                   })}
                 </Marquee>
               </Button>

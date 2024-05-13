@@ -65,12 +65,12 @@ const en = {
   disclaimer:
     "This app is an unofficial app which uses the information of SplatNet 3, and is not related to Nintendo Co., Ltd.",
   support: "Support",
-  preference_notice:
-    "You can customize Conch Bay to your liking. For example, you can allow Conch Bay to load results in the background or prioritize showing Salmon Run-related information.",
-  enabled: "Enabled",
-  disabled: "Disabled",
-  background_refresh: "Background Refresh (%{enabled})",
-  salmon_run_friendly_mode: "Salmon Run Friendly Mode (%{enabled})",
+  preference_notice: "You can customize Conch Bay to your liking.",
+  enable: "Enable",
+  disable: "Disable",
+  auto_refresh: "Auto Refresh (%{enable})",
+  background_refresh: "Background Refresh (%{enable})",
+  salmon_run_friendly_mode: "Salmon Run Friendly Mode (%{enable})",
   language_notice:
     "You can change your region and language so that Conch Bay can load Splatfest, results and SplatNet 3 in the corresponding region and language.",
   change_game_language: "Change Game Language (%{language})",

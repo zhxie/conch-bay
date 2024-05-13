@@ -67,12 +67,12 @@ const ja = {
   disclaimer:
     "当アプリは、イカリング3の情報を利用した非公式アプリであり、任天堂株式会社とは一切関係はございません。",
   support: "サポート",
-  preference_notice:
-    "ホラガイベイを自分好みにカスタマイズできます。例えば、ホラガイベイがバックグラウンドでリザルトを読み込むことを許可したり、サーモンランに関する情報を優先的に表示したりできます。",
-  enabled: "有効",
-  disabled: "無効",
-  background_refresh: "バックグラウンド更新 (%{enabled})",
-  salmon_run_friendly_mode: "サーモンランフレンドリーモード (%{enabled})",
+  preference_notice: "ホラガイベイを自分好みにカスタマイズできます。",
+  enable: "有効",
+  disable: "無効",
+  auto_refresh: "自動更新 (%{enable})",
+  background_refresh: "バックグラウンド更新 (%{enable})",
+  salmon_run_friendly_mode: "サーモンランフレンドリーモード (%{enable})",
   language_notice:
     "ホラガイベイが対応する地域と言語のフェス、リザルト、イカリング3をロードできるように、地域と言語を変更できます。",
   change_game_language: "ゲームの言語を変更 (%{language})",
