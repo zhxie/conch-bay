@@ -12,7 +12,7 @@ const en = {
   // UI.
   log_in: "Log In",
   log_in_notice:
-    "You can use Conch Bay to view schedules and SplatNet Shop, import results, and analyze stats and trends without logging in. Logging in will allow you to load results and friends, display gears, and access SplatNet 3. Logging in involves sending non-identifying information to non-Nintendo imink or nxapi. This information will not be logged or stored, please see the privacy policy for more information.",
+    "You can use Conch Bay to view schedules and SplatNet Shop, import results, and analyze stats and trends without logging in. Logging in will allow you to load results and friends, view gears, and access SplatNet 3. Logging in involves sending non-identifying information to non-Nintendo imink or nxapi. This information will not be logged or stored, please see the privacy policy for more information.",
   log_in_warning:
     "Conch Bay will not cause your account to be compromised or your personal information to be leaked. However, due to Nintendo's continued negative attitude towards 3rd party apps, you should use Conch Bay at your own risk.",
   log_in_continue: "I have read and understand",
@@ -22,7 +22,7 @@ const en = {
   logging_in: "Acquiring tokens",
   failed_to_acquire_session_token: "Failed to acquire session token (%{error})",
   log_out_notice:
-    "After logging out, you will be not able to load results and friends, display gears, and access SplatNet 3. Results stored in Conch Bay will not be removed.",
+    "After logging out, you will be not able to load results and friends, view gears, and access SplatNet 3. Results stored in Conch Bay will not be removed.",
   log_out_continue: "Log Out",
   logging_out: "Logging out",
   upgrading_database: "Upgrading database",
