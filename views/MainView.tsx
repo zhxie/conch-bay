@@ -122,7 +122,7 @@ import FilterView from "./FilterView";
 import FriendView from "./FriendView";
 import GearsView from "./GearsView";
 import ImportView from "./ImportView";
-import ResultView, { ResultGroup, Result } from "./ResultView";
+import ResultView, { ResultGroup } from "./ResultView";
 import RotationsView from "./RotationsView";
 import ScheduleView from "./ScheduleView";
 import ShopView from "./ShopView";
@@ -396,23 +396,22 @@ const MainView = () => {
     }
   }, [fault]);
 
-  const canGroup = (current: Result, group: ResultGroup) => {
+  const canGroupBattle = (battle: VsHistoryDetailResult, group: ResultGroup) => {
     // Battles with the same mode and in the 2 hours (24 hours for tricolors and unlimited for
-    // privates) period will be regarded in the same group, coops with the same rule, stage and
-    // supplied weapons in the 48 hours (2 hours period) will be regarded in the same group. There
-    // is also a 2 minutes grace period for both battles and coops when certain conditions are met.
+    // privates) period will be regarded in the same group. There is also a 2 minutes grace period
+    // for battles when certain conditions are met.
     // TODO: these grade conditions are not completed. E.g., regular battles even with the same
     // stages cannot be regarded as in the same rotation. We have to check the context (the above
     // only now) to group correctly.
-    if (current.battle && group.battles) {
-      const mode = current.battle.vsHistoryDetail!.vsMode.id;
+    if (group.battles) {
+      const mode = battle.vsHistoryDetail!.vsMode.id;
       if (mode === group.battles[0].vsHistoryDetail!.vsMode.id) {
         switch (mode) {
           case "VnNNb2RlLTE=":
           case "VnNNb2RlLTY=":
           case "VnNNb2RlLTc=":
             if (
-              Math.floor(dayjs(current.battle.vsHistoryDetail!.playedTime).valueOf() / 7200000) ===
+              Math.floor(dayjs(battle.vsHistoryDetail!.playedTime).valueOf() / 7200000) ===
               Math.floor(dayjs(group.battles[0].vsHistoryDetail!.playedTime).valueOf() / 7200000)
             ) {
               return true;
@@ -423,15 +422,12 @@ const MainView = () => {
           case "VnNNb2RlLTM=":
           case "VnNNb2RlLTQ=":
             if (
-              Math.floor(dayjs(current.battle.vsHistoryDetail!.playedTime).valueOf() / 7200000) ===
+              Math.floor(dayjs(battle.vsHistoryDetail!.playedTime).valueOf() / 7200000) ===
                 Math.floor(
                   dayjs(group.battles[0].vsHistoryDetail!.playedTime).valueOf() / 7200000
                 ) ||
-              (current.battle.vsHistoryDetail!.vsRule.id ===
-                group.battles[0].vsHistoryDetail!.vsRule.id &&
-                Math.floor(
-                  dayjs(current.battle.vsHistoryDetail!.playedTime).valueOf() / 7200000
-                ) ===
+              (battle.vsHistoryDetail!.vsRule.id === group.battles[0].vsHistoryDetail!.vsRule.id &&
+                Math.floor(dayjs(battle.vsHistoryDetail!.playedTime).valueOf() / 7200000) ===
                   Math.floor(
                     dayjs(group.battles[0].vsHistoryDetail!.playedTime)
                       .subtract(2, "minute")
@@ -443,11 +439,11 @@ const MainView = () => {
             break;
           case "VnNNb2RlLTg=":
             if (
-              Math.floor(dayjs(current.battle.vsHistoryDetail!.playedTime).valueOf() / 86400000) ===
+              Math.floor(dayjs(battle.vsHistoryDetail!.playedTime).valueOf() / 86400000) ===
                 Math.floor(
                   dayjs(group.battles[0].vsHistoryDetail!.playedTime).valueOf() / 86400000
                 ) ||
-              Math.floor(dayjs(current.battle.vsHistoryDetail!.playedTime).valueOf() / 86400000) ===
+              Math.floor(dayjs(battle.vsHistoryDetail!.playedTime).valueOf() / 86400000) ===
                 Math.floor(
                   dayjs(group.battles[0].vsHistoryDetail!.playedTime)
                     .subtract(2, "minute")
@@ -463,21 +459,25 @@ const MainView = () => {
         }
       }
     }
-    if (current.coop && group.coops) {
+    return false;
+  };
+
+  const canGroupCoop = (coop: CoopHistoryDetailResult, group: ResultGroup) => {
+    // Coops with the same rule, stage and supplied weapons in the 48 hours (2 hours period) will be
+    // regarded in the same group. There is also a 2 minutes grace period for coops when certain
+    // conditions are met.
+    if (group.coops) {
       if (
-        current.coop.coopHistoryDetail!.rule === group.coops[0].coopHistoryDetail!.rule &&
-        current.coop.coopHistoryDetail!.coopStage.id ===
-          group.coops[0].coopHistoryDetail!.coopStage.id &&
-        current.coop
-          .coopHistoryDetail!.weapons.map((weapon) => getImageHash(weapon.image.url))
-          .join() ===
+        coop.coopHistoryDetail!.rule === group.coops[0].coopHistoryDetail!.rule &&
+        coop.coopHistoryDetail!.coopStage.id === group.coops[0].coopHistoryDetail!.coopStage.id &&
+        coop.coopHistoryDetail!.weapons.map((weapon) => getImageHash(weapon.image.url)).join() ===
           group.coops[0]
             .coopHistoryDetail!.weapons.map((weapon) => getImageHash(weapon.image.url))
             .join() &&
-        (Math.ceil(dayjs(current.coop.coopHistoryDetail!.playedTime).valueOf() / 7200000) -
+        (Math.ceil(dayjs(coop.coopHistoryDetail!.playedTime).valueOf() / 7200000) -
           Math.floor(dayjs(group.coops[0].coopHistoryDetail!.playedTime).valueOf() / 7200000) <=
           24 ||
-          Math.ceil(dayjs(current.coop.coopHistoryDetail!.playedTime).valueOf() / 7200000) -
+          Math.ceil(dayjs(coop.coopHistoryDetail!.playedTime).valueOf() / 7200000) -
             Math.floor(
               dayjs(group.coops[0].coopHistoryDetail!.playedTime).subtract(2, "minute").valueOf() /
                 7200000
@@ -502,67 +502,15 @@ const MainView = () => {
     }
 
     // Query results and merge into groups.
-    const details: Result[] = [];
     const records = await Database.queryDetailAll(offset, limit, filterRef.current);
-    for (const record of records) {
-      if (record.mode === "salmon_run") {
-        details.push({ coop: JSON.parse(record.detail) as CoopHistoryDetailResult });
-      } else {
-        details.push({ battle: JSON.parse(record.detail) as VsHistoryDetailResult });
-      }
-    }
     const newGroups: ResultGroup[] = [];
-    let group: ResultGroup = {};
-    for (const detail of details) {
-      if (canGroup(detail, group)) {
-        if (detail.battle) {
-          group.battles!.push(detail.battle);
-        } else {
-          group.coops!.push(detail.coop!);
-        }
-      } else {
-        if (group.battles || group.coops) {
-          newGroups.push(group);
-        }
-        if (detail.battle) {
-          group = { battles: [detail.battle] };
-        } else {
-          group = { coops: [detail.coop!] };
-        }
-      }
-    }
-    if (group.battles || group.coops) {
-      newGroups.push(group);
-    }
-
-    // Set groups.
     if (groups !== undefined && count >= 20 && length > count) {
-      let final = groups;
-      const lastGroupIndex = groups.length - 1;
-      if (
-        newGroups.length > 0 &&
-        groups.length > 0 &&
-        newGroups[0].battles &&
-        canGroup({ battle: newGroups[0].battles[0] }, groups[lastGroupIndex])
-      ) {
-        final = groups.concat(newGroups.slice(1));
-        final[lastGroupIndex].battles = final[lastGroupIndex].battles!.concat(
-          newGroups[0].battles!
-        );
-      } else if (
-        newGroups.length > 0 &&
-        groups.length > 0 &&
-        newGroups[0].coops &&
-        canGroup({ coop: newGroups[0].coops[0] }, groups[lastGroupIndex])
-      ) {
-        final = groups.concat(newGroups.slice(1));
-        final[lastGroupIndex].coops = final[lastGroupIndex].coops!.concat(newGroups[0].coops!);
-      } else {
-        final = groups.concat(newGroups);
+      // Reuse groups on loading more results.
+      for (const group of groups) {
+        newGroups.push(group);
       }
-      setGroups(final);
     } else {
-      setGroups(newGroups);
+      // Read total and filter options on loading new results.
       const [filtered, newTotal] = await Promise.all([
         Database.count(filterRef.current),
         Database.count(),
@@ -574,6 +522,23 @@ const MainView = () => {
         setFilterOptions(filterOptions);
       }
     }
+    for (const record of records) {
+      if (record.mode === "salmon_run") {
+        const coop = JSON.parse(record.detail) as CoopHistoryDetailResult;
+        if (newGroups.length === 0 || !canGroupCoop(coop, newGroups[newGroups.length - 1])) {
+          newGroups.push({ coops: [] });
+        }
+        newGroups[newGroups.length - 1].coops!.push(coop);
+      } else {
+        const battle = JSON.parse(record.detail) as VsHistoryDetailResult;
+        if (newGroups.length === 0 || !canGroupBattle(battle, newGroups[newGroups.length - 1])) {
+          newGroups.push({ battles: [] });
+        }
+        newGroups[newGroups.length - 1].battles!.push(battle);
+      }
+    }
+
+    setGroups(newGroups);
     setLoadingMore(false);
   };
   const updatePlayedTime = async () => {

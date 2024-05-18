@@ -94,7 +94,7 @@ import {
 } from "../utils/ui";
 import { StatsModal } from "./StatsView";
 
-export interface Result {
+interface Result {
   battle?: VsHistoryDetailResult;
   coop?: CoopHistoryDetailResult;
 }
@@ -201,7 +201,7 @@ const ResultView = (props: ResultViewProps) => {
       );
     }
   };
-  const i = useMemo(() => {
+  const currentResultIndex = useMemo(() => {
     const j = findIndex();
     if (j === undefined) {
       return undefined;
@@ -509,23 +509,29 @@ const ResultView = (props: ResultViewProps) => {
     setDisplayCoopPlayer(false);
   };
   const onShowNextResultPress = () => {
-    if (i !== undefined && i - 1 >= 0) {
-      if ((displayBattle && results![i - 1].battle) || (displayCoop && results![i - 1].coop)) {
-        setResult(results![i - 1]);
+    if (currentResultIndex !== undefined && currentResultIndex - 1 >= 0) {
+      if (
+        (displayBattle && results![currentResultIndex - 1].battle) ||
+        (displayCoop && results![currentResultIndex - 1].coop)
+      ) {
+        setResult(results![currentResultIndex - 1]);
         return;
       }
-      willDisplayNext.current = i - 1;
+      willDisplayNext.current = currentResultIndex - 1;
     }
     setDisplayBattle(false);
     setDisplayCoop(false);
   };
   const onShowPreviousResultPress = () => {
-    if (i !== undefined && i + 1 < results!.length) {
-      if ((displayBattle && results![i + 1].battle) || (displayCoop && results![i + 1].coop)) {
-        setResult(results![i + 1]);
+    if (currentResultIndex !== undefined && currentResultIndex + 1 < results!.length) {
+      if (
+        (displayBattle && results![currentResultIndex + 1].battle) ||
+        (displayCoop && results![currentResultIndex + 1].coop)
+      ) {
+        setResult(results![currentResultIndex + 1]);
         return;
       }
-      willDisplayNext.current = i + 1;
+      willDisplayNext.current = currentResultIndex + 1;
     }
     setDisplayBattle(false);
     setDisplayCoop(false);
@@ -1184,9 +1190,9 @@ const ResultView = (props: ResultViewProps) => {
                 </VStack>
               )}
             </Modal>
-            {i !== undefined && (
+            {currentResultIndex !== undefined && (
               <PureIconButton
-                disabled={i === 0}
+                disabled={currentResultIndex === 0}
                 size={24}
                 icon="chevron-left"
                 hitSlop={8}
@@ -1194,9 +1200,9 @@ const ResultView = (props: ResultViewProps) => {
                 onPress={onShowNextResultPress}
               />
             )}
-            {i !== undefined && (
+            {currentResultIndex !== undefined && (
               <PureIconButton
-                disabled={i === (results?.length ?? 1) - 1}
+                disabled={currentResultIndex === (results?.length ?? 1) - 1}
                 size={24}
                 icon="chevron-right"
                 hitSlop={8}
@@ -1556,9 +1562,9 @@ const ResultView = (props: ResultViewProps) => {
                 </VStack>
               )}
             </Modal>
-            {i !== undefined && (
+            {currentResultIndex !== undefined && (
               <PureIconButton
-                disabled={i === 0}
+                disabled={currentResultIndex === 0}
                 size={24}
                 icon="chevron-left"
                 hitSlop={8}
@@ -1566,9 +1572,9 @@ const ResultView = (props: ResultViewProps) => {
                 onPress={onShowNextResultPress}
               />
             )}
-            {i !== undefined && (
+            {currentResultIndex !== undefined && (
               <PureIconButton
-                disabled={i === (results?.length ?? 1) - 1}
+                disabled={currentResultIndex === (results?.length ?? 1) - 1}
                 size={24}
                 icon="chevron-right"
                 hitSlop={8}
