@@ -131,7 +131,6 @@ const ResultView = (props: ResultViewProps) => {
   const showBanner = useBanner();
 
   const [result, setResult] = useState<Result>();
-  const [group, setGroup] = useState<Result[]>();
   const [displayResult, setDisplayResult] = useState(false);
   const [displayBattle, setDisplayBattle] = useState(false);
   const [battlePlayer, setBattlePlayer] = useState<VsPlayer>();
@@ -141,6 +140,7 @@ const ResultView = (props: ResultViewProps) => {
   const [displayCoopPlayer, setDisplayCoopPlayer] = useState(false);
   const willDisplayNext = useRef<number>();
   const [hidePlayerNames, setHidePlayerNames] = useState(false);
+  const [group, setGroup] = useState<Result[]>();
   const [displayGroup, setDisplayGroup] = useState(false);
   const [dimension, setDimension] = useState(0);
 
@@ -151,20 +151,6 @@ const ResultView = (props: ResultViewProps) => {
   const coopDetailsRef = useRef<AccordionDisplayHandle>(null);
   const coopFade = useRef(new Animated.Value(1)).current;
 
-  const results = useMemo(() => {
-    if (!props.groups) {
-      return undefined;
-    }
-    const results: Result[] = [];
-    for (const group of props.groups) {
-      if (group.battles) {
-        results.push(...group.battles!.map((battle) => ({ battle: battle })));
-      } else {
-        results.push(...group.coops!.map((coop) => ({ coop: coop })));
-      }
-    }
-    return results;
-  }, [props.groups]);
   const groupsAndResults = useMemo(() => {
     if (!props.groups) {
       return undefined;
@@ -195,7 +181,7 @@ const ResultView = (props: ResultViewProps) => {
   const findIndex = () => {
     const id = result?.battle?.vsHistoryDetail?.id || result?.coop?.coopHistoryDetail?.id;
     if (id) {
-      return results?.findIndex(
+      return groupsAndResults?.findIndex(
         (result) =>
           result.battle?.vsHistoryDetail?.id === id || result.coop?.coopHistoryDetail?.id === id
       );
@@ -207,7 +193,7 @@ const ResultView = (props: ResultViewProps) => {
       return undefined;
     }
     return j >= 0 ? j : undefined;
-  }, [results, result]);
+  }, [groupsAndResults, result]);
 
   const isVsPlayerDragon = (player: VsPlayer) => {
     switch (player.festDragonCert as FestDragonCert) {
@@ -509,29 +495,38 @@ const ResultView = (props: ResultViewProps) => {
     setDisplayCoopPlayer(false);
   };
   const onShowNextResultPress = () => {
-    if (currentResultIndex !== undefined && currentResultIndex - 1 >= 0) {
+    // The first item in groupsAndResults is always a group.
+    if (currentResultIndex !== undefined && currentResultIndex - 1 >= 1) {
+      let offset = 1;
+      if (groupsAndResults![currentResultIndex - 1].group) {
+        offset = 2;
+      }
       if (
-        (displayBattle && results![currentResultIndex - 1].battle) ||
-        (displayCoop && results![currentResultIndex - 1].coop)
+        (displayBattle && groupsAndResults![currentResultIndex - offset].battle) ||
+        (displayCoop && groupsAndResults![currentResultIndex - offset].coop)
       ) {
-        setResult(results![currentResultIndex - 1]);
+        setResult(groupsAndResults![currentResultIndex - offset]);
         return;
       }
-      willDisplayNext.current = currentResultIndex - 1;
+      willDisplayNext.current = currentResultIndex - offset;
     }
     setDisplayBattle(false);
     setDisplayCoop(false);
   };
   const onShowPreviousResultPress = () => {
-    if (currentResultIndex !== undefined && currentResultIndex + 1 < results!.length) {
+    if (currentResultIndex !== undefined && currentResultIndex + 1 < groupsAndResults!.length) {
+      let offset = 1;
+      if (groupsAndResults![currentResultIndex + 1].group) {
+        offset = 2;
+      }
       if (
-        (displayBattle && results![currentResultIndex + 1].battle) ||
-        (displayCoop && results![currentResultIndex + 1].coop)
+        (displayBattle && groupsAndResults![currentResultIndex + offset].battle) ||
+        (displayCoop && groupsAndResults![currentResultIndex + offset].coop)
       ) {
-        setResult(results![currentResultIndex + 1]);
+        setResult(groupsAndResults![currentResultIndex + offset]);
         return;
       }
-      willDisplayNext.current = currentResultIndex + 1;
+      willDisplayNext.current = currentResultIndex + offset;
     }
     setDisplayBattle(false);
     setDisplayCoop(false);
@@ -644,11 +639,11 @@ const ResultView = (props: ResultViewProps) => {
       if (willDisplayNext.current < 0) {
         setDisplayResult(true);
       } else {
-        if (results?.[willDisplayNext.current].battle) {
-          setResult({ battle: results![willDisplayNext.current].battle });
+        if (groupsAndResults?.[willDisplayNext.current].battle) {
+          setResult({ battle: groupsAndResults![willDisplayNext.current].battle });
           setDisplayBattle(true);
-        } else if (results?.[willDisplayNext.current].coop) {
-          setResult({ coop: results![willDisplayNext.current].coop });
+        } else if (groupsAndResults?.[willDisplayNext.current].coop) {
+          setResult({ coop: groupsAndResults![willDisplayNext.current].coop });
           setDisplayCoop(true);
         }
       }
@@ -1192,7 +1187,7 @@ const ResultView = (props: ResultViewProps) => {
             </Modal>
             {currentResultIndex !== undefined && (
               <PureIconButton
-                disabled={currentResultIndex === 0}
+                disabled={currentResultIndex === 1}
                 size={24}
                 icon="chevron-left"
                 hitSlop={8}
@@ -1202,7 +1197,8 @@ const ResultView = (props: ResultViewProps) => {
             )}
             {currentResultIndex !== undefined && (
               <PureIconButton
-                disabled={currentResultIndex === (results?.length ?? 1) - 1}
+                // groupsAndResults has at least 2 items.
+                disabled={currentResultIndex === (groupsAndResults?.length ?? 2) - 1}
                 size={24}
                 icon="chevron-right"
                 hitSlop={8}
@@ -1564,7 +1560,7 @@ const ResultView = (props: ResultViewProps) => {
             </Modal>
             {currentResultIndex !== undefined && (
               <PureIconButton
-                disabled={currentResultIndex === 0}
+                disabled={currentResultIndex === 1}
                 size={24}
                 icon="chevron-left"
                 hitSlop={8}
@@ -1574,7 +1570,8 @@ const ResultView = (props: ResultViewProps) => {
             )}
             {currentResultIndex !== undefined && (
               <PureIconButton
-                disabled={currentResultIndex === (results?.length ?? 1) - 1}
+                // groupsAndResults has at least 2 items.
+                disabled={currentResultIndex === (groupsAndResults?.length ?? 2) - 1}
                 size={24}
                 icon="chevron-right"
                 hitSlop={8}
