@@ -332,89 +332,112 @@ export const queryLatestTime = async () => {
   );
   return record?.time;
 };
+let filterOptions:
+  | {
+      modes: Set<string>;
+      rules: Set<string>;
+      stages: Set<string>;
+      weapons: Set<string>;
+    }
+  | undefined = undefined;
 export const queryFilterOptions = async () => {
-  const modeSql = "SELECT DISTINCT mode FROM result";
-  const ruleSql = "SELECT DISTINCT rule FROM result";
-  const stageSql = "SELECT DISTINCT stage FROM result";
-  const weaponSql = "SELECT DISTINCT weapon FROM result";
+  if (!filterOptions) {
+    filterOptions = {
+      modes: new Set<string>(),
+      rules: new Set<string>(),
+      stages: new Set<string>(),
+      weapons: new Set<string>(),
+    };
 
-  const [modeRecord, ruleRecord, stageRecord, weaponRecord] = await Promise.all([
-    db!.getAllAsync<{ mode: string }>(modeSql),
-    db!.getAllAsync<{ rule: string }>(ruleSql),
-    db!.getAllAsync<{ stage: string }>(stageSql),
-    db!.getAllAsync<{ weapon: string }>(weaponSql),
-  ]);
-  const weaponSet = new Set<string>();
-  for (const row of weaponRecord) {
-    const weapon = row["weapon"];
-    for (const w of weapon.split(",")) {
-      if (w.length > 0) {
-        weaponSet.add(weaponList.images[w] ?? w);
+    const modeSql = "SELECT DISTINCT mode FROM result";
+    const ruleSql = "SELECT DISTINCT rule FROM result";
+    const stageSql = "SELECT DISTINCT stage FROM result";
+    const weaponSql = "SELECT DISTINCT weapon FROM result";
+
+    const [modeRecord, ruleRecord, stageRecord, weaponRecord] = await Promise.all([
+      db!.getAllAsync<{ mode: string }>(modeSql),
+      db!.getAllAsync<{ rule: string }>(ruleSql),
+      db!.getAllAsync<{ stage: string }>(stageSql),
+      db!.getAllAsync<{ weapon: string }>(weaponSql),
+    ]);
+
+    for (const record of modeRecord) {
+      if (record.mode) {
+        filterOptions.modes.add(record.mode);
+      }
+    }
+    for (const record of ruleRecord) {
+      if (record.rule) {
+        filterOptions.rules.add(record.rule);
+      }
+    }
+    for (const record of stageRecord) {
+      if (record.stage) {
+        filterOptions.stages.add(record.stage);
+      }
+    }
+    for (const row of weaponRecord) {
+      for (const weapon of row.weapon.split(",")) {
+        if (weapon) {
+          filterOptions.weapons.add(weaponList.images[weapon] ?? weapon);
+        }
       }
     }
   }
+
   return {
-    modes: modeRecord
-      .map((row) => row["mode"])
-      .filter((mode) => mode !== "")
-      .sort((a, b) => {
-        // Move coop to the last.
-        if (a === "salmon_run") {
-          return 1;
-        }
-        if (b === "salmon_run") {
-          return -1;
-        }
-        // Move anarchy battle open behind anarchy battle series.
-        let aId = decode64Index(a);
-        if (aId === 51) {
-          aId = 2.5;
-        }
-        let bId = decode64Index(b);
-        if (bId === 51) {
-          bId = 2.5;
-        }
-        return aId - bId;
-      }),
-    rules: ruleRecord
-      .map((row) => row["rule"])
-      .filter((rule) => rule !== "")
-      .sort((a, b) => {
-        // Move coop rules behind battle rules.
-        if (a.startsWith("V") && b.startsWith("V")) {
-          return decode64Index(a) - decode64Index(b);
-        } else if (a.startsWith("V")) {
-          return -1;
-        } else if (b.startsWith("V")) {
-          return 1;
-        }
-        // Sort coop rules as REGULAR, BIG_RUN and TEAM_CONTEST.
-        const coopRuleMap = {
-          REGULAR: 1,
-          BIG_RUN: 2,
-          TEAM_CONTEST: 3,
-        };
-        const aSeq = coopRuleMap[a];
-        const bSeq = coopRuleMap[b];
-        if (aSeq && bSeq) {
-          return aSeq - bSeq;
-        }
-        return a.localeCompare(b);
-      }),
-    stages: stageRecord
-      .map((row) => row["stage"])
-      .filter((stage) => stage !== "")
-      .sort((a, b) => {
-        // Move coop stages behind battle stages.
-        if (a.startsWith("V") && b.startsWith("Q")) {
-          return -1;
-        }
-        if (a.startsWith("Q") && b.startsWith("V")) {
-          return 1;
-        }
+    modes: Array.from(filterOptions.modes.values()).sort((a, b) => {
+      // Move coop to the last.
+      if (a === "salmon_run") {
+        return 1;
+      }
+      if (b === "salmon_run") {
+        return -1;
+      }
+      // Move anarchy battle open behind anarchy battle series.
+      let aId = decode64Index(a);
+      if (aId === 51) {
+        aId = 2.5;
+      }
+      let bId = decode64Index(b);
+      if (bId === 51) {
+        bId = 2.5;
+      }
+      return aId - bId;
+    }),
+    rules: Array.from(filterOptions.rules.values()).sort((a, b) => {
+      // Move coop rules behind battle rules.
+      if (a.startsWith("V") && b.startsWith("V")) {
         return decode64Index(a) - decode64Index(b);
-      }),
-    weapons: Array.from(weaponSet.values()).sort((a, b) => {
+      } else if (a.startsWith("V")) {
+        return -1;
+      } else if (b.startsWith("V")) {
+        return 1;
+      }
+      // Sort coop rules as REGULAR, BIG_RUN and TEAM_CONTEST.
+      const coopRuleMap = {
+        REGULAR: 1,
+        BIG_RUN: 2,
+        TEAM_CONTEST: 3,
+      };
+      const aSeq = coopRuleMap[a];
+      const bSeq = coopRuleMap[b];
+      if (aSeq && bSeq) {
+        return aSeq - bSeq;
+      }
+      return a.localeCompare(b);
+    }),
+    stages: Array.from(filterOptions.stages.values()).sort((a, b) => {
+      // Move coop stages behind battle stages.
+      if (a.startsWith("V") && b.startsWith("Q")) {
+        return -1;
+      }
+      if (a.startsWith("Q") && b.startsWith("V")) {
+        return 1;
+      }
+      return decode64Index(a) - decode64Index(b);
+    }),
+    weapons: Array.from(filterOptions.weapons.values()).sort((a, b) => {
       let aid: number | undefined, bid: number | undefined;
       try {
         aid = decode64Index(a);
@@ -462,6 +485,22 @@ export const add = async (
   stage: string,
   stats: string
 ) => {
+  if (filterOptions) {
+    if (mode) {
+      filterOptions.modes.add(mode);
+    }
+    if (rule) {
+      filterOptions.rules.add(rule);
+    }
+    if (stage) {
+      filterOptions.stages.add(stage);
+    }
+    for (const w of weapon.split(",")) {
+      if (w) {
+        filterOptions.weapons.add(w);
+      }
+    }
+  }
   await db!.runAsync(
     "INSERT INTO result VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
     id,
