@@ -79,6 +79,7 @@ import {
   VsTeam,
 } from "../models/types";
 import weaponList from "../models/weapons.json";
+import { fetchXRankings } from "../utils/api";
 import { decode64BattlePlayerId, decode64CoopPlayerId } from "../utils/codec";
 import { countBattle, countCoop } from "../utils/stats";
 import {
@@ -121,6 +122,8 @@ interface ResultViewProps {
   style?: StyleProp<ViewStyle>;
 }
 
+const xRankingSet = new Set<string>();
+
 const ResultView = (props: ResultViewProps) => {
   const { height } = useWindowDimensions();
   // HACK: expect there is 480px occupied by other components.
@@ -135,6 +138,8 @@ const ResultView = (props: ResultViewProps) => {
   const [displayBattle, setDisplayBattle] = useState(false);
   const [battlePlayer, setBattlePlayer] = useState<VsPlayer>();
   const [displayBattlePlayer, setDisplayBattlePlayer] = useState(false);
+  const [xRankings, setXRankings] = useState(false);
+  const [checkingXRankings, setCheckingXRankings] = useState(false);
   const [displayCoop, setDisplayCoop] = useState(false);
   const [coopPlayer, setCoopPlayer] = useState<CoopPlayerResult>();
   const [displayCoopPlayer, setDisplayCoopPlayer] = useState(false);
@@ -586,6 +591,10 @@ const ResultView = (props: ResultViewProps) => {
     await Clipboard.setStringAsync(value.toString());
     showBanner(BannerLevel.Info, t("copied_to_clipboard"));
   };
+  const onViewXRankings = () => {
+    const id = decode64BattlePlayerId(battlePlayer!.id);
+    WebBrowser.openBrowserAsync(`https://splat.top/player/u-${id}`);
+  };
   const onViewBattlesAndJobsWithThisPlayerPress = async () => {
     if (displayBattlePlayer) {
       // HACK: we cannot parse encrypted IDs from ikawidget3.
@@ -937,9 +946,26 @@ const ResultView = (props: ResultViewProps) => {
                           }
                           crown={player.crown}
                           dragon={isVsPlayerDragon(player) ? getColor(team.color) : undefined}
-                          onPress={() => {
+                          onPress={async () => {
                             setBattlePlayer(player);
                             setDisplayBattlePlayer(true);
+                            setXRankings(false);
+                            try {
+                              const id = decode64BattlePlayerId(player.id);
+                              if (xRankingSet.has(id)) {
+                                setXRankings(true);
+                                return;
+                              }
+                              setCheckingXRankings(true);
+                              const result = await fetchXRankings(id);
+                              if (result) {
+                                xRankingSet.add(id);
+                                setXRankings(true);
+                              }
+                            } catch {
+                              showBanner(BannerLevel.Warn, t("failed_to_check_x_rankings"));
+                            }
+                            setCheckingXRankings(false);
                           }}
                         />
                       ))}
@@ -1163,7 +1189,6 @@ const ResultView = (props: ResultViewProps) => {
                   </VStack>
                   <VStack style={ViewStyles.wf}>
                     <Button
-                      disabled={props.filterDisabled}
                       style={[ViewStyles.mb2, ViewStyles.accent]}
                       onPress={onViewBattlesAndJobsWithThisPlayerPress}
                     >
@@ -1171,9 +1196,29 @@ const ResultView = (props: ResultViewProps) => {
                         {t("view_battles_and_jobs_with_this_player")}
                       </Marquee>
                     </Button>
-                    <Button style={ViewStyles.accent} onPress={onAnalyzeBuildPress}>
+                    <Button
+                      style={[ViewStyles.mb2, ViewStyles.accent]}
+                      onPress={onAnalyzeBuildPress}
+                    >
                       <Marquee style={[ViewStyles.mr1, theme.reverseTextStyle]}>
                         {t("analyze_build")}
+                      </Marquee>
+                      <Icon
+                        name="external-link"
+                        size={TextStyles.h5.fontSize}
+                        color={theme.reverseTextStyle.color}
+                      />
+                    </Button>
+                    <Button
+                      disabled={!checkingXRankings && !xRankings}
+                      loading={checkingXRankings}
+                      loadingText={t("checking_x_rankings")}
+                      style={ViewStyles.accent}
+                      textStyle={theme.reverseTextStyle}
+                      onPress={onViewXRankings}
+                    >
+                      <Marquee style={[ViewStyles.mr1, theme.reverseTextStyle]}>
+                        {t("view_x_rankings")}
                       </Marquee>
                       <Icon
                         name="external-link"

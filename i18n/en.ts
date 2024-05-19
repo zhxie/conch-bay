@@ -190,6 +190,9 @@ const en = {
   failed_to_view_battles_and_jobs_with_this_player:
     "Failed to view battles and jobs with this player",
   analyze_build: "Analyze Build",
+  view_x_rankings: "View X Rankings",
+  checking_x_rankings: "Checking X Rankings",
+  failed_to_check_x_rankings: "Failed to check X Rankings",
   self: "Self",
   team: "Team",
   // Stats.

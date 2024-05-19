@@ -101,6 +101,6 @@ Conch Bay uses [splat3](https://github.com/Leanny/splat3) for mapping and [Ninte
 
 Conch Bay uses [Splatoon3.ink](https://splatoon3.ink/) for images and [splat3](https://github.com/Leanny/splat3) for mapping in data converters.
 
-Conch Bay uses [sendou.ink](https://sendou.ink/) Build Analyzer as an external tool.
+Conch Bay uses [sendou.ink](https://sendou.ink/) Build Analyzer and [splat.top](https://splat.top/) as external tools.
 
 Conch Bay is grateful for Splatoon-related open source pioneers including [s3s](https://github.com/frozenpandaman/s3s) and [s3si.ts](https://github.com/spacemeowx2/s3si.ts), and all open source components listed in the [OSS Licenses](https://github.com/zhxie/conch-bay/wiki/OSS-Licenses).

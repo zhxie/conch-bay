@@ -183,6 +183,9 @@ const zhHant = {
   view_battles_and_jobs_with_this_player: "查看與此玩家的戰鬥與打工",
   failed_to_view_battles_and_jobs_with_this_player: "未能查看與此玩家的戰鬥與打工",
   analyze_build: "分析配裝",
+  view_x_rankings: "查看X排名",
+  checking_x_rankings: "檢查X排名中",
+  failed_to_check_x_rankings: "未能檢查X排名",
   self: "自己",
   team: "團隊",
   // Stats.

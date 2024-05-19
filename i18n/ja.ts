@@ -191,6 +191,9 @@ const ja = {
   failed_to_view_battles_and_jobs_with_this_player:
     "このプレイヤーとのバトルとバイトを表示できません",
   analyze_build: "ギア構成を分析",
+  view_x_rankings: "Xランキングを表示",
+  checking_x_rankings: "Xランキングをチェック中",
+  failed_to_check_x_rankings: "Xランキングをチェックできません",
   self: "自分",
   team: "チーム",
   // Stats.

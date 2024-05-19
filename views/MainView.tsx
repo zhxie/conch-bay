@@ -1836,6 +1836,9 @@ const MainView = () => {
   const onSendouInkPress = () => {
     WebBrowser.openBrowserAsync("https://sendou.ink/");
   };
+  const onSplatTopPress = () => {
+    WebBrowser.openBrowserAsync("https://splat.top/");
+  };
   const onOssLicensesPress = () => {
     WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay/wiki/OSS-Licenses");
   };
@@ -2528,6 +2531,9 @@ const MainView = () => {
               </Text>
               <Text style={[TextStyles.link, ViewStyles.mb1]} onPress={onSendouInkPress}>
                 sendou.ink
+              </Text>
+              <Text style={[TextStyles.link, ViewStyles.mb1]} onPress={onSplatTopPress}>
+                splat.top
               </Text>
               <Text style={TextStyles.link} onPress={onOssLicensesPress}>
                 {t("oss_licenses")}

@@ -62,6 +62,13 @@ export const fetchSplatfests = async (region: string) => {
   const json = await res.json();
   return (json as FestivalsQuery)[region].data;
 };
+export const fetchXRankings = async (id: string) => {
+  const res = await fetch(`https://splat.top/api/player/u-${id}`, {
+    headers: { "User-Agent": USER_AGENT },
+  });
+  const json = await res.json();
+  return json.length > 0;
+};
 
 let NSO_VERSION = versions.NSO_VERSION;
 let SPLATNET_VERSION = versions.SPLATNET_VERSION;

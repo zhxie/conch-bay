@@ -183,6 +183,9 @@ const zhHans = {
   view_battles_and_jobs_with_this_player: "查看与此玩家的战斗与打工",
   failed_to_view_battles_and_jobs_with_this_player: "未能查看与此玩家的战斗与打工",
   analyze_build: "分析配装",
+  view_x_rankings: "查看X排名",
+  checking_x_rankings: "检查X排名中",
+  failed_to_check_x_rankings: "未能检查X排名",
   self: "自己",
   team: "团队",
   // Stats.
