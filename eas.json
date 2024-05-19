@@ -17,10 +17,10 @@
         "simulator": true
       }
     },
-    "production": {},
     "internal": {
       "distribution": "internal"
-    }
+    },
+    "production": {}
   },
   "submit": {
     "production": {
