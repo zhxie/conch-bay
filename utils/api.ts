@@ -118,7 +118,14 @@ const callIminkFApi = async (step: number, idToken: string, naId: string, coralU
     headers: { "Content-Type": "application/json; charset=utf-8", "User-Agent": USER_AGENT },
     timeout: AXIOS_TOKEN_TIMEOUT,
   });
-  return res.data as { f: string; request_id: string; timestamp: string };
+  const f = res.data["f"];
+  const requestId = res.data["request_id"];
+  const timestamp = res.data["timestamp"];
+  if (!f || !requestId || !timestamp) {
+    // { error: true; reason: string; }
+    throw new Error(`/f: ${res.statusText}: ${JSON.stringify(res.data)}`);
+  }
+  return { f, requestId, timestamp } as { f: string; requestId: string; timestamp: string };
 };
 const callNxapiZncaApi = async (
   step: number,
@@ -143,7 +150,14 @@ const callNxapiZncaApi = async (
     },
     timeout: AXIOS_TOKEN_TIMEOUT,
   });
-  return res.data as { f: string; request_id: string; timestamp: string };
+  const f = res.data["f"];
+  const requestId = res.data["request_id"];
+  const timestamp = res.data["timestamp"];
+  if (!f || !requestId || !timestamp) {
+    // { error: string; error_message: string; errors: { error: string; error_message: string }[]; warnings: { error: string; error_message: string }[]; }
+    throw new Error(`/f: ${res.statusText}: ${JSON.stringify(res.data)}`);
+  }
+  return { f, requestId, timestamp } as { f: string; requestId: string; timestamp: string };
 };
 export const generateLogIn = async () => {
   const state = encode64Url(encode64(Crypto.getRandomBytes(36)));
@@ -196,7 +210,12 @@ export const getSessionToken = async (url: string, cv: string) => {
       timeout: AXIOS_TOKEN_TIMEOUT,
     }
   );
-  return res.data["session_token"] as string;
+  const sessionToken = res.data["session_token"];
+  if (!sessionToken) {
+    // { error: string; error_description: string; }
+    throw new Error(`/api/session_token: ${res.statusText}: ${JSON.stringify(res.data)}`);
+  }
+  return sessionToken as string;
 };
 export const getWebServiceToken = async (sessionToken: string) => {
   // Get tokens.
@@ -219,7 +238,8 @@ export const getWebServiceToken = async (sessionToken: string) => {
   });
   const { access_token: accessToken, id_token: idToken } = res.data;
   if (!accessToken || !idToken) {
-    throw new Error(`/api/token: ${JSON.stringify(res.data)}`);
+    // { error: string; error_description: string; }
+    throw new Error(`/api/token: ${res.statusText}: ${JSON.stringify(res.data)}`);
   }
 
   // Get user info.
@@ -238,7 +258,8 @@ export const getWebServiceToken = async (sessionToken: string) => {
   });
   const { birthday, language, country, id } = res2.data;
   if (!birthday || !language || !country || !id) {
-    throw new Error(`/users/me: ${JSON.stringify(res2.data)}`);
+    // { type: string; detail: string; instance: string; title: string; errorCode: string; status: number; }
+    throw new Error(`/users/me: ${res2.statusText}: ${JSON.stringify(res2.data)}`);
   }
 
   const callApis = [callIminkFApi, callNxapiZncaApi];
@@ -247,10 +268,7 @@ export const getWebServiceToken = async (sessionToken: string) => {
     try {
       // Get access token.
       const json = await callApi(1, idToken, id);
-      const { f, request_id: requestId, timestamp } = json;
-      if (!f || !requestId || !timestamp) {
-        throw new Error(`/f: ${JSON.stringify(json)}`);
-      }
+      const { f, requestId, timestamp } = json;
       const body3 = {
         parameter: {
           f: f,
@@ -280,15 +298,13 @@ export const getWebServiceToken = async (sessionToken: string) => {
       const idToken2 = res3.data["result"]?.["webApiServerCredential"]?.["accessToken"];
       const coralUserId = res3.data["result"]?.["user"]?.["id"];
       if (!idToken2 || !coralUserId) {
-        throw new Error(`/Account/Login: ${JSON.stringify(res3.data)}`);
+        // { status: number; errorMessage: string; correlationId: string; }
+        throw new Error(`/Account/Login: ${res3.statusText}: ${JSON.stringify(res3.data)}`);
       }
 
       // Get web service token.
       const json2 = await callApi(2, idToken2, id, coralUserId.toString());
-      const { f: f2, request_id: requestId2, timestamp: timestamp2 } = json2;
-      if (!f2 || !requestId2 || !timestamp2) {
-        throw new Error(`/f: ${JSON.stringify(json)}`);
-      }
+      const { f: f2, requestId: requestId2, timestamp: timestamp2 } = json2;
       const body4 = {
         parameter: {
           f: f2,
@@ -315,7 +331,10 @@ export const getWebServiceToken = async (sessionToken: string) => {
         }
       );
       if (!res4.data["result"]?.["accessToken"]) {
-        throw new Error(`/Game/GetWebServiceToken: ${JSON.stringify(res4.data)}`);
+        // { status: number; errorMessage: string; correlationId: string; }
+        throw new Error(
+          `/Game/GetWebServiceToken: ${res4.statusText}: ${JSON.stringify(res4.data)}`
+        );
       }
       const accessToken = res4.data["result"]["accessToken"];
       return { accessToken, country, language };
@@ -358,6 +377,9 @@ export const getBulletToken = async (webServiceToken: WebServiceToken, language:
       timeout: AXIOS_TOKEN_TIMEOUT,
     }
   );
+  if (res.status >= 400) {
+    throw new Error(`/api/bullet_tokens: ${res.statusText}`);
+  }
   return res.data["bulletToken"] as string;
 };
 
@@ -398,6 +420,9 @@ const fetchGraphQl = async <T>(
       "X-Web-View-Ver": SPLATNET_VERSION,
     },
   });
+  if (res.status >= 400) {
+    throw new Error(`/api/graphql: ${res.statusText}`);
+  }
   return res;
 };
 export const fetchFriends = async (
