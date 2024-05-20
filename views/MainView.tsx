@@ -6,6 +6,7 @@ import * as Application from "expo-application";
 import { BlurView } from "expo-blur";
 import * as Clipboard from "expo-clipboard";
 import * as DevClient from "expo-dev-client";
+import { registerDevMenuItems } from "expo-dev-menu";
 import * as FileSystem from "expo-file-system";
 import { Image } from "expo-image";
 import * as IntentLauncher from "expo-intent-launcher";
@@ -129,6 +130,25 @@ import ShopView from "./ShopView";
 import SplatNetView, { SplatNetViewRef } from "./SplatNetView";
 import StatsView from "./StatsView";
 import TrendsView from "./TrendsView";
+
+let enableDevelopmentBuildResultRefreshing = false;
+
+const devMenuItems = [
+  {
+    name: "Enable Result Refreshing",
+    callback: () => {
+      enableDevelopmentBuildResultRefreshing = true;
+    },
+  },
+  {
+    name: "Remove Latest Result",
+    callback: async () => {
+      const result = await Database.queryDetailAll(0, 1);
+      await Database.remove(result[0].id);
+    },
+  },
+];
+registerDevMenuItems(devMenuItems);
 
 enum TimeRange {
   Today = "today",
@@ -605,7 +625,7 @@ const MainView = () => {
           }),
         (async () => {
           // Avoid refresh in development build by default.
-          if (DevClient.isDevelopmentBuild()) {
+          if (!enableDevelopmentBuildResultRefreshing && DevClient.isDevelopmentBuild()) {
             return;
           }
           if (sessionToken) {
