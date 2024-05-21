@@ -103,7 +103,7 @@ const zhHant = {
   copy_web_service_token: "複製Web服務令牌",
   copy_bullet_token: "複製Bullet令牌",
   copied_to_clipboard: "已複製到剪貼簿",
-  copy_configuration_and_state: "複製配置與狀態",
+  export_configuration: "匯出配置",
   export_database: "匯出資料庫",
   privacy_policy: "私隱政策",
   acknowledgments: "致謝",

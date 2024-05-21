@@ -97,19 +97,20 @@ import {
   WebServiceToken,
 } from "../utils/api";
 import {
-  Key,
-  useAsyncStorage,
-  useBooleanAsyncStorage,
-  useNumberAsyncStorage,
-  useStringAsyncStorage,
-} from "../utils/async-storage";
-import {
   isBackgroundTaskRegistered,
   registerBackgroundTask,
   unregisterBackgroundTask,
 } from "../utils/background";
 import { decode64String, encode64String } from "../utils/codec";
 import * as Database from "../utils/database";
+import {
+  AsyncStorageKey,
+  Key,
+  useBooleanMmvk,
+  useMmkv,
+  useNumberMmvk,
+  useStringMmvk,
+} from "../utils/mmkv";
 import { ok, sleep } from "../utils/promise";
 import { Brief } from "../utils/stats";
 import { getImageCacheKey, getUserIconCacheSource, isImageExpired, roundPower } from "../utils/ui";
@@ -194,55 +195,46 @@ const MainView = () => {
   const [acknowledgments, setAcknowledgments] = useState(false);
   const [fault, setFault] = useState<Error>();
 
-  const [sessionToken, setSessionToken, clearSessionToken, sessionTokenReady] =
-    useStringAsyncStorage(Key.SessionToken);
+  const [sessionToken, setSessionToken, clearSessionToken, sessionTokenReady] = useStringMmvk(
+    Key.SessionToken
+  );
   const [webServiceToken, setWebServiceToken, clearWebServiceToken, webServiceTokenReady] =
-    useAsyncStorage<WebServiceToken>(Key.WebServiceToken);
-  const [bulletToken, setBulletToken, clearBulletToken, bulletTokenReady] = useStringAsyncStorage(
+    useMmkv<WebServiceToken>(Key.WebServiceToken);
+  const [bulletToken, setBulletToken, clearBulletToken, bulletTokenReady] = useStringMmvk(
     Key.BulletToken
   );
-  const [language, setLanguage, clearLanguage, languageReady] = useStringAsyncStorage(
+  const [language, setLanguage, clearLanguage, languageReady] = useStringMmvk(
     Key.Language,
     t("lang")
   );
-  const [region, setRegion, clearRegion, regionReady] = useStringAsyncStorage(
-    Key.Region,
-    t("region")
-  );
+  const [region, setRegion, clearRegion, regionReady] = useStringMmvk(Key.Region, t("region"));
 
-  const [icon, setIcon, clearIcon] = useStringAsyncStorage(Key.Icon);
-  const [level, setLevel, clearLevel] = useStringAsyncStorage(Key.Level);
-  const [rank, setRank, clearRank] = useStringAsyncStorage(Key.Rank);
-  const [splatZonesXPower, setSplatZonesXPower, clearSplatZonesXPower] = useStringAsyncStorage(
-    Key.SplatZonesXPower,
-    "0"
+  const [icon, setIcon, clearIcon] = useStringMmvk(Key.Icon);
+  const [level, setLevel, clearLevel] = useStringMmvk(Key.Level);
+  const [rank, setRank, clearRank] = useStringMmvk(Key.Rank);
+  const [splatZonesXPower, setSplatZonesXPower, clearSplatZonesXPower] = useStringMmvk(
+    Key.SplatZonesXPower
   );
-  const [towerControlXPower, setTowerControlXPower, clearTowerControlXPower] =
-    useStringAsyncStorage(Key.TowerControlXPower, "0");
-  const [rainmakerXPower, setRainmakerXPower, clearRainmakerXPower] = useStringAsyncStorage(
-    Key.RainmakerXPower,
-    "0"
+  const [towerControlXPower, setTowerControlXPower, clearTowerControlXPower] = useStringMmvk(
+    Key.TowerControlXPower
   );
-  const [clamBlitzXPower, setClamBlitzXPower, clearClamBlitzXPower] = useStringAsyncStorage(
-    Key.ClamBlitzXPower,
-    "0"
+  const [rainmakerXPower, setRainmakerXPower, clearRainmakerXPower] = useStringMmvk(
+    Key.RainmakerXPower
   );
-  const [grade, setGrade, clearGrade] = useStringAsyncStorage(Key.Grade);
-  const [playedTime, setPlayedTime, clearPlayedTime] = useNumberAsyncStorage(Key.PlayedTime);
+  const [clamBlitzXPower, setClamBlitzXPower, clearClamBlitzXPower] = useStringMmvk(
+    Key.ClamBlitzXPower
+  );
+  const [grade, setGrade, clearGrade] = useStringMmvk(Key.Grade);
+  const [playedTime, setPlayedTime, clearPlayedTime] = useNumberMmvk(Key.PlayedTime);
 
-  const [filter, setFilter, clearFilter, filterReady] = useAsyncStorage<Database.FilterProps>(
-    Key.Filter
-  );
+  const [filter, setFilter, clearFilter, filterReady] = useMmkv<Database.FilterProps>(Key.Filter);
   const filterRef = useRef(filter);
-  const [backgroundRefresh, setBackgroundRefresh, clearBackgroundRefresh] = useBooleanAsyncStorage(
+  const [backgroundRefresh, setBackgroundRefresh, clearBackgroundRefresh] = useBooleanMmvk(
     Key.BackgroundRefresh
   );
   const [salmonRunFriendlyMode, setSalmonRunFriendlyMode, clearSalmonRunFriendlyMode] =
-    useBooleanAsyncStorage(Key.SalmonRunFriendlyMode);
-  const [autoRefresh, setAutoRefresh, clearAutoRefresh] = useBooleanAsyncStorage(
-    Key.AutoRefresh,
-    false
-  );
+    useBooleanMmvk(Key.SalmonRunFriendlyMode);
+  const [autoRefresh, setAutoRefresh, clearAutoRefresh] = useBooleanMmvk(Key.AutoRefresh, false);
 
   const [apiUpdated, setApiUpdated] = useState(false);
   const [schedules, setSchedules] = useState<Schedules>();
@@ -286,11 +278,55 @@ const MainView = () => {
     ) {
       (async () => {
         try {
+          // Migrate async storage.
+          const migrated = await AsyncStorage.getItem(AsyncStorageKey.Migrated);
+          if (!migrated) {
+            // HACK: not all fields are migrated for convenience and clear installation.
+            const [
+              sessionToken,
+              language,
+              region,
+              playedTime,
+              backgroundRefresh,
+              salmonRunFriendlyMode,
+              autoRefresh,
+            ] = await AsyncStorage.multiGet([
+              AsyncStorageKey.SessionToken,
+              AsyncStorageKey.Language,
+              AsyncStorageKey.Region,
+              AsyncStorageKey.PlayedTime,
+              AsyncStorageKey.BackgroundRefresh,
+              AsyncStorageKey.SalmonRunFriendlyMode,
+              AsyncStorageKey.AutoRefresh,
+            ]);
+            if (sessionToken[1]) {
+              setSessionToken(sessionToken[1]);
+            }
+            if (language[1]) {
+              setLanguage(language[1]);
+            }
+            if (region[1]) {
+              setRegion(region[1]);
+            }
+            if (playedTime[1]) {
+              setPlayedTime(parseInt(playedTime[1]));
+            }
+            if (backgroundRefresh[1]) {
+              setBackgroundRefresh(backgroundRefresh[1] === "1");
+            }
+            if (salmonRunFriendlyMode[1]) {
+              setSalmonRunFriendlyMode(salmonRunFriendlyMode[1] === "1");
+            }
+            if (autoRefresh[1]) {
+              setAutoRefresh(autoRefresh[1] === "1");
+            }
+            await AsyncStorage.setItem(AsyncStorageKey.Migrated, "1");
+          }
           // Remove players filter since we do not have their names now.
           if (filter?.players) {
             const newFilter = JSON.parse(JSON.stringify(filter));
             newFilter.players = [];
-            await setFilter(newFilter);
+            setFilter(newFilter);
           }
           const upgrade = await Database.open();
           if (upgrade !== undefined) {
@@ -432,7 +468,7 @@ const MainView = () => {
     const time = await Database.queryLatestTime();
     if (time !== undefined) {
       if (playedTime !== time) {
-        await setPlayedTime(time);
+        setPlayedTime(time);
         return true;
       }
     }
@@ -458,7 +494,7 @@ const MainView = () => {
     if (webServiceToken) {
       const newBulletToken = await getBulletToken(webServiceToken, language).catch(() => undefined);
       if (newBulletToken) {
-        await setBulletToken(newBulletToken);
+        setBulletToken(newBulletToken);
         return { webServiceToken, bulletToken: newBulletToken };
       }
     }
@@ -467,11 +503,11 @@ const MainView = () => {
     const newWebServiceToken = await getWebServiceToken(sessionToken).catch((e) => {
       throw new Error(t("failed_to_acquire_web_service_token", { error: e }));
     });
-    await setWebServiceToken(newWebServiceToken);
+    setWebServiceToken(newWebServiceToken);
     const newBulletToken = await getBulletToken(newWebServiceToken, language).catch((e) => {
       throw new Error(t("failed_to_acquire_bullet_token", { error: e }));
     });
-    await setBulletToken(newBulletToken);
+    setBulletToken(newBulletToken);
 
     return { webServiceToken: newWebServiceToken, bulletToken: newBulletToken };
   };
@@ -663,16 +699,16 @@ const MainView = () => {
               : fetchXBattleHistories(webServiceToken, bulletToken, language).then(
                   (historyDetail) => {
                     setSplatZonesXPower(
-                      historyDetail.xBattleHistories.summary.xPowerAr?.lastXPower?.toString() ?? "0"
+                      historyDetail.xBattleHistories.summary.xPowerAr?.lastXPower?.toString() ?? ""
                     );
                     setTowerControlXPower(
-                      historyDetail.xBattleHistories.summary.xPowerLf?.lastXPower?.toString() ?? "0"
+                      historyDetail.xBattleHistories.summary.xPowerLf?.lastXPower?.toString() ?? ""
                     );
                     setRainmakerXPower(
-                      historyDetail.xBattleHistories.summary.xPowerGl?.lastXPower?.toString() ?? "0"
+                      historyDetail.xBattleHistories.summary.xPowerGl?.lastXPower?.toString() ?? ""
                     );
                     setClamBlitzXPower(
-                      historyDetail.xBattleHistories.summary.xPowerCl?.lastXPower?.toString() ?? "0"
+                      historyDetail.xBattleHistories.summary.xPowerCl?.lastXPower?.toString() ?? ""
                     );
                     return historyDetail;
                   }
@@ -752,7 +788,7 @@ const MainView = () => {
         }),
       fetchCoopResult(webServiceToken, bulletToken, language)
         .then(async (coopResult) => {
-          await setGrade(coopResult.coopResult.regularGrade.id);
+          setGrade(coopResult.coopResult.regularGrade.id);
 
           // Fetch details.
           const ids: string[] = [];
@@ -827,7 +863,7 @@ const MainView = () => {
   const onFilterLayout = (event: LayoutChangeEvent) => {
     setFilterHeight(event.nativeEvent.layout.height);
   };
-  const onFilterPlayer = async (id: string, name: string) => {
+  const onFilterPlayer = (id: string, name: string) => {
     let newFilter: Database.FilterProps;
     if (!filter) {
       newFilter = { players: [], modes: [], rules: [], stages: [], weapons: [] };
@@ -838,13 +874,12 @@ const MainView = () => {
       newFilter = JSON.parse(JSON.stringify(filter));
     }
     newFilter.players!.push(id);
-    const promise = setFilter(newFilter);
+    setFilter(newFilter);
     if (players?.[id] !== name) {
       const newPlayers = JSON.parse(JSON.stringify(players ?? {}));
       newPlayers[id] = name;
       setPlayers(newPlayers);
     }
-    await promise;
   };
   const onQuery = (id: string) => {
     const record = Database.queryDetail(id);
@@ -950,7 +985,7 @@ const MainView = () => {
         setLoggingIn(false);
         return;
       }
-      await setSessionToken(res3);
+      setSessionToken(res3);
 
       setLoggingIn(false);
       setLogIn(false);
@@ -966,7 +1001,7 @@ const MainView = () => {
       const paste = await Clipboard.getStringAsync();
       const sessionToken = paste.trim();
       if (sessionToken.length > 0) {
-        await setSessionToken(await Clipboard.getStringAsync());
+        setSessionToken(await Clipboard.getStringAsync());
       }
 
       setLoggingIn(false);
@@ -1026,11 +1061,11 @@ const MainView = () => {
   const onSplatNetPress = () => {
     splatNetViewRef.current?.open();
   };
-  const onChangeFilterPress = async (filter?: Database.FilterProps) => {
+  const onChangeFilterPress = (filter?: Database.FilterProps) => {
     if (filter) {
-      await setFilter(filter);
+      setFilter(filter);
     } else {
-      await clearFilter();
+      clearFilter();
     }
   };
   const onShowMorePress = () => {
@@ -1119,7 +1154,7 @@ const MainView = () => {
     if (webServiceToken) {
       const newBulletToken = await getBulletToken(webServiceToken, language).catch(() => undefined);
       if (newBulletToken) {
-        await setBulletToken(newBulletToken);
+        setBulletToken(newBulletToken);
         return webServiceToken;
       }
     }
@@ -1131,7 +1166,7 @@ const MainView = () => {
       return undefined;
     });
     if (res) {
-      await setWebServiceToken(res);
+      setWebServiceToken(res);
       return res;
     }
     return undefined;
@@ -1274,13 +1309,13 @@ const MainView = () => {
       setSupport(false);
     }
   };
-  const onAutoRefreshPress = async () => {
+  const onAutoRefreshPress = () => {
     if (!autoRefresh) {
       showBanner(BannerLevel.Info, t("auto_refresh_enabled"));
-      await setAutoRefresh(true);
+      setAutoRefresh(true);
     } else {
       showBanner(BannerLevel.Info, t("auto_refresh_disabled"));
-      await setAutoRefresh(false);
+      setAutoRefresh(false);
     }
   };
   const onBackgroundRefreshPress = async () => {
@@ -1289,7 +1324,7 @@ const MainView = () => {
       if (registered) {
         await unregisterBackgroundTask();
       }
-      await clearBackgroundRefresh();
+      clearBackgroundRefresh();
     } else {
       switch ((await Notifications.getPermissionsAsync()).status) {
         case ModulesCore.PermissionStatus.GRANTED:
@@ -1302,25 +1337,25 @@ const MainView = () => {
       }
     }
   };
-  const onSalmonRunFriendlyModePress = async () => {
+  const onSalmonRunFriendlyModePress = () => {
     if (salmonRunFriendlyMode) {
-      await clearSalmonRunFriendlyMode();
+      clearSalmonRunFriendlyMode();
     } else {
-      await setSalmonRunFriendlyMode(true);
+      setSalmonRunFriendlyMode(true);
     }
   };
-  const onGameLanguageSelected = async (language: string) => {
+  const onGameLanguageSelected = (language: string) => {
     if (language === t("lang")) {
-      await clearLanguage();
+      clearLanguage();
     } else {
-      await setLanguage(language);
+      setLanguage(language);
     }
   };
-  const onSplatfestRegionSelected = async (region: string) => {
+  const onSplatfestRegionSelected = (region: string) => {
     if (language === t("region")) {
-      await clearRegion();
+      clearRegion();
     } else {
-      await setRegion(region);
+      setRegion(region);
     }
   };
   const onChangeDisplayLanguagePress = () => {
@@ -1588,7 +1623,7 @@ const MainView = () => {
   const onClearDatabasePress = async () => {
     setClearingDatabase(true);
     await Database.clear();
-    await clearPlayedTime();
+    clearPlayedTime();
     await loadBriefs();
     setClearingDatabase(false);
     setSupport(false);
@@ -1662,15 +1697,13 @@ const MainView = () => {
       showBanner(BannerLevel.Info, t("copied_to_clipboard"));
     }
   };
-  const onCopyConfigurationAndState = async () => {
-    const keys = await AsyncStorage.getAllKeys();
-    const pairs = await AsyncStorage.multiGet(keys);
-    const result = {};
-    for (const pair of pairs) {
-      result[pair[0]] = pair[1];
+  const onExportConfiguration = async () => {
+    const uri = FileSystem.documentDirectory + "mmkv/mmkv.default";
+    try {
+      await Sharing.shareAsync(uri, { UTI: "public.database" });
+    } catch (e) {
+      showBanner(BannerLevel.Error, e);
     }
-    await Clipboard.setStringAsync(JSON.stringify(result));
-    showBanner(BannerLevel.Info, t("copied_to_clipboard"));
   };
   const onExportDatabasePress = async () => {
     const uri = FileSystem.documentDirectory + "SQLite/conch-bay.db";
@@ -1685,7 +1718,7 @@ const MainView = () => {
   };
   const onNotificationContinue = async () => {
     await Notifications.requestPermissionsAsync();
-    await setBackgroundRefresh(true);
+    setBackgroundRefresh(true);
     await registerBackgroundTask().catch((e) => {
       showBanner(BannerLevel.Warn, t("failed_to_enable_background_refresh", { error: e }));
     });
@@ -2332,11 +2365,9 @@ const MainView = () => {
                   <Button
                     style={[ViewStyles.mb2, ViewStyles.accent]}
                     textStyle={theme.reverseTextStyle}
-                    onPress={onCopyConfigurationAndState}
+                    onPress={onExportConfiguration}
                   >
-                    <Marquee style={theme.reverseTextStyle}>
-                      {t("copy_configuration_and_state")}
-                    </Marquee>
+                    <Marquee style={theme.reverseTextStyle}>{t("export_configuration")}</Marquee>
                   </Button>
                   <Button style={ViewStyles.accent} onPress={onExportDatabasePress}>
                     <Marquee style={theme.reverseTextStyle}>{t("export_database")}</Marquee>

@@ -103,7 +103,7 @@ const zhHans = {
   copy_web_service_token: "复制Web服务令牌",
   copy_bullet_token: "复制Bullet令牌",
   copied_to_clipboard: "已复制到剪贴板",
-  copy_configuration_and_state: "复制配置与状态",
+  export_configuration: "导出配置",
   export_database: "导出数据库",
   privacy_policy: "隐私政策",
   acknowledgments: "致谢",
