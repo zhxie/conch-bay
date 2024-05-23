@@ -109,21 +109,6 @@ export const upgrade = async () => {
       throw e;
     }
   }
-  if (version < 6) {
-    await beginTransaction();
-    try {
-      const statement = await db!.prepareAsync("UPDATE result SET stats = ? WHERE id = ?");
-      for await (const row of queryDetailEach({ modes: ["salmon_run"] })) {
-        await statement.executeAsync(JSON.stringify(countCoop(JSON.parse(row.detail))), row.id);
-      }
-      await statement.finalizeAsync();
-      await db!.execAsync("PRAGMA user_version=6");
-      await commit();
-    } catch (e) {
-      await rollback();
-      throw e;
-    }
-  }
   if (version < 7) {
     await beginTransaction();
     try {

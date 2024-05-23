@@ -65,7 +65,6 @@ import {
   AwardRank,
   Badge,
   CoopHistoryDetailResult,
-  CoopMemberResult,
   CoopPlayerResult,
   CoopRule,
   CoopWaveResult,
@@ -692,7 +691,7 @@ const ResultView = (props: ResultViewProps) => {
       return (
         <VStack flex style={ViewStyles.px4}>
           <BattleButton
-            battle={(result.item as ResultAndGroup).battle}
+            battle={result.item.battle}
             first={false}
             last={
               groupsAndResults!.length > result.index + 1 &&
@@ -727,12 +726,10 @@ const ResultView = (props: ResultViewProps) => {
     }
     if (result.item.coop) {
       const color = getCoopRuleColor(result.item.coop.coopHistoryDetail!.rule)!;
-      const powerEgg =
-        // HACK: cast out union uncertainty.
-        (result.item.coop.coopHistoryDetail!.memberResults as CoopMemberResult[]).reduce(
-          (sum, result) => sum + result.deliverCount,
-          result.item.coop.coopHistoryDetail!.myResult.deliverCount
-        );
+      const powerEgg = result.item.coop.coopHistoryDetail!.memberResults.reduce(
+        (sum, result) => sum + result.deliverCount,
+        result.item.coop.coopHistoryDetail!.myResult.deliverCount
+      );
       const goldenEgg = result.item.coop.coopHistoryDetail!.waveResults.reduce(
         (sum, result) => sum + (result.teamDeliverCount ?? 0),
         0
@@ -740,7 +737,7 @@ const ResultView = (props: ResultViewProps) => {
       return (
         <VStack flex style={ViewStyles.px4}>
           <CoopButton
-            coop={(result.item as ResultAndGroup).coop}
+            coop={result.item.coop}
             first={false}
             last={
               groupsAndResults!.length > result.index + 1 &&
