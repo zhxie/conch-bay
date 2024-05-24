@@ -2,12 +2,12 @@ import * as SQLite from "expo-sqlite";
 import { CoopHistoryDetailResult, VsHistoryDetailResult } from "../models/types";
 import weaponList from "../models/weapons.json";
 import { decode64BattlePlayerId, decode64CoopPlayerId, decode64Index } from "./codec";
-import { countBattle, countCoop } from "./stats";
+import { getBattleBrief, getCoopBrief } from "./stats";
 import { getImageHash, getVsSelfPlayer } from "./ui";
 
 let db: SQLite.SQLiteDatabase | undefined = undefined;
 
-const VERSION = 8;
+const VERSION = 9;
 
 export const open = async () => {
   if (db) {
@@ -99,7 +99,10 @@ export const upgrade = async () => {
         modes: ["salmon_run"],
         inverted: true,
       })) {
-        await statement.executeAsync(JSON.stringify(countBattle(JSON.parse(row.detail))), row.id);
+        await statement.executeAsync(
+          JSON.stringify(getBattleBrief(JSON.parse(row.detail))),
+          row.id
+        );
       }
       await statement.finalizeAsync();
       await db!.execAsync("PRAGMA user_version=3");
@@ -115,9 +118,15 @@ export const upgrade = async () => {
       const statement = await db!.prepareAsync("UPDATE result SET stats = ? WHERE id = ?");
       for await (const row of queryDetailEach()) {
         if (row.mode === "salmon_run") {
-          await statement.executeAsync(JSON.stringify(countCoop(JSON.parse(row.detail))), row.id);
+          await statement.executeAsync(
+            JSON.stringify(getCoopBrief(JSON.parse(row.detail))),
+            row.id
+          );
         } else {
-          await statement.executeAsync(JSON.stringify(countBattle(JSON.parse(row.detail))), row.id);
+          await statement.executeAsync(
+            JSON.stringify(getBattleBrief(JSON.parse(row.detail))),
+            row.id
+          );
         }
       }
       await statement.finalizeAsync();
@@ -181,6 +190,32 @@ export const upgrade = async () => {
       }
       await statement.finalizeAsync();
       await db!.execAsync("PRAGMA user_version=8");
+      await commit();
+    } catch (e) {
+      await rollback();
+      throw e;
+    }
+  }
+  if (version < 9) {
+    await beginTransaction();
+    try {
+      await db!.execAsync("ALTER TABLE result RENAME COLUMN stats TO brief");
+      const statement = await db!.prepareAsync("UPDATE result SET brief = ? WHERE id = ?");
+      for await (const row of queryDetailEach()) {
+        if (row.mode === "salmon_run") {
+          await statement.executeAsync(
+            JSON.stringify(getCoopBrief(JSON.parse(row.detail))),
+            row.id
+          );
+        } else {
+          await statement.executeAsync(
+            JSON.stringify(getBattleBrief(JSON.parse(row.detail))),
+            row.id
+          );
+        }
+      }
+      await statement.finalizeAsync();
+      await db!.execAsync("PRAGMA user_version=9");
       await commit();
     } catch (e) {
       await rollback();
@@ -301,13 +336,13 @@ export const queryDetailEach = (filter?: FilterProps) => {
     `SELECT id, time, mode, detail FROM result ${condition} ORDER BY time DESC`
   );
 };
-export const queryStats = async (filter?: FilterProps) => {
+export const queryBrief = async (filter?: FilterProps) => {
   let condition: string = "";
   if (filter) {
     condition = convertFilter(filter);
   }
-  const record = await db!.getAllAsync<{ id: string; mode: string; stats: string }>(
-    `SELECT id, mode, stats FROM result ${condition} ORDER BY time DESC`
+  const record = await db!.getAllAsync<{ id: string; mode: string; brief: string }>(
+    `SELECT id, mode, brief FROM result ${condition} ORDER BY time DESC`
   );
   return record;
 };
@@ -468,7 +503,7 @@ export const add = async (
   players: string[],
   detail: string,
   stage: string,
-  stats: string
+  brief: string
 ) => {
   if (filterOptions) {
     if (mode) {
@@ -496,7 +531,7 @@ export const add = async (
     players.join(","),
     detail,
     stage,
-    stats
+    brief
   );
 };
 export const addBattle = async (battle: VsHistoryDetailResult) => {
@@ -530,7 +565,7 @@ export const addBattle = async (battle: VsHistoryDetailResult) => {
       .filter((player) => player),
     JSON.stringify(battle),
     battle.vsHistoryDetail!.vsStage.id,
-    JSON.stringify(countBattle(battle))
+    JSON.stringify(getBattleBrief(battle))
   );
 };
 export const addCoop = async (coop: CoopHistoryDetailResult) => {
@@ -560,7 +595,7 @@ export const addCoop = async (coop: CoopHistoryDetailResult) => {
       .filter((player) => player),
     JSON.stringify(coop),
     coop.coopHistoryDetail!.coopStage.id,
-    JSON.stringify(countCoop(coop))
+    JSON.stringify(getCoopBrief(coop))
   );
 };
 export const remove = async (id: string) => {

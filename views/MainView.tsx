@@ -111,7 +111,7 @@ import {
 import { decode64String, encode64String } from "../utils/codec";
 import * as Database from "../utils/database";
 import { ok, sleep } from "../utils/promise";
-import { Stats } from "../utils/stats";
+import { Brief } from "../utils/stats";
 import {
   getImageCacheKey,
   getImageHash,
@@ -260,7 +260,7 @@ const MainView = () => {
   const [total, setTotal] = useState(0);
   const [players, setPlayers] = useState<Record<string, string>>();
   const [filterOptions, setFilterOptions] = useState<Database.FilterProps>();
-  const [stats, setStats] = useState<Stats[]>();
+  const [briefs, setBriefs] = useState<Brief[]>();
 
   const count = useMemo(() => {
     let current = 0;
@@ -361,7 +361,7 @@ const MainView = () => {
     }
   }, [filter]);
   useEffect(() => {
-    setStats(undefined);
+    setBriefs(undefined);
   }, [filter, filtered]);
   useEffect(() => {
     if (!progressTotal) {
@@ -1186,21 +1186,21 @@ const MainView = () => {
     }
     await loadResults(num);
   };
-  const onStatsPress = async () => {
-    if (stats) {
-      return stats;
+  const onBriefsPress = async () => {
+    if (briefs) {
+      return briefs;
     }
     setProcessing(true);
-    const records = await Database.queryStats(filter);
-    const results: Stats[] = [];
+    const records = await Database.queryBrief(filter);
+    const results: Brief[] = [];
     for (const record of records) {
       if (record.mode === "salmon_run") {
-        results.push({ coop: JSON.parse(record.stats) });
+        results.push({ coop: JSON.parse(record.brief) });
       } else {
-        results.push({ battle: JSON.parse(record.stats) });
+        results.push({ battle: JSON.parse(record.brief) });
       }
     }
-    setStats(results);
+    setBriefs(results);
     setProcessing(false);
     return results;
   };
@@ -2054,17 +2054,17 @@ const MainView = () => {
                   <HStack flex center style={ViewStyles.px4}>
                     <StatsView
                       disabled={processing}
-                      onStats={onStatsPress}
+                      onBriefs={onBriefsPress}
                       style={ViewStyles.mr2}
                     />
                     <TrendsView
                       disabled={processing}
-                      onStats={onStatsPress}
+                      onBriefs={onBriefsPress}
                       style={ViewStyles.mr2}
                     />
                     <RotationsView
                       disabled={processing}
-                      onStats={onStatsPress}
+                      onBriefs={onBriefsPress}
                       style={ViewStyles.mr2}
                     />
                     {sessionToken.length > 0 && (

@@ -3,14 +3,27 @@ import {
   CoopHistoryDetailResult,
   CoopMemberResult,
   CoopRule,
+  DragonMatchType,
   Judgement,
   VsHistoryDetailResult,
   VsPlayer,
 } from "../models/types";
 import weaponList from "../models/weapons.json";
 import { decode64Index } from "./codec";
-import { getImageHash, getVsPower, getVsSelfPlayer } from "./ui";
+import { getImageHash, getVsPower } from "./ui";
 
+interface BattlePlayerBrief {
+  self: boolean;
+  weapon: string;
+  subWeapon: string;
+  specialWeapon: string;
+  turf: number;
+  kill?: number;
+  assist?: number;
+  death?: number;
+  special?: number;
+  ultraSignal?: number;
+}
 interface BattlePlayerStats {
   turf: number;
   kill: number;
@@ -18,24 +31,21 @@ interface BattlePlayerStats {
   death: number;
   special: number;
 }
-export interface BattleStats {
+export interface BattleBrief {
+  id: string;
+  result: Judgement;
   time: number;
-  win: boolean;
-  lose: boolean;
-  exempt: boolean;
-  power?: number;
   duration: number;
-  self: BattlePlayerStats;
-  teamMember: number;
-  team: BattlePlayerStats;
-  allMember: number;
-  all: BattlePlayerStats;
   mode: string;
   rule: string;
+  challenge?: string;
   stage: string;
-  weapon: string;
+  power?: number;
+  dragon?: DragonMatchType;
+  myTeam: BattlePlayerBrief[];
+  otherTeams: BattlePlayerBrief[][];
 }
-interface BattlesStats {
+export interface BattleStats {
   count: number;
   win: number;
   lose: number;
@@ -69,86 +79,56 @@ interface BattlesStats {
   }[];
 }
 
-const countBattlePlayer = (player: VsPlayer): BattlePlayerStats => {
+const getBattlePlayerBrief = (player: VsPlayer): BattlePlayerBrief => {
   return {
+    self: player.isMyself,
+    weapon: player.weapon.id,
+    subWeapon: player.weapon.subWeapon.id,
+    specialWeapon: player.weapon.specialWeapon.id,
     turf: player.paint,
-    kill: player.result?.kill ?? 0,
-    assist: player.result?.assist ?? 0,
-    death: player.result?.death ?? 0,
-    special: player.result?.special ?? 0,
+    kill: player.result?.kill,
+    assist: player.result?.assist,
+    death: player.result?.death,
+    special: player.result?.special,
+    ultraSignal: player.result?.noroshiTry === null ? undefined : player.result?.noroshiTry,
   };
 };
-const addBattlePlayerStats = (...players: BattlePlayerStats[]): BattlePlayerStats => {
-  let turf = 0,
-    kill = 0,
-    assist = 0,
-    death = 0,
-    special = 0;
-  for (const player of players) {
-    turf += player.turf;
-    kill += player.kill;
-    assist += player.assist;
-    death += player.death;
-    special += player.special;
-  }
-  return { turf, kill, assist, death, special };
+const addBattlePlayerStats = (
+  stats: BattlePlayerStats,
+  player: BattlePlayerBrief
+): BattlePlayerStats => {
+  return {
+    turf: stats.turf + player.turf,
+    kill: stats.kill + (player.kill ?? 0),
+    assist: stats.assist + (player.assist ?? 0),
+    death: stats.death + (player.death ?? 0),
+    special: stats.special + (player.special ?? 0),
+  };
 };
-export const countBattle = (battle: VsHistoryDetailResult): BattleStats => {
-  let win = false,
-    lose = false;
-  switch (battle.vsHistoryDetail!.judgement as Judgement) {
-    case Judgement.WIN:
-      win = true;
-      break;
-    case Judgement.LOSE:
-    case Judgement.DEEMED_LOSE:
-    case Judgement.EXEMPTED_LOSE:
-      lose = true;
-      break;
-    case Judgement.DRAW:
-      break;
-  }
+export const getBattleBrief = (battle: VsHistoryDetailResult): BattleBrief => {
   const power = getVsPower(battle);
-  // Disconnected and draw should be skipped.
-  let exempt = false;
-  if (
-    (battle.vsHistoryDetail!.judgement === Judgement.DEEMED_LOSE &&
-      battle.vsHistoryDetail!.duration === 0) ||
-    battle.vsHistoryDetail!.judgement === Judgement.DRAW
-  ) {
-    exempt = true;
-  }
-  const selfPlayer = getVsSelfPlayer(battle);
 
   return {
+    id: battle.vsHistoryDetail!.id,
+    result: battle.vsHistoryDetail!.judgement as Judgement,
     time: new Date(battle.vsHistoryDetail!.playedTime).valueOf(),
-    win,
-    lose,
-    exempt,
-    power: power === null ? undefined : power,
     duration: battle.vsHistoryDetail!.duration,
-    self: countBattlePlayer(selfPlayer),
-    teamMember: battle.vsHistoryDetail!.myTeam.players.length,
-    team: battle
-      .vsHistoryDetail!.myTeam.players.map((player) => countBattlePlayer(player))
-      .reduce((prev, current) => addBattlePlayerStats(prev, current)),
-    allMember: [battle.vsHistoryDetail!.myTeam, ...battle.vsHistoryDetail!.otherTeams]
-      .map((team) => team.players.length)
-      .reduce((prev, current) => prev + current),
-    all: [battle.vsHistoryDetail!.myTeam, ...battle.vsHistoryDetail!.otherTeams]
-      .map((team) =>
-        team.players
-          .map((player) => countBattlePlayer(player))
-          .reduce((prev, current) => addBattlePlayerStats(prev, current))
-      )
-      .reduce((prev, current) => addBattlePlayerStats(prev, current)),
     mode: battle.vsHistoryDetail!.vsMode.id,
     rule: battle.vsHistoryDetail!.vsRule.id,
+    challenge: battle.vsHistoryDetail!.leagueMatch?.leagueMatchEvent?.id,
     stage: battle.vsHistoryDetail!.vsStage.id,
-    weapon: selfPlayer.weapon.id,
+    power: power === null ? undefined : power,
+    dragon: battle.vsHistoryDetail!.festMatch?.dragonMatchType as DragonMatchType | undefined,
+    myTeam: battle.vsHistoryDetail!.myTeam.players.map((player) => getBattlePlayerBrief(player)),
+    otherTeams: battle.vsHistoryDetail!.otherTeams.map((team) =>
+      team.players.map((player) => getBattlePlayerBrief(player))
+    ),
   };
 };
-export const addBattleStats = (...battles: BattleStats[]): BattlesStats => {
+const getSelfBattlePlayerBrief = (battle: BattleBrief) => {
+  return battle.myTeam.find((player) => player.self)!;
+};
+export const getBattleStats = (...battles: BattleBrief[]): BattleStats => {
   let count = 0,
     win = 0,
     lose = 0,
@@ -184,22 +164,45 @@ export const addBattleStats = (...battles: BattleStats[]): BattlesStats => {
     weaponMap = new Map<string, Map<string, { count: number; win: number }>>();
   for (const battle of battles) {
     count += 1;
-    win += battle.win ? 1 : 0;
-    lose += battle.lose ? 1 : 0;
-    exempt += battle.exempt ? 1 : 0;
+    switch (battle.result) {
+      case Judgement.WIN:
+        win += 1;
+        break;
+      case Judgement.LOSE:
+      case Judgement.DEEMED_LOSE:
+      case Judgement.EXEMPTED_LOSE:
+        lose += 1;
+        break;
+      case Judgement.DRAW:
+        break;
+    }
+    let skip = false;
+    if (
+      (battle.result === Judgement.DEEMED_LOSE && battle.duration === 0) ||
+      battle.result === Judgement.DRAW
+    ) {
+      skip = true;
+      exempt += 1;
+    }
     if (battle.power) {
       powerCount += 1;
       powerTotal += battle.power;
       powerMax = Math.max(powerMax, battle.power);
     }
-    if (battle.exempt) {
+    // Disconnected and draw should be skipped.
+    if (skip) {
       continue;
     }
     duration += battle.duration;
-    self = addBattlePlayerStats(self, battle.self);
-    (teamMember += battle.teamMember), (team = addBattlePlayerStats(team, battle.team));
-    allMember += battle.allMember;
-    all = addBattlePlayerStats(all, battle.all);
+    const selfPlayerBrief = getSelfBattlePlayerBrief(battle);
+    self = addBattlePlayerStats(self, selfPlayerBrief);
+    teamMember += battle.myTeam.length;
+    team = battle.myTeam.reduce((prev, current) => addBattlePlayerStats(prev, current), team);
+    allMember +=
+      battle.myTeam.length + battle.otherTeams.reduce((prev, current) => prev + current.length, 0);
+    all = battle.otherTeams
+      .flat()
+      .reduce((prev, current) => addBattlePlayerStats(prev, current), all);
     if (!stageMap.has(battle.stage)) {
       stageMap.set(battle.stage, new Map());
     }
@@ -208,16 +211,16 @@ export const addBattleStats = (...battles: BattleStats[]): BattlesStats => {
     }
     const stage = stageMap.get(battle.stage)!.get(battle.rule)!;
     stage.count += 1;
-    stage.win += battle.win ? 1 : 0;
-    if (!weaponMap.has(battle.weapon)) {
-      weaponMap.set(battle.weapon, new Map());
+    stage.win += battle.result === Judgement.WIN ? 1 : 0;
+    if (!weaponMap.has(selfPlayerBrief.weapon)) {
+      weaponMap.set(selfPlayerBrief.weapon, new Map());
     }
-    if (!weaponMap.get(battle.weapon)!.has(battle.rule)) {
-      weaponMap.get(battle.weapon)!.set(battle.rule, { count: 0, win: 0 });
+    if (!weaponMap.get(selfPlayerBrief.weapon)!.has(battle.rule)) {
+      weaponMap.get(selfPlayerBrief.weapon)!.set(battle.rule, { count: 0, win: 0 });
     }
-    const weapon = weaponMap.get(battle.weapon)!.get(battle.rule)!;
+    const weapon = weaponMap.get(selfPlayerBrief.weapon)!.get(battle.rule)!;
     weapon.count += 1;
-    weapon.win += battle.win ? 1 : 0;
+    weapon.win += battle.result === Judgement.WIN ? 1 : 0;
   }
   const stages = Array.from(stageMap, (stage) => {
     const rules = Array.from(stage[1], (rule) => ({
@@ -263,6 +266,16 @@ export const addBattleStats = (...battles: BattleStats[]): BattlesStats => {
   };
 };
 
+interface CoopPlayerBrief {
+  weapons: string[];
+  specialWeapon?: string;
+  defeat: number;
+  golden: number;
+  assist: number;
+  power: number;
+  rescue: number;
+  rescued: number;
+}
 interface CoopPlayerStats {
   defeat: number;
   golden: number;
@@ -285,15 +298,17 @@ interface WaveStats {
     clear: number;
   }[];
 }
-export interface CoopStats {
+export interface CoopBrief {
+  id: string;
+  result: number;
   time: number;
-  exempt: boolean;
-  clear: boolean;
-  wave: number;
+  rule: CoopRule;
+  stage: string;
+  suppliedWeapons: string[];
   hazardLevel: number;
-  self: CoopPlayerStats;
-  member: number;
-  team: CoopPlayerStats;
+  grade?: { id: string; point: number };
+  players: CoopPlayerBrief[];
+  waves: WaveStats[];
   bosses: BossSalmonidStats[];
   king?: { id: string; defeat: boolean };
   scales?: {
@@ -301,14 +316,8 @@ export interface CoopStats {
     silver: number;
     bronze: number;
   };
-  waves: WaveStats[];
-  rule: string;
-  stage: string;
-  weapons: string[];
-  specialWeapon?: string;
-  suppliedWeapons: string[];
 }
-interface CoopsStats {
+export interface CoopStats {
   count: number;
   exempt: number;
   clear: number;
@@ -343,8 +352,13 @@ interface CoopsStats {
   }[];
 }
 
-const countCoopPlayer = (memberResult: CoopMemberResult): CoopPlayerStats => {
+const getCoopPlayerBrief = (memberResult: CoopMemberResult): CoopPlayerBrief => {
   return {
+    weapons: memberResult.weapons.map((weapon) => getImageHash(weapon.image.url)),
+    specialWeapon:
+      memberResult.specialWeapon === null
+        ? undefined
+        : getImageHash(memberResult.specialWeapon.image.url),
     defeat: memberResult.defeatEnemyCount,
     golden: memberResult.goldenDeliverCount,
     assist: memberResult.goldenAssistCount,
@@ -353,61 +367,17 @@ const countCoopPlayer = (memberResult: CoopMemberResult): CoopPlayerStats => {
     rescued: memberResult.rescuedCount,
   };
 };
-const addCoopPlayerStats = (...players: CoopPlayerStats[]): CoopPlayerStats => {
-  let defeat = 0,
-    golden = 0,
-    assist = 0,
-    power = 0,
-    rescue = 0,
-    rescued = 0;
-  for (const player of players) {
-    defeat += player.defeat;
-    golden += player.golden;
-    assist += player.assist;
-    power += player.power;
-    rescue += player.rescue;
-    rescued += player.rescued;
-  }
-  return { defeat, golden, assist, power, rescue, rescued };
+const addCoopPlayerStats = (stats: CoopPlayerStats, player: CoopPlayerBrief): CoopPlayerStats => {
+  return {
+    defeat: stats.defeat + player.defeat,
+    golden: stats.golden + player.golden,
+    assist: stats.assist + player.assist,
+    power: stats.power + player.power,
+    rescue: stats.rescue + player.rescue,
+    rescued: stats.rescued + player.rescued,
+  };
 };
-export const countCoop = (coop: CoopHistoryDetailResult): CoopStats => {
-  // Disconnected should be skipped.
-  let exempt = false;
-  if (coop.coopHistoryDetail!.resultWave < 0) {
-    exempt = true;
-  }
-  let clear = false,
-    wave = 0;
-  if (coop.coopHistoryDetail!.resultWave >= 0) {
-    if (coop.coopHistoryDetail!.resultWave === 0) {
-      clear = true;
-      // The maximum wave cleared is 3 in SplatNet, but we will fix it and have 5 in eggstra
-      // works.
-      wave = coop.coopHistoryDetail!.waveResults.length;
-      switch (coop.coopHistoryDetail!.rule as CoopRule) {
-        case CoopRule.REGULAR:
-        case CoopRule.BIG_RUN:
-          if (coop.coopHistoryDetail!.bossResult) {
-            wave -= 1;
-          }
-          break;
-        case CoopRule.TEAM_CONTEST:
-          break;
-      }
-    } else {
-      wave = coop.coopHistoryDetail!.resultWave - 1;
-    }
-  }
-  const bossMap = new Map<string, { appear: number; defeat: number; defeatTeam: number }>();
-  for (const enemyResult of coop.coopHistoryDetail!.enemyResults) {
-    if (!bossMap.has(enemyResult.enemy.id)) {
-      bossMap.set(enemyResult.enemy.id, { appear: 0, defeat: 0, defeatTeam: 0 });
-    }
-    const boss = bossMap.get(enemyResult.enemy.id)!;
-    boss.appear += enemyResult.popCount;
-    boss.defeat += enemyResult.defeatCount;
-    boss.defeatTeam += enemyResult.teamDefeatCount;
-  }
+export const getCoopBrief = (coop: CoopHistoryDetailResult): CoopBrief => {
   const waveMap = new Map<string, Map<number, { appear: number; clear: number }>>();
   for (let i = 0; i < coop.coopHistoryDetail!.waveResults.length; i++) {
     const waveResult = coop.coopHistoryDetail!.waveResults[i];
@@ -461,21 +431,16 @@ export const countCoop = (coop: CoopHistoryDetailResult): CoopStats => {
         .get(waveResult.waterLevel)!.clear += 1;
     }
   }
-
-  let king: { id: string; defeat: boolean } | undefined = undefined;
-  if (coop.coopHistoryDetail!.bossResult) {
-    king = {
-      id: coop.coopHistoryDetail!.bossResult.boss.id,
-      defeat: coop.coopHistoryDetail!.bossResult.hasDefeatBoss,
-    };
+  const bossMap = new Map<string, { appear: number; defeat: number; defeatTeam: number }>();
+  for (const enemyResult of coop.coopHistoryDetail!.enemyResults) {
+    if (!bossMap.has(enemyResult.enemy.id)) {
+      bossMap.set(enemyResult.enemy.id, { appear: 0, defeat: 0, defeatTeam: 0 });
+    }
+    const boss = bossMap.get(enemyResult.enemy.id)!;
+    boss.appear += enemyResult.popCount;
+    boss.defeat += enemyResult.defeatCount;
+    boss.defeatTeam += enemyResult.teamDefeatCount;
   }
-  const bosses = Array.from(bossMap, (boss) => ({
-    id: boss[0],
-    appear: boss[1].appear,
-    defeat: boss[1].defeat,
-    defeatTeam: boss[1].defeatTeam,
-  }));
-  bosses.sort((a, b) => decode64Index(a.id) - decode64Index(b.id));
   const waves = Array.from(waveMap, (wave) => {
     const levels = Array.from(wave[1], (level) => ({
       id: level[0],
@@ -504,20 +469,43 @@ export const countCoop = (coop: CoopHistoryDetailResult): CoopStats => {
     }
     return decode64Index(a.id) - decode64Index(b.id);
   });
+  const bosses = Array.from(bossMap, (boss) => ({
+    id: boss[0],
+    appear: boss[1].appear,
+    defeat: boss[1].defeat,
+    defeatTeam: boss[1].defeatTeam,
+  }));
+  bosses.sort((a, b) => decode64Index(a.id) - decode64Index(b.id));
 
   return {
+    id: coop.coopHistoryDetail!.id,
+    result: coop.coopHistoryDetail!.resultWave,
     time: new Date(coop.coopHistoryDetail!.playedTime).valueOf(),
-    exempt,
-    clear,
-    wave,
+    rule: coop.coopHistoryDetail!.rule as CoopRule,
+    stage: coop.coopHistoryDetail!.coopStage.id,
+    suppliedWeapons: coop.coopHistoryDetail!.weapons.map((weapon) =>
+      getImageHash(weapon.image.url)
+    ),
     hazardLevel: coop.coopHistoryDetail!.dangerRate,
-    self: countCoopPlayer(coop.coopHistoryDetail!.myResult),
-    member: coop.coopHistoryDetail!.memberResults.length + 1,
-    team: [coop.coopHistoryDetail!.myResult, ...coop.coopHistoryDetail!.memberResults]
-      .map((memberResult) => countCoopPlayer(memberResult))
-      .reduce((prev, current) => addCoopPlayerStats(prev, current)),
+    grade: coop.coopHistoryDetail!.afterGrade
+      ? {
+          id: coop.coopHistoryDetail!.afterGrade.id,
+          point: coop.coopHistoryDetail!.afterGradePoint!,
+        }
+      : undefined,
+    players: [getCoopPlayerBrief(coop.coopHistoryDetail!.myResult)].concat(
+      ...coop.coopHistoryDetail!.memberResults.map((memberResult) =>
+        getCoopPlayerBrief(memberResult)
+      )
+    ),
+    waves,
     bosses,
-    king,
+    king: coop.coopHistoryDetail!.bossResult
+      ? {
+          id: coop.coopHistoryDetail!.bossResult.boss.id,
+          defeat: coop.coopHistoryDetail!.bossResult.hasDefeatBoss,
+        }
+      : undefined,
     scales: coop.coopHistoryDetail!.scale
       ? {
           gold: coop.coopHistoryDetail!.scale!.gold,
@@ -525,21 +513,9 @@ export const countCoop = (coop: CoopHistoryDetailResult): CoopStats => {
           bronze: coop.coopHistoryDetail!.scale!.bronze,
         }
       : undefined,
-    waves,
-    rule: coop.coopHistoryDetail!.rule,
-    stage: coop.coopHistoryDetail!.coopStage.id,
-    weapons: coop.coopHistoryDetail!.myResult.weapons.map((weapon) =>
-      getImageHash(weapon.image.url)
-    ),
-    specialWeapon: coop.coopHistoryDetail!.myResult.specialWeapon
-      ? getImageHash(coop.coopHistoryDetail!.myResult.specialWeapon.image.url)
-      : undefined,
-    suppliedWeapons: coop.coopHistoryDetail!.weapons.map((weapon) =>
-      getImageHash(weapon.image.url)
-    ),
   };
 };
-export const addCoopStats = (...coops: CoopStats[]): CoopsStats => {
+export const getCoopStats = (...coops: CoopBrief[]): CoopStats => {
   let count = 0,
     exempt = 0,
     clear = 0,
@@ -573,16 +549,31 @@ export const addCoopStats = (...coops: CoopStats[]): CoopsStats => {
     specialWeaponMap = new Map<string, number>();
   for (const coop of coops) {
     count += 1;
-    exempt += coop.exempt ? 1 : 0;
-    if (coop.exempt) {
+    const skip = coop.result < 0;
+    exempt += skip ? 1 : 0;
+    // Disconnected should be skipped.
+    if (skip) {
       continue;
     }
-    clear += coop.clear ? 1 : 0;
-    wave += coop.wave;
+    clear += coop.result === 0 ? 1 : 0;
+    if (coop.result === 0) {
+      // The maximum wave cleared is 3 in SplatNet, but we will fix it and have 5 in Eggstra Works.
+      switch (coop.rule) {
+        case CoopRule.REGULAR:
+        case CoopRule.BIG_RUN:
+          wave += 3;
+          break;
+        case CoopRule.TEAM_CONTEST:
+          wave += 5;
+          break;
+      }
+    } else {
+      wave += coop.result - 1;
+    }
     hazardLevel += coop.hazardLevel;
-    self = addCoopPlayerStats(self, coop.self);
-    member += coop.member;
-    team = addCoopPlayerStats(team, coop.team);
+    self = addCoopPlayerStats(self, coop.players[0]);
+    member += coop.players.length;
+    team = coop.players.reduce((prev, current) => addCoopPlayerStats(prev, current), team);
     for (const boss of coop.bosses) {
       if (!bossMap.has(boss.id)) {
         bossMap.set(boss.id, { appear: 0, defeat: 0, defeatTeam: 0 });
@@ -621,17 +612,20 @@ export const addCoopStats = (...coops: CoopStats[]): CoopsStats => {
       stageMap.set(coop.stage, 0);
     }
     stageMap.set(coop.stage, stageMap.get(coop.stage)! + 1);
-    for (const weapon of coop.weapons) {
+    for (const weapon of coop.players[0].weapons) {
       if (!weaponMap.has(weapon)) {
         weaponMap.set(weapon, 0);
       }
       weaponMap.set(weapon, weaponMap.get(weapon)! + 1);
     }
-    if (coop.specialWeapon) {
-      if (!specialWeaponMap.has(coop.specialWeapon)) {
-        specialWeaponMap.set(coop.specialWeapon, 0);
+    if (coop.players[0].specialWeapon) {
+      if (!specialWeaponMap.has(coop.players[0].specialWeapon)) {
+        specialWeaponMap.set(coop.players[0].specialWeapon, 0);
       }
-      specialWeaponMap.set(coop.specialWeapon, specialWeaponMap.get(coop.specialWeapon)! + 1);
+      specialWeaponMap.set(
+        coop.players[0].specialWeapon,
+        specialWeaponMap.get(coop.players[0].specialWeapon)! + 1
+      );
     }
   }
   const kings = Array.from(kingMap, (king) => ({
@@ -753,6 +747,10 @@ export const addCoopStats = (...coops: CoopStats[]): CoopsStats => {
   };
 };
 
+export interface Brief {
+  battle?: BattleBrief;
+  coop?: CoopBrief;
+}
 export interface Stats {
   battle?: BattleStats;
   coop?: CoopStats;

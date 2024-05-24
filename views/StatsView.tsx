@@ -21,11 +21,11 @@ import {
   ViewStyles,
 } from "../components";
 import t from "../i18n";
-import { BattleStats, CoopStats, Stats, addBattleStats, addCoopStats } from "../utils/stats";
+import { BattleBrief, Brief, CoopBrief, getBattleStats, getCoopStats } from "../utils/stats";
 import { roundPower } from "../utils/ui";
 
 interface StatsModalProps {
-  stats?: Stats[];
+  briefs?: Brief[];
   dimension?: number;
   hideEmpty?: boolean;
   isVisible: boolean;
@@ -36,32 +36,33 @@ interface StatsModalProps {
 }
 
 const StatsModal = (props: StatsModalProps) => {
-  const battlesStats = useMemo(
+  const battleStats = useMemo(
     () =>
-      addBattleStats(
-        ...((props.stats?.map((result) => result.battle).filter((battle) => battle) ??
-          []) as BattleStats[])
+      getBattleStats(
+        ...((props.briefs?.map((result) => result.battle).filter((battle) => battle) ??
+          []) as BattleBrief[])
       ),
-    [props.stats]
+    [props.briefs]
   );
   const coopsStats = useMemo(
     () =>
-      addCoopStats(
-        ...((props.stats?.map((result) => result.coop).filter((coop) => coop) ?? []) as CoopStats[])
+      getCoopStats(
+        ...((props.briefs?.map((result) => result.coop).filter((coop) => coop) ??
+          []) as CoopBrief[])
       ),
-    [props.stats]
+    [props.briefs]
   );
 
   const battleDimension = useMemo(() => {
     switch (props.dimension || 0) {
       case 0:
-        return battlesStats.self;
+        return battleStats.self;
       case 1:
-        return battlesStats.team;
+        return battleStats.team;
       default:
         throw new Error(`unexpected dimension ${props.dimension}`);
     }
-  }, [battlesStats, props.dimension]);
+  }, [battleStats, props.dimension]);
   const coopDimension = useMemo(() => {
     switch (props.dimension || 0) {
       case 0:
@@ -135,33 +136,33 @@ const StatsModal = (props: StatsModalProps) => {
       {props.children}
       <SalmonRunSwitcher>
         <>
-          {(!props.hideEmpty || battlesStats.count > 0) && (
+          {(!props.hideEmpty || battleStats.count > 0) && (
             <VStack style={ViewStyles.mb2}>
-              <Display first last={battlesStats.count === 0} title={t("battle")}>
-                <Text numberOfLines={1}>{battlesStats.count}</Text>
+              <Display first last={battleStats.count === 0} title={t("battle")}>
+                <Text numberOfLines={1}>{battleStats.count}</Text>
               </Display>
-              {battlesStats.count > 0 && (
+              {battleStats.count > 0 && (
                 <VStack>
                   <Display title={t("victory")}>
-                    <Text numberOfLines={1}>{battlesStats.win}</Text>
+                    <Text numberOfLines={1}>{battleStats.win}</Text>
                   </Display>
                   <Display title={t("defeat")}>
-                    <Text numberOfLines={1}>{battlesStats.lose}</Text>
+                    <Text numberOfLines={1}>{battleStats.lose}</Text>
                   </Display>
-                  {battlesStats.power.count > 0 && (
+                  {battleStats.power.count > 0 && (
                     <Display title={t("power")}>
                       <Text numberOfLines={1}>
                         {formatPower(
-                          battlesStats.power.total,
-                          battlesStats.power.max,
-                          battlesStats.power.count
+                          battleStats.power.total,
+                          battleStats.power.max,
+                          battleStats.power.count
                         )}
                       </Text>
                     </Display>
                   )}
                   <Display title={t("turf_inked")}>
                     <Text numberOfLines={1}>
-                      {formatTotalAndAverage(battleDimension.turf, battlesStats.duration / 60)}
+                      {formatTotalAndAverage(battleDimension.turf, battleStats.duration / 60)}
                     </Text>
                   </Display>
                   <Display title={t("splatted")}>
@@ -169,25 +170,25 @@ const StatsModal = (props: StatsModalProps) => {
                       {formatTotalAndAverageKillAndAssist(
                         battleDimension.kill,
                         battleDimension.assist,
-                        battlesStats.duration / 60
+                        battleStats.duration / 60
                       )}
                     </Text>
                   </Display>
                   <Display title={t("be_splatted")}>
                     <Text numberOfLines={1}>
-                      {formatTotalAndAverage(battleDimension.death, battlesStats.duration / 60)}
+                      {formatTotalAndAverage(battleDimension.death, battleStats.duration / 60)}
                     </Text>
                   </Display>
-                  <Display last={battlesStats.stages.length === 0} title={t("special_weapon_uses")}>
+                  <Display last={battleStats.stages.length === 0} title={t("special_weapon_uses")}>
                     <Text numberOfLines={1}>
-                      {formatTotalAndAverage(battleDimension.special, battlesStats.duration / 60)}
+                      {formatTotalAndAverage(battleDimension.special, battleStats.duration / 60)}
                     </Text>
                   </Display>
-                  {battlesStats.stages.length > 0 && (
+                  {battleStats.stages.length > 0 && (
                     <VStack>
                       <AccordionDisplay
                         title={t("stage_stats")}
-                        subChildren={battlesStats.stages.map((stage) => (
+                        subChildren={battleStats.stages.map((stage) => (
                           <AccordionDisplay
                             key={stage.id}
                             level={1}
@@ -212,7 +213,7 @@ const StatsModal = (props: StatsModalProps) => {
                       <AccordionDisplay
                         last
                         title={t("weapon_stats")}
-                        subChildren={battlesStats.weapons.map((weapon, i, weapons) => (
+                        subChildren={battleStats.weapons.map((weapon, i, weapons) => (
                           <AccordionDisplay
                             key={weapon.id}
                             last={i === weapons.length - 1}
@@ -423,12 +424,12 @@ const StatsModal = (props: StatsModalProps) => {
 
 interface StatsViewProps {
   disabled?: boolean;
-  onStats: () => Promise<Stats[]>;
+  onBriefs: () => Promise<Brief[]>;
   style?: StyleProp<ViewStyle>;
 }
 
 const StatsView = (props: StatsViewProps) => {
-  const [stats, setStats] = useState<Stats[]>();
+  const [briefs, setBriefs] = useState<Brief[]>();
   const [loading, setLoading] = useState(false);
   const [displayStats, setDisplayStats] = useState(false);
   const [group, setGroup] = useState(0);
@@ -451,10 +452,10 @@ const StatsView = (props: StatsViewProps) => {
   }, [group]);
 
   const filtered = useMemo(() => {
-    if (!stats) {
+    if (!briefs) {
       return undefined;
     }
-    return stats.filter((result) => {
+    return briefs.filter((result) => {
       if (beginTime === 0) {
         return true;
       }
@@ -463,12 +464,12 @@ const StatsView = (props: StatsViewProps) => {
       }
       return result.coop!.time >= beginTime;
     });
-  }, [stats, beginTime]);
+  }, [briefs, beginTime]);
 
   const onStatsPress = async () => {
     setLoading(true);
-    const results = await props.onStats();
-    setStats(results);
+    const results = await props.onBriefs();
+    setBriefs(results);
     setDisplayStats(true);
     setLoading(false);
   };
@@ -476,7 +477,7 @@ const StatsView = (props: StatsViewProps) => {
     setDisplayStats(false);
   };
   const onModalHide = () => {
-    setStats(undefined);
+    setBriefs(undefined);
   };
   const onGroupChange = (event: NativeSyntheticEvent<NativeSegmentedControlIOSChangeEvent>) => {
     setGroup(event.nativeEvent.selectedSegmentIndex);
@@ -492,7 +493,7 @@ const StatsView = (props: StatsViewProps) => {
         onPress={onStatsPress}
       />
       <StatsModal
-        stats={filtered}
+        briefs={filtered}
         isVisible={displayStats}
         footer={<Notice title={t("stats_notice2")} />}
         onClose={onStatsClose}

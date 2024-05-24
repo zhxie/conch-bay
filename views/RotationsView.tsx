@@ -16,30 +16,30 @@ import {
 } from "../components";
 import t from "../i18n";
 import unknownList from "../models/unknowns.json";
-import { BattleStats, CoopStats, Stats } from "../utils/stats";
+import { BattleBrief, Brief, CoopBrief } from "../utils/stats";
 import { getCoopRuleColor, getImageCacheSource, getVsModeColor } from "../utils/ui";
 import { StatsModal } from "./StatsView";
 
 interface StatsGroup {
-  battles?: BattleStats[];
-  coops?: CoopStats[];
+  battles?: BattleBrief[];
+  coops?: CoopBrief[];
 }
 
 interface RotationViewProps {
   disabled?: boolean;
-  onStats: () => Promise<Stats[]>;
+  onBriefs: () => Promise<Brief[]>;
   style?: StyleProp<ViewStyle>;
 }
 
 const RotationsView = (props: RotationViewProps) => {
-  const [stats, setStats] = useState<Stats[]>();
+  const [briefs, setBriefs] = useState<Brief[]>();
   const [loading, setLoading] = useState(false);
   const [rotations, setRotations] = useState(false);
-  const [group, setGroup] = useState<Stats[]>();
+  const [group, setGroup] = useState<Brief[]>();
   const [displayGroup, setDisplayGroup] = useState(false);
   const [dimension, setDimension] = useState(0);
 
-  const canGroup = (current: Stats, group: StatsGroup) => {
+  const canGroup = (current: Brief, group: StatsGroup) => {
     // TODO: reuse group codes.
     if (current.battle && group.battles) {
       const mode = current.battle.mode;
@@ -103,11 +103,11 @@ const RotationsView = (props: RotationViewProps) => {
 
   const groups = useMemo(() => {
     const groups: StatsGroup[] = [];
-    if (!stats) {
+    if (!briefs) {
       return groups;
     }
     let group: StatsGroup = {};
-    for (const stat of stats) {
+    for (const stat of briefs) {
       if (canGroup(stat, group)) {
         if (stat.battle) {
           group.battles!.push(stat.battle);
@@ -129,12 +129,12 @@ const RotationsView = (props: RotationViewProps) => {
       groups.push(group);
     }
     return groups;
-  }, [stats]);
+  }, [briefs]);
 
   const onRotationPress = async () => {
     setLoading(true);
-    const results = await props.onStats();
-    setStats(results);
+    const results = await props.onBriefs();
+    setBriefs(results);
     setRotations(true);
     setLoading(false);
   };
@@ -142,7 +142,7 @@ const RotationsView = (props: RotationViewProps) => {
     setRotations(false);
   };
   const onModalHide = () => {
-    setStats(undefined);
+    setBriefs(undefined);
   };
   const formatGroupPeriod = (start: number, end: number) => {
     const dateTimeFormat = "M/D HH:mm";
@@ -263,7 +263,7 @@ const RotationsView = (props: RotationViewProps) => {
         estimatedItemSize={64}
         ListHeaderComponent={
           <StatsModal
-            stats={group}
+            briefs={group}
             dimension={dimension}
             hideEmpty
             isVisible={displayGroup}

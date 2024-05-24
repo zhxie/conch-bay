@@ -80,7 +80,7 @@ import {
 import weaponList from "../models/weapons.json";
 import { fetchXRankings } from "../utils/api";
 import { decode64BattlePlayerId, decode64CoopPlayerId } from "../utils/codec";
-import { countBattle, countCoop } from "../utils/stats";
+import { getBattleBrief, getCoopBrief } from "../utils/stats";
 import {
   getCoopRuleColor,
   getImageCacheSource,
@@ -170,15 +170,15 @@ const ResultView = (props: ResultViewProps) => {
     }
     return results;
   }, [props.groups]);
-  const stats = useMemo(() => {
+  const briefs = useMemo(() => {
     if (!group) {
       return undefined;
     }
     return group.map((result) => {
       if (result.battle) {
-        return { battle: countBattle(result.battle) };
+        return { battle: getBattleBrief(result.battle) };
       }
-      return { coop: countCoop(result.coop!) };
+      return { coop: getCoopBrief(result.coop!) };
     });
   }, [group]);
 
@@ -1625,7 +1625,7 @@ const ResultView = (props: ResultViewProps) => {
         )}
       </Modal>
       <StatsModal
-        stats={stats}
+        briefs={briefs}
         dimension={dimension}
         hideEmpty
         isVisible={displayGroup}

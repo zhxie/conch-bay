@@ -28,12 +28,12 @@ import {
   useTheme,
 } from "../components";
 import t from "../i18n";
-import { BattleStats, CoopStats, Stats, addBattleStats, addCoopStats } from "../utils/stats";
+import { BattleBrief, Brief, CoopBrief, getBattleStats, getCoopStats } from "../utils/stats";
 import { burnColor, rationalize } from "../utils/ui";
 
 interface TrendViewProps {
   disabled?: boolean;
-  onStats: () => Promise<Stats[]>;
+  onBriefs: () => Promise<Brief[]>;
   style?: StyleProp<ViewStyle>;
 }
 
@@ -71,14 +71,14 @@ const TrendsView = (props: TrendViewProps) => {
   const theme = useTheme();
 
   const [point, setPoint] = useState(20);
-  const [stats, setStats] = useState<Stats[]>();
+  const [briefs, setBriefs] = useState<Brief[]>();
   const [loading, setLoading] = useState(false);
   const [trends, setTrends] = useState(false);
   const [group, setGroup] = useState(0);
   const [battleDimensions, setBattleDimensions] = useState<BattleDimension[]>(["VICTORY"]);
   const [coopDimensions, setCoopDimensions] = useState<CoopDimension[]>(["CLEAR"]);
 
-  const split = <T extends BattleStats | CoopStats>(arr: T[], count: number, group: number) => {
+  const split = <T extends BattleBrief | CoopBrief>(arr: T[], count: number, group: number) => {
     const result: T[][] = [];
     if (group === 0) {
       for (let i = 0; i < count && i < arr.length - 1; i++) {
@@ -124,24 +124,24 @@ const TrendsView = (props: TrendViewProps) => {
   };
 
   const battles = useMemo(
-    () => stats?.filter((result) => result.battle).map((result) => result.battle!),
-    [stats]
+    () => briefs?.filter((result) => result.battle).map((result) => result.battle!),
+    [briefs]
   );
   const battleGroups = useMemo(
     () => (battles ? split(battles, point, group) : []),
     [battles, group]
   );
   const coops = useMemo(
-    () => stats?.filter((result) => result.coop).map((result) => result.coop!),
-    [stats]
+    () => briefs?.filter((result) => result.coop).map((result) => result.coop!),
+    [briefs]
   );
   const coopGroups = useMemo(() => (coops ? split(coops, point, group) : []), [coops, group]);
 
   const battlesStats = useMemo(
-    () => battleGroups.map((group) => addBattleStats(...group)),
+    () => battleGroups.map((group) => getBattleStats(...group)),
     [battleGroups]
   );
-  const coopsStats = useMemo(() => coopGroups.map((group) => addCoopStats(...group)), [coopGroups]);
+  const coopsStats = useMemo(() => coopGroups.map((group) => getCoopStats(...group)), [coopGroups]);
 
   const getBattleData = (dimension: BattleDimension) => {
     switch (dimension) {
@@ -332,8 +332,8 @@ const TrendsView = (props: TrendViewProps) => {
 
   const onTrendsPress = async () => {
     setLoading(true);
-    const results = await props.onStats();
-    setStats(results);
+    const results = await props.onBriefs();
+    setBriefs(results);
     setTrends(true);
     setLoading(false);
   };
@@ -341,7 +341,7 @@ const TrendsView = (props: TrendViewProps) => {
     setTrends(false);
   };
   const onModalHide = () => {
-    setStats(undefined);
+    setBriefs(undefined);
   };
   const onLayout = (event: LayoutChangeEvent) => {
     setPoint(Math.max(Math.round(event.nativeEvent.layout.width / 20), 20));
