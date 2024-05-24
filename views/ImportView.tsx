@@ -34,12 +34,9 @@ import workSuitList from "../models/workSuits.json";
 import { decode64, encode64String } from "../utils/codec";
 import { getImageHash } from "../utils/ui";
 
-// Assuming 64MB limitation and 16kB for each result for DB-DB importing, 4 times about the result
-// size. The actual usage may lower then that.
-const DB_BATCH_SIZE = 4096;
-// Assuming 64MB limitation and 64kB for each result for DB-DB importing, 16 times about the result
-// size. The actual usage may lower then that.
-const FILE_BATCH_SIZE = 1024;
+// Assuming 64MB limitation and 256kB for each result for DB-DB importing. The actual usage may
+// lower then that.
+const BATCH_SIZE = 256;
 // Assuming 64MB limitation for JSON-DB importing. The limitation may be easily reached since there
 // is a lot of string-string and string-object conversions.
 // A much stricter limitation of 16MB limitation per GB memory will be applied to Android devices.
@@ -384,7 +381,7 @@ const ImportView = (props: ImportViewProps) => {
           )
         );
         battles.push(battle);
-        if (battles.length >= FILE_BATCH_SIZE) {
+        if (battles.length >= BATCH_SIZE) {
           const result = await props.onResults(battles, []);
           skip += result.skip;
           fail += result.fail;
@@ -411,7 +408,7 @@ const ImportView = (props: ImportViewProps) => {
           )
         );
         coops.push(coop);
-        if (coops.length >= FILE_BATCH_SIZE) {
+        if (coops.length >= BATCH_SIZE) {
           const result = await props.onResults([], coops);
           skip += result.skip;
           fail += result.fail;
@@ -655,7 +652,7 @@ const ImportView = (props: ImportViewProps) => {
       )) {
         const battle = parseFleece(row.body, battleSharedKeys);
         battles.push({ vsHistoryDetail: battle });
-        if (battles.length >= DB_BATCH_SIZE) {
+        if (battles.length >= BATCH_SIZE) {
           const result = await props.onResults(battles, []);
           skip += result.skip;
           fail += result.fail;
@@ -685,7 +682,7 @@ const ImportView = (props: ImportViewProps) => {
       )) {
         const coop = parseFleece(row.body, coopSharedKeys);
         coops.push({ coopHistoryDetail: coop });
-        if (coops.length >= DB_BATCH_SIZE) {
+        if (coops.length >= BATCH_SIZE) {
           const result = await props.onResults([], coops);
           skip += result.skip;
           fail += result.fail;

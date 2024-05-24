@@ -313,7 +313,7 @@ export const queryStats = async (filter?: FilterProps) => {
 };
 export const queryLatestTime = async () => {
   const record = await db!.getFirstAsync<{ time: number }>(
-    "SELECT time FROM result ORDER BY time DESC LIMIT 1"
+    "SELECT time FROM result ORDER BY time DESC"
   );
   return record?.time;
 };
