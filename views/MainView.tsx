@@ -235,6 +235,7 @@ const MainView = () => {
   const [salmonRunFriendlyMode, setSalmonRunFriendlyMode, clearSalmonRunFriendlyMode] =
     useBooleanMmvk(Key.SalmonRunFriendlyMode);
   const [autoRefresh, setAutoRefresh, clearAutoRefresh] = useBooleanMmvk(Key.AutoRefresh, false);
+  const [migrated, setMigrated, , migratedReady] = useBooleanMmvk(Key.Migrated, false);
 
   const [apiUpdated, setApiUpdated] = useState(false);
   const [schedules, setSchedules] = useState<Schedules>();
@@ -274,12 +275,12 @@ const MainView = () => {
       bulletTokenReady &&
       languageReady &&
       regionReady &&
-      filterReady
+      filterReady &&
+      migratedReady
     ) {
       (async () => {
         try {
           // Migrate async storage.
-          const migrated = await AsyncStorage.getItem(AsyncStorageKey.Migrated);
           if (!migrated) {
             // HACK: not all fields are migrated for convenience and clear installation.
             const [
@@ -320,7 +321,7 @@ const MainView = () => {
             if (autoRefresh[1]) {
               setAutoRefresh(autoRefresh[1] === "1");
             }
-            await AsyncStorage.setItem(AsyncStorageKey.Migrated, "1");
+            setMigrated(true);
           }
           // Remove players filter since we do not have their names now.
           if (filter?.players) {
@@ -350,6 +351,7 @@ const MainView = () => {
     languageReady,
     regionReady,
     filterReady,
+    migratedReady,
   ]);
   useEffect(() => {
     if (ready) {

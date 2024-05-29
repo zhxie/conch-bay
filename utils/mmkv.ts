@@ -9,7 +9,6 @@ export enum AsyncStorageKey {
   BackgroundRefresh = "backgroundRefresh",
   SalmonRunFriendlyMode = "salmonRunFriendlyMode",
   AutoRefresh = "autoRefresh",
-  Migrated = "migrated",
 }
 
 export enum Key {
@@ -31,6 +30,7 @@ export enum Key {
   BackgroundRefresh = "backgroundRefresh",
   SalmonRunFriendlyMode = "salmonRunFriendlyMode",
   AutoRefresh = "autoRefresh",
+  Migrated = "migrated",
 }
 
 const storage = new MMKV();
