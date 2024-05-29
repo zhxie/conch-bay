@@ -1,4 +1,5 @@
-import * as SQLite from "expo-sqlite";
+import * as SQLite from "@op-engineering/op-sqlite";
+import * as FileSystem from "expo-file-system";
 import { LRUCache } from "lru-cache";
 import { CoopHistoryDetailResult, VsHistoryDetailResult } from "../models/types";
 import weaponList from "../models/weapons.json";
@@ -6,24 +7,28 @@ import { decode64BattlePlayerId, decode64CoopPlayerId, decode64Index } from "./c
 import { getBattleBrief, getCoopBrief } from "./stats";
 import { getImageHash, getVsSelfPlayer } from "./ui";
 
-let db: SQLite.SQLiteDatabase | undefined = undefined;
+let db: SQLite.OPSQLiteConnection | undefined = undefined;
 
 const VERSION = 9;
+const BATCH_SIZE = 4096;
 
 export const open = async () => {
   if (db) {
     return undefined;
   }
-  db = await SQLite.openDatabaseAsync("conch-bay.db");
+  db = SQLite.open({
+    name: "conch-bay.db",
+    location: FileSystem.documentDirectory!.replace("file://", "") + "SQLite",
+  });
 
   // Initialize database.
-  await db!.execAsync(
+  await db.executeAsync(
     "CREATE TABLE IF NOT EXISTS result ( id TEXT PRIMARY KEY, time INT NOT NULL, mode TEXT NOT NULL, rule TEXT NOT NULL, weapon TEXT NOT NULL, players TEXT NOT NULL, detail TEXT NOT NULL )"
   );
 
   // Check database version.
-  const record = (await db!.getFirstAsync<{ user_version: number }>("PRAGMA user_version"))!;
-  const version = record.user_version;
+  const record = await db.executeAsync("PRAGMA user_version");
+  const version = record.rows!.item(0)["user_version"];
   if (version < VERSION) {
     return await count();
   }
@@ -34,172 +39,182 @@ export const open = async () => {
   return undefined;
 };
 export const upgrade = async () => {
-  const record = (await db!.getFirstAsync<{ user_version: number }>("PRAGMA user_version"))!;
-  const version = record.user_version;
+  const record = await db!.executeAsync("PRAGMA user_version");
+  const version = record.rows!.item(0)["user_version"];
+  let error: unknown = undefined;
   if (version < 1) {
-    await beginTransaction();
-    try {
-      await db!.execAsync('ALTER TABLE result ADD COLUMN stage TEXT NOT NULL DEFAULT ""');
-      for await (const row of queryEach()) {
-        if (row.mode === "salmon_run") {
-          await db!.runAsync(
-            "UPDATE result SET stage = ? WHERE id = ?",
-            (JSON.parse(row.detail) as CoopHistoryDetailResult).coopHistoryDetail!.coopStage.id,
-            row.id
-          );
-        } else {
-          await db!.runAsync(
-            "UPDATE result SET stage = ? WHERE id = ?",
-            (JSON.parse(row.detail) as VsHistoryDetailResult).vsHistoryDetail!.vsStage.id,
-            row.id
-          );
+    db!.transaction(async (tx) => {
+      try {
+        await tx.executeAsync('ALTER TABLE result ADD COLUMN stage TEXT NOT NULL DEFAULT ""');
+        for await (const row of queryEach()) {
+          if (row.mode === "salmon_run") {
+            await tx.executeAsync("UPDATE result SET stage = ? WHERE id = ?", [
+              (JSON.parse(row.detail) as CoopHistoryDetailResult).coopHistoryDetail!.coopStage.id,
+              row.id,
+            ]);
+          } else {
+            await tx.executeAsync("UPDATE result SET stage = ? WHERE id = ?", [
+              (JSON.parse(row.detail) as VsHistoryDetailResult).vsHistoryDetail!.vsStage.id,
+              row.id,
+            ]);
+          }
         }
+        await tx.executeAsync("PRAGMA user_version=1");
+      } catch (e) {
+        error = e;
+        throw e;
       }
-      await db!.execAsync("PRAGMA user_version=1");
-      await commit();
-    } catch (e) {
-      await rollback();
-      throw e;
+    });
+    if (error) {
+      throw error;
     }
   }
   if (version < 2) {
-    await beginTransaction();
-    try {
-      const statement = await db!.prepareAsync("UPDATE result SET weapon = ? WHERE id = ?");
-      for await (const row of db!.getEachAsync<{
-        id: string;
-        time: number;
-        mode: string;
-        rule: string;
-        players: string;
-        detail: string;
-        stage: string;
-      }>('SELECT * FROM result WHERE mode = "salmon_run" AND weapon = ""')) {
-        const detail = JSON.parse(row.detail) as CoopHistoryDetailResult;
-        await statement.executeAsync(
-          detail
-            .coopHistoryDetail!.myResult.weapons.map((weapon) => getImageHash(weapon.image.url))
-            .join(","),
-          detail.coopHistoryDetail!.id
-        );
+    db!.transaction(async (tx) => {
+      try {
+        for await (const row of queryEach({ modes: ["salmon_run"] })) {
+          const coop = JSON.parse(row["detail"]) as CoopHistoryDetailResult;
+          await tx.executeAsync("UPDATE result SET weapon = ? WHERE id = ?", [
+            coop
+              .coopHistoryDetail!.myResult.weapons.map((weapon) => getImageHash(weapon.image.url))
+              .join(","),
+            row["id"],
+          ]);
+        }
+        await tx.executeAsync("PRAGMA user_version=2");
+      } catch (e) {
+        error = e;
+        throw e;
       }
-      await statement.finalizeAsync();
-      await db!.execAsync("PRAGMA user_version=2");
-      await commit();
-    } catch (e) {
-      await rollback();
-      throw e;
+    });
+    if (error) {
+      throw error;
     }
   }
   if (version < 3) {
-    await beginTransaction();
-    try {
-      await db!.execAsync('ALTER TABLE result ADD COLUMN stats TEXT NOT NULL DEFAULT ""');
-      await db!.execAsync("PRAGMA user_version=3");
-      await commit();
-    } catch (e) {
-      await rollback();
-      throw e;
+    db!.transaction(async (tx) => {
+      try {
+        await tx.executeAsync('ALTER TABLE result ADD COLUMN stats TEXT NOT NULL DEFAULT ""');
+        await tx.executeAsync("PRAGMA user_version=3");
+      } catch (e) {
+        error = e;
+        throw e;
+      }
+    });
+    if (error) {
+      throw error;
     }
   }
   if (version < 8) {
-    await beginTransaction();
-    try {
-      const statement = await db!.prepareAsync("UPDATE result SET players = ? WHERE id = ?");
-      for await (const row of queryEach()) {
-        if (row.mode === "salmon_run") {
-          const coop = JSON.parse(row.detail);
-          let selfPlayer: string;
-          try {
-            selfPlayer = decode64CoopPlayerId(coop.coopHistoryDetail!.myResult.player.id);
-          } catch {
-            selfPlayer = "";
+    db!.transaction(async (tx) => {
+      try {
+        for await (const row of queryEach()) {
+          let players: string[] = [];
+          if (row["mode"] === "salmon_run") {
+            const coop = JSON.parse(row["detail"]) as CoopHistoryDetailResult;
+            let selfPlayer: string;
+            try {
+              selfPlayer = decode64CoopPlayerId(coop.coopHistoryDetail!.myResult.player.id);
+            } catch {
+              selfPlayer = "";
+            }
+            players = coop
+              .coopHistoryDetail!.memberResults.map((memberResult) => {
+                try {
+                  return decode64CoopPlayerId(memberResult.player.id);
+                } catch {
+                  return "";
+                }
+              })
+              .concat(selfPlayer)
+              .filter((player) => player);
+          } else {
+            const battle = JSON.parse(row["detail"]) as VsHistoryDetailResult;
+            players = battle
+              .vsHistoryDetail!.myTeam.players.map((player) => {
+                try {
+                  return decode64BattlePlayerId(player.id);
+                } catch {
+                  return "";
+                }
+              })
+              .concat(
+                battle
+                  .vsHistoryDetail!.otherTeams.map((otherTeam) =>
+                    otherTeam.players.map((player) => {
+                      try {
+                        return decode64BattlePlayerId(player.id);
+                      } catch {
+                        return "";
+                      }
+                    })
+                  )
+                  .flat()
+              )
+              .filter((player) => player);
           }
-          const players = coop
-            .coopHistoryDetail!.memberResults.map((memberResult) => {
-              try {
-                return decode64CoopPlayerId(memberResult.player.id);
-              } catch {
-                return "";
-              }
-            })
-            .concat(selfPlayer)
-            .filter((player) => player);
-          await statement.executeAsync(players.join(","), row.id);
-        } else {
-          const battle = JSON.parse(row.detail);
-          const players = battle
-            .vsHistoryDetail!.myTeam.players.map((player) => {
-              try {
-                return decode64BattlePlayerId(player.id);
-              } catch {
-                return "";
-              }
-            })
-            .concat(
-              battle
-                .vsHistoryDetail!.otherTeams.map((otherTeam) =>
-                  otherTeam.players.map((player) => {
-                    try {
-                      return decode64BattlePlayerId(player.id);
-                    } catch {
-                      return "";
-                    }
-                  })
-                )
-                .flat()
-            )
-            .filter((player) => player);
-          await statement.executeAsync(players.join(","), row.id);
+          await tx.executeAsync("UPDATE result SET players = ? WHERE id = ?", [
+            players.join(","),
+            row["id"],
+          ]);
         }
+        await tx.executeAsync("PRAGMA user_version=8");
+      } catch (e) {
+        error = e;
+        throw e;
       }
-      await statement.finalizeAsync();
-      await db!.execAsync("PRAGMA user_version=8");
-      await commit();
-    } catch (e) {
-      await rollback();
-      throw e;
+    });
+    if (error) {
+      throw error;
     }
   }
   if (version < 9) {
-    await beginTransaction();
-    try {
-      await db!.execAsync("ALTER TABLE result RENAME COLUMN stats TO brief");
-      const statement = await db!.prepareAsync("UPDATE result SET brief = ? WHERE id = ?");
-      for await (const row of queryEach()) {
-        if (row.mode === "salmon_run") {
-          await statement.executeAsync(
-            JSON.stringify(getCoopBrief(JSON.parse(row.detail))),
-            row.id
-          );
-        } else {
-          await statement.executeAsync(
-            JSON.stringify(getBattleBrief(JSON.parse(row.detail))),
-            row.id
-          );
+    db!.transaction(async (tx) => {
+      try {
+        await tx.executeAsync('ALTER TABLE result ADD COLUMN stats TEXT NOT NULL DEFAULT ""');
+        for await (const row of queryEach()) {
+          let stats = "";
+          if (row["mode"] === "salmon_run") {
+            const coop = JSON.parse(row["detail"]) as CoopHistoryDetailResult;
+            stats = JSON.stringify(getCoopBrief(coop));
+          } else {
+            const battle = JSON.parse(row["detail"]) as VsHistoryDetailResult;
+            stats = JSON.stringify(getBattleBrief(battle));
+          }
+          await tx.executeAsync("UPDATE result SET stats = ? WHERE id = ?", [stats, row["id"]]);
         }
+        await tx.executeAsync("PRAGMA user_version=3");
+      } catch (e) {
+        error = e;
+        throw e;
       }
-      await statement.finalizeAsync();
-      await db!.execAsync("PRAGMA user_version=9");
-      await commit();
-    } catch (e) {
-      await rollback();
-      throw e;
+    });
+    if (error) {
+      throw error;
     }
   }
 };
 export const close = () => {
-  db!.closeAsync();
+  db!.close();
 };
-const beginTransaction = async () => {
-  await db!.execAsync("begin transaction");
-};
-const commit = async () => {
-  await db!.execAsync("commit");
-};
-const rollback = async () => {
-  await db!.execAsync("rollback");
-};
+
+export async function* executeAsyncEach(
+  db: SQLite.OPSQLiteConnection,
+  query: string,
+  params?: any[]
+) {
+  let offset = 0;
+  while (true) {
+    const record = await db!.executeAsync(`${query} LIMIT ${BATCH_SIZE} OFFSET ${offset}`, params);
+    for (const row of record.rows!._array) {
+      yield row;
+    }
+    if (record.rows!.length < BATCH_SIZE) {
+      break;
+    }
+    offset += BATCH_SIZE;
+  }
+}
 
 export interface FilterProps {
   players?: string[];
@@ -282,44 +297,45 @@ const convertFilter = (filter?: FilterProps, from?: number) => {
   return `WHERE ${condition}`;
 };
 
-export const queryEach = (filter?: FilterProps) => {
+export async function* queryEach(filter?: FilterProps) {
   let condition: string = "";
   if (filter) {
     condition = convertFilter(filter);
   }
-  return db!.getEachAsync<{ id: string; time: number; mode: string; detail: string }>(
+  for await (const row of executeAsyncEach(
+    db!,
     `SELECT id, time, mode, detail FROM result ${condition} ORDER BY time DESC`
-  );
-};
+  )) {
+    yield row as { id: string; time: number; mode: string; detail: string };
+  }
+}
 export const queryBrief = async (filter?: FilterProps) => {
   let condition: string = "";
   if (filter) {
     condition = convertFilter(filter);
   }
-  const record = await db!.getAllAsync<{ id: string; mode: string; brief: string }>(
+  const record = await db!.executeAsync(
     `SELECT id, mode, brief FROM result ${condition} ORDER BY time DESC`
   );
-  return record;
+  return record.rows!._array as { id: string; mode: string; brief: string }[];
 };
 const details = new LRUCache<string, { mode: string; detail: string }>({ max: 100 });
 export const queryDetail = (id: string) => {
   if (details.has(id)) {
     return details.get(id);
   }
-  const record = db!.getFirstSync<{ mode: string; detail: string }>(
-    "SELECT mode, detail FROM result WHERE id = ?",
-    id
-  );
-  if (record) {
-    details.set(id, record);
+  const record = db!.execute("SELECT mode, detail FROM result WHERE id = ?", [id]);
+  if (record.rows!.item(0)) {
+    details.set(id, record.rows!.item(0));
   }
-  return record;
+  return record.rows!.item(0) as { mode: string; detail: string };
 };
 export const queryLatestTime = async () => {
-  const record = await db!.getFirstAsync<{ time: number }>(
-    "SELECT time FROM result ORDER BY time DESC"
-  );
-  return record?.time;
+  const record = await db!.executeAsync("SELECT time FROM result ORDER BY time DESC LIMIT 1");
+  if (record.rows!.length === 0) {
+    return undefined;
+  }
+  return record.rows!.item(0)["time"] as number;
 };
 let filterOptions:
   | {
@@ -344,29 +360,29 @@ export const queryFilterOptions = async () => {
     const weaponSql = "SELECT DISTINCT weapon FROM result";
 
     const [modeRecord, ruleRecord, stageRecord, weaponRecord] = await Promise.all([
-      db!.getAllAsync<{ mode: string }>(modeSql),
-      db!.getAllAsync<{ rule: string }>(ruleSql),
-      db!.getAllAsync<{ stage: string }>(stageSql),
-      db!.getAllAsync<{ weapon: string }>(weaponSql),
+      db!.executeAsync(modeSql),
+      db!.executeAsync(ruleSql),
+      db!.executeAsync(stageSql),
+      db!.executeAsync(weaponSql),
     ]);
 
-    for (const record of modeRecord) {
-      if (record.mode) {
-        filterOptions.modes.add(record.mode);
+    for (const record of modeRecord.rows!._array) {
+      if (record["mode"]) {
+        filterOptions.modes.add(record["mode"]);
       }
     }
-    for (const record of ruleRecord) {
-      if (record.rule) {
-        filterOptions.rules.add(record.rule);
+    for (const record of ruleRecord.rows!._array) {
+      if (record["rule"]) {
+        filterOptions.rules.add(record["rule"]);
       }
     }
-    for (const record of stageRecord) {
-      if (record.stage) {
-        filterOptions.stages.add(record.stage);
+    for (const record of stageRecord.rows!._array) {
+      if (record["stage"]) {
+        filterOptions.stages.add(record["stage"]);
       }
     }
-    for (const row of weaponRecord) {
-      for (const weapon of row.weapon.split(",")) {
+    for (const row of weaponRecord.rows!._array) {
+      for (const weapon of row["weapon"].split(",")) {
         if (weapon) {
           filterOptions.weapons.add(weaponList.images[weapon] ?? weapon);
         }
@@ -454,14 +470,12 @@ export const count = async (filter?: FilterProps, from?: number) => {
   if (filter || from) {
     condition = convertFilter(filter, from);
   }
-  const record = (await db!.getFirstAsync<{ "COUNT(1)": number }>(
-    `SELECT COUNT(1) FROM result ${condition}`
-  ))!;
-  return record["COUNT(1)"];
+  const record = await db!.executeAsync(`SELECT COUNT(1) FROM result ${condition}`);
+  return record.rows!.item(0)["COUNT(1)"] as number;
 };
 export const isExist = async (id: string) => {
-  const record = await db!.getFirstAsync<{ id: string }>("SELECT id FROM result WHERE id = ?", id);
-  return record !== null;
+  const record = await db!.executeAsync("SELECT id FROM result WHERE id = ?", [id]);
+  return record.rows!.length > 0;
 };
 export const add = async (
   id: string,
@@ -490,8 +504,7 @@ export const add = async (
       }
     }
   }
-  await db!.runAsync(
-    "INSERT INTO result VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+  await db!.executeAsync("INSERT INTO result VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", [
     id,
     time,
     mode,
@@ -500,8 +513,8 @@ export const add = async (
     players.join(","),
     detail,
     stage,
-    brief
-  );
+    brief,
+  ]);
 };
 export const addBattle = async (battle: VsHistoryDetailResult) => {
   return await add(
@@ -568,13 +581,13 @@ export const addCoop = async (coop: CoopHistoryDetailResult) => {
   );
 };
 export const remove = async (id: string) => {
-  await db!.runAsync("DELETE FROM result WHERE id = ?", id);
+  await db!.executeAsync("DELETE FROM result WHERE id = ?", [id]);
 };
 export const clear = async () => {
-  await db!.execAsync("DELETE FROM result");
-  // await db!.execAsync("VACUUM result");
+  await db!.executeAsync("DELETE FROM result");
+  // await db!.executeAsync("VACUUM result");
 };
 export const drop = async () => {
-  await db!.execAsync("PRAGMA user_version=0");
-  await db!.execAsync("DROP TABLE result");
+  await db!.executeAsync("PRAGMA user_version=0");
+  await db!.executeAsync("DROP TABLE result");
 };

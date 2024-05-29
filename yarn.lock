@@ -1746,17 +1746,6 @@
   resolved "https://registry.yarnpkg.com/@expo/vector-icons/-/vector-icons-14.0.0.tgz#48ce0aa5c05873b07c0c78bfe16c870388f4de9a"
   integrity sha512-5orm59pdnBQlovhU9k4DbjMUZBHNlku7IRgFY56f7pcaaCnXq9yaLJoOQl9sMwNdFzf4gnkTyHmR5uN10mI9rA==
 
-"@expo/websql@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.npmjs.org/@expo/websql/-/websql-1.0.1.tgz"
-  integrity sha512-H9/t1V7XXyKC343FJz/LwaVBfDhs6IqhDtSYWpt8LNSQDVjf5NvVJLc5wp+KCpRidZx8+0+YeHJN45HOXmqjFA==
-  dependencies:
-    argsarray "^0.0.1"
-    immediate "^3.2.2"
-    noop-fn "^1.0.0"
-    pouchdb-collections "^1.0.1"
-    tiny-queue "^0.2.1"
-
 "@expo/xcpretty@^4.3.0":
   version "4.3.1"
   resolved "https://registry.yarnpkg.com/@expo/xcpretty/-/xcpretty-4.3.1.tgz#e0a6a92d1e46ab5ac5e90d9a8e66ac1a2a2f5920"
@@ -2004,6 +1993,11 @@
   integrity sha512-q9CRWjpHCMIh5sVyefoD1cA7PkvILqCZsnSOEUUivORLjxCO/Irmue2DprETiNgEqktDBZaM1Bi+jrarx1XdCg==
   dependencies:
     semver "^7.3.5"
+
+"@op-engineering/op-sqlite@^6.0.1":
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/@op-engineering/op-sqlite/-/op-sqlite-6.0.1.tgz#bd1bde495def0380d5b1dbec7fbd9a6ef207ed81"
+  integrity sha512-rQ/kVT9O/LcdZijqlMAuDWUK04Wl3n1kUXy7zsWty3/HIb0b2U0ppOw2z/1AiBQqs/0vF3dYUajtamF7Hq7zwg==
 
 "@pkgjs/parseargs@^0.11.0":
   version "0.11.0"
@@ -2859,11 +2853,6 @@ argparse@^2.0.1:
   version "2.0.1"
   resolved "https://registry.npmjs.org/argparse/-/argparse-2.0.1.tgz"
   integrity sha512-8+9WqebbFzpX9OR+Wa6O29asIogeRMzcGtAINdpMHHyAg10f05aSFVBbcEqGf/PXw1EjAZ+q2/bEBg3DvurK3Q==
-
-argsarray@^0.0.1:
-  version "0.0.1"
-  resolved "https://registry.npmjs.org/argsarray/-/argsarray-0.0.1.tgz"
-  integrity sha512-u96dg2GcAKtpTrBdDoFIM7PjcBA+6rSP0OR94MOReNRyUECL6MtQt5XXmRr4qrftYaef9+l5hcpO5te7sML1Cg==
 
 array-find-index@^1.0.2:
   version "1.0.2"
@@ -4207,13 +4196,6 @@ expo-sharing@~12.0.1:
   resolved "https://registry.yarnpkg.com/expo-sharing/-/expo-sharing-12.0.1.tgz#6c4d951beda47dac47112e679d60fc06c233b7aa"
   integrity sha512-wBT+WeXwapj/9NWuLJO01vi9bdlchYu/Q/xD8slL/Ls4vVYku8CPqzkTtDFcjLrjtlJqyeHsdQXwKLvORmBIew==
 
-expo-sqlite@~14.0.3:
-  version "14.0.3"
-  resolved "https://registry.yarnpkg.com/expo-sqlite/-/expo-sqlite-14.0.3.tgz#7d91e564b86cea09db40fd6fe0ccd79785234ffb"
-  integrity sha512-H9+QXpB9ppPFeI5ZIPzIZJAdj4hgP2XJEoNe6xlhSUqcEhiq7k55Hs4mf1LX2r1JgSbIjucMEuDlMT8ntU4Pew==
-  dependencies:
-    "@expo/websql" "^1.0.1"
-
 expo-status-bar@~1.12.1:
   version "1.12.1"
   resolved "https://registry.yarnpkg.com/expo-status-bar/-/expo-status-bar-1.12.1.tgz#52ce594aab5064a0511d14375364d718ab78aa66"
@@ -4883,11 +4865,6 @@ image-size@^1.0.2:
   integrity sha512-xfOoWjceHntRb3qFCrh5ZFORYH8XCdYpASltMhZ/Q0KZiOwjdE/Yl2QCiWdwD+lygV5bMCvauzgu5PxBX/Yerg==
   dependencies:
     queue "6.0.2"
-
-immediate@^3.2.2:
-  version "3.3.0"
-  resolved "https://registry.npmjs.org/immediate/-/immediate-3.3.0.tgz"
-  integrity sha512-HR7EVodfFUdQCTIeySw+WDRFJlPcLOJbXfwwZ7Oom6tjsvZ3bOkCDJHehQC3nxJrv7+f9XecwazynjU8e4Vw3Q==
 
 import-fresh@^2.0.0:
   version "2.0.0"
@@ -6156,11 +6133,6 @@ node-stream-zip@^1.9.1:
   resolved "https://registry.npmjs.org/node-stream-zip/-/node-stream-zip-1.15.0.tgz"
   integrity sha512-LN4fydt9TqhZhThkZIVQnF9cwjU3qmUH9h78Mx/K7d3VvfRqqwthLwJEUOEL0QPZ0XQmNN7be5Ggit5+4dq3Bw==
 
-noop-fn@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.npmjs.org/noop-fn/-/noop-fn-1.0.0.tgz"
-  integrity sha512-pQ8vODlgXt2e7A3mIbFDlizkr46r75V+BJxVAyat8Jl7YmI513gG5cfyRL0FedKraoZ+VAouI1h4/IWpus5pcQ==
-
 nopt@^4.0.1:
   version "4.0.3"
   resolved "https://registry.npmjs.org/nopt/-/nopt-4.0.3.tgz"
@@ -6577,11 +6549,6 @@ postcss@~8.4.32:
     nanoid "^3.3.7"
     picocolors "^1.0.0"
     source-map-js "^1.0.2"
-
-pouchdb-collections@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.npmjs.org/pouchdb-collections/-/pouchdb-collections-1.0.1.tgz"
-  integrity sha512-31db6JRg4+4D5Yzc2nqsRqsA2oOkZS8DpFav3jf/qVNBxusKa2ClkEIZ2bJNpaDbMfWtnuSq59p6Bn+CipPMdg==
 
 prelude-ls@^1.2.1:
   version "1.2.1"
@@ -7839,11 +7806,6 @@ through@2:
   version "2.3.8"
   resolved "https://registry.npmjs.org/through/-/through-2.3.8.tgz"
   integrity sha512-w89qg7PI8wAdvX60bMDP+bFoD5Dvhm9oLheFp5O4a2QF0cSBGsBX4qZmadPMvVqlLJBBci+WqGGOAPvcDeNSVg==
-
-tiny-queue@^0.2.1:
-  version "0.2.1"
-  resolved "https://registry.npmjs.org/tiny-queue/-/tiny-queue-0.2.1.tgz"
-  integrity sha512-EijGsv7kzd9I9g0ByCl6h42BWNGUZrlCSejfrb3AKeHC33SGbASu1VDf5O3rRiiUOhAC9CHdZxFPbZu0HmR70A==
 
 tmp@^0.0.33:
   version "0.0.33"

@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@hacceuee/s3-pixel-icons": "^2.3.12",
+    "@op-engineering/op-sqlite": "^6.0.1",
     "@react-native-async-storage/async-storage": "1.23.1",
     "@react-native-community/hooks": "^3.0.0",
     "@react-native-cookies/cookies": "^6.2.1",
@@ -41,7 +42,6 @@
     "expo-mail-composer": "~13.0.1",
     "expo-notifications": "~0.28.3",
     "expo-sharing": "~12.0.1",
-    "expo-sqlite": "~14.0.3",
     "expo-status-bar": "~1.12.1",
     "expo-system-ui": "~3.0.4",
     "expo-web-browser": "~13.0.3",
@@ -88,6 +88,9 @@
   },
   "resolutions": {
     "@expo/config-plugins": "~8.0.0"
+  },
+  "op-sqlite": {
+    "performanceMode": "2"
   },
   "author": "Sketch",
   "private": true
