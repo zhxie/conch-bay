@@ -1,7 +1,7 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as BackgroundFetch from "expo-background-fetch";
 import * as Notifications from "expo-notifications";
 import * as TaskManager from "expo-task-manager";
+import { MMKV } from "react-native-mmkv";
 import t from "../i18n";
 import {
   WebServiceToken,
@@ -14,9 +14,9 @@ import {
   updateNsoVersion,
   updateSplatnetVersion,
 } from "./api";
-import { Key } from "./async-storage";
 import { decode64String, encode64String } from "./codec";
 import * as Database from "./database";
+import { Key } from "./mmkv";
 import { ok, sleep } from "./promise";
 
 const BACKGROUND_REFRESH_RESULTS_TASK = "background-refresh-results";
@@ -30,10 +30,11 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
     await ok(Promise.all([updateNsoVersion(), updateSplatnetVersion()]));
 
     // Check previous token.
-    const language = (await AsyncStorage.getItem(Key.Language)) || t("lang");
+    const storage = new MMKV();
+    const language = storage.getString(Key.Language) || t("lang");
     let webServiceToken: WebServiceToken | undefined = undefined;
     let bulletToken = "";
-    const webServiceTokenString = await AsyncStorage.getItem(Key.WebServiceToken);
+    const webServiceTokenString = storage.getString(Key.WebServiceToken);
     if (webServiceTokenString) {
       try {
         webServiceToken = JSON.parse(webServiceTokenString) as WebServiceToken;
@@ -45,7 +46,7 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
 
     // Reacquire tokens.
     if (bulletToken.length === 0) {
-      const sessionToken = await AsyncStorage.getItem(Key.SessionToken);
+      const sessionToken = storage.getString(Key.SessionToken);
       if (!sessionToken || sessionToken.length === 0) {
         throw new Error("no session token");
       }
@@ -54,7 +55,7 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
         throw new Error(`failed to acquire web service token ${newWebServiceToken.message}`);
       }
       webServiceToken = newWebServiceToken;
-      await AsyncStorage.setItem(Key.WebServiceToken, JSON.stringify(webServiceToken));
+      storage.set(Key.WebServiceToken, JSON.stringify(webServiceToken));
       const newBulletToken = await getBulletToken(webServiceToken, language).catch(
         (e) => e as Error
       );
@@ -166,7 +167,7 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
     }
     if ((await Notifications.getPermissionsAsync()).granted) {
       // Always set badge as unread result count.
-      const playedTime = parseInt((await AsyncStorage.getItem(Key.PlayedTime)) || "0");
+      const playedTime = storage.getNumber(Key.PlayedTime) || 0;
       let unread = await Database.count(undefined, playedTime);
       if (playedTime !== 0) {
         unread -= 1;

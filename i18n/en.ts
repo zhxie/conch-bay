@@ -107,7 +107,7 @@ const en = {
   copy_web_service_token: "Copy Web Service Token",
   copy_bullet_token: "Copy Bullet Token",
   copied_to_clipboard: "Copied to clipboard",
-  copy_configuration_and_state: "Copy Configuration and State",
+  export_configuration: "Export Configuration",
   export_database: "Export Database",
   privacy_policy: "Privacy Policy",
   acknowledgments: "Acknowledgments",

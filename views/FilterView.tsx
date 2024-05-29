@@ -26,7 +26,7 @@ interface FilterViewProps {
   filter?: FilterProps;
   players?: Record<string, string>;
   options?: FilterProps;
-  onChange: (filter?: FilterProps) => Promise<void>;
+  onChange: (filter?: FilterProps) => void;
   onLayout?: (event: LayoutChangeEvent) => void;
   style?: StyleProp<ViewStyle>;
 }
@@ -59,26 +59,26 @@ const FilterView = (props: FilterViewProps) => {
   const onFilterPress = () => {
     setFilter(true);
   };
-  const onFilterLongPress = async () => {
+  const onFilterLongPress = () => {
     if (!isFilterEqual(props.filter, EmptyFilterProps)) {
-      await props.onChange(EmptyFilterProps);
+      props.onChange(EmptyFilterProps);
     }
   };
-  const onQuickFilterPress = async (filter: FilterProps) => {
+  const onQuickFilterPress = (filter: FilterProps) => {
     if (!isFilterEqual(props.filter, filter)) {
-      await props.onChange(filter);
+      props.onChange(filter);
     } else {
-      await props.onChange(undefined);
+      props.onChange(undefined);
     }
   };
   const onFilterClose = () => {
     setFilter(false);
   };
-  const onOptionPress = async (group: string, key: string) => {
+  const onOptionPress = (group: string, key: string) => {
     if (!props.filter) {
       const filter = { players: [], modes: [], rules: [], stages: [], weapons: [] };
       filter[group].push(key);
-      await props.onChange(filter);
+      props.onChange(filter);
     } else {
       if (!props.filter[group]) {
         props.filter[group] = [];
@@ -86,16 +86,16 @@ const FilterView = (props: FilterViewProps) => {
       if (props.filter[group].includes(key)) {
         const newFilter = JSON.parse(JSON.stringify(props.filter));
         newFilter[group] = newFilter[group].filter((item: string) => item !== key);
-        await props.onChange(newFilter);
+        props.onChange(newFilter);
       } else {
         const newFilter = JSON.parse(JSON.stringify(props.filter));
         newFilter[group].push(key);
-        await props.onChange(newFilter);
+        props.onChange(newFilter);
       }
     }
   };
-  const onClearFilterPress = async () => {
-    await props.onChange(undefined);
+  const onClearFilterPress = () => {
+    props.onChange(undefined);
   };
 
   return (

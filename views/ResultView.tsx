@@ -105,7 +105,7 @@ interface ResultViewProps {
   header: React.ReactElement;
   footer: React.ReactElement;
   filterDisabled?: boolean;
-  onFilterPlayer: (id: string, name: string) => Promise<void>;
+  onFilterPlayer: (id: string, name: string) => void;
   onQuery: (id: string) => Result | undefined;
   onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
   onScrollBeginDrag?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
@@ -675,7 +675,7 @@ const ResultView = (props: ResultViewProps) => {
     const id = decode64BattlePlayerId(battlePlayer!.id);
     WebBrowser.openBrowserAsync(`https://splat.top/player/u-${id}`);
   };
-  const onViewBattlesAndJobsWithThisPlayerPress = async () => {
+  const onViewBattlesAndJobsWithThisPlayerPress = () => {
     if (displayBattlePlayer) {
       // HACK: we cannot parse encrypted IDs from ikawidget3.
       let id: string;
@@ -685,7 +685,7 @@ const ResultView = (props: ResultViewProps) => {
         showBanner(BannerLevel.Warn, t("failed_to_view_battles_and_jobs_with_this_player"));
         return;
       }
-      await props.onFilterPlayer(id, battlePlayer!.name);
+      props.onFilterPlayer(id, battlePlayer!.name);
       setDisplayBattlePlayer(false);
       setDisplayBattle(false);
     } else if (displayCoopPlayer) {
@@ -697,7 +697,7 @@ const ResultView = (props: ResultViewProps) => {
         showBanner(BannerLevel.Warn, t("failed_to_view_battles_and_jobs_with_this_player"));
         return;
       }
-      await props.onFilterPlayer(id, coopPlayer!.player.name);
+      props.onFilterPlayer(id, coopPlayer!.player.name);
       setDisplayCoopPlayer(false);
       setDisplayCoop(false);
     }
