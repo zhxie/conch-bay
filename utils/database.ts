@@ -95,43 +95,7 @@ export const upgrade = async () => {
     await beginTransaction();
     try {
       await db!.execAsync('ALTER TABLE result ADD COLUMN stats TEXT NOT NULL DEFAULT ""');
-      const statement = await db!.prepareAsync("UPDATE result SET stats = ? WHERE id = ?");
-      for await (const row of queryEach({
-        modes: ["salmon_run"],
-        inverted: true,
-      })) {
-        await statement.executeAsync(
-          JSON.stringify(getBattleBrief(JSON.parse(row.detail))),
-          row.id
-        );
-      }
-      await statement.finalizeAsync();
       await db!.execAsync("PRAGMA user_version=3");
-      await commit();
-    } catch (e) {
-      await rollback();
-      throw e;
-    }
-  }
-  if (version < 7) {
-    await beginTransaction();
-    try {
-      const statement = await db!.prepareAsync("UPDATE result SET stats = ? WHERE id = ?");
-      for await (const row of queryEach()) {
-        if (row.mode === "salmon_run") {
-          await statement.executeAsync(
-            JSON.stringify(getCoopBrief(JSON.parse(row.detail))),
-            row.id
-          );
-        } else {
-          await statement.executeAsync(
-            JSON.stringify(getBattleBrief(JSON.parse(row.detail))),
-            row.id
-          );
-        }
-      }
-      await statement.finalizeAsync();
-      await db!.execAsync("PRAGMA user_version=7");
       await commit();
     } catch (e) {
       await rollback();
