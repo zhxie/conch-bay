@@ -1,4 +1,5 @@
 import * as SQLite from "expo-sqlite";
+import { LRUCache } from "lru-cache";
 import { CoopHistoryDetailResult, VsHistoryDetailResult } from "../models/types";
 import weaponList from "../models/weapons.json";
 import { decode64BattlePlayerId, decode64CoopPlayerId, decode64Index } from "./codec";
@@ -39,7 +40,7 @@ export const upgrade = async () => {
     await beginTransaction();
     try {
       await db!.execAsync('ALTER TABLE result ADD COLUMN stage TEXT NOT NULL DEFAULT ""');
-      for await (const row of queryDetailEach()) {
+      for await (const row of queryEach()) {
         if (row.mode === "salmon_run") {
           await db!.runAsync(
             "UPDATE result SET stage = ? WHERE id = ?",
@@ -95,7 +96,7 @@ export const upgrade = async () => {
     try {
       await db!.execAsync('ALTER TABLE result ADD COLUMN stats TEXT NOT NULL DEFAULT ""');
       const statement = await db!.prepareAsync("UPDATE result SET stats = ? WHERE id = ?");
-      for await (const row of queryDetailEach({
+      for await (const row of queryEach({
         modes: ["salmon_run"],
         inverted: true,
       })) {
@@ -116,7 +117,7 @@ export const upgrade = async () => {
     await beginTransaction();
     try {
       const statement = await db!.prepareAsync("UPDATE result SET stats = ? WHERE id = ?");
-      for await (const row of queryDetailEach()) {
+      for await (const row of queryEach()) {
         if (row.mode === "salmon_run") {
           await statement.executeAsync(
             JSON.stringify(getCoopBrief(JSON.parse(row.detail))),
@@ -141,7 +142,7 @@ export const upgrade = async () => {
     await beginTransaction();
     try {
       const statement = await db!.prepareAsync("UPDATE result SET players = ? WHERE id = ?");
-      for await (const row of queryDetailEach()) {
+      for await (const row of queryEach()) {
         if (row.mode === "salmon_run") {
           const coop = JSON.parse(row.detail);
           let selfPlayer: string;
@@ -201,7 +202,7 @@ export const upgrade = async () => {
     try {
       await db!.execAsync("ALTER TABLE result RENAME COLUMN stats TO brief");
       const statement = await db!.prepareAsync("UPDATE result SET brief = ? WHERE id = ?");
-      for await (const row of queryDetailEach()) {
+      for await (const row of queryEach()) {
         if (row.mode === "salmon_run") {
           await statement.executeAsync(
             JSON.stringify(getCoopBrief(JSON.parse(row.detail))),
@@ -317,17 +318,7 @@ const convertFilter = (filter?: FilterProps, from?: number) => {
   return `WHERE ${condition}`;
 };
 
-export const queryDetailAll = async (offset: number, limit: number, filter?: FilterProps) => {
-  let condition: string = "";
-  if (filter) {
-    condition = convertFilter(filter);
-  }
-  const record = await db!.getAllAsync<{ id: string; time: number; mode: string; detail: string }>(
-    `SELECT id, time, mode, detail FROM result ${condition} ORDER BY time DESC LIMIT ${limit} OFFSET ${offset}`
-  );
-  return record;
-};
-export const queryDetailEach = (filter?: FilterProps) => {
+export const queryEach = (filter?: FilterProps) => {
   let condition: string = "";
   if (filter) {
     condition = convertFilter(filter);
@@ -344,6 +335,20 @@ export const queryBrief = async (filter?: FilterProps) => {
   const record = await db!.getAllAsync<{ id: string; mode: string; brief: string }>(
     `SELECT id, mode, brief FROM result ${condition} ORDER BY time DESC`
   );
+  return record;
+};
+const details = new LRUCache<string, { mode: string; detail: string }>({ max: 100 });
+export const queryDetail = (id: string) => {
+  if (details.has(id)) {
+    return details.get(id);
+  }
+  const record = db!.getFirstSync<{ mode: string; detail: string }>(
+    "SELECT mode, detail FROM result WHERE id = ?",
+    id
+  );
+  if (record) {
+    details.set(id, record);
+  }
   return record;
 };
 export const queryLatestTime = async () => {

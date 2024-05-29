@@ -27,13 +27,11 @@ interface StatsGroup {
 
 interface RotationViewProps {
   disabled?: boolean;
-  onBriefs: () => Promise<Brief[]>;
+  briefs?: Brief[];
   style?: StyleProp<ViewStyle>;
 }
 
 const RotationsView = (props: RotationViewProps) => {
-  const [briefs, setBriefs] = useState<Brief[]>();
-  const [loading, setLoading] = useState(false);
   const [rotations, setRotations] = useState(false);
   const [group, setGroup] = useState<Brief[]>();
   const [displayGroup, setDisplayGroup] = useState(false);
@@ -103,11 +101,11 @@ const RotationsView = (props: RotationViewProps) => {
 
   const groups = useMemo(() => {
     const groups: StatsGroup[] = [];
-    if (!briefs) {
+    if (!props.briefs) {
       return groups;
     }
     let group: StatsGroup = {};
-    for (const stat of briefs) {
+    for (const stat of props.briefs) {
       if (canGroup(stat, group)) {
         if (stat.battle) {
           group.battles!.push(stat.battle);
@@ -129,20 +127,13 @@ const RotationsView = (props: RotationViewProps) => {
       groups.push(group);
     }
     return groups;
-  }, [briefs]);
+  }, [props.briefs]);
 
-  const onRotationPress = async () => {
-    setLoading(true);
-    const results = await props.onBriefs();
-    setBriefs(results);
+  const onRotationPress = () => {
     setRotations(true);
-    setLoading(false);
   };
   const onRotationClose = () => {
     setRotations(false);
-  };
-  const onModalHide = () => {
-    setBriefs(undefined);
   };
   const formatGroupPeriod = (start: number, end: number) => {
     const dateTimeFormat = "M/D HH:mm";
@@ -248,7 +239,6 @@ const RotationsView = (props: RotationViewProps) => {
     <Center style={props.style}>
       <ToolButton
         disabled={props.disabled}
-        loading={loading}
         icon="calendar"
         title={t("rotations")}
         onPress={onRotationPress}
@@ -278,7 +268,6 @@ const RotationsView = (props: RotationViewProps) => {
           </StatsModal>
         }
         onClose={onRotationClose}
-        onModalHide={onModalHide}
         // HACK: fixed height should be provided to FlashList.
         style={[ViewStyles.modal2d, { height: 32 + 64 * groups.length, paddingHorizontal: 0 }]}
       />

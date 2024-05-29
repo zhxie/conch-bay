@@ -33,7 +33,7 @@ import { burnColor, rationalize } from "../utils/ui";
 
 interface TrendViewProps {
   disabled?: boolean;
-  onBriefs: () => Promise<Brief[]>;
+  briefs?: Brief[];
   style?: StyleProp<ViewStyle>;
 }
 
@@ -71,8 +71,6 @@ const TrendsView = (props: TrendViewProps) => {
   const theme = useTheme();
 
   const [point, setPoint] = useState(20);
-  const [briefs, setBriefs] = useState<Brief[]>();
-  const [loading, setLoading] = useState(false);
   const [trends, setTrends] = useState(false);
   const [group, setGroup] = useState(0);
   const [battleDimensions, setBattleDimensions] = useState<BattleDimension[]>(["VICTORY"]);
@@ -124,16 +122,16 @@ const TrendsView = (props: TrendViewProps) => {
   };
 
   const battles = useMemo(
-    () => briefs?.filter((result) => result.battle).map((result) => result.battle!),
-    [briefs]
+    () => props.briefs?.filter((result) => result.battle).map((result) => result.battle!),
+    [props.briefs]
   );
   const battleGroups = useMemo(
     () => (battles ? split(battles, point, group) : []),
     [battles, group]
   );
   const coops = useMemo(
-    () => briefs?.filter((result) => result.coop).map((result) => result.coop!),
-    [briefs]
+    () => props.briefs?.filter((result) => result.coop).map((result) => result.coop!),
+    [props.briefs]
   );
   const coopGroups = useMemo(() => (coops ? split(coops, point, group) : []), [coops, group]);
 
@@ -330,18 +328,11 @@ const TrendsView = (props: TrendViewProps) => {
     }
   };
 
-  const onTrendsPress = async () => {
-    setLoading(true);
-    const results = await props.onBriefs();
-    setBriefs(results);
+  const onTrendsPress = () => {
     setTrends(true);
-    setLoading(false);
   };
   const onTrendsClose = () => {
     setTrends(false);
-  };
-  const onModalHide = () => {
-    setBriefs(undefined);
   };
   const onLayout = (event: LayoutChangeEvent) => {
     setPoint(Math.max(Math.round(event.nativeEvent.layout.width / 20), 20));
@@ -374,7 +365,6 @@ const TrendsView = (props: TrendViewProps) => {
     <Center style={props.style}>
       <ToolButton
         disabled={props.disabled}
-        loading={loading}
         icon="trending-up"
         title={t("trends")}
         onPress={onTrendsPress}
@@ -382,7 +372,6 @@ const TrendsView = (props: TrendViewProps) => {
       <Modal
         isVisible={trends}
         onClose={onTrendsClose}
-        onModalHide={onModalHide}
         onLayout={onLayout}
         style={ViewStyles.modal2d}
       >

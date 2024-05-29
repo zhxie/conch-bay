@@ -80,16 +80,14 @@ import {
 import weaponList from "../models/weapons.json";
 import { fetchXRankings } from "../utils/api";
 import { decode64BattlePlayerId, decode64CoopPlayerId } from "../utils/codec";
-import { getBattleBrief, getCoopBrief } from "../utils/stats";
+import { BattleBrief, Brief, CoopBrief, getSelfBattlePlayerBrief } from "../utils/stats";
 import {
   getCoopRuleColor,
   getImageCacheSource,
   getImageHash,
   getColor,
   getVsModeColor,
-  getVsSelfPlayer,
   getGearPadding,
-  getVsPower,
   roundPower,
 } from "../utils/ui";
 import { StatsModal } from "./StatsView";
@@ -98,20 +96,17 @@ interface Result {
   battle?: VsHistoryDetailResult;
   coop?: CoopHistoryDetailResult;
 }
-export interface ResultGroup {
-  battles?: VsHistoryDetailResult[];
-  coops?: CoopHistoryDetailResult[];
-}
-interface ResultAndGroup extends Result {
-  group?: ResultGroup;
+interface BriefOrGroup extends Brief {
+  group?: Brief[];
 }
 interface ResultViewProps {
-  groups?: ResultGroup[];
+  briefs?: Brief[];
   refreshControl: React.ReactElement<RefreshControlProps>;
   header: React.ReactElement;
   footer: React.ReactElement;
   filterDisabled?: boolean;
   onFilterPlayer: (id: string, name: string) => Promise<void>;
+  onQuery: (id: string) => Result | undefined;
   onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
   onScrollBeginDrag?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
   onScrollEndDrag?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
@@ -142,9 +137,10 @@ const ResultView = (props: ResultViewProps) => {
   const [displayCoop, setDisplayCoop] = useState(false);
   const [coopPlayer, setCoopPlayer] = useState<CoopPlayerResult>();
   const [displayCoopPlayer, setDisplayCoopPlayer] = useState(false);
-  const willDisplayNext = useRef<number>();
+  const willDisplayNext = useRef<Result>();
+  const willDisplayResult = useRef<boolean>(false);
   const [hidePlayerNames, setHidePlayerNames] = useState(false);
-  const [group, setGroup] = useState<Result[]>();
+  const [group, setGroup] = useState<Brief[]>();
   const [displayGroup, setDisplayGroup] = useState(false);
   const [dimension, setDimension] = useState(0);
 
@@ -155,39 +151,117 @@ const ResultView = (props: ResultViewProps) => {
   const coopDetailsRef = useRef<AccordionDisplayHandle>(null);
   const coopFade = useRef(new Animated.Value(1)).current;
 
-  const groupsAndResults = useMemo(() => {
-    if (!props.groups) {
+  const canGroupBattle = (battle: BattleBrief, group: Brief[]) => {
+    // Battles with the same mode and in the 2 hours (24 hours for tricolors and unlimited for
+    // privates) period will be regarded in the same group. There is also a 2 minutes grace period
+    // for battles when certain conditions are met.
+    // TODO: these grade conditions are not completed. E.g., regular battles even with the same
+    // stages cannot be regarded as in the same rotation. We have to check the context (the above
+    // only now) to group correctly.
+    if (group[0]?.battle) {
+      if (battle.mode === group[0].battle.mode) {
+        switch (battle.mode) {
+          case "VnNNb2RlLTE=":
+          case "VnNNb2RlLTY=":
+          case "VnNNb2RlLTc=":
+            if (
+              Math.floor(dayjs(battle.time).valueOf() / 7200000) ===
+              Math.floor(dayjs(group[0].battle.time).valueOf() / 7200000)
+            ) {
+              return true;
+            }
+            break;
+          case "VnNNb2RlLTI=":
+          case "VnNNb2RlLTUx":
+          case "VnNNb2RlLTM=":
+          case "VnNNb2RlLTQ=":
+            if (
+              Math.floor(dayjs(battle.time).valueOf() / 7200000) ===
+                Math.floor(dayjs(group[0].battle.time).valueOf() / 7200000) ||
+              (battle.rule === group[0].battle.rule &&
+                Math.floor(dayjs(battle.time).valueOf() / 7200000) ===
+                  Math.floor(dayjs(group[0].battle.time).subtract(2, "minute").valueOf() / 7200000))
+            ) {
+              return true;
+            }
+            break;
+          case "VnNNb2RlLTg=":
+            if (
+              Math.floor(dayjs(battle.time).valueOf() / 86400000) ===
+                Math.floor(dayjs(group[0].battle.time).valueOf() / 86400000) ||
+              Math.floor(dayjs(battle.time).valueOf() / 86400000) ===
+                Math.floor(dayjs(group[0].battle.time).subtract(2, "minute").valueOf() / 86400000)
+            ) {
+              return true;
+            }
+            break;
+          case "VnNNb2RlLTU=":
+          default:
+            return true;
+        }
+      }
+    }
+    return false;
+  };
+  const canGroupCoop = (coop: CoopBrief, group: Brief[]) => {
+    // Coops with the same rule, stage and supplied weapons in the 48 hours (2 hours period) will be
+    // regarded in the same group. There is also a 2 minutes grace period for coops when certain
+    // conditions are met.
+    if (group[0]?.coop) {
+      if (
+        coop.rule === group[0].coop.rule &&
+        coop.stage === group[0].coop.stage &&
+        coop.suppliedWeapons.join(",") === group[0].coop.suppliedWeapons.join(",") &&
+        (Math.ceil(dayjs(coop.time).valueOf() / 7200000) -
+          Math.floor(dayjs(group[0].coop.time).valueOf() / 7200000) <=
+          24 ||
+          Math.ceil(dayjs(coop.time).valueOf() / 7200000) -
+            Math.floor(dayjs(group[0].coop.time).subtract(2, "minute").valueOf() / 7200000) <=
+            24)
+      ) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  const briefsAndGroups: BriefOrGroup[] | undefined = useMemo(() => {
+    if (!props.briefs) {
       return undefined;
     }
-    const results: ResultAndGroup[] = [];
-    for (const group of props.groups) {
-      results.push({ group: group });
-      if (group.battles) {
-        results.push(...group.battles!.map((battle) => ({ battle: battle })));
+    const groups: Brief[][] = [];
+    for (const brief of props.briefs) {
+      if (brief.battle) {
+        if (groups.length === 0 || !canGroupBattle(brief.battle, groups[groups.length - 1])) {
+          groups.push([brief]);
+        } else {
+          groups[groups.length - 1].push(brief);
+        }
       } else {
-        results.push(...group.coops!.map((coop) => ({ coop: coop })));
+        if (groups.length === 0 || !canGroupCoop(brief.coop!, groups[groups.length - 1])) {
+          groups.push([brief]);
+        } else {
+          groups[groups.length - 1].push(brief);
+        }
+      }
+    }
+    const results: BriefOrGroup[] = [];
+    for (const group of groups) {
+      results.push({ group });
+      if (group[0].battle) {
+        results.push(...group.map((group) => ({ battle: group.battle! })));
+      } else {
+        results.push(...group.map((group) => ({ coop: group.coop! })));
       }
     }
     return results;
-  }, [props.groups]);
-  const briefs = useMemo(() => {
-    if (!group) {
-      return undefined;
-    }
-    return group.map((result) => {
-      if (result.battle) {
-        return { battle: getBattleBrief(result.battle) };
-      }
-      return { coop: getCoopBrief(result.coop!) };
-    });
-  }, [group]);
+  }, [props.briefs]);
 
   const findIndex = () => {
     const id = result?.battle?.vsHistoryDetail?.id || result?.coop?.coopHistoryDetail?.id;
     if (id) {
-      return groupsAndResults?.findIndex(
-        (result) =>
-          result.battle?.vsHistoryDetail?.id === id || result.coop?.coopHistoryDetail?.id === id
+      return briefsAndGroups?.findIndex(
+        (result) => result.battle?.id === id || result.coop?.id === id
       );
     }
   };
@@ -197,7 +271,7 @@ const ResultView = (props: ResultViewProps) => {
       return undefined;
     }
     return j >= 0 ? j : undefined;
-  }, [groupsAndResults, result]);
+  }, [briefsAndGroups, result]);
 
   const isVsPlayerDragon = (player: VsPlayer) => {
     switch (player.festDragonCert as FestDragonCert) {
@@ -208,10 +282,10 @@ const ResultView = (props: ResultViewProps) => {
         return true;
     }
   };
-  const isCoopClear = (coop: CoopHistoryDetailResult) => {
-    if (coop.coopHistoryDetail!.resultWave === 0) {
-      if (coop.coopHistoryDetail!.bossResult) {
-        return coop.coopHistoryDetail!.bossResult.hasDefeatBoss;
+  const isCoopClear = (coop: CoopBrief) => {
+    if (coop.result === 0) {
+      if (coop.king) {
+        return coop.king.defeat;
       }
       return true;
     }
@@ -227,8 +301,8 @@ const ResultView = (props: ResultViewProps) => {
     return wave + 1 < coop.coopHistoryDetail!.resultWave;
   };
 
-  const formatJudgement = (battle: VsHistoryDetailResult) => {
-    switch (battle.vsHistoryDetail!.judgement as Judgement) {
+  const formatJudgement = (battle: BattleBrief) => {
+    switch (battle.result) {
       case Judgement.WIN:
         return CResult.Win;
       case Judgement.DRAW:
@@ -240,9 +314,9 @@ const ResultView = (props: ResultViewProps) => {
         return CResult.ExemptedLose;
     }
   };
-  const formatDragon = (battle: VsHistoryDetailResult) => {
-    if (battle.vsHistoryDetail!.festMatch) {
-      switch (battle.vsHistoryDetail!.festMatch.dragonMatchType as DragonMatchType) {
+  const formatDragon = (battle: BattleBrief) => {
+    if (battle.dragon) {
+      switch (battle.dragon) {
         case DragonMatchType.NORMAL:
           return undefined;
         case DragonMatchType.DECUPLE:
@@ -254,11 +328,11 @@ const ResultView = (props: ResultViewProps) => {
       }
     }
   };
-  const formatPower = (power: number | null | undefined) => {
-    if (power === null || power === undefined) {
+  const formatPower = (battle: BattleBrief) => {
+    if (battle.power === undefined) {
       return undefined;
     }
-    return roundPower(power);
+    return roundPower(battle.power);
   };
   const formatSpecies = (species: Enum<typeof Species>) => {
     switch (species as Species) {
@@ -319,39 +393,42 @@ const ResultView = (props: ResultViewProps) => {
         return Color.SilverScale;
     }
   };
-  const formatHazardLevel = (coop: CoopHistoryDetailResult) => {
-    if (coop.coopHistoryDetail!.dangerRate > 0) {
-      return `${parseInt(String(coop.coopHistoryDetail!.dangerRate * 100))}%`;
+  const formatHazardLevel = (hazardLevel: number) => {
+    if (hazardLevel > 0) {
+      return `${parseInt(String(hazardLevel * 100))}%`;
     }
     return "";
   };
-  const formatCoopInfo = (coop: CoopHistoryDetailResult) => {
-    if (coop.coopHistoryDetail!.afterGrade) {
-      return `${td(coop.coopHistoryDetail!.afterGrade)} ${
-        coop.coopHistoryDetail!.afterGradePoint || 0
-      }`;
+  const formatCoopInfo = (coop: CoopBrief) => {
+    if (coop.grade) {
+      return `${t(coop.grade.id)} ${coop.grade.point}`;
     }
-    switch (coop.coopHistoryDetail!.resultWave) {
-      case -1:
-        return "";
-      case 0:
-        if (coop.coopHistoryDetail!.bossResult) {
-          return t("xtrawave");
-        }
-        return t("wave_n", { n: coop.coopHistoryDetail!.waveResults.length });
-      default:
-        return t("wave_n", { n: coop.coopHistoryDetail!.waveResults.length });
+    if (coop.result < 0) {
+      return "";
     }
+    if (coop.result == 0) {
+      if (coop.king) {
+        return t("xtrawave");
+      }
+      switch (coop.rule) {
+        case CoopRule.REGULAR:
+        case CoopRule.BIG_RUN:
+          return t("wave_n", { n: 3 });
+        case CoopRule.TEAM_CONTEST:
+          return t("wave_n", { n: 5 });
+      }
+    }
+    return t("wave_n", { n: coop.result });
   };
-  const formatGradeChange = (coop: CoopHistoryDetailResult) => {
-    switch (coop.coopHistoryDetail!.rule as CoopRule) {
+  const formatGradeChange = (coop: CoopBrief) => {
+    switch (coop.rule) {
       case CoopRule.REGULAR:
       case CoopRule.BIG_RUN:
-        switch (coop.coopHistoryDetail!.resultWave) {
+        switch (coop.result) {
           case 0:
             return CResult.Win;
           default:
-            if (coop.coopHistoryDetail!.resultWave < 3) {
+            if (coop.result < 3) {
               return CResult.Lose;
             }
             return CResult.Draw;
@@ -360,7 +437,7 @@ const ResultView = (props: ResultViewProps) => {
         return undefined;
     }
   };
-  const formatGroupPeriod = (start: string, end: string) => {
+  const formatGroupPeriod = (start: number, end: number) => {
     const dateTimeFormat = "M/D HH:mm";
 
     const startTime = dayjs(start).format(dateTimeFormat);
@@ -502,35 +579,39 @@ const ResultView = (props: ResultViewProps) => {
     // The first item in groupsAndResults is always a group.
     if (currentResultIndex !== undefined && currentResultIndex - 1 >= 1) {
       let offset = 1;
-      if (groupsAndResults![currentResultIndex - 1].group) {
+      if (briefsAndGroups![currentResultIndex - 1].group) {
         offset = 2;
       }
+      const target = briefsAndGroups![currentResultIndex - offset];
+      const result = props.onQuery(target.battle?.id ?? target.coop!.id);
       if (
-        (displayBattle && groupsAndResults![currentResultIndex - offset].battle) ||
-        (displayCoop && groupsAndResults![currentResultIndex - offset].coop)
+        (displayBattle && target.battle) ||
+        (displayCoop && briefsAndGroups![currentResultIndex - offset].coop)
       ) {
-        setResult(groupsAndResults![currentResultIndex - offset]);
+        setResult(result);
         return;
       }
-      willDisplayNext.current = currentResultIndex - offset;
+      willDisplayNext.current = result;
     }
     setDisplayBattle(false);
     setDisplayCoop(false);
   };
   const onShowPreviousResultPress = () => {
-    if (currentResultIndex !== undefined && currentResultIndex + 1 < groupsAndResults!.length) {
+    if (currentResultIndex !== undefined && currentResultIndex + 1 < briefsAndGroups!.length) {
       let offset = 1;
-      if (groupsAndResults![currentResultIndex + 1].group) {
+      if (briefsAndGroups![currentResultIndex + 1].group) {
         offset = 2;
       }
+      const target = briefsAndGroups![currentResultIndex + offset];
+      const result = props.onQuery(target.battle?.id ?? target.coop!.id);
       if (
-        (displayBattle && groupsAndResults![currentResultIndex + offset].battle) ||
-        (displayCoop && groupsAndResults![currentResultIndex + offset].coop)
+        (displayBattle && briefsAndGroups![currentResultIndex + offset].battle) ||
+        (displayCoop && briefsAndGroups![currentResultIndex + offset].coop)
       ) {
-        setResult(groupsAndResults![currentResultIndex + offset]);
+        setResult(result);
         return;
       }
-      willDisplayNext.current = currentResultIndex + offset;
+      willDisplayNext.current = result;
     }
     setDisplayBattle(false);
     setDisplayCoop(false);
@@ -582,7 +663,7 @@ const ResultView = (props: ResultViewProps) => {
     });
   };
   const onShowRawResultPress = () => {
-    willDisplayNext.current = -1;
+    willDisplayResult.current = true;
     setDisplayBattle(false);
     setDisplayCoop(false);
   };
@@ -643,17 +724,16 @@ const ResultView = (props: ResultViewProps) => {
     );
   };
   const onModalHide = () => {
-    if (willDisplayNext.current !== undefined) {
-      if (willDisplayNext.current < 0) {
-        setDisplayResult(true);
-      } else {
-        if (groupsAndResults?.[willDisplayNext.current].battle) {
-          setResult({ battle: groupsAndResults![willDisplayNext.current].battle });
-          setDisplayBattle(true);
-        } else if (groupsAndResults?.[willDisplayNext.current].coop) {
-          setResult({ coop: groupsAndResults![willDisplayNext.current].coop });
-          setDisplayCoop(true);
-        }
+    if (willDisplayResult.current) {
+      setDisplayResult(true);
+      willDisplayResult.current = false;
+    } else if (willDisplayNext.current !== undefined) {
+      if (willDisplayNext.current.battle) {
+        setResult({ battle: willDisplayNext.current.battle });
+        setDisplayBattle(true);
+      } else if (willDisplayNext.current.coop) {
+        setResult({ coop: willDisplayNext.current.coop });
+        setDisplayCoop(true);
       }
       willDisplayNext.current = undefined;
     }
@@ -665,103 +745,88 @@ const ResultView = (props: ResultViewProps) => {
     setDimension(event.nativeEvent.selectedSegmentIndex);
   };
 
-  const onBattlePress = useCallback((battle: VsHistoryDetailResult) => {
-    setResult({ battle });
-    setDisplayBattle(true);
-  }, []);
-  const onCoopPress = useCallback((coop: CoopHistoryDetailResult) => {
-    setResult({ coop });
-    setDisplayCoop(true);
-  }, []);
-  const onGroupPress = useCallback((group: ResultGroup) => {
-    const results: Result[] = [];
-    for (const battle of group.battles ?? []) {
-      results.push({ battle });
+  const onBattlePress = useCallback((id: string) => {
+    const result = props.onQuery(id);
+    if (result?.battle) {
+      setResult({ battle: result.battle });
+      setDisplayBattle(true);
     }
-    for (const coop of group.coops ?? []) {
-      results.push({ coop });
+  }, []);
+  const onCoopPress = useCallback((id: string) => {
+    const result = props.onQuery(id);
+    if (result?.coop) {
+      setResult({ coop: result.coop });
+      setDisplayCoop(true);
     }
-    setGroup(results);
+  }, []);
+  const onGroupPress = useCallback((group: Brief[]) => {
+    setGroup(group);
     setDisplayGroup(true);
   }, []);
 
-  const renderItem = (result: ListRenderItemInfo<ResultAndGroup>) => {
+  const renderItem = (result: ListRenderItemInfo<BriefOrGroup>) => {
     if (result.item.battle) {
-      const color = getVsModeColor(result.item.battle.vsHistoryDetail!.vsMode.id)!;
+      const color = getVsModeColor(result.item.battle.mode)!;
+      const self = getSelfBattlePlayerBrief(result.item.battle);
       return (
         <VStack flex style={ViewStyles.px4}>
           <BattleButton
-            battle={result.item.battle}
+            id={result.item.battle.id}
             first={false}
             last={
-              groupsAndResults!.length > result.index + 1 &&
-              groupsAndResults![result.index + 1].group !== undefined
+              briefsAndGroups!.length > result.index + 1 &&
+              briefsAndGroups![result.index + 1].group !== undefined
             }
             tag={
-              result.extraData?.battle?.vsHistoryDetail?.id ===
-              result.item.battle.vsHistoryDetail!.id
+              result.extraData?.battle?.vsHistoryDetail?.id === result.item.battle.id
                 ? color
                 : undefined
             }
             color={color}
             result={formatJudgement(result.item.battle)}
-            rule={td(result.item.battle.vsHistoryDetail!.vsRule)}
+            rule={t(result.item.battle.rule)}
             dragon={formatDragon(result.item.battle)}
-            stage={td(result.item.battle.vsHistoryDetail!.vsStage)}
-            weapon={td(getVsSelfPlayer(result.item.battle).weapon)}
-            power={formatPower(getVsPower(result.item.battle))}
-            kill={getVsSelfPlayer(result.item.battle).result?.kill}
-            assist={getVsSelfPlayer(result.item.battle).result?.assist}
-            death={getVsSelfPlayer(result.item.battle).result?.death}
-            special={getVsSelfPlayer(result.item.battle).result?.special}
-            ultraSignal={
-              result.item.battle.vsHistoryDetail!.myTeam.tricolorRole !== "DEFENSE"
-                ? getVsSelfPlayer(result.item.battle).result?.noroshiTry
-                : undefined
-            }
+            stage={t(result.item.battle.stage)}
+            weapon={t(self.weapon)}
+            power={formatPower(result.item.battle)}
+            kill={self.kill}
+            assist={self.assist}
+            death={self.death}
+            special={self.special}
+            ultraSignal={self.ultraSignal}
             onPress={onBattlePress}
           />
         </VStack>
       );
     }
     if (result.item.coop) {
-      const color = getCoopRuleColor(result.item.coop.coopHistoryDetail!.rule)!;
-      const powerEgg = result.item.coop.coopHistoryDetail!.memberResults.reduce(
-        (sum, result) => sum + result.deliverCount,
-        result.item.coop.coopHistoryDetail!.myResult.deliverCount
-      );
-      const goldenEgg = result.item.coop.coopHistoryDetail!.waveResults.reduce(
-        (sum, result) => sum + (result.teamDeliverCount ?? 0),
+      const color = getCoopRuleColor(result.item.coop.rule)!;
+      const powerEgg = result.item.coop.players.reduce((prev, current) => prev + current.power, 0);
+      const goldenEgg = result.item.coop.players.reduce(
+        (prev, current) => prev + current.golden,
         0
       );
       return (
         <VStack flex style={ViewStyles.px4}>
           <CoopButton
-            coop={result.item.coop}
+            id={result.item.coop!.id}
             first={false}
             last={
-              groupsAndResults!.length > result.index + 1 &&
-              groupsAndResults![result.index + 1].group !== undefined
+              briefsAndGroups!.length > result.index + 1 &&
+              briefsAndGroups![result.index + 1].group !== undefined
             }
             tag={
-              result.extraData?.coop?.coopHistoryDetail?.id ===
-              result.item.coop.coopHistoryDetail!.id
+              result.extraData?.coop?.coopHistoryDetail?.id === result.item.coop.id
                 ? color
                 : undefined
             }
             color={color}
-            result={
-              result.item.coop.coopHistoryDetail!.resultWave === 0 ? CResult.Win : CResult.Lose
-            }
-            rule={t(result.item.coop.coopHistoryDetail!.rule)}
-            stage={td(result.item.coop.coopHistoryDetail!.coopStage)}
-            kingSalmonid={
-              result.item.coop.coopHistoryDetail!.bossResult
-                ? td(result.item.coop.coopHistoryDetail!.bossResult.boss)
-                : undefined
-            }
+            result={result.item.coop.result === 0 ? CResult.Win : CResult.Lose}
+            rule={t(result.item.coop.rule)}
+            stage={t(result.item.coop.stage)}
+            kingSalmonid={result.item.coop.king ? t(result.item.coop.king.id) : undefined}
             isClear={isCoopClear(result.item.coop)}
-            hazardLevel={formatHazardLevel(result.item.coop)}
+            hazardLevel={formatHazardLevel(result.item.coop.hazardLevel)}
             info={formatCoopInfo(result.item.coop)}
             gradeChange={formatGradeChange(result.item.coop)}
             powerEgg={powerEgg}
@@ -773,25 +838,23 @@ const ResultView = (props: ResultViewProps) => {
     }
     let mode = "";
     let period = "";
-    if (result.item.group!.battles) {
-      mode = result.item.group!.battles[0].vsHistoryDetail!.vsMode.id;
+    if (result.item.group![0].battle) {
+      mode = result.item.group![0].battle!.mode;
       period = formatGroupPeriod(
-        result.item.group!.battles[result.item.group!.battles.length - 1].vsHistoryDetail!
-          .playedTime,
-        result.item.group!.battles[0].vsHistoryDetail!.playedTime
+        result.item.group![result.item.group!.length - 1].battle!.time,
+        result.item.group![0].battle!.time
       );
     } else {
-      mode = result.item.group!.coops![0].coopHistoryDetail!.rule;
+      mode = result.item.group![0].coop!.rule;
       period = formatGroupPeriod(
-        result.item.group!.coops![result.item.group!.coops!.length - 1].coopHistoryDetail!
-          .playedTime,
-        result.item.group!.coops![0].coopHistoryDetail!.playedTime
+        result.item.group![result.item.group!.length - 1].coop!.time,
+        result.item.group![0].coop!.time
       );
     }
     return (
       <VStack flex style={ViewStyles.px4}>
         <GroupButton
-          group={(result.item as ResultAndGroup).group}
+          group={(result.item as BriefOrGroup).group}
           first={true}
           last={false}
           title={t(mode)}
@@ -807,22 +870,18 @@ const ResultView = (props: ResultViewProps) => {
     <VStack flex>
       <FlashList
         refreshControl={props.refreshControl}
-        data={groupsAndResults}
+        data={briefsAndGroups}
         keyExtractor={(groupAndResult) => {
           if (groupAndResult.battle) {
-            return groupAndResult.battle.vsHistoryDetail!.id;
+            return groupAndResult.battle.id;
           }
           if (groupAndResult.coop) {
-            return groupAndResult.coop!.coopHistoryDetail!.id;
+            return groupAndResult.coop!.id;
           }
-          if (groupAndResult.group!.battles) {
-            return `${groupAndResult.group!.battles[0].vsHistoryDetail!.id}-${
-              groupAndResult.group!.battles.length
-            }`;
+          if (groupAndResult.group![0].battle) {
+            return `${groupAndResult.group![0].battle.id}-${groupAndResult.group!.length}`;
           }
-          return `${groupAndResult.group!.coops![0].coopHistoryDetail!.id}-${
-            groupAndResult.group!.coops!.length
-          }`;
+          return `${groupAndResult.group![0].coop!.id}-${groupAndResult.group!.length}`;
         }}
         renderItem={renderItem}
         extraData={result}
@@ -1240,7 +1299,7 @@ const ResultView = (props: ResultViewProps) => {
             {currentResultIndex !== undefined && (
               <PureIconButton
                 // groupsAndResults has at least 2 items.
-                disabled={currentResultIndex === (groupsAndResults?.length ?? 2) - 1}
+                disabled={currentResultIndex === (briefsAndGroups?.length ?? 2) - 1}
                 size={24}
                 icon="chevron-right"
                 hitSlop={8}
@@ -1451,7 +1510,9 @@ const ResultView = (props: ResultViewProps) => {
                           </Display>
                           {result.coop.coopHistoryDetail!.dangerRate > 0 && (
                             <Display level={1} title={t("hazard_level")}>
-                              <Text numberOfLines={1}>{formatHazardLevel(result.coop)}</Text>
+                              <Text numberOfLines={1}>
+                                {formatHazardLevel(result.coop.coopHistoryDetail!.dangerRate)}
+                              </Text>
                             </Display>
                           )}
                           {result.coop.coopHistoryDetail!.afterGrade && (
@@ -1613,7 +1674,7 @@ const ResultView = (props: ResultViewProps) => {
             {currentResultIndex !== undefined && (
               <PureIconButton
                 // groupsAndResults has at least 2 items.
-                disabled={currentResultIndex === (groupsAndResults?.length ?? 2) - 1}
+                disabled={currentResultIndex === (briefsAndGroups?.length ?? 2) - 1}
                 size={24}
                 icon="chevron-right"
                 hitSlop={8}
@@ -1625,7 +1686,7 @@ const ResultView = (props: ResultViewProps) => {
         )}
       </Modal>
       <StatsModal
-        briefs={briefs}
+        briefs={group}
         dimension={dimension}
         hideEmpty
         isVisible={displayGroup}

@@ -7,8 +7,8 @@ import { HStack } from "./Stack";
 import { Color, TextStyles, ViewStyles, useTheme } from "./Styles";
 import Text from "./Text";
 
-interface CoopButtonProps<T> {
-  coop?: T;
+interface CoopButtonProps {
+  id?: string;
   color: string;
   first?: boolean;
   last?: boolean;
@@ -24,17 +24,17 @@ interface CoopButtonProps<T> {
   goldenEgg: number;
   powerEgg: number;
   style?: StyleProp<ViewStyle>;
-  onPress?: (coop: T) => void;
+  onPress?: (id: string) => void;
 }
 
-const CoopButton = <T,>(props: CoopButtonProps<T>) => {
+const CoopButton = (props: CoopButtonProps) => {
   const theme = useTheme();
 
   const clearStyle = [TextStyles.b, { color: props.color }];
 
   const onPress = () => {
-    if (props.coop && props.onPress) {
-      props.onPress(props.coop);
+    if (props.id && props.onPress) {
+      props.onPress(props.id);
     }
   };
 

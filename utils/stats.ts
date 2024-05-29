@@ -125,7 +125,7 @@ export const getBattleBrief = (battle: VsHistoryDetailResult): BattleBrief => {
     ),
   };
 };
-const getSelfBattlePlayerBrief = (battle: BattleBrief) => {
+export const getSelfBattlePlayerBrief = (battle: BattleBrief) => {
   return battle.myTeam.find((player) => player.self)!;
 };
 export const getBattleStats = (...battles: BattleBrief[]): BattleStats => {

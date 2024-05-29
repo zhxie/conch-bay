@@ -424,13 +424,11 @@ const StatsModal = (props: StatsModalProps) => {
 
 interface StatsViewProps {
   disabled?: boolean;
-  onBriefs: () => Promise<Brief[]>;
+  briefs?: Brief[];
   style?: StyleProp<ViewStyle>;
 }
 
 const StatsView = (props: StatsViewProps) => {
-  const [briefs, setBriefs] = useState<Brief[]>();
-  const [loading, setLoading] = useState(false);
   const [displayStats, setDisplayStats] = useState(false);
   const [group, setGroup] = useState(0);
 
@@ -452,10 +450,10 @@ const StatsView = (props: StatsViewProps) => {
   }, [group]);
 
   const filtered = useMemo(() => {
-    if (!briefs) {
+    if (!props.briefs) {
       return undefined;
     }
-    return briefs.filter((result) => {
+    return props.briefs.filter((result) => {
       if (beginTime === 0) {
         return true;
       }
@@ -464,20 +462,13 @@ const StatsView = (props: StatsViewProps) => {
       }
       return result.coop!.time >= beginTime;
     });
-  }, [briefs, beginTime]);
+  }, [props.briefs, beginTime]);
 
-  const onStatsPress = async () => {
-    setLoading(true);
-    const results = await props.onBriefs();
-    setBriefs(results);
+  const onStatsPress = () => {
     setDisplayStats(true);
-    setLoading(false);
   };
   const onStatsClose = () => {
     setDisplayStats(false);
-  };
-  const onModalHide = () => {
-    setBriefs(undefined);
   };
   const onGroupChange = (event: NativeSyntheticEvent<NativeSegmentedControlIOSChangeEvent>) => {
     setGroup(event.nativeEvent.selectedSegmentIndex);
@@ -487,7 +478,6 @@ const StatsView = (props: StatsViewProps) => {
     <Center style={props.style}>
       <ToolButton
         disabled={props.disabled}
-        loading={loading}
         icon="bar-chart-2"
         title={t("stats")}
         onPress={onStatsPress}
@@ -497,7 +487,6 @@ const StatsView = (props: StatsViewProps) => {
         isVisible={displayStats}
         footer={<Notice title={t("stats_notice2")} />}
         onClose={onStatsClose}
-        onModalHide={onModalHide}
       >
         <SegmentedControl
           values={[t("all"), t("day"), t("week"), t("month"), t("season")]}

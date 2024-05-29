@@ -7,8 +7,8 @@ import { HStack } from "./Stack";
 import { Color, ViewStyles } from "./Styles";
 import Text from "./Text";
 
-interface BattleButtonProps<T> {
-  battle?: T;
+interface BattleButtonProps {
+  id?: string;
   color: string;
   first?: boolean;
   last?: boolean;
@@ -23,12 +23,12 @@ interface BattleButtonProps<T> {
   assist?: number;
   death?: number;
   special?: number;
-  ultraSignal?: number | null;
+  ultraSignal?: number;
   style?: StyleProp<ViewStyle>;
-  onPress?: (battle: T) => void;
+  onPress?: (id: string) => void;
 }
 
-const BattleButton = <T,>(props: BattleButtonProps<T>) => {
+const BattleButton = (props: BattleButtonProps) => {
   const killAndAssist =
     props.kill == undefined
       ? "-"
@@ -37,8 +37,8 @@ const BattleButton = <T,>(props: BattleButtonProps<T>) => {
       : props.kill;
 
   const onPress = () => {
-    if (props.battle && props.onPress) {
-      props.onPress(props.battle);
+    if (props.id && props.onPress) {
+      props.onPress(props.id);
     }
   };
 
@@ -62,7 +62,7 @@ const BattleButton = <T,>(props: BattleButtonProps<T>) => {
     >
       {props.result !== undefined && (
         <HStack center>
-          {props.ultraSignal !== undefined && props.ultraSignal !== null && (
+          {props.ultraSignal !== undefined && (
             <HStack center style={ViewStyles.mr1}>
               <Circle size={10} color={Color.UltraSignal} style={ViewStyles.mr1} />
               <Text numberOfLines={1}>{props.ultraSignal}</Text>

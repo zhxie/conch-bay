@@ -112,18 +112,12 @@ import { decode64String, encode64String } from "../utils/codec";
 import * as Database from "../utils/database";
 import { ok, sleep } from "../utils/promise";
 import { Brief } from "../utils/stats";
-import {
-  getImageCacheKey,
-  getImageHash,
-  getUserIconCacheSource,
-  isImageExpired,
-  roundPower,
-} from "../utils/ui";
+import { getImageCacheKey, getUserIconCacheSource, isImageExpired, roundPower } from "../utils/ui";
 import FilterView from "./FilterView";
 import FriendView from "./FriendView";
 import GearsView from "./GearsView";
 import ImportView from "./ImportView";
-import ResultView, { ResultGroup } from "./ResultView";
+import ResultView from "./ResultView";
 import RotationsView from "./RotationsView";
 import ScheduleView from "./ScheduleView";
 import ShopView from "./ShopView";
@@ -143,7 +137,7 @@ const devMenuItems = [
   {
     name: "Remove Latest Result",
     callback: async () => {
-      const result = await Database.queryDetailAll(0, 1);
+      const result = await Database.queryBrief();
       await Database.remove(result[0].id);
     },
   },
@@ -188,7 +182,7 @@ const MainView = () => {
   const [progress, setProgress] = useState(0);
   const [progressTotal, setProgressTotal] = useState(0);
   const [loadingMore, setLoadingMore] = useState(false);
-  const [processing, setProcessing] = useState(false);
+  const [refreshingGears, setRefreshingGears] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [support, setSupport] = useState(false);
   const [clearingCache, setClearingCache] = useState(false);
@@ -255,20 +249,15 @@ const MainView = () => {
   const [shop, setShop] = useState<Shop>();
   const [friends, setFriends] = useState<FriendListResult>();
   const [voting, setVoting] = useState<DetailVotingStatusResult>();
-  const [groups, setGroups] = useState<ResultGroup[]>();
+  const [briefs, setBriefs] = useState<Brief[]>();
+  const [count, setCount] = useState(20);
   const [filtered, setFiltered] = useState(0);
   const [total, setTotal] = useState(0);
   const [players, setPlayers] = useState<Record<string, string>>();
   const [filterOptions, setFilterOptions] = useState<Database.FilterProps>();
-  const [briefs, setBriefs] = useState<Brief[]>();
 
-  const count = useMemo(() => {
-    let current = 0;
-    for (const group of groups ?? []) {
-      current += (group.battles?.length ?? 0) + (group.coops?.length ?? 0);
-    }
-    return current;
-  }, [groups]);
+  const showedBriefs = useMemo(() => briefs?.slice(0, count), [briefs, count]);
+
   const allResultsShown = count >= filtered;
 
   const fade = useRef(new Animated.Value(0)).current;
@@ -311,7 +300,7 @@ const MainView = () => {
             await Database.upgrade();
             setUpgrade(false);
           }
-          await loadResults(20);
+          await loadBriefs();
           setReady(true);
         } catch (e) {
           setFault(new Error(`database corrupted: ${(e as Error).message}`));
@@ -357,12 +346,9 @@ const MainView = () => {
   useEffect(() => {
     filterRef.current = filter;
     if (ready) {
-      loadResults(20);
+      loadBriefs();
     }
   }, [filter]);
-  useEffect(() => {
-    setBriefs(undefined);
-  }, [filter, filtered]);
   useEffect(() => {
     if (!progressTotal) {
       setProgress(0);
@@ -404,7 +390,7 @@ const MainView = () => {
         if (ready) {
           const updated = await updatePlayedTime();
           if (updated) {
-            await loadResults(20);
+            loadBriefs();
           }
         }
       }
@@ -416,149 +402,30 @@ const MainView = () => {
     }
   }, [fault]);
 
-  const canGroupBattle = (battle: VsHistoryDetailResult, group: ResultGroup) => {
-    // Battles with the same mode and in the 2 hours (24 hours for tricolors and unlimited for
-    // privates) period will be regarded in the same group. There is also a 2 minutes grace period
-    // for battles when certain conditions are met.
-    // TODO: these grade conditions are not completed. E.g., regular battles even with the same
-    // stages cannot be regarded as in the same rotation. We have to check the context (the above
-    // only now) to group correctly.
-    if (group.battles) {
-      const mode = battle.vsHistoryDetail!.vsMode.id;
-      if (mode === group.battles[0].vsHistoryDetail!.vsMode.id) {
-        switch (mode) {
-          case "VnNNb2RlLTE=":
-          case "VnNNb2RlLTY=":
-          case "VnNNb2RlLTc=":
-            if (
-              Math.floor(dayjs(battle.vsHistoryDetail!.playedTime).valueOf() / 7200000) ===
-              Math.floor(dayjs(group.battles[0].vsHistoryDetail!.playedTime).valueOf() / 7200000)
-            ) {
-              return true;
-            }
-            break;
-          case "VnNNb2RlLTI=":
-          case "VnNNb2RlLTUx":
-          case "VnNNb2RlLTM=":
-          case "VnNNb2RlLTQ=":
-            if (
-              Math.floor(dayjs(battle.vsHistoryDetail!.playedTime).valueOf() / 7200000) ===
-                Math.floor(
-                  dayjs(group.battles[0].vsHistoryDetail!.playedTime).valueOf() / 7200000
-                ) ||
-              (battle.vsHistoryDetail!.vsRule.id === group.battles[0].vsHistoryDetail!.vsRule.id &&
-                Math.floor(dayjs(battle.vsHistoryDetail!.playedTime).valueOf() / 7200000) ===
-                  Math.floor(
-                    dayjs(group.battles[0].vsHistoryDetail!.playedTime)
-                      .subtract(2, "minute")
-                      .valueOf() / 7200000
-                  ))
-            ) {
-              return true;
-            }
-            break;
-          case "VnNNb2RlLTg=":
-            if (
-              Math.floor(dayjs(battle.vsHistoryDetail!.playedTime).valueOf() / 86400000) ===
-                Math.floor(
-                  dayjs(group.battles[0].vsHistoryDetail!.playedTime).valueOf() / 86400000
-                ) ||
-              Math.floor(dayjs(battle.vsHistoryDetail!.playedTime).valueOf() / 86400000) ===
-                Math.floor(
-                  dayjs(group.battles[0].vsHistoryDetail!.playedTime)
-                    .subtract(2, "minute")
-                    .valueOf() / 86400000
-                )
-            ) {
-              return true;
-            }
-            break;
-          case "VnNNb2RlLTU=":
-          default:
-            return true;
-        }
-      }
-    }
-    return false;
-  };
-
-  const canGroupCoop = (coop: CoopHistoryDetailResult, group: ResultGroup) => {
-    // Coops with the same rule, stage and supplied weapons in the 48 hours (2 hours period) will be
-    // regarded in the same group. There is also a 2 minutes grace period for coops when certain
-    // conditions are met.
-    if (group.coops) {
-      if (
-        coop.coopHistoryDetail!.rule === group.coops[0].coopHistoryDetail!.rule &&
-        coop.coopHistoryDetail!.coopStage.id === group.coops[0].coopHistoryDetail!.coopStage.id &&
-        coop.coopHistoryDetail!.weapons.map((weapon) => getImageHash(weapon.image.url)).join() ===
-          group.coops[0]
-            .coopHistoryDetail!.weapons.map((weapon) => getImageHash(weapon.image.url))
-            .join() &&
-        (Math.ceil(dayjs(coop.coopHistoryDetail!.playedTime).valueOf() / 7200000) -
-          Math.floor(dayjs(group.coops[0].coopHistoryDetail!.playedTime).valueOf() / 7200000) <=
-          24 ||
-          Math.ceil(dayjs(coop.coopHistoryDetail!.playedTime).valueOf() / 7200000) -
-            Math.floor(
-              dayjs(group.coops[0].coopHistoryDetail!.playedTime).subtract(2, "minute").valueOf() /
-                7200000
-            ) <=
-            24)
-      ) {
-        return true;
-      }
-    }
-    return false;
-  };
-
-  const loadResults = async (length: number) => {
+  const loadBriefs = async () => {
     setLoadingMore(true);
-    let offset: number, limit: number;
-    if (groups !== undefined && count >= 20 && length > count) {
-      offset = count;
-      limit = length - count;
-    } else {
-      offset = 0;
-      limit = length;
-    }
-
-    // Query results and merge into groups.
-    const records = await Database.queryDetailAll(offset, limit, filterRef.current);
-    const newGroups: ResultGroup[] = [];
-    if (groups !== undefined && count >= 20 && length > count) {
-      // Reuse groups on loading more results.
-      for (const group of groups) {
-        newGroups.push(group);
-      }
-    } else {
-      // Read total and filter options on loading new results.
-      const [filtered, newTotal] = await Promise.all([
-        Database.count(filterRef.current),
-        Database.count(),
-      ]);
-      setFiltered(filtered);
-      setTotal(newTotal);
-      if (newTotal !== total) {
-        const filterOptions = await Database.queryFilterOptions();
-        setFilterOptions(filterOptions);
-      }
-    }
+    const records = await Database.queryBrief(filter);
+    const briefs: Brief[] = [];
     for (const record of records) {
       if (record.mode === "salmon_run") {
-        const coop = JSON.parse(record.detail) as CoopHistoryDetailResult;
-        if (newGroups.length === 0 || !canGroupCoop(coop, newGroups[newGroups.length - 1])) {
-          newGroups.push({ coops: [] });
-        }
-        newGroups[newGroups.length - 1].coops!.push(coop);
+        briefs.push({ coop: JSON.parse(record.brief) });
       } else {
-        const battle = JSON.parse(record.detail) as VsHistoryDetailResult;
-        if (newGroups.length === 0 || !canGroupBattle(battle, newGroups[newGroups.length - 1])) {
-          newGroups.push({ battles: [] });
-        }
-        newGroups[newGroups.length - 1].battles!.push(battle);
+        briefs.push({ battle: JSON.parse(record.brief) });
       }
     }
-
-    setGroups(newGroups);
+    setBriefs(briefs);
+    setCount(20);
+    // Read total and filter options on loading new results.
+    const [filtered, newTotal] = await Promise.all([
+      Database.count(filterRef.current),
+      Database.count(),
+    ]);
+    setFiltered(filtered);
+    setTotal(newTotal);
+    if (newTotal !== total) {
+      const filterOptions = await Database.queryFilterOptions();
+      setFilterOptions(filterOptions);
+    }
     setLoadingMore(false);
   };
   const updatePlayedTime = async () => {
@@ -947,7 +814,7 @@ const MainView = () => {
     }
     const updated = await updatePlayedTime();
     if (n > 0 || updated) {
-      await loadResults(20);
+      await loadBriefs();
     }
     if (throwable > 1) {
       throw new Error();
@@ -978,6 +845,16 @@ const MainView = () => {
       setPlayers(newPlayers);
     }
     await promise;
+  };
+  const onQuery = (id: string) => {
+    const record = Database.queryDetail(id);
+    if (record) {
+      if (record.mode === "salmon_run") {
+        return { coop: JSON.parse(record.detail) };
+      } else {
+        return { battle: JSON.parse(record.detail) };
+      }
+    }
   };
   const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     // HACK: onScrollToTop has a delay, use onScroll instead.
@@ -1156,11 +1033,11 @@ const MainView = () => {
       await clearFilter();
     }
   };
-  const onShowMorePress = async () => {
+  const onShowMorePress = () => {
     if (allResultsShown) {
       return;
     }
-    await loadResults(count + 20);
+    setCount(count + 20);
   };
   const onShowMoreSelected = async (key: TimeRange) => {
     let num = 20;
@@ -1184,29 +1061,11 @@ const MainView = () => {
         num = filtered;
         break;
     }
-    await loadResults(num);
+    setCount(num);
   };
-  const onBriefsPress = async () => {
-    if (briefs) {
-      return briefs;
-    }
-    setProcessing(true);
-    const records = await Database.queryBrief(filter);
-    const results: Brief[] = [];
-    for (const record of records) {
-      if (record.mode === "salmon_run") {
-        results.push({ coop: JSON.parse(record.brief) });
-      } else {
-        results.push({ battle: JSON.parse(record.brief) });
-      }
-    }
-    setBriefs(results);
-    setProcessing(false);
-    return results;
-  };
-  const onGearsPress = async () => {
+  const onRefreshGears = async () => {
     try {
-      setProcessing(true);
+      setRefreshingGears(true);
       let newWebServiceToken: WebServiceToken | undefined = undefined;
       let newBulletToken = "";
       let equipmentsAttempt: MyOutfitCommonDataEquipmentsResult | undefined;
@@ -1237,10 +1096,10 @@ const MainView = () => {
             showBanner(BannerLevel.Warn, t("failed_to_load_gears", { error: e }));
             return undefined;
           }));
-      setProcessing(false);
+      setRefreshingGears(false);
       return equipments;
     } catch (e) {
-      setProcessing(false);
+      setRefreshingGears(false);
       showBanner(BannerLevel.Error, e);
     }
   };
@@ -1347,7 +1206,7 @@ const MainView = () => {
   const onImportComplete = async (n: number) => {
     // Query stored latest results if updated.
     if (n > 0) {
-      await loadResults(20);
+      await loadBriefs();
     }
     deactivateKeepAwake("import");
     setRefreshing(false);
@@ -1361,7 +1220,7 @@ const MainView = () => {
       await FileSystem.makeDirectoryAsync(`${dir}/battles`, { intermediates: true });
       let lastTime = 0;
       let duplicate = 0;
-      for await (const row of Database.queryDetailEach({
+      for await (const row of Database.queryEach({
         modes: ["salmon_run"],
         inverted: true,
       })) {
@@ -1380,7 +1239,7 @@ const MainView = () => {
       await FileSystem.makeDirectoryAsync(`${dir}/coops`, { intermediates: true });
       lastTime = 0;
       duplicate = 0;
-      for await (const row of Database.queryDetailEach({ modes: ["salmon_run"] })) {
+      for await (const row of Database.queryEach({ modes: ["salmon_run"] })) {
         const time = row.time / 1000;
         if (time == lastTime) {
           duplicate++;
@@ -1477,7 +1336,7 @@ const MainView = () => {
     try {
       // Preload images from saved results.
       const resources = new Map<string, string>();
-      for await (const row of Database.queryDetailEach()) {
+      for await (const row of Database.queryEach()) {
         if (row.mode === "salmon_run") {
           const coop = JSON.parse(row.detail) as CoopHistoryDetailResult;
           for (const memberResult of [
@@ -1730,7 +1589,7 @@ const MainView = () => {
     setClearingDatabase(true);
     await Database.clear();
     await clearPlayedTime();
-    loadResults(20);
+    await loadBriefs();
     setClearingDatabase(false);
     setSupport(false);
   };
@@ -1883,7 +1742,7 @@ const MainView = () => {
         <Animated.View style={[ViewStyles.f, { opacity: fade }]}>
           {/* HACK: it is a little bit weird concentrating on result list. */}
           <ResultView
-            groups={groups}
+            briefs={showedBriefs}
             refreshControl={
               <RefreshControl
                 progressViewOffset={insets.top}
@@ -2052,39 +1911,31 @@ const MainView = () => {
                   style={[ViewStyles.mb4, ViewStyles.wf]}
                 >
                   <HStack flex center style={ViewStyles.px4}>
-                    <StatsView
-                      disabled={processing}
-                      onBriefs={onBriefsPress}
-                      style={ViewStyles.mr2}
-                    />
-                    <TrendsView
-                      disabled={processing}
-                      onBriefs={onBriefsPress}
-                      style={ViewStyles.mr2}
-                    />
+                    <StatsView disabled={refreshingGears} briefs={briefs} style={ViewStyles.mr2} />
+                    <TrendsView disabled={refreshingGears} briefs={briefs} style={ViewStyles.mr2} />
                     <RotationsView
-                      disabled={processing}
-                      onBriefs={onBriefsPress}
+                      disabled={refreshingGears}
+                      briefs={briefs}
                       style={ViewStyles.mr2}
                     />
                     {sessionToken.length > 0 && (
                       <GearsView
-                        disabled={processing}
-                        onPress={onGearsPress}
+                        disabled={refreshingGears}
+                        onPress={onRefreshGears}
                         style={ViewStyles.mr2}
                       />
                     )}
                     {sessionToken.length > 0 && (
                       <SplatNetView
                         ref={splatNetViewRef}
-                        disabled={processing}
+                        disabled={refreshingGears}
                         lang={language}
                         style={ViewStyles.mr2}
                         onGetWebServiceToken={onGetWebServiceToken}
                       />
                     )}
                     <ImportView
-                      disabled={processing}
+                      disabled={refreshingGears}
                       onBegin={onImportBegin}
                       onResults={onImportResults}
                       onComplete={onImportComplete}
@@ -2142,6 +1993,7 @@ const MainView = () => {
             }
             filterDisabled={loadingMore}
             onFilterPlayer={onFilterPlayer}
+            onQuery={onQuery}
             onScroll={onScroll}
             onScrollBeginDrag={onScrollBegin}
             onScrollEndDrag={onScrollEndDrag}

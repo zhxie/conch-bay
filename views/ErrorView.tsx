@@ -62,7 +62,7 @@ const ErrorView = (props: ErrorViewProps) => {
     await FileSystem.makeDirectoryAsync(`${dir}/battles`, { intermediates: true });
     let lastTime = 0;
     let duplicate = 0;
-    for await (const row of Database.queryDetailEach({
+    for await (const row of Database.queryEach({
       modes: ["salmon_run"],
       inverted: true,
     })) {
@@ -81,7 +81,7 @@ const ErrorView = (props: ErrorViewProps) => {
     await FileSystem.makeDirectoryAsync(`${dir}/coops`, { intermediates: true });
     lastTime = 0;
     duplicate = 0;
-    for await (const row of Database.queryDetailEach({ modes: ["salmon_run"] })) {
+    for await (const row of Database.queryEach({ modes: ["salmon_run"] })) {
       const time = row.time / 1000;
       if (time == lastTime) {
         duplicate++;
