@@ -260,7 +260,7 @@ const en = {
     "Please export in ikawidget3 and import it. Please note, some information may not be accurate since IKAX3 contains encrypted data.",
   import_salmdroidnw_backup_notice: "Please backup in salmdroidNW and import it.",
   "import_salmonia3+_backup_notice":
-    "Please backup as JSON in Salmonia3+ and import it. Please note, some information may be missing since the Salmonia3+ backup does not contain all the data of results.",
+    "Please backup in Salmonia3+ and import it. Please note, some information may be missing since the Salmonia3+ backup does not contain all the data of results.",
   random: "Random",
   split_and_import_notice:
     "Conch Bay requires a lot of memory to import records. If Conch Bay cannot import records, you can split and import them. Please note, splitting and importing takes several minutes to tens of minutes.",

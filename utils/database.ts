@@ -572,7 +572,7 @@ export const remove = async (id: string) => {
 };
 export const clear = async () => {
   await db!.execAsync("DELETE FROM result");
-  // await db!.execAsync("VACUUM result");
+  await db!.execAsync("VACUUM");
 };
 export const drop = async () => {
   await db!.execAsync("PRAGMA user_version=0");

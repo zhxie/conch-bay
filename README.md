@@ -62,7 +62,7 @@ python3 tools/convert_salmdroidnw_backup.py <PATH_TO_SALMDROIDNW_BACKUP>
 Run the following command to extract and convert data from a Salmonia3+ backup into `conch-bay-import.zip`. You can then import it into Conch Bay. Notice that some information may be missing since the Salmonia3+ backup does not contain all the data of results.
 
 ```sh
-python3 tools/convert_salmonia3+_backup.py <PATH_TO_SALMONIA3+_PLAIN_JSON_BACKUP>
+python3 tools/convert_salmonia3+_backup.py <PATH_TO_SALMONIA3+_BACKUP>
 ```
 
 ### Rescue data from a Conch Bay database

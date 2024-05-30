@@ -2,9 +2,12 @@ from base64 import b64encode
 from dateutil import parser
 from hashlib import sha256
 import json
+import os
 import requests
 import sys
+import tempfile
 import utils
+import zipfile
 
 ENEMY_MAP = [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17, 20]
 
@@ -73,24 +76,24 @@ def construct_member_result(result, player):
         False,
     )
     background["textColor"] = {
-        "a": player["text_color"][3],
-        "b": player["text_color"][2],
-        "g": player["text_color"][1],
-        "r": player["text_color"][0],
+        "a": float(player["textColor"][3]),
+        "b": float(player["textColor"][2]),
+        "g": float(player["textColor"][1]),
+        "r": float(player["textColor"][0]),
     }
     special_weapon = (
-        construct_weapon(SPECIAL_WEAPON_IMAGE[player["special_id"]])
-        if player["special_id"] != None
+        construct_weapon(SPECIAL_WEAPON_IMAGE[player["specialId"]])
+        if player["specialId"] != None
         else None
     )
     if special_weapon != None:
-        special_weapon["weaponId"] = player["special_id"]
+        special_weapon["weaponId"] = player["specialId"]
     return {
         "player": {
             "__isPlayer": "CoopPlayer",
             "byname": player["byname"],
             "name": player["name"],
-            "nameId": player["name_id"],
+            "nameId": player["nameId"],
             "nameplate": {
                 "badges": list(
                     map(
@@ -109,26 +112,26 @@ def construct_member_result(result, player):
             ),
             "id": construct_id(
                 "CoopPlayer",
-                result["npln_user_id"],
-                result["play_time"],
+                result["nplnUserId"],
+                result["playTime"],
                 result["uuid"],
-                f":u-{player['npln_user_id']}",
+                f":u-{player['nplnUserId']}",
             ),
             "species": player["species"],
         },
         "weapons": list(
             map(
                 lambda x: construct_weapon(WEAPON_IMAGE[x]),
-                player["weapon_list"],
+                player["weaponList"],
             )
         ),
         "specialWeapon": special_weapon,
-        "defeatEnemyCount": player["boss_kill_counts_total"],
-        "deliverCount": player["ikura_num"],
-        "goldenAssistCount": player["golden_ikura_assist_num"],
-        "goldenDeliverCount": player["golden_ikura_num"],
-        "rescueCount": player["help_count"],
-        "rescuedCount": player["dead_count"],
+        "defeatEnemyCount": player["bossKillCountsTotal"],
+        "deliverCount": player["ikuraNum"],
+        "goldenAssistCount": player["goldenIkuraAssistNum"],
+        "goldenDeliverCount": player["goldenIkuraNum"],
+        "rescueCount": player["helpCount"],
+        "rescuedCount": player["deadCount"],
     }
 
 
@@ -198,21 +201,25 @@ def main():
         return
     warmup()
 
+    dir = tempfile.mkdtemp()
+    with zipfile.ZipFile(sys.argv[1], "r") as f:
+        f.extractall(dir)
+
     coops = []
-    with open(f"{sys.argv[1]}", encoding="utf-8") as f:
+    with open(f"{dir}/{os.listdir(dir)[0]}", encoding="utf-8") as f:
         data = json.loads(f.read())
         for schedule in data["schedules"]:
             for result in schedule["results"]:
                 enemyResults = []
                 for i in range(0, 14):
-                    if result["boss_counts"][i] != 0:
+                    if result["bossCounts"][i] != 0:
                         enemyResults.append(
                             {
-                                "defeatCount": result["players"][0]["boss_kill_counts"][
+                                "defeatCount": result["players"][0]["bossKillCounts"][
                                     i
                                 ],
-                                "teamDefeatCount": result["boss_kill_counts"][i],
-                                "popCount": result["boss_counts"][i],
+                                "teamDefeatCount": result["bossKillCounts"][i],
+                                "popCount": result["bossCounts"][i],
                                 "enemy": construct_image_obj(
                                     "CoopEnemy", ENEMY_MAP[i], ENEMY_IMAGE[ENEMY_MAP[i]]
                                 ),
@@ -222,12 +229,12 @@ def main():
                 for i in range(0, len(result["waves"])):
                     specialWeapon = []
                     for player in result["players"]:
-                        for _ in range(0, player["special_counts"][i]):
+                        for _ in range(0, player["specialCounts"][i]):
                             specialWeapon.append(
                                 construct_image_obj(
                                     "SpecialWeapon",
-                                    player["special_id"],
-                                    SPECIAL_WEAPON_IMAGE[player["special_id"]],
+                                    player["specialId"],
+                                    SPECIAL_WEAPON_IMAGE[player["specialId"]],
                                 )
                             )
                         specialWeapons.append(specialWeapon)
@@ -237,13 +244,13 @@ def main():
                             "__typename": "CoopHistoryDetail",
                             "id": construct_id(
                                 "CoopHistoryDetail",
-                                result["npln_user_id"],
-                                result["play_time"],
+                                result["nplnUserId"],
+                                result["playTime"],
                                 result["uuid"],
                             ),
                             "afterGrade": (
-                                construct_obj("CoopGrade", result["grade_id"])
-                                if result["grade_id"] != None
+                                construct_obj("CoopGrade", result["gradeId"])
+                                if result["gradeId"] != None
                                 else None
                             ),
                             "myResult": construct_member_result(
@@ -259,57 +266,59 @@ def main():
                                 {
                                     "boss": construct_image_obj(
                                         "CoopEnemy",
-                                        result["boss_id"],
-                                        ENEMY_IMAGE[result["boss_id"]],
+                                        result["bossId"],
+                                        ENEMY_IMAGE[result["bossId"]],
                                     ),
-                                    "hasDefeatBoss": result["is_boss_defeated"],
+                                    "hasDefeatBoss": result["isBossDefeated"],
                                 }
-                                if result["boss_id"] != None
+                                if result["bossId"] != None
                                 else None
                             ),
                             "enemyResults": enemyResults,
                             "waveResults": list(
                                 map(
                                     lambda x: {
-                                        "waveNumber": x["id"],
-                                        "waterLevel": x["water_level"],
+                                        "waveNumber": x["waveId"],
+                                        "waterLevel": x["waterLevel"],
                                         "eventWave": (
                                             construct_obj(
-                                                "CoopEventWave", x["event_type"]
+                                                "CoopEventWave", x["eventType"]
                                             )
-                                            if x["event_type"] != 0
+                                            if x["eventType"] != 0
                                             else None
                                         ),
-                                        "deliverNorm": x["quota_num"],
-                                        "goldenPopCount": x["golden_ikura_pop_num"],
-                                        "teamDeliverCount": x["golden_ikura_num"],
-                                        "specialWeapons": specialWeapons[x["id"] - 1],
+                                        "deliverNorm": x["quotaNum"],
+                                        "goldenPopCount": x["goldenIkuraPopNum"],
+                                        "teamDeliverCount": x["goldenIkuraNum"],
+                                        "specialWeapons": specialWeapons[
+                                            x["waveId"] - 1
+                                        ],
                                     },
                                     result["waves"],
                                 )
                             ),
                             "resultWave": (
-                                result["failure_wave"]
-                                if result["failure_wave"] != None
+                                result["failureWave"]
+                                if result["failureWave"] != None
                                 else 0
                             ),
-                            "playedTime": result["play_time"],
+                            "playedTime": result["playTime"],
                             "rule": schedule["rule"],
                             "coopStage": construct_image_obj(
                                 "CoopStage",
-                                schedule["stage_id"],
-                                COOP_STAGE_IMAGE[schedule["stage_id"]],
+                                schedule["stageId"],
+                                COOP_STAGE_IMAGE[schedule["stageId"]],
                             ),
-                            "dangerRate": result["danger_rate"],
-                            "scenarioCode": result["scenario_code"],
-                            "smellMeter": result["smell_meter"],
+                            "dangerRate": float(result["dangerRate"]),
+                            "scenarioCode": result["scenarioCode"],
+                            "smellMeter": result["smellMeter"],
                             "weapons": list(
                                 map(
                                     lambda x: construct_weapon(WEAPON_IMAGE[x]),
-                                    schedule["weapon_list"],
+                                    schedule["weaponList"],
                                 )
                             ),
-                            "afterGradePoint": result["grade_point"],
+                            "afterGradePoint": result["gradePoint"],
                             "scale": (
                                 {
                                     "gold": result["scale"][2],
@@ -319,10 +328,10 @@ def main():
                                 if result["scale"][0] != None
                                 else None
                             ),
-                            "jobPoint": result["kuma_point"],
-                            "jobScore": result["job_score"],
-                            "jobRate": result["job_rate"],
-                            "jobBonus": result["job_bonus"],
+                            "jobPoint": result["kumaPoint"],
+                            "jobScore": result["jobScore"],
+                            "jobRate": float(result["jobRate"]),
+                            "jobBonus": result["jobBonus"],
                             "nextHistoryDetail": None,
                             "previousHistoryDetail": None,
                         }

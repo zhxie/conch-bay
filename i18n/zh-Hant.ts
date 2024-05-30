@@ -250,7 +250,7 @@ const zhHant = {
     "請在ikawidget3中匯出並匯入。請注意，由於IKAX3包含加密數據，部分資訊可能不準確。",
   import_salmdroidnw_backup_notice: "請在salmdroidNW中備份並匯入。",
   "import_salmonia3+_backup_notice":
-    "請在Salmonia3+中備份為JSON並匯入。請注意，由於Salmonia3+備份並未包含記錄的所有數據，部分資訊可能缺失。",
+    "請在Salmonia3+中備份並匯入。請注意，由於Salmonia3+備份並未包含記錄的所有數據，部分資訊可能缺失。",
   random: "隨機",
   split_and_import_notice:
     "法螺灣需要佔用大量的記憶體以匯入記錄。如果法螺灣無法匯入記錄，您可以分割記錄並匯入。請注意，分割並匯入需要數分鐘到數十分鐘的時間。",

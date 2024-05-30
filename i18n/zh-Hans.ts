@@ -250,7 +250,7 @@ const zhHans = {
     "请在ikawidget3中导出并导入。请注意，由于IKAX3包含加密数据，部分信息可能不准确。",
   import_salmdroidnw_backup_notice: "请在salmdroidNW中备份并导入。",
   "import_salmonia3+_backup_notice":
-    "请在Salmonia3+中备份为JSON并导入。请注意，由于Salmonia3+备份并未包含记录的所有数据，部分信息可能缺失。",
+    "请在Salmonia3+中备份并导入。请注意，由于Salmonia3+备份并未包含记录的所有数据，部分信息可能缺失。",
   random: "随机",
   split_and_import_notice:
     "法螺湾需要占用大量的内存以导入记录。如果法螺湾无法导入记录，您可以分割记录并导入。请注意，分割并导入需要数分钟到数十分钟的时间。",
