@@ -8,7 +8,7 @@ import { getImageHash, getVsSelfPlayer } from "./ui";
 
 let db: SQLite.SQLiteDatabase | undefined = undefined;
 
-const VERSION = 9;
+const VERSION = 10;
 
 export const open = async () => {
   if (db) {
@@ -25,13 +25,13 @@ export const open = async () => {
   const record = (await db!.getFirstAsync<{ user_version: number }>("PRAGMA user_version"))!;
   const version = record.user_version;
   if (version < VERSION) {
-    return await count();
+    return true;
   }
   if (version > VERSION) {
     throw new Error(`unexpected database version ${version}`);
   }
 
-  return undefined;
+  return false;
 };
 export const upgrade = async () => {
   const record = (await db!.getFirstAsync<{ user_version: number }>("PRAGMA user_version"))!;
@@ -40,7 +40,9 @@ export const upgrade = async () => {
     await beginTransaction();
     try {
       await db!.execAsync('ALTER TABLE result ADD COLUMN stage TEXT NOT NULL DEFAULT ""');
-      for await (const row of queryEach()) {
+      for await (const row of db!.getEachAsync<{ id: string; mode: string; detail: string }>(
+        `SELECT id, mode, detail FROM result`
+      )) {
         if (row.mode === "salmon_run") {
           await db!.runAsync(
             "UPDATE result SET stage = ? WHERE id = ?",
@@ -106,7 +108,9 @@ export const upgrade = async () => {
     await beginTransaction();
     try {
       const statement = await db!.prepareAsync("UPDATE result SET players = ? WHERE id = ?");
-      for await (const row of queryEach()) {
+      for await (const row of db!.getEachAsync<{ id: string; mode: string; detail: string }>(
+        `SELECT id, mode, detail FROM result`
+      )) {
         if (row.mode === "salmon_run") {
           const coop = JSON.parse(row.detail);
           let selfPlayer: string;
@@ -166,7 +170,9 @@ export const upgrade = async () => {
     try {
       await db!.execAsync("ALTER TABLE result RENAME COLUMN stats TO brief");
       const statement = await db!.prepareAsync("UPDATE result SET brief = ? WHERE id = ?");
-      for await (const row of queryEach()) {
+      for await (const row of db!.getEachAsync<{ id: string; mode: string; detail: string }>(
+        `SELECT id, mode, detail FROM result`
+      )) {
         if (row.mode === "salmon_run") {
           await statement.executeAsync(
             JSON.stringify(getCoopBrief(JSON.parse(row.detail))),
@@ -186,6 +192,53 @@ export const upgrade = async () => {
       await rollback();
       throw e;
     }
+  }
+  if (version < 10) {
+    await beginTransaction();
+    try {
+      await db!.execAsync(
+        "CREATE TABLE IF NOT EXISTS brief ( id TEXT PRIMARY KEY, time INT NOT NULL, mode TEXT NOT NULL, rule TEXT NOT NULL, stage TEXT NOT NULL, weapon TEXT NOT NULL, players TEXT NOT NULL, brief TEXT NOT NULL )"
+      );
+      await db!.execAsync(
+        "CREATE TABLE IF NOT EXISTS detail ( id TEXT PRIMARY KEY, time INT NOT NULL, mode TEXT NOT NULL, detail TEXT NOT NULL )"
+      );
+      const briefStatement = await db!.prepareAsync(
+        "INSERT INTO brief VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+      );
+      const detailStatement = await db!.prepareAsync("INSERT INTO detail VALUES (?, ?, ?, ?)");
+      for await (const row of db!.getEachAsync<{
+        id: string;
+        time: number;
+        mode: string;
+        rule: string;
+        weapon: string;
+        players: string;
+        detail: string;
+        stage: string;
+        brief: string;
+      }>(`SELECT id, time, mode, rule, weapon, players, detail, stage, brief FROM result`)) {
+        await briefStatement.executeAsync(
+          row.id,
+          row.time,
+          row.mode,
+          row.rule,
+          row.stage,
+          row.weapon,
+          row.players,
+          row.brief
+        );
+        await detailStatement.executeAsync(row.id, row.time, row.mode, row.detail);
+      }
+      await briefStatement.finalizeAsync();
+      await detailStatement.finalizeAsync();
+      await db!.execAsync("DROP TABLE result");
+      await db!.execAsync("PRAGMA user_version=10");
+      await commit();
+    } catch (e) {
+      await rollback();
+      throw e;
+    }
+    await db!.execAsync("VACUUM");
   }
 };
 export const close = () => {
@@ -282,22 +335,13 @@ const convertFilter = (filter?: FilterProps, from?: number) => {
   return `WHERE ${condition}`;
 };
 
-export const queryEach = (filter?: FilterProps) => {
-  let condition: string = "";
-  if (filter) {
-    condition = convertFilter(filter);
-  }
-  return db!.getEachAsync<{ id: string; time: number; mode: string; detail: string }>(
-    `SELECT id, time, mode, detail FROM result ${condition} ORDER BY time DESC`
-  );
-};
 export const queryBrief = async (filter?: FilterProps) => {
   let condition: string = "";
   if (filter) {
     condition = convertFilter(filter);
   }
   const record = await db!.getAllAsync<{ id: string; mode: string; brief: string }>(
-    `SELECT id, mode, brief FROM result ${condition} ORDER BY time DESC`
+    `SELECT id, mode, brief FROM brief ${condition} ORDER BY time DESC`
   );
   return record;
 };
@@ -307,7 +351,7 @@ export const queryDetail = (id: string) => {
     return details.get(id);
   }
   const record = db!.getFirstSync<{ mode: string; detail: string }>(
-    "SELECT mode, detail FROM result WHERE id = ?",
+    "SELECT mode, detail FROM detail WHERE id = ?",
     id
   );
   if (record) {
@@ -315,9 +359,14 @@ export const queryDetail = (id: string) => {
   }
   return record;
 };
+export const queryDetailEach = () => {
+  return db!.getEachAsync<{ id: string; time: number; mode: string; detail: string }>(
+    `SELECT id, time, mode, detail FROM detail`
+  );
+};
 export const queryLatestTime = async () => {
   const record = await db!.getFirstAsync<{ time: number }>(
-    "SELECT time FROM result ORDER BY time DESC"
+    "SELECT time FROM brief ORDER BY time DESC"
   );
   return record?.time;
 };
@@ -338,10 +387,10 @@ export const queryFilterOptions = async () => {
       weapons: new Set<string>(),
     };
 
-    const modeSql = "SELECT DISTINCT mode FROM result";
-    const ruleSql = "SELECT DISTINCT rule FROM result";
-    const stageSql = "SELECT DISTINCT stage FROM result";
-    const weaponSql = "SELECT DISTINCT weapon FROM result";
+    const modeSql = "SELECT DISTINCT mode FROM brief";
+    const ruleSql = "SELECT DISTINCT rule FROM brief";
+    const stageSql = "SELECT DISTINCT stage FROM brief";
+    const weaponSql = "SELECT DISTINCT weapon FROM brief";
 
     const [modeRecord, ruleRecord, stageRecord, weaponRecord] = await Promise.all([
       db!.getAllAsync<{ mode: string }>(modeSql),
@@ -455,12 +504,12 @@ export const count = async (filter?: FilterProps, from?: number) => {
     condition = convertFilter(filter, from);
   }
   const record = (await db!.getFirstAsync<{ "COUNT(1)": number }>(
-    `SELECT COUNT(1) FROM result ${condition}`
+    `SELECT COUNT(1) FROM brief ${condition}`
   ))!;
   return record["COUNT(1)"];
 };
 export const isExist = async (id: string) => {
-  const record = await db!.getFirstAsync<{ id: string }>("SELECT id FROM result WHERE id = ?", id);
+  const record = await db!.getFirstAsync<{ id: string }>("SELECT id FROM brief WHERE id = ?", id);
   return record !== null;
 };
 export const add = async (
@@ -468,11 +517,11 @@ export const add = async (
   time: number,
   mode: string,
   rule: string,
+  stage: string,
   weapon: string,
   players: string[],
-  detail: string,
-  stage: string,
-  brief: string
+  brief: string,
+  detail: string
 ) => {
   if (filterOptions) {
     if (mode) {
@@ -491,17 +540,17 @@ export const add = async (
     }
   }
   await db!.runAsync(
-    "INSERT INTO result VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+    "INSERT INTO brief VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
     id,
     time,
     mode,
     rule,
+    stage,
     weapon,
     players.join(","),
-    detail,
-    stage,
     brief
   );
+  await db!.runAsync("INSERT INTO detail VALUES (?, ?, ?, ?)", id, time, mode, detail);
 };
 export const addBattle = async (battle: VsHistoryDetailResult) => {
   return await add(
@@ -509,6 +558,7 @@ export const addBattle = async (battle: VsHistoryDetailResult) => {
     new Date(battle.vsHistoryDetail!.playedTime).valueOf(),
     battle.vsHistoryDetail!.vsMode.id,
     battle.vsHistoryDetail!.vsRule.id,
+    battle.vsHistoryDetail!.vsStage.id,
     getVsSelfPlayer(battle).weapon.id,
     battle
       .vsHistoryDetail!.myTeam.players.map((player) => {
@@ -532,9 +582,8 @@ export const addBattle = async (battle: VsHistoryDetailResult) => {
           .flat()
       )
       .filter((player) => player),
-    JSON.stringify(battle),
-    battle.vsHistoryDetail!.vsStage.id,
-    JSON.stringify(getBattleBrief(battle))
+    JSON.stringify(getBattleBrief(battle)),
+    JSON.stringify(battle)
   );
 };
 export const addCoop = async (coop: CoopHistoryDetailResult) => {
@@ -549,6 +598,7 @@ export const addCoop = async (coop: CoopHistoryDetailResult) => {
     new Date(coop.coopHistoryDetail!.playedTime).valueOf(),
     "salmon_run",
     coop.coopHistoryDetail!.rule,
+    coop.coopHistoryDetail!.coopStage.id,
     coop
       .coopHistoryDetail!.myResult.weapons.map((weapon) => getImageHash(weapon.image.url))
       .join(","),
@@ -562,19 +612,21 @@ export const addCoop = async (coop: CoopHistoryDetailResult) => {
       })
       .concat(selfPlayer)
       .filter((player) => player),
-    JSON.stringify(coop),
-    coop.coopHistoryDetail!.coopStage.id,
-    JSON.stringify(getCoopBrief(coop))
+    JSON.stringify(getCoopBrief(coop)),
+    JSON.stringify(coop)
   );
 };
 export const remove = async (id: string) => {
-  await db!.runAsync("DELETE FROM result WHERE id = ?", id);
+  await db!.runAsync("DELETE FROM brief WHERE id = ?", id);
+  await db!.runAsync("DELETE FROM detail WHERE id = ?", id);
 };
 export const clear = async () => {
-  await db!.execAsync("DELETE FROM result");
+  await db!.execAsync("DELETE FROM brief");
+  await db!.execAsync("DELETE FROM detail");
   await db!.execAsync("VACUUM");
 };
 export const drop = async () => {
   await db!.execAsync("PRAGMA user_version=0");
-  await db!.execAsync("DROP TABLE result");
+  await db!.execAsync("DROP TABLE brief");
+  await db!.execAsync("DROP TABLE detail");
 };

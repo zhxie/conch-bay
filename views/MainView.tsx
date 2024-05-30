@@ -330,10 +330,8 @@ const MainView = () => {
             setFilter(newFilter);
           }
           const upgrade = await Database.open();
-          if (upgrade !== undefined) {
-            if (upgrade > 0) {
-              setUpgrade(true);
-            }
+          if (upgrade) {
+            setUpgrade(true);
             await Database.upgrade();
             setUpgrade(false);
           }
@@ -1254,40 +1252,29 @@ const MainView = () => {
     const uri = FileSystem.cacheDirectory + "conch-bay-export.zip";
     try {
       await FileSystem.makeDirectoryAsync(dir, { intermediates: true });
-      await FileSystem.makeDirectoryAsync(`${dir}/battles`, { intermediates: true });
-      let lastTime = 0;
-      let duplicate = 0;
-      for await (const row of Database.queryEach({
-        modes: ["salmon_run"],
-        inverted: true,
-      })) {
+      await Promise.all([
+        FileSystem.makeDirectoryAsync(`${dir}/battles`, { intermediates: true }),
+        FileSystem.makeDirectoryAsync(`${dir}/coops`, { intermediates: true }),
+      ]);
+      const battleDuplicate = new Map<number, number>();
+      const coopDuplicate = new Map<number, number>();
+      for await (const row of Database.queryDetailEach()) {
         const time = row.time / 1000;
-        if (time == lastTime) {
-          duplicate++;
+        if (row.mode === "salmon_run") {
+          const sequence = (coopDuplicate.get(time) ?? 0) + 1;
+          coopDuplicate.set(time, sequence);
+          await FileSystem.writeAsStringAsync(
+            `${dir}/coops/${time}${sequence ? `-${sequence}` : ""}.json`,
+            row.detail
+          );
         } else {
-          duplicate = 0;
+          const sequence = (battleDuplicate.get(time) ?? 0) + 1;
+          battleDuplicate.set(time, sequence);
+          await FileSystem.writeAsStringAsync(
+            `${dir}/battles/${time}${sequence > 1 ? `-${sequence}` : ""}.json`,
+            row.detail
+          );
         }
-        lastTime = time;
-        await FileSystem.writeAsStringAsync(
-          `${dir}/battles/${time}${duplicate ? `-${duplicate}` : ""}.json`,
-          row.detail
-        );
-      }
-      await FileSystem.makeDirectoryAsync(`${dir}/coops`, { intermediates: true });
-      lastTime = 0;
-      duplicate = 0;
-      for await (const row of Database.queryEach({ modes: ["salmon_run"] })) {
-        const time = row.time / 1000;
-        if (time == lastTime) {
-          duplicate++;
-        } else {
-          duplicate = 0;
-        }
-        lastTime = time;
-        await FileSystem.writeAsStringAsync(
-          `${dir}/coops/${time}${duplicate ? `-${duplicate}` : ""}.json`,
-          row.detail
-        );
       }
       await zip(dir, uri);
 
@@ -1373,7 +1360,7 @@ const MainView = () => {
     try {
       // Preload images from saved results.
       const resources = new Map<string, string>();
-      for await (const row of Database.queryEach()) {
+      for await (const row of Database.queryDetailEach()) {
         if (row.mode === "salmon_run") {
           const coop = JSON.parse(row.detail) as CoopHistoryDetailResult;
           for (const memberResult of [
