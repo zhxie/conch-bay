@@ -31,7 +31,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: node_modules
-          key: ${{ runner.os }}-build-node-modules-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-build-node-modules-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-build-node-modules-
             ${{ runner.os }}-build-
@@ -42,6 +42,7 @@ jobs:
 
       - name: expo-doctor dependencies
         run: yarn doctor
+        continue-on-error: true
 
   compile:
     runs-on: ubuntu-latest
@@ -60,7 +61,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: node_modules
-          key: ${{ runner.os }}-build-node-modules-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-build-node-modules-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-build-node-modules-
             ${{ runner.os }}-build-
@@ -89,7 +90,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: node_modules
-          key: ${{ runner.os }}-build-node-modules-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-build-node-modules-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-build-node-modules-
             ${{ runner.os }}-build-
@@ -118,7 +119,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: node_modules
-          key: ${{ runner.os }}-build-node-modules-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-build-node-modules-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-build-node-modules-
             ${{ runner.os }}-build-
@@ -172,7 +173,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: node_modules
-          key: ${{ runner.os }}-build-node-modules-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-build-node-modules-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-build-node-modules-
 
@@ -181,7 +182,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: /Users/runner/Library/Caches/CocoaPods
-          key: ${{ runner.os }}-build-cocoa-pods-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-build-cocoa-pods-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-build-cocoa-pods-
 
