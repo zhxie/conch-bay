@@ -330,7 +330,11 @@ def main():
                             ),
                             "jobPoint": result["kumaPoint"],
                             "jobScore": result["jobScore"],
-                            "jobRate": float(result["jobRate"]),
+                            "jobRate": (
+                                float(result["jobRate"])
+                                if result["jobRate"] != None
+                                else None
+                            ),
                             "jobBonus": result["jobBonus"],
                             "nextHistoryDetail": None,
                             "previousHistoryDetail": None,

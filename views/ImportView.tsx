@@ -1089,7 +1089,7 @@ const ImportView = (props: ImportViewProps) => {
                   : null,
               jobPoint: result["kumaPoint"],
               jobScore: result["jobScore"],
-              jobRate: parseFloat(result["jobRate"]),
+              jobRate: result["jobRate"] === null ? null : parseFloat(result["jobRate"]),
               jobBonus: result["jobBonus"],
               nextHistoryDetail: null,
               previousHistoryDetail: null,
