@@ -153,6 +153,8 @@ const ja = {
   filter_notice: "フィルターボタンを長押しするとフィルターをクリアできます。",
   // Result.
   n_x_battle: "%{n}倍マッチ",
+  conch_clash: "ホラガイ争奪戦",
+  n_x_conch_clash: "%{n}倍ホラガイ争奪戦",
   n_win_strike: "%{n}連勝",
   score_n: "%{score}カウント",
   knock_out: "ノックアウト！",

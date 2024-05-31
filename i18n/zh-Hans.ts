@@ -146,6 +146,8 @@ const zhHans = {
   filter_notice: "您可以通过长按筛选按钮清除筛选。",
   // Result.
   n_x_battle: "%{n}倍比赛",
+  conch_clash: "法螺争夺战",
+  n_x_conch_clash: "%{n}倍法螺争夺战",
   n_win_strike: "%{n}连胜",
   score_n: "%{score}计数",
   knock_out: "完胜！",

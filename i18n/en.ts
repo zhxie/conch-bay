@@ -151,6 +151,8 @@ const en = {
   filter_notice: "You can clear filters by long pressing on the filter button.",
   // Result.
   n_x_battle: "%{n}x Battle",
+  conch_clash: "Conch Clash",
+  n_x_conch_clash: "%{n}x Conch Clash",
   n_win_strike: "%{n}-WIN STRIKE",
   score_n: "Score %{score}",
   knock_out: "KNOCKOUT!",

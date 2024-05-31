@@ -1,4 +1,20 @@
 # Fix missing null on linked array field, update queries and type definitions.
+diff --git a/node_modules/splatnet3-types/dist/enum.d.ts b/node_modules/splatnet3-types/dist/enum.d.ts
+index 1501aba..6f03231 100644
+--- a/node_modules/splatnet3-types/dist/enum.d.ts
++++ b/node_modules/splatnet3-types/dist/enum.d.ts
+@@ -37,7 +37,10 @@ export declare enum DragonMatchType {
+     NORMAL = "NORMAL",
+     DECUPLE = "DECUPLE",
+     DRAGON = "DRAGON",
+-    DOUBLE_DRAGON = "DOUBLE_DRAGON"
++    DOUBLE_DRAGON = "DOUBLE_DRAGON",
++    CONCH_SHELL_SCRAMBLE = "CONCH_SHELL_SCRAMBLE",
++    CONCH_SHELL_SCRAMBLE_10 = "CONCH_SHELL_SCRAMBLE_10",
++    CONCH_SHELL_SCRAMBLE_33 = "CONCH_SHELL_SCRAMBLE_33",
+ }
+ export declare enum FestDragonCert {
+     NONE = "NONE",
 diff --git a/node_modules/splatnet3-types/dist/generated-type-helpers.d.ts b/node_modules/splatnet3-types/dist/generated-type-helpers.d.ts
 index c448e28..183a6fd 100644
 --- a/node_modules/splatnet3-types/dist/generated-type-helpers.d.ts
@@ -115,7 +131,7 @@ index 20ce97d..a0ce888 100644
  };
  declare type CoopSupplyWeapon_splatoon3ink = Pick<CoopSupplyWeapon, 'name' | 'image'> & {
 diff --git a/node_modules/splatnet3-types/dist/types.d.ts b/node_modules/splatnet3-types/dist/types.d.ts
-index 20f737f..aff3314 100644
+index 20f737f..913bca0 100644
 --- a/node_modules/splatnet3-types/dist/types.d.ts
 +++ b/node_modules/splatnet3-types/dist/types.d.ts
 @@ -264,7 +264,7 @@ export interface CoopHistoryDetail {
@@ -147,3 +163,11 @@ index 20f737f..aff3314 100644
  }
  export interface VsHistoryGroup {
      __typename: 'VsHistoryGroup';
+@@ -1039,6 +1039,7 @@ export interface FestMatchHistory {
+     contribution: number;
+     jewel: number;
+     myFestPower: number | null;
++    conchShell: number | null;
+ }
+ export declare type VsHistoryGroupConnection = Connection<VsHistoryGroup>;
+ export declare type VsHistoryDetailConnection = Connection<VsHistoryDetail>;

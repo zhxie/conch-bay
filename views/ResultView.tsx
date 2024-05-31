@@ -325,6 +325,12 @@ const ResultView = (props: ResultViewProps) => {
           return t("n_x_battle", { n: 100 });
         case DragonMatchType.DOUBLE_DRAGON:
           return t("n_x_battle", { n: 333 });
+        case DragonMatchType.CONCH_SHELL_SCRAMBLE:
+          return t("conch_clash");
+        case DragonMatchType.CONCH_SHELL_SCRAMBLE_10:
+          return t("n_x_conch_clash", { n: 10 });
+        case DragonMatchType.CONCH_SHELL_SCRAMBLE_33:
+          return t("n_x_conch_clash", { n: 33 });
       }
     }
   };

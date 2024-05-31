@@ -146,6 +146,8 @@ const zhHant = {
   filter_notice: "您可以透過長按篩選按鈕清除篩選。",
   // Result.
   n_x_battle: "%{n}倍比賽",
+  conch_clash: "法螺爭奪戰",
+  n_x_conch_clash: "%{n}倍法螺爭奪戰",
   n_win_strike: "%{n}連勝",
   score_n: "%{score}計數",
   knock_out: "完勝！",
