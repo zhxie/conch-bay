@@ -5,6 +5,7 @@ const base = {
   "es-ES": "Español",
   "es-MX": "Español (México)",
   "fr-CA": "Français (Canada)",
+  "fr-FR": "Français (France)",
   "it-IT": "Italiano",
   "ja-JP": "日本語",
   "ko-KR": "한국어",

@@ -2230,6 +2230,7 @@ const MainView = () => {
                   { key: "es-ES", value: t("es-ES") },
                   { key: "es-MX", value: t("es-MX") },
                   { key: "fr-CA", value: t("fr-CA") },
+                  { key: "fr-FR", value: t("fr-FR") },
                   { key: "it-IT", value: t("it-IT") },
                   { key: "ja-JP", value: t("ja-JP") },
                   { key: "ko-KR", value: t("ko-KR") },
