@@ -1445,7 +1445,10 @@ const ResultView = (props: ResultViewProps) => {
                                     <EmptyBossSalmonidBox
                                       key={j}
                                       firstRow={i === 0}
-                                      lastRow={i === rows.length - 1}
+                                      lastRow={
+                                        !result.coop!.coopHistoryDetail!.bossResult &&
+                                        i === rows.length - 1
+                                      }
                                       firstColumn={j === 0}
                                       lastColumn={j === columns.length - 1}
                                     />
@@ -1453,7 +1456,10 @@ const ResultView = (props: ResultViewProps) => {
                                     <BossSalmonidBox
                                       key={j}
                                       firstRow={i === 0}
-                                      lastRow={i === rows.length - 1}
+                                      lastRow={
+                                        !result.coop!.coopHistoryDetail!.bossResult &&
+                                        i === rows.length - 1
+                                      }
                                       firstColumn={j === 0}
                                       lastColumn={j === columns.length - 1}
                                       color={
@@ -1485,6 +1491,34 @@ const ResultView = (props: ResultViewProps) => {
                                 )}
                             </HStack>
                           ))}
+                      </VStack>
+                    )}
+                    {result.coop.coopHistoryDetail!.bossResult && (
+                      <VStack>
+                        <HStack>
+                          {(
+                            result.coop.coopHistoryDetail!["bossResults"] || [
+                              result.coop.coopHistoryDetail!.bossResult,
+                            ]
+                          ).map((bossResult, i, bossResults) => (
+                            <BossSalmonidBox
+                              key={i}
+                              firstRow={result.coop!.coopHistoryDetail!.enemyResults.length === 0}
+                              lastRow
+                              firstColumn={i === 0}
+                              lastColumn={i === bossResults.length - 1}
+                              color={
+                                bossResult.hasDefeatBoss
+                                  ? getCoopRuleColor(result.coop!.coopHistoryDetail!.rule)!
+                                  : undefined
+                              }
+                              name={td(bossResult.boss)}
+                              defeat={0}
+                              teamDefeat={bossResult.hasDefeatBoss ? 1 : 0}
+                              appearance={1}
+                            />
+                          ))}
+                        </HStack>
                       </VStack>
                     )}
                   </VStack>

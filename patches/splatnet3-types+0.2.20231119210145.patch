@@ -131,10 +131,17 @@ index 20ce97d..a0ce888 100644
  };
  declare type CoopSupplyWeapon_splatoon3ink = Pick<CoopSupplyWeapon, 'name' | 'image'> & {
 diff --git a/node_modules/splatnet3-types/dist/types.d.ts b/node_modules/splatnet3-types/dist/types.d.ts
-index 20f737f..913bca0 100644
+index 20f737f..6100aa8 100644
 --- a/node_modules/splatnet3-types/dist/types.d.ts
 +++ b/node_modules/splatnet3-types/dist/types.d.ts
-@@ -264,7 +264,7 @@ export interface CoopHistoryDetail {
+@@ -258,13 +258,14 @@ export interface CoopHistoryDetail {
+     afterGradePoint: number | null;
+     gradePointDiff: CoopGradePointDiff | keyof typeof CoopGradePointDiff;
+     bossResult: CoopBossResult | null;
++    bossResults: CoopBossResult[] | null;
+     myResult: CoopPlayerResult;
+     memberResults: CoopPlayerResult[];
+     enemyResults: CoopEnemyResult[];
      waveResults: CoopWaveResult[];
      playedTime: string;
      dangerRate: number;
@@ -143,7 +150,7 @@ index 20f737f..913bca0 100644
      smellMeter: number | null;
      scale: CoopScale | null;
      jobPoint: number | null;
-@@ -273,8 +273,8 @@ export interface CoopHistoryDetail {
+@@ -273,8 +274,8 @@ export interface CoopHistoryDetail {
      jobBonus: number | null;
  }
  export interface CoopBossResult {
@@ -154,7 +161,7 @@ index 20f737f..913bca0 100644
  }
  export interface CoopPlayerResult {
      player: CoopPlayer;
-@@ -895,7 +895,7 @@ export interface VsHistorySummary {
+@@ -895,7 +896,7 @@ export interface VsHistorySummary {
      xPowerLf: XPower | null;
  }
  export interface XPower {
@@ -163,7 +170,7 @@ index 20f737f..913bca0 100644
  }
  export interface VsHistoryGroup {
      __typename: 'VsHistoryGroup';
-@@ -1039,6 +1039,7 @@ export interface FestMatchHistory {
+@@ -1039,6 +1040,7 @@ export interface FestMatchHistory {
      contribution: number;
      jewel: number;
      myFestPower: number | null;
