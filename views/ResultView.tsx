@@ -204,22 +204,48 @@ const ResultView = (props: ResultViewProps) => {
     return false;
   };
   const canGroupCoop = (coop: CoopBrief, group: Brief[]) => {
-    // Coops with the same rule, stage and supplied weapons in the 48 hours (2 hours period) will be
-    // regarded in the same group. There is also a 2 minutes grace period for coops when certain
-    // conditions are met.
+    // Coops with the same rule, stage (no restriction for Big Run, since there are random stages)
+    // and supplied weapons in the 48 hours (2 hours period) will be regarded in the same group.
+    // Coops without points will be regarded as privates and will be grouped without any condition.
+    // There is also a 2 minutes grace period for coops when certain conditions are met.
     if (group[0]?.coop) {
-      if (
-        coop.rule === group[0].coop.rule &&
-        coop.stage === group[0].coop.stage &&
-        coop.suppliedWeapons.join(",") === group[0].coop.suppliedWeapons.join(",") &&
-        (Math.ceil(dayjs(coop.time).valueOf() / 7200000) -
-          Math.floor(dayjs(group[0].coop.time).valueOf() / 7200000) <=
-          24 ||
-          Math.ceil(dayjs(coop.time).valueOf() / 7200000) -
-            Math.floor(dayjs(group[0].coop.time).subtract(2, "minute").valueOf() / 7200000) <=
-            24)
-      ) {
-        return true;
+      if (coop.private || group[0].coop.private) {
+        if (coop.private && group[0].coop.private) {
+          return true;
+        }
+        return false;
+      }
+      switch (coop.rule) {
+        case CoopRule.REGULAR:
+        case CoopRule.TEAM_CONTEST:
+          if (
+            coop.rule === group[0].coop.rule &&
+            coop.stage === group[0].coop.stage &&
+            coop.suppliedWeapons.join(",") === group[0].coop.suppliedWeapons.join(",") &&
+            (Math.ceil(dayjs(coop.time).valueOf() / 7200000) -
+              Math.floor(dayjs(group[0].coop.time).valueOf() / 7200000) <=
+              24 ||
+              Math.ceil(dayjs(coop.time).valueOf() / 7200000) -
+                Math.floor(dayjs(group[0].coop.time).subtract(2, "minute").valueOf() / 7200000) <=
+                24)
+          ) {
+            return true;
+          }
+          break;
+        case CoopRule.BIG_RUN:
+          if (
+            coop.rule === group[0].coop.rule &&
+            coop.suppliedWeapons.join(",") === group[0].coop.suppliedWeapons.join(",") &&
+            (Math.ceil(dayjs(coop.time).valueOf() / 7200000) -
+              Math.floor(dayjs(group[0].coop.time).valueOf() / 7200000) <=
+              24 ||
+              Math.ceil(dayjs(coop.time).valueOf() / 7200000) -
+                Math.floor(dayjs(group[0].coop.time).subtract(2, "minute").valueOf() / 7200000) <=
+                24)
+          ) {
+            return true;
+          }
+          break;
       }
     }
     return false;

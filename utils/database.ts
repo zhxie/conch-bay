@@ -8,7 +8,7 @@ import { getImageHash, getVsSelfPlayer } from "./ui";
 
 let db: SQLite.SQLiteDatabase | undefined = undefined;
 
-const VERSION = 10;
+const VERSION = 11;
 
 export const open = async () => {
   if (db) {
@@ -239,6 +239,26 @@ export const upgrade = async () => {
       throw e;
     }
     await db!.execAsync("VACUUM");
+  }
+  if (version < 11) {
+    await beginTransaction();
+    try {
+      const statement = await db!.prepareAsync("UPDATE brief SET brief = ? WHERE id = ?");
+      for await (const row of queryDetailEach()) {
+        if (row.mode === "salmon_run") {
+          await statement.executeAsync(
+            JSON.stringify(getCoopBrief(JSON.parse(row.detail))),
+            row.id
+          );
+        }
+      }
+      await statement.finalizeAsync();
+      await db!.execAsync("PRAGMA user_version=11");
+      await commit();
+    } catch (e) {
+      await rollback();
+      throw e;
+    }
   }
 };
 export const close = () => {

@@ -302,6 +302,7 @@ export interface CoopBrief {
   id: string;
   result: number;
   time: number;
+  private: boolean;
   rule: CoopRule;
   stage: string;
   suppliedWeapons: string[];
@@ -481,6 +482,7 @@ export const getCoopBrief = (coop: CoopHistoryDetailResult): CoopBrief => {
     id: coop.coopHistoryDetail!.id,
     result: coop.coopHistoryDetail!.resultWave,
     time: new Date(coop.coopHistoryDetail!.playedTime).valueOf(),
+    private: coop.coopHistoryDetail!.jobPoint === null,
     rule: coop.coopHistoryDetail!.rule as CoopRule,
     stage: coop.coopHistoryDetail!.coopStage.id,
     suppliedWeapons: coop.coopHistoryDetail!.weapons.map((weapon) =>
