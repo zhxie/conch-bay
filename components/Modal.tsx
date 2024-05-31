@@ -8,10 +8,14 @@ import {
   StyleSheet,
   View,
   ViewStyle,
+  useWindowDimensions,
 } from "react-native";
 import ReactNativeModal from "react-native-modal";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { VStack } from "./Stack";
 import { ViewStyles, useTheme } from "./Styles";
+
+const MAX_WIDTH = 648;
 
 interface ModalBaseProps {
   isVisible: boolean;
@@ -53,6 +57,9 @@ interface ModalProps {
 const Modal = (props: ModalProps) => {
   const theme = useTheme();
 
+  const dimensions = useWindowDimensions();
+  const insets = useSafeAreaInsets();
+
   const onScrollEndDrag = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     if (!!props.onClose && event.nativeEvent.contentOffset.y < -80) {
       props.onClose();
@@ -60,31 +67,30 @@ const Modal = (props: ModalProps) => {
   };
 
   return (
-    <ModalBase isVisible={props.isVisible} onClose={props.onClose} onModalHide={props.onModalHide}>
+    <ModalBase
+      isVisible={props.isVisible}
+      fullscreen={dimensions.width <= MAX_WIDTH}
+      onClose={props.onClose}
+      onModalHide={props.onModalHide}
+    >
       <ScrollView
         showsHorizontalScrollIndicator={false}
         onScrollEndDrag={onScrollEndDrag}
         onLayout={props.onLayout}
-        style={[styles.panel, theme.backgroundStyle, props.style]}
+        style={[
+          dimensions.width <= MAX_WIDTH ? styles.panel : styles.fullscreenPanel,
+          theme.backgroundStyle,
+          props.style,
+        ]}
       >
         <View style={styles.padding} />
         {props.children}
-        <View style={styles.padding} />
+        <View
+          style={{
+            height: Math.max(insets.bottom, styles.padding.height),
+          }}
+        />
       </ScrollView>
-    </ModalBase>
-  );
-};
-
-interface FullscreenModalProps {
-  isVisible: boolean;
-  onModalHide?: () => void;
-  children?: React.ReactNode;
-}
-
-const FullscreenModal = (props: FullscreenModalProps) => {
-  return (
-    <ModalBase isVisible={props.isVisible} style={{ margin: 0 }} onModalHide={props.onModalHide}>
-      {props.children}
     </ModalBase>
   );
 };
@@ -104,6 +110,9 @@ interface FlashModalProps<T> {
 const FlashModal = <T,>(props: FlashModalProps<T>) => {
   const theme = useTheme();
 
+  const dimensions = useWindowDimensions();
+  const insets = useSafeAreaInsets();
+
   const onScrollEndDrag = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     if (!!props.onClose && event.nativeEvent.contentOffset.y < -80) {
       props.onClose();
@@ -111,8 +120,19 @@ const FlashModal = <T,>(props: FlashModalProps<T>) => {
   };
 
   return (
-    <ModalBase isVisible={props.isVisible} onClose={props.onClose} onModalHide={props.onModalHide}>
-      <VStack style={[styles.panel, theme.backgroundStyle, props.style]}>
+    <ModalBase
+      fullscreen={dimensions.width <= MAX_WIDTH}
+      isVisible={props.isVisible}
+      onClose={props.onClose}
+      onModalHide={props.onModalHide}
+    >
+      <VStack
+        style={[
+          dimensions.width <= MAX_WIDTH ? styles.panel : styles.fullscreenPanel,
+          theme.backgroundStyle,
+          props.style,
+        ]}
+      >
         <FlashList
           showsHorizontalScrollIndicator={false}
           data={props.data}
@@ -125,7 +145,13 @@ const FlashModal = <T,>(props: FlashModalProps<T>) => {
               {props.ListHeaderComponent}
             </VStack>
           }
-          ListFooterComponent={<View style={styles.padding} />}
+          ListFooterComponent={
+            <View
+              style={{
+                height: Math.max(insets.bottom, styles.padding.height),
+              }}
+            />
+          }
           onScrollEndDrag={onScrollEndDrag}
         />
       </VStack>
@@ -135,6 +161,12 @@ const FlashModal = <T,>(props: FlashModalProps<T>) => {
 
 const styles = StyleSheet.create({
   panel: {
+    maxWidth: MAX_WIDTH,
+    ...ViewStyles.rt2,
+    ...ViewStyles.px4,
+  },
+  fullscreenPanel: {
+    maxWidth: MAX_WIDTH,
     ...ViewStyles.r2,
     ...ViewStyles.px4,
   },

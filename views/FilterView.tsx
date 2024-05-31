@@ -206,7 +206,7 @@ const FilterView = (props: FilterViewProps) => {
       <Modal
         isVisible={filter}
         onClose={onFilterClose}
-        style={[ViewStyles.modal2, ViewStyles.pl4, ViewStyles.pr2]}
+        style={[ViewStyles.modal1, ViewStyles.pl4, ViewStyles.pr2]}
       >
         <VStack flex>
           {(props.filter?.players?.length ?? 0) > 0 && (

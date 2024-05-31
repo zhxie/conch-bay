@@ -131,7 +131,7 @@ const StatsModal = (props: StatsModalProps) => {
       isVisible={props.isVisible}
       onClose={props.onClose}
       onModalHide={props.onModalHide}
-      style={ViewStyles.modal2}
+      style={ViewStyles.modal1}
     >
       {props.children}
       <SalmonRunSwitcher>

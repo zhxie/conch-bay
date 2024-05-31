@@ -269,7 +269,7 @@ const RotationsView = (props: RotationViewProps) => {
         }
         onClose={onRotationClose}
         // HACK: fixed height should be provided to FlashList.
-        style={[ViewStyles.modal2, { height: 32 + 64 * groups.length, paddingHorizontal: 0 }]}
+        style={[ViewStyles.modal1, { height: 32 + 64 * groups.length, paddingHorizontal: 0 }]}
       />
     </Center>
   );
