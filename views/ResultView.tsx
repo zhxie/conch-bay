@@ -915,8 +915,9 @@ const ResultView = (props: ResultViewProps) => {
         isVisible={displayResult}
         onClose={onDisplayResultClose}
         style={[
-          ViewStyles.modal2f,
+          ViewStyles.modal2,
           {
+            height: ViewStyles.modal2.maxHeight,
             backgroundColor: "#272822",
           },
         ]}
@@ -935,7 +936,7 @@ const ResultView = (props: ResultViewProps) => {
         isVisible={displayBattle}
         onClose={onDisplayBattleClose}
         onModalHide={onModalHide}
-        style={[ViewStyles.modal3d, { paddingHorizontal: 0 }]}
+        style={[ViewStyles.modal3, { paddingHorizontal: 0 }]}
       >
         {result?.battle && (
           <Animated.View style={{ opacity: battleFade }}>
@@ -1192,7 +1193,7 @@ const ResultView = (props: ResultViewProps) => {
             <Modal
               isVisible={displayBattlePlayer}
               onClose={onDisplayBattlePlayerClose}
-              style={ViewStyles.modal1d}
+              style={ViewStyles.modal1}
             >
               {battlePlayer && (
                 <VStack center>
@@ -1314,7 +1315,7 @@ const ResultView = (props: ResultViewProps) => {
         isVisible={displayCoop}
         onClose={onDisplayCoopClose}
         onModalHide={onModalHide}
-        style={[ViewStyles.modal3d, { paddingHorizontal: 0 }]}
+        style={[ViewStyles.modal3, { paddingHorizontal: 0 }]}
       >
         {result?.coop && (
           <Animated.View style={{ opacity: coopFade }}>
@@ -1616,7 +1617,7 @@ const ResultView = (props: ResultViewProps) => {
             <Modal
               isVisible={displayCoopPlayer}
               onClose={onDisplayCoopPlayerClose}
-              style={ViewStyles.modal1d}
+              style={ViewStyles.modal1}
             >
               {coopPlayer && (
                 <VStack center>

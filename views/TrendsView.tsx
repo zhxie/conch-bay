@@ -373,7 +373,7 @@ const TrendsView = (props: TrendViewProps) => {
         isVisible={trends}
         onClose={onTrendsClose}
         onLayout={onLayout}
-        style={ViewStyles.modal2d}
+        style={ViewStyles.modal2}
       >
         <VStack style={ViewStyles.mb2}>
           <SegmentedControl

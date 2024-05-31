@@ -23,7 +23,7 @@ export { default as Icon } from "./Icon";
 export { IconButton, PureIconButton } from "./IconButton";
 export { default as Image } from "./Image";
 export { default as Marquee } from "./Marquee";
-export { Modal, FullscreenModal, FlashModal } from "./Modal";
+export { ModalBase, Modal, FlashModal } from "./Modal";
 export { default as Notice } from "./Notice";
 export { default as Picker } from "./Picker";
 export { default as ResultButton, Result } from "./ResultButton";

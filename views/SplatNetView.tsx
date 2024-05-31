@@ -3,7 +3,7 @@ import { ForwardedRef, forwardRef, useImperativeHandle, useState } from "react";
 import { ActivityIndicator, Platform, Share, StyleProp, ViewStyle } from "react-native";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 import { WebView, WebViewMessageEvent } from "react-native-webview";
-import { Center, FullscreenModal, ToolButton, ViewStyles } from "../components";
+import { Center, ModalBase, ToolButton, ViewStyles } from "../components";
 import t from "../i18n";
 import { WebServiceToken } from "../utils/api";
 
@@ -80,7 +80,7 @@ const SplatNetView = (props: SplatNetViewProps, ref: ForwardedRef<SplatNetViewRe
           style={{ width: 0, height: 0 }}
         />
       )}
-      <FullscreenModal isVisible={webView} onModalHide={onModalHide}>
+      <ModalBase isVisible={webView} fullscreen onModalHide={onModalHide}>
         <SafeAreaProvider
           style={[
             ViewStyles.ff,
@@ -161,7 +161,7 @@ const SplatNetView = (props: SplatNetViewProps, ref: ForwardedRef<SplatNetViewRe
             )}
           </SafeAreaView>
         </SafeAreaProvider>
-      </FullscreenModal>
+      </ModalBase>
     </Center>
   );
 };

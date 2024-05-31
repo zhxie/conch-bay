@@ -1165,7 +1165,7 @@ const ImportView = (props: ImportViewProps) => {
         title={t("import")}
         onPress={onImportPress}
       />
-      <Modal isVisible={import_} onClose={onImportClose} style={ViewStyles.modal1d}>
+      <Modal isVisible={import_} onClose={onImportClose} style={ViewStyles.modal1}>
         <Dialog icon="download" text={t("import_notice")}>
           <Button
             style={[
@@ -1231,7 +1231,7 @@ const ImportView = (props: ImportViewProps) => {
         <Modal
           isVisible={ikawidget3}
           onClose={onImportIkawidget3Ikax3Close}
-          style={ViewStyles.modal1d}
+          style={ViewStyles.modal1}
         >
           <Dialog icon="info" text={t("import_ikawidget3_ikax3_notice")}>
             <Button
@@ -1247,7 +1247,7 @@ const ImportView = (props: ImportViewProps) => {
         <Modal
           isVisible={salmdroidnw}
           onClose={onImportSalmdroidnwBackupClose}
-          style={ViewStyles.modal1d}
+          style={ViewStyles.modal1}
         >
           <Dialog icon="info" text={t("import_salmdroidnw_backup_notice")}>
             <Button
@@ -1263,7 +1263,7 @@ const ImportView = (props: ImportViewProps) => {
         <Modal
           isVisible={salmonia3Plus}
           onClose={onImportSalmonia3PlusBackupClose}
-          style={ViewStyles.modal1d}
+          style={ViewStyles.modal1}
         >
           <Dialog icon="info" text={t("import_salmonia3+_backup_notice")}>
             <Button
@@ -1276,7 +1276,7 @@ const ImportView = (props: ImportViewProps) => {
             </Button>
           </Dialog>
         </Modal>
-        <Modal isVisible={uri.length > 0} style={ViewStyles.modal1d}>
+        <Modal isVisible={uri.length > 0} style={ViewStyles.modal1}>
           <Dialog icon="circle-alert" text={t("split_and_import_notice")}>
             <Button
               style={[ViewStyles.mb2, ViewStyles.accent]}

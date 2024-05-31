@@ -114,42 +114,28 @@ export const ViewStyles = StyleSheet.create({
   disabled: {
     opacity: 0.4,
   },
-  modal0_67d: {
+  modal0_67: {
     maxHeight: 384,
     width: "90%",
     maxWidth: 576,
     position: "absolute",
     bottom: 0,
   },
-  modal1d: {
+  modal1: {
     maxHeight: 576,
     width: "90%",
     maxWidth: 576,
     position: "absolute",
     bottom: 0,
   },
-  modal1f: {
-    height: 576,
-    width: "90%",
-    maxWidth: 576,
-    position: "absolute",
-    bottom: 0,
-  },
-  modal2d: {
+  modal2: {
     maxHeight: 576,
     width: "100%",
     maxWidth: 648,
     position: "absolute",
     bottom: 0,
   },
-  modal2f: {
-    height: 576,
-    width: "100%",
-    maxWidth: 648,
-    position: "absolute",
-    bottom: 0,
-  },
-  modal3d: {
+  modal3: {
     maxHeight: 620,
     width: "100%",
     maxWidth: 648,

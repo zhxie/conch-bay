@@ -2064,7 +2064,7 @@ const MainView = () => {
             />
           )}
         </Animated.View>
-        <Modal isVisible={update} onClose={onUpdateClose} style={ViewStyles.modal1d}>
+        <Modal isVisible={update} onClose={onUpdateClose} style={ViewStyles.modal1}>
           <Dialog icon="sparkles" text={t("update_notice")}>
             {Platform.OS === "ios" && (
               <Button
@@ -2092,7 +2092,7 @@ const MainView = () => {
             </Button>
           </Dialog>
         </Modal>
-        <Modal isVisible={logIn} onClose={onLogInClose} style={ViewStyles.modal1d}>
+        <Modal isVisible={logIn} onClose={onLogInClose} style={ViewStyles.modal1}>
           <CustomDialog icon="circle-alert">
             <Text
               style={[
@@ -2140,7 +2140,7 @@ const MainView = () => {
             </DialogSection>
           </CustomDialog>
         </Modal>
-        <Modal isVisible={logOut} onClose={onLogOutClose} style={ViewStyles.modal1d}>
+        <Modal isVisible={logOut} onClose={onLogOutClose} style={ViewStyles.modal1}>
           <CustomDialog icon="circle-alert">
             <DialogSection text={t("relog_in_notice")} style={ViewStyles.mb4}>
               <Button
@@ -2178,7 +2178,7 @@ const MainView = () => {
             </DialogSection>
           </CustomDialog>
         </Modal>
-        <Modal isVisible={support} onClose={onSupportClose} style={ViewStyles.modal1d}>
+        <Modal isVisible={support} onClose={onSupportClose} style={ViewStyles.modal1}>
           <CustomDialog icon="circle-help">
             <DialogSection text={t("preference_notice")} style={ViewStyles.mb4}>
               {sessionToken.length > 0 && (
@@ -2365,7 +2365,7 @@ const MainView = () => {
               )}
             </DialogSection>
           </CustomDialog>
-          <Modal isVisible={notification} onClose={onNotificationClose} style={ViewStyles.modal1d}>
+          <Modal isVisible={notification} onClose={onNotificationClose} style={ViewStyles.modal1}>
             <Dialog icon="bell-dot" text={t("notification_notice")}>
               <Button style={ViewStyles.accent} onPress={onNotificationContinue}>
                 <Marquee style={theme.reverseTextStyle}>{t("ok")}</Marquee>
@@ -2376,7 +2376,7 @@ const MainView = () => {
         <Modal
           isVisible={acknowledgments}
           onClose={onAcknowledgmentsClose}
-          style={ViewStyles.modal1d}
+          style={ViewStyles.modal1}
         >
           <VStack center style={ViewStyles.mb3}>
             <Marquee style={[TextStyles.h3, ViewStyles.mb2]}>{t("creators")}</Marquee>

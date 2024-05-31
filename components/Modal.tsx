@@ -15,6 +15,7 @@ import { ViewStyles, useTheme } from "./Styles";
 
 interface ModalBaseProps {
   isVisible: boolean;
+  fullscreen?: boolean;
   style?: StyleProp<ViewStyle>;
   onClose?: () => void;
   onModalHide?: () => void;
@@ -32,7 +33,7 @@ const ModalBase = (props: ModalBaseProps) => {
       useNativeDriver
       hideModalContentWhileAnimating
       statusBarTranslucent
-      style={[ViewStyles.c, props.style]}
+      style={[props.fullscreen && { margin: 0 }, ViewStyles.c, props.style]}
       onModalHide={props.onModalHide}
     >
       {props.children}
@@ -142,4 +143,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export { Modal, FullscreenModal, FlashModal };
+export { ModalBase, Modal, FlashModal };
