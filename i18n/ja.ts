@@ -301,8 +301,10 @@ const ja = {
   // Escaped.
   "VnNTdGFnZS0tMQ==": "ランダム",
   VnNTdGFnZS0tOTk5: "",
+  Q29vcFN0YWdlLS0x: "各地で同時発生",
   "Q29vcFN0YWdlLS05OTk=": "",
   "TGVhZ3VlTWF0Y2hFdmVudC1Ob3RGb3VuZA==": "",
+  Q29vcEVuZW15LTMw: "オカシラ連合",
   Q29vcEVuZW15LTMx: "ランダム",
 };
 

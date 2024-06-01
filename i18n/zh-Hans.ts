@@ -291,8 +291,10 @@ const zhHans = {
   // Escaped.
   "VnNTdGFnZS0tMQ==": "随机",
   VnNTdGFnZS0tOTk5: "",
+  Q29vcFN0YWdlLS0x: "各地同时发生",
   "Q29vcFN0YWdlLS05OTk=": "",
   "TGVhZ3VlTWF0Y2hFdmVudC1Ob3RGb3VuZA==": "",
+  Q29vcEVuZW15LTMw: "头目联合",
   Q29vcEVuZW15LTMx: "随机",
 };
 

@@ -222,8 +222,6 @@ const getSalmonidMap = async (version) => {
     SakelienGiant: 23,
     SakeRope: 24,
     SakeJaw: 25,
-    // TODO: we know nothing about it yet.
-    Triple: 0,
   };
   const res = await fetch(
     `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/CoopEnemyInfo.json`

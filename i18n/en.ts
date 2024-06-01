@@ -301,8 +301,10 @@ const en = {
   // Escaped.
   "VnNTdGFnZS0tMQ==": "Random",
   VnNTdGFnZS0tOTk5: "",
+  Q29vcFN0YWdlLS0x: "Multiple Sites",
   "Q29vcFN0YWdlLS05OTk=": "",
   "TGVhZ3VlTWF0Y2hFdmVudC1Ob3RGb3VuZA==": "",
+  Q29vcEVuZW15LTMw: "Triumvirate",
   Q29vcEVuZW15LTMx: "Random",
 };
 
