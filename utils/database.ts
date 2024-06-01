@@ -8,7 +8,7 @@ import { getImageHash, getVsSelfPlayer } from "./ui";
 
 let db: SQLite.SQLiteDatabase | undefined = undefined;
 
-const VERSION = 11;
+const VERSION = 12;
 
 export const open = async () => {
   if (db) {
@@ -173,12 +173,7 @@ export const upgrade = async () => {
       for await (const row of db!.getEachAsync<{ id: string; mode: string; detail: string }>(
         `SELECT id, mode, detail FROM result`
       )) {
-        if (row.mode === "salmon_run") {
-          await statement.executeAsync(
-            JSON.stringify(getCoopBrief(JSON.parse(row.detail))),
-            row.id
-          );
-        } else {
+        if (row.mode !== "salmon_run") {
           await statement.executeAsync(
             JSON.stringify(getBattleBrief(JSON.parse(row.detail))),
             row.id
@@ -240,7 +235,7 @@ export const upgrade = async () => {
     }
     await db!.execAsync("VACUUM");
   }
-  if (version < 11) {
+  if (version < 12) {
     await beginTransaction();
     try {
       const statement = await db!.prepareAsync("UPDATE brief SET brief = ? WHERE id = ?");
@@ -253,7 +248,7 @@ export const upgrade = async () => {
         }
       }
       await statement.finalizeAsync();
-      await db!.execAsync("PRAGMA user_version=11");
+      await db!.execAsync("PRAGMA user_version=12");
       await commit();
     } catch (e) {
       await rollback();

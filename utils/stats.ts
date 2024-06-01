@@ -298,6 +298,11 @@ interface WaveStats {
     clear: number;
   }[];
 }
+interface Scales {
+  gold: number;
+  silver: number;
+  bronze: number;
+}
 export interface CoopBrief {
   id: string;
   result: number;
@@ -311,12 +316,15 @@ export interface CoopBrief {
   players: CoopPlayerBrief[];
   waves: WaveStats[];
   bosses: BossSalmonidStats[];
-  king?: { id: string; defeat: boolean };
-  scales?: {
-    gold: number;
-    silver: number;
-    bronze: number;
+  king?: {
+    id: string;
+    defeat: boolean;
   };
+  kings: {
+    id: string;
+    defeat: boolean;
+  }[];
+  scales?: Scales;
 }
 export interface CoopStats {
   count: number;
@@ -333,11 +341,7 @@ export interface CoopStats {
     appear: number;
     defeat: number;
   }[];
-  scales: {
-    gold: number;
-    silver: number;
-    bronze: number;
-  };
+  scales: Scales;
   waves: WaveStats[];
   stages: {
     id: string;
@@ -508,6 +512,24 @@ export const getCoopBrief = (coop: CoopHistoryDetailResult): CoopBrief => {
           defeat: coop.coopHistoryDetail!.bossResult.hasDefeatBoss,
         }
       : undefined,
+    kings: coop.coopHistoryDetail!.bossResult
+      ? [
+          {
+            id: coop.coopHistoryDetail!.bossResult.boss.id,
+            defeat: coop.coopHistoryDetail!.bossResult.hasDefeatBoss,
+          },
+        ]
+      : coop.coopHistoryDetail!["bossResults"]
+      ? coop
+          .coopHistoryDetail!["bossResults"].map((bossResult) => ({
+            id: bossResult.boss.id,
+            defeat: bossResult.hasDefeatBoss,
+          }))
+          .concat({
+            id: coop.coopHistoryDetail!.bossResult!.boss.id,
+            defeat: coop.coopHistoryDetail!.bossResult!.hasDefeatBoss,
+          })
+      : [],
     scales: coop.coopHistoryDetail!.scale
       ? {
           gold: coop.coopHistoryDetail!.scale!.gold,
@@ -585,13 +607,13 @@ export const getCoopStats = (...coops: CoopBrief[]): CoopStats => {
       currentBoss.defeat += boss.defeat;
       currentBoss.defeatTeam += boss.defeatTeam;
     }
-    if (coop.king) {
-      if (!kingMap.has(coop.king.id)) {
-        kingMap.set(coop.king.id, { appear: 0, defeat: 0 });
+    for (const king of coop.kings) {
+      if (!kingMap.has(king.id)) {
+        kingMap.set(king.id, { appear: 0, defeat: 0 });
       }
-      const king = kingMap.get(coop.king.id)!;
-      king.appear += 1;
-      king.defeat += coop.king.defeat ? 1 : 0;
+      const currentKing = kingMap.get(king.id)!;
+      currentKing.appear += 1;
+      currentKing.defeat += king.defeat ? 1 : 0;
     }
     gold += coop.scales?.gold ?? 0;
     silver += coop.scales?.silver ?? 0;
