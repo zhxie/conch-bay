@@ -39,7 +39,7 @@
     "expo-intent-launcher": "~11.0.1",
     "expo-localization": "~15.0.3",
     "expo-mail-composer": "~13.0.1",
-    "expo-notifications": "~0.28.4",
+    "expo-notifications": "~0.28.5",
     "expo-sharing": "~12.0.1",
     "expo-sqlite": "~14.0.3",
     "expo-status-bar": "~1.12.1",
