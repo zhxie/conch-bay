@@ -440,7 +440,7 @@ const MainView = () => {
 
   const loadBriefs = async () => {
     setLoadingMore(true);
-    const records = await Database.queryBrief(filter);
+    const records = await Database.queryBrief(filterRef.current);
     const briefs: Brief[] = [];
     for (const record of records) {
       if (record.mode === "salmon_run") {
