@@ -1731,10 +1731,10 @@
   resolved "https://registry.npmjs.org/@graphql-typed-document-node/core/-/core-3.2.0.tgz"
   integrity sha512-mB9oAsNCm9aM3/SOv4YtBMqZbYj10R7dkq8byBqxGY/ncFwhf2oQzMV+LCRlWoDSEBJ3COiR1yeDvMtsoOsuFQ==
 
-"@hacceuee/s3-pixel-icons@^2.3.13":
-  version "2.3.13"
-  resolved "https://registry.yarnpkg.com/@hacceuee/s3-pixel-icons/-/s3-pixel-icons-2.3.13.tgz#eb5b767af0a829c9ae9c424c1e6a0a2c4bfe3fa8"
-  integrity sha512-QzXgwfCbHgt/0kRwsmnS1NfgVJ+pI4hs2Tjmss6TTymOfAfL0zFwjhOHwqVK+GH5kEXbXy4HYVG5P6i4WQv/GQ==
+"@hacceuee/s3-pixel-icons@^2.4.0":
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/@hacceuee/s3-pixel-icons/-/s3-pixel-icons-2.4.0.tgz#7fbd02a7331cf673a5add9122724d1d4d439e2af"
+  integrity sha512-AeXxuMrGNq+ycGyRZdjBpoU+dsBeCsWDPhNgsdcCqYsTNUXdevsTfSIc/jmxkZGgcWyUNsynufFEC2yH7ASvzg==
 
 "@hapi/hoek@^9.0.0":
   version "9.3.0"
