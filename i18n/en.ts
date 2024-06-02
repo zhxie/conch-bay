@@ -170,6 +170,7 @@ const en = {
   challenge_power: "Challenge Power",
   splatfest_power: "Splatfest Power",
   clout: "Clout",
+  synergy_bonus: "Synergy Bonus",
   festival_shell: "Festival Shell",
   played_time: "Played Time",
   medals_earned: "Medals Earned",

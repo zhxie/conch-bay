@@ -340,9 +340,9 @@ const ResultView = (props: ResultViewProps) => {
         return CResult.ExemptedLose;
     }
   };
-  const formatDragon = (battle: BattleBrief) => {
-    if (battle.dragon) {
-      switch (battle.dragon) {
+  const formatDragon = (dragon?: DragonMatchType) => {
+    if (dragon) {
+      switch (dragon) {
         case DragonMatchType.NORMAL:
           return undefined;
         case DragonMatchType.DECUPLE:
@@ -817,7 +817,7 @@ const ResultView = (props: ResultViewProps) => {
             color={color}
             result={formatJudgement(result.item.battle)}
             rule={t(result.item.battle.rule)}
-            dragon={formatDragon(result.item.battle)}
+            dragon={formatDragon(result.item.battle.dragon)}
             stage={t(result.item.battle.stage)}
             weapon={t(self.weapon)}
             power={formatPower(result.item.battle)}
@@ -1070,7 +1070,17 @@ const ResultView = (props: ResultViewProps) => {
                         <VStack>
                           <Display level={1} title={t("rule")}>
                             <Text numberOfLines={1}>
-                              {`${td(result.battle.vsHistoryDetail!.vsRule)}`}
+                              {`${td(result.battle.vsHistoryDetail!.vsRule)}${
+                                formatDragon(
+                                  result.battle.vsHistoryDetail!.festMatch
+                                    ?.dragonMatchType as DragonMatchType
+                                )
+                                  ? ` (${formatDragon(
+                                      result.battle.vsHistoryDetail!.festMatch
+                                        ?.dragonMatchType as DragonMatchType
+                                    )})`
+                                  : ""
+                              }`}
                             </Text>
                           </Display>
                           <Display level={1} title={t("stage")}>
@@ -1156,6 +1166,17 @@ const ResultView = (props: ResultViewProps) => {
                                   {`${result.battle.vsHistoryDetail!.festMatch.contribution}`}
                                 </Text>
                               </Display>
+
+                              {result.battle.vsHistoryDetail!.myTeam["festUniformBonusRate"] && (
+                                <Display level={1} title={t("synergy_bonus")}>
+                                  <Text numberOfLines={1}>
+                                    {`${
+                                      result.battle.vsHistoryDetail!.myTeam["festUniformBonusRate"]
+                                    }`}
+                                  </Text>
+                                </Display>
+                              )}
+
                               <Display level={1} title={t("festival_shell")}>
                                 <HStack center>
                                   {new Array(7).fill(0).map((_, i, rects) => (

@@ -171,6 +171,7 @@ const ja = {
   challenge_power: "イベントパワー",
   splatfest_power: "フェスパワー",
   clout: "こうけん度",
+  synergy_bonus: "おそろいボーナス",
   festival_shell: "オマツリガイ",
   played_time: "遊んだ日時",
   medals_earned: "ゲットした表彰",

@@ -164,6 +164,7 @@ const zhHant = {
   challenge_power: "活動戰力",
   splatfest_power: "祭典戰力",
   clout: "貢獻度",
+  synergy_bonus: "團隊穿搭獎勵",
   festival_shell: "祭典貝",
   played_time: "遊戲時間",
   medals_earned: "獲得的表揚",

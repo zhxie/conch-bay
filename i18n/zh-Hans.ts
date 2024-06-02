@@ -164,6 +164,7 @@ const zhHans = {
   challenge_power: "活动战力",
   splatfest_power: "祭典战力",
   clout: "贡献度",
+  synergy_bonus: "团队穿搭奖励",
   festival_shell: "祭典贝",
   played_time: "游戏时间",
   medals_earned: "获得的表彰",
