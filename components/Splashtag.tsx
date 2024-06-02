@@ -53,7 +53,7 @@ const Splashtag = (props: SplashtagProps) => {
     <Center flex style={props.style} onLayout={onLayout}>
       <Image
         source={props.banner}
-        style={[ViewStyles.r2, { width: "100%", aspectRatio: 700 / 200 }]}
+        style={[ViewStyles.r2, ViewStyles.wf, { aspectRatio: 700 / 200 }]}
         onLoad={onLoad}
       />
       <HStack
