@@ -35,7 +35,7 @@ export { default as ShiftBox } from "./ShiftBox";
 export { default as Splashtag, SplashtagContext } from "./Splashtag";
 export * from "./Stack";
 export { default as Text } from "./Text";
-export { default as TitledList } from "./TitledList";
+export { TitledList, ResultTitledList } from "./TitledList";
 export { default as ToolButton } from "./ToolButton";
 export { default as WaveBox } from "./WaveBox";
 export { default as WorkSuitBox } from "./WorkSuitBox";

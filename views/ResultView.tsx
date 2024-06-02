@@ -41,20 +41,19 @@ import {
   Image,
   Marquee,
   Modal,
-  PureIconButton,
   Rectangle,
   Result as CResult,
   ResultButton,
   Splashtag,
   Text,
   TextStyles,
-  TitledList,
   VStack,
   ViewStyles,
   WaveBox,
   WorkSuitBox,
   useBanner,
   useTheme,
+  ResultTitledList,
 } from "../components";
 import t, { td } from "../i18n";
 import abilityList from "../models/abilities.json";
@@ -89,6 +88,7 @@ import {
   getVsModeColor,
   getGearPadding,
   roundPower,
+  getSplatoon3InkStageSource,
 } from "../utils/ui";
 import { StatsModal } from "./StatsView";
 
@@ -977,10 +977,16 @@ const ResultView = (props: ResultViewProps) => {
               // HACK: add padding around view shot, withdraw 16px margin in the top and 32px in the bottom, and add back 8px (mb2) in the bottom.
               style={[theme.backgroundStyle, ViewStyles.p4, { top: -16, marginBottom: -24 }]}
             >
-              <TitledList
+              <ResultTitledList
                 color={getVsModeColor(result.battle.vsHistoryDetail!.vsMode.id)}
+                image={getSplatoon3InkStageSource(result.battle.vsHistoryDetail!.vsStage.image.url)}
                 title={t(result.battle.vsHistoryDetail!.vsMode.id)}
                 subtitle={formatAnnotation(result.battle)}
+                leftDisabled={currentResultIndex === 1}
+                // groupsAndResults has at least 2 items.
+                rightDisabled={currentResultIndex === (briefsAndGroups?.length ?? 2) - 1}
+                onLeftPress={onShowNextResultPress}
+                onRightPress={onShowPreviousResultPress}
               >
                 <VStack style={ViewStyles.wf}>
                   {formatTeams(result.battle).map((team, i) => (
@@ -1228,7 +1234,7 @@ const ResultView = (props: ResultViewProps) => {
                     />
                   </VStack>
                 </VStack>
-              </TitledList>
+              </ResultTitledList>
             </ViewShot>
             <VStack style={ViewStyles.px4}>
               <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onHidePlayerNamesPress}>
@@ -1340,27 +1346,6 @@ const ResultView = (props: ResultViewProps) => {
                 </VStack>
               )}
             </Modal>
-            {currentResultIndex !== undefined && (
-              <PureIconButton
-                disabled={currentResultIndex === 1}
-                size={24}
-                icon="chevron-left"
-                hitSlop={8}
-                style={{ position: "absolute", left: 16, marginLeft: -4 }}
-                onPress={onShowNextResultPress}
-              />
-            )}
-            {currentResultIndex !== undefined && (
-              <PureIconButton
-                // groupsAndResults has at least 2 items.
-                disabled={currentResultIndex === (briefsAndGroups?.length ?? 2) - 1}
-                size={24}
-                icon="chevron-right"
-                hitSlop={8}
-                style={{ position: "absolute", right: 16, marginRight: -4 }}
-                onPress={onShowPreviousResultPress}
-              />
-            )}
           </Animated.View>
         )}
       </Modal>
@@ -1377,12 +1362,20 @@ const ResultView = (props: ResultViewProps) => {
               // HACK: add padding around view shot, withdraw 16px margin in the top and 32px in the bottom, and add back 8px (mb2) in the bottom.
               style={[theme.backgroundStyle, ViewStyles.p4, { top: -16, marginBottom: -24 }]}
             >
-              <TitledList
+              <ResultTitledList
                 color={getCoopRuleColor(result.coop.coopHistoryDetail!.rule)}
+                image={getSplatoon3InkStageSource(
+                  result.coop.coopHistoryDetail!.coopStage.image.url
+                )}
                 title={t(result.coop.coopHistoryDetail!.rule)}
                 subtitle={
                   result.coop.coopHistoryDetail!.resultWave === -1 ? t("penalty") : undefined
                 }
+                leftDisabled={currentResultIndex === 1}
+                // groupsAndResults has at least 2 items.
+                rightDisabled={currentResultIndex === (briefsAndGroups?.length ?? 2) - 1}
+                onLeftPress={onShowNextResultPress}
+                onRightPress={onShowPreviousResultPress}
               >
                 <VStack style={ViewStyles.wf}>
                   <VStack style={ViewStyles.mb2}>
@@ -1686,7 +1679,7 @@ const ResultView = (props: ResultViewProps) => {
                     />
                   </VStack>
                 </VStack>
-              </TitledList>
+              </ResultTitledList>
             </ViewShot>
             <VStack style={ViewStyles.px4}>
               <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onHidePlayerNamesPress}>
@@ -1749,27 +1742,6 @@ const ResultView = (props: ResultViewProps) => {
                 </VStack>
               )}
             </Modal>
-            {currentResultIndex !== undefined && (
-              <PureIconButton
-                disabled={currentResultIndex === 1}
-                size={24}
-                icon="chevron-left"
-                hitSlop={8}
-                style={{ position: "absolute", left: 16, marginLeft: -4 }}
-                onPress={onShowNextResultPress}
-              />
-            )}
-            {currentResultIndex !== undefined && (
-              <PureIconButton
-                // groupsAndResults has at least 2 items.
-                disabled={currentResultIndex === (briefsAndGroups?.length ?? 2) - 1}
-                size={24}
-                icon="chevron-right"
-                hitSlop={8}
-                style={{ position: "absolute", right: 16, marginRight: -4 }}
-                onPress={onShowPreviousResultPress}
-              />
-            )}
           </Animated.View>
         )}
       </Modal>

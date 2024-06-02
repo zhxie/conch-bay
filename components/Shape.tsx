@@ -1,15 +1,15 @@
-import { StyleProp, View, ViewStyle } from "react-native";
+import { Animated, DimensionValue, StyleProp, ViewStyle } from "react-native";
 
 interface CircleProps {
   size: number;
-  color?: string;
-  outline?: string;
+  color?: string | Animated.AnimatedInterpolation<string | number>;
+  outline?: string | Animated.AnimatedInterpolation<string | number>;
   style?: StyleProp<ViewStyle>;
 }
 
 const Circle = (props: CircleProps) => {
   return (
-    <View
+    <Animated.View
       style={[
         {
           width: props.size,
@@ -26,15 +26,15 @@ const Circle = (props: CircleProps) => {
 };
 
 interface RectangleProps {
-  width: number;
-  height: number;
-  color?: string;
+  width: DimensionValue;
+  height: DimensionValue;
+  color?: string | Animated.AnimatedInterpolation<string | number>;
   style?: StyleProp<ViewStyle>;
 }
 
 const Rectangle = (props: RectangleProps) => {
   return (
-    <View
+    <Animated.View
       style={[
         { width: props.width, height: props.height, backgroundColor: props.color },
         props.style,

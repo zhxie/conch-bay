@@ -42,6 +42,23 @@ export const getUserIconCacheSource = (userIcon: string) => {
   };
 };
 
+export const getSplatoon3InkStageSource = (image: string) => {
+  const bannerCacheKey = getImageCacheKey(image);
+  const iconCacheKey = bannerCacheKey
+    .replace("banner/low_resolution", "icon/high_resolution")
+    .replace("_3.png", "_0.png");
+  const bannerPath = getAuthorityAndPath(image);
+  const bannerSplitted = bannerPath.split(/prod|splatnet/g);
+  const bannerSuffix = bannerSplitted[bannerSplitted.length - 1];
+  const iconSuffix = bannerSuffix
+    .replace("banner/low_resolution", "icon/high_resolution")
+    .replace("_3.png", "_0.png");
+  return {
+    uri: `https://splatoon3.ink/assets/splatnet${iconSuffix}`,
+    cacheKey: iconCacheKey,
+  };
+};
+
 export const getColor = (color: { a: number; b: number; g: number; r: number }) => {
   return `rgba(${Math.round(color.r * 255)}, ${Math.round(color.g * 255)}, ${Math.round(
     color.b * 255
