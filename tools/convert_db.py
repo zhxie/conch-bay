@@ -14,7 +14,7 @@ def main():
     coops = []
     with sqlite3.connect(sys.argv[1]) as conn:
         cur = conn.cursor()
-        for row in cur.execute("SELECT id, mode, detail FROM result"):
+        for row in cur.execute("SELECT id, mode, detail FROM detail"):
             if row[0] not in ids:
                 ids.add(row[0])
                 if row[1] == "salmon_run":
