@@ -194,11 +194,22 @@ const StatsModal = (props: StatsModalProps) => {
                             level={1}
                             title={t(stage.id)}
                             subChildren={stage.rules.map((rule) => (
-                              <Display key={rule.id} level={2} title={t(rule.id)}>
+                              <AccordionDisplay
+                                key={rule.id}
+                                level={2}
+                                title={t(rule.id)}
+                                subChildren={rule.weapons.map((weapon) => (
+                                  <Display key={weapon.id} level={3} title={t(weapon.id)}>
+                                    <Text numberOfLines={1}>
+                                      {formatWinRateAndTotal(weapon.win, weapon.count)}
+                                    </Text>
+                                  </Display>
+                                ))}
+                              >
                                 <Text numberOfLines={1}>
                                   {formatWinRateAndTotal(rule.win, rule.count)}
                                 </Text>
-                              </Display>
+                              </AccordionDisplay>
                             ))}
                           >
                             <Text numberOfLines={1}>
@@ -220,16 +231,23 @@ const StatsModal = (props: StatsModalProps) => {
                             level={1}
                             title={t(weapon.id)}
                             subChildren={weapon.rules.map((rule, j, rules) => (
-                              <Display
+                              <AccordionDisplay
                                 key={rule.id}
                                 last={i === weapons.length - 1 && j === rules.length - 1}
                                 level={2}
                                 title={t(rule.id)}
+                                subChildren={rule.stages.map((stage) => (
+                                  <Display key={stage.id} level={3} title={t(stage.id)}>
+                                    <Text numberOfLines={1}>
+                                      {formatWinRateAndTotal(stage.win, stage.count)}
+                                    </Text>
+                                  </Display>
+                                ))}
                               >
                                 <Text numberOfLines={1}>
                                   {formatWinRateAndTotal(rule.win, rule.count)}
                                 </Text>
-                              </Display>
+                              </AccordionDisplay>
                             ))}
                           >
                             <Text numberOfLines={1}>
