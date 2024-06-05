@@ -12,6 +12,29 @@ import weaponList from "../models/weapons.json";
 import { decode64Index } from "./codec";
 import { getImageHash, getVsPower } from "./ui";
 
+const idSort = (a, b) => decode64Index(a.id) - decode64Index(b.id);
+const weaponSort = (a: { id: string }, b: { id: string }) => {
+  let aid: number | undefined, bid: number | undefined;
+  try {
+    aid = decode64Index(a.id);
+  } catch {
+    /* empty */
+  }
+  try {
+    bid = decode64Index(b.id);
+  } catch {
+    /* empty */
+  }
+  if (aid === undefined && bid === undefined) {
+    return a.id.localeCompare(b.id);
+  } else if (aid === undefined) {
+    return 1;
+  } else if (bid === undefined) {
+    return -1;
+  }
+  return aid - bid;
+};
+
 interface BattlePlayerBrief {
   self: boolean;
   weapon: string;
@@ -262,7 +285,7 @@ export const getBattleStats = (...battles: BattleBrief[]): BattleStats => {
         count: weapon[1].count,
         win: weapon[1].win,
       }));
-      weapons.sort((a, b) => decode64Index(a.id) - decode64Index(b.id));
+      weapons.sort(idSort);
       return {
         id: rule[0],
         count: weapons.reduce((prev, current) => prev + current.count, 0),
@@ -270,7 +293,7 @@ export const getBattleStats = (...battles: BattleBrief[]): BattleStats => {
         weapons,
       };
     });
-    rules.sort((a, b) => decode64Index(a.id) - decode64Index(b.id));
+    rules.sort(idSort);
     return {
       id: stage[0],
       count: rules.reduce((prev, current) => prev + current.count, 0),
@@ -278,7 +301,7 @@ export const getBattleStats = (...battles: BattleBrief[]): BattleStats => {
       rules,
     };
   });
-  stages.sort((a, b) => decode64Index(a.id) - decode64Index(b.id));
+  stages.sort(idSort);
   const weapons = Array.from(weaponMap, (weapon) => {
     const rules = Array.from(weapon[1], (rule) => {
       const stages = Array.from(rule[1], (stage) => ({
@@ -286,7 +309,7 @@ export const getBattleStats = (...battles: BattleBrief[]): BattleStats => {
         count: stage[1].count,
         win: stage[1].win,
       }));
-      stages.sort((a, b) => decode64Index(a.id) - decode64Index(b.id));
+      stages.sort(idSort);
       return {
         id: rule[0],
         count: stages.reduce((prev, current) => prev + current.count, 0),
@@ -294,7 +317,7 @@ export const getBattleStats = (...battles: BattleBrief[]): BattleStats => {
         stages,
       };
     });
-    rules.sort((a, b) => decode64Index(a.id) - decode64Index(b.id));
+    rules.sort(idSort);
     return {
       id: weapon[0],
       count: rules.reduce((prev, current) => prev + current.count, 0),
@@ -302,7 +325,7 @@ export const getBattleStats = (...battles: BattleBrief[]): BattleStats => {
       rules,
     };
   });
-  weapons.sort((a, b) => decode64Index(a.id) - decode64Index(b.id));
+  weapons.sort(idSort);
 
   return {
     count,
@@ -344,14 +367,6 @@ interface BossSalmonidStats {
   appear: number;
   defeat: number;
   defeatTeam: number;
-}
-interface WaveStats {
-  id: string;
-  levels: {
-    id: number;
-    appear: number;
-    clear: number;
-  }[];
 }
 interface Scales {
   gold: number;
@@ -551,7 +566,7 @@ export const getCoopBrief = (coop: CoopHistoryDetailResult): CoopBrief => {
     defeat: boss[1].defeat,
     defeatTeam: boss[1].defeatTeam,
   }));
-  bosses.sort((a, b) => decode64Index(a.id) - decode64Index(b.id));
+  bosses.sort(idSort);
 
   return {
     id: coop.coopHistoryDetail!.id,
@@ -728,14 +743,14 @@ export const getCoopStats = (...coops: CoopBrief[]): CoopStats => {
     appear: king[1].appear,
     defeat: king[1].defeat,
   }));
-  kings.sort((a, b) => decode64Index(a.id) - decode64Index(b.id));
+  kings.sort(idSort);
   const bosses = Array.from(bossMap, (boss) => ({
     id: boss[0],
     appear: boss[1].appear,
     defeat: boss[1].defeat,
     defeatTeam: boss[1].defeatTeam,
   }));
-  bosses.sort((a, b) => decode64Index(a.id) - decode64Index(b.id));
+  bosses.sort(idSort);
   const stages = Array.from(stageMap, (stage) => ({
     id: stage[0],
     count: stage[1],
@@ -770,57 +785,17 @@ export const getCoopStats = (...coops: CoopBrief[]): CoopStats => {
     }
     return decode64Index(a.id) - decode64Index(b.id);
   });
-  stages.sort((a, b) => decode64Index(a.id) - decode64Index(b.id));
+  stages.sort(idSort);
   const weapons = Array.from(weaponMap, (weapon) => ({
     id: weaponList.images[weapon[0]] ?? weapon[0],
     count: weapon[1],
   }));
-  weapons.sort((a, b) => {
-    let aid: number | undefined, bid: number | undefined;
-    try {
-      aid = decode64Index(a.id);
-    } catch {
-      /* empty */
-    }
-    try {
-      bid = decode64Index(b.id);
-    } catch {
-      /* empty */
-    }
-    if (aid === undefined && bid === undefined) {
-      return a.id.localeCompare(b.id);
-    } else if (aid === undefined) {
-      return 1;
-    } else if (bid === undefined) {
-      return -1;
-    }
-    return aid - bid;
-  });
+  weapons.sort(weaponSort);
   const specialWeapons = Array.from(specialWeaponMap, (specialWeapon) => ({
     id: coopSpecialWeaponList.images[specialWeapon[0]] ?? specialWeapon[0],
     count: specialWeapon[1],
   }));
-  specialWeapons.sort((a, b) => {
-    let aid: number | undefined, bid: number | undefined;
-    try {
-      aid = decode64Index(a.id);
-    } catch {
-      /* empty */
-    }
-    try {
-      bid = decode64Index(b.id);
-    } catch {
-      /* empty */
-    }
-    if (aid === undefined && bid === undefined) {
-      return a.id.localeCompare(b.id);
-    } else if (aid === undefined) {
-      return 1;
-    } else if (bid === undefined) {
-      return -1;
-    }
-    return decode64Index(a.id) - decode64Index(b.id);
-  });
+  specialWeapons.sort(weaponSort);
   return {
     count,
     exempt,
