@@ -53,3 +53,7 @@ export const decode64CoopPlayerId = (base64: string) => {
   const s = Buffer.from(data).toString();
   return s.split(":")[2].split("-")[1];
 };
+
+export const deepCopy = <T>(obj: T): T => {
+  return JSON.parse(JSON.stringify(obj));
+};

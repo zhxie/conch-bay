@@ -21,6 +21,7 @@ import {
   ViewStyles,
 } from "../components";
 import t from "../i18n";
+import { deepCopy } from "../utils/codec";
 import { BattleBrief, Brief, CoopBrief, getBattleStats, getCoopStats } from "../utils/stats";
 import { roundPower } from "../utils/ui";
 
@@ -61,6 +62,26 @@ const clearRateSort = (
   }
   return bWinRate - aWinRate;
 };
+const defeatRateSort = (
+  a: { appear: number; defeat: number },
+  b: { appear: number; defeat: number }
+) => {
+  if (a.appear === 0 && b.appear === 0) {
+    return 0;
+  }
+  if (a.appear === 0) {
+    return 1;
+  }
+  if (b.appear === 0) {
+    return -1;
+  }
+  const aWinRate = a.defeat / a.appear;
+  const bWinRate = b.defeat / b.appear;
+  if (aWinRate == bWinRate) {
+    return b.defeat - a.defeat;
+  }
+  return bWinRate - aWinRate;
+};
 
 interface StatsModalProps {
   briefs?: Brief[];
@@ -98,7 +119,7 @@ const StatsModal = (props: StatsModalProps) => {
       case 0:
         return battleStats.stages;
       case 1: {
-        const stages = JSON.parse(JSON.stringify(battleStats.stages));
+        const stages = deepCopy(battleStats.stages);
         for (const stage of stages) {
           for (const rule of stage.rules) {
             rule.weapons.sort((a, b) => b.count - a.count);
@@ -109,7 +130,7 @@ const StatsModal = (props: StatsModalProps) => {
         return stages;
       }
       case 2: {
-        const stages = JSON.parse(JSON.stringify(battleStats.stages));
+        const stages = deepCopy(battleStats.stages);
         for (const stage of stages) {
           for (const rule of stage.rules) {
             rule.weapons.sort(winRateSort);
@@ -128,7 +149,7 @@ const StatsModal = (props: StatsModalProps) => {
       case 0:
         return battleStats.weapons;
       case 1: {
-        const weapons = JSON.parse(JSON.stringify(battleStats.weapons));
+        const weapons = deepCopy(battleStats.weapons);
         for (const weapon of weapons) {
           for (const rule of weapon.rules) {
             rule.stages.sort((a, b) => b.count - a.count);
@@ -139,7 +160,7 @@ const StatsModal = (props: StatsModalProps) => {
         return weapons;
       }
       case 2: {
-        const weapons = JSON.parse(JSON.stringify(battleStats.weapons));
+        const weapons = deepCopy(battleStats.weapons);
         for (const weapon of weapons) {
           for (const rule of weapon.rules) {
             rule.stages.sort(winRateSort);
@@ -153,12 +174,95 @@ const StatsModal = (props: StatsModalProps) => {
         throw new Error(`unexpected sort ${sort}`);
     }
   }, [battleStats, sort]);
+  const coopBosses = useMemo(() => {
+    switch (sort) {
+      case 0:
+        switch (props.dimension || 0) {
+          case 0:
+            return coopsStats.bosses;
+          case 1:
+            return coopsStats.bosses.map((boss) => ({
+              id: boss.id,
+              appear: boss.appear,
+              defeat: boss.defeatTeam,
+            }));
+          default:
+            throw new Error(`unexpected dimension ${props.dimension}`);
+        }
+      case 1: {
+        let bosses: { id: string; appear: number; defeat: number }[];
+        switch (props.dimension || 0) {
+          case 0:
+            bosses = coopsStats.bosses.map((boss) => ({
+              id: boss.id,
+              appear: boss.appear,
+              defeat: boss.defeat,
+            }));
+            break;
+          case 1:
+            bosses = coopsStats.bosses.map((boss) => ({
+              id: boss.id,
+              appear: boss.appear,
+              defeat: boss.defeatTeam,
+            }));
+            break;
+          default:
+            throw new Error(`unexpected dimension ${props.dimension}`);
+        }
+        bosses.sort((a, b) => b.appear - a.appear);
+        return bosses;
+      }
+      case 2: {
+        let bosses: { id: string; appear: number; defeat: number }[];
+        switch (props.dimension || 0) {
+          case 0:
+            bosses = coopsStats.bosses.map((boss) => ({
+              id: boss.id,
+              appear: boss.appear,
+              defeat: boss.defeat,
+            }));
+            break;
+          case 1:
+            bosses = coopsStats.bosses.map((boss) => ({
+              id: boss.id,
+              appear: boss.appear,
+              defeat: boss.defeatTeam,
+            }));
+            break;
+          default:
+            throw new Error(`unexpected dimension ${props.dimension}`);
+        }
+        bosses.sort(defeatRateSort);
+        return bosses;
+      }
+      default:
+        throw new Error(`unexpected sort ${sort}`);
+    }
+  }, [coopsStats, sort, props.dimension]);
+  const coopKings = useMemo(() => {
+    switch (sort) {
+      case 0:
+        return coopsStats.kings;
+      case 1: {
+        const kings = deepCopy(coopsStats.kings);
+        kings.sort((a, b) => b.appear - a.appear);
+        return kings;
+      }
+      case 2: {
+        const kings = deepCopy(coopsStats.kings);
+        kings.sort(defeatRateSort);
+        return kings;
+      }
+      default:
+        throw new Error(`unexpected sort ${sort}`);
+    }
+  }, [coopsStats, sort]);
   const coopWaveStats = useMemo(() => {
     switch (sort) {
       case 0:
         return coopsStats.waves;
       case 1: {
-        const waves = JSON.parse(JSON.stringify(coopsStats.waves));
+        const waves = deepCopy(coopsStats.waves);
         for (const wave of waves) {
           wave.levels.sort((a, b) => b.appear - a.appear);
         }
@@ -166,7 +270,7 @@ const StatsModal = (props: StatsModalProps) => {
         return waves;
       }
       case 2: {
-        const waves = JSON.parse(JSON.stringify(coopsStats.waves));
+        const waves = deepCopy(coopsStats.waves);
         for (const wave of waves) {
           wave.levels.sort(clearRateSort);
         }
@@ -181,10 +285,14 @@ const StatsModal = (props: StatsModalProps) => {
     switch (sort) {
       case 0:
         return coopsStats.stages;
-      case 1:
+      case 1: {
+        const stages = deepCopy(coopsStats.stages);
+        stages.sort((a, b) => b.appear - a.appear);
+        return stages;
+      }
       case 2: {
-        const stages = JSON.parse(JSON.stringify(coopsStats.stages));
-        stages.sort((a, b) => b.count - a.count);
+        const stages = deepCopy(coopsStats.stages);
+        stages.sort(clearRateSort);
         return stages;
       }
       default:
@@ -195,10 +303,14 @@ const StatsModal = (props: StatsModalProps) => {
     switch (sort) {
       case 0:
         return coopsStats.weapons;
-      case 1:
+      case 1: {
+        const weapons = deepCopy(coopsStats.weapons);
+        weapons.sort((a, b) => b.appear - a.appear);
+        return weapons;
+      }
       case 2: {
-        const weapons = JSON.parse(JSON.stringify(coopsStats.weapons));
-        weapons.sort((a, b) => b.count - a.count);
+        const weapons = deepCopy(coopsStats.weapons);
+        weapons.sort(clearRateSort);
         return weapons;
       }
       default:
@@ -209,10 +321,14 @@ const StatsModal = (props: StatsModalProps) => {
     switch (sort) {
       case 0:
         return coopsStats.specialWeapons;
-      case 1:
+      case 1: {
+        const specialWeapons = deepCopy(coopsStats.specialWeapons);
+        specialWeapons.sort((a, b) => b.appear - a.appear);
+        return specialWeapons;
+      }
       case 2: {
-        const specialWeapons = JSON.parse(JSON.stringify(coopsStats.specialWeapons));
-        specialWeapons.sort((a, b) => b.count - a.count);
+        const specialWeapons = deepCopy(coopsStats.specialWeapons);
+        specialWeapons.sort(clearRateSort);
         return specialWeapons;
       }
       default:
@@ -309,7 +425,7 @@ const StatsModal = (props: StatsModalProps) => {
         values={[t("default"), t("appearance"), t("win_rate")]}
         selectedIndex={sort}
         onChange={onSortChange}
-        style={ViewStyles.mb1}
+        style={ViewStyles.mb2}
       />
       <SalmonRunSwitcher>
         <>
@@ -458,19 +574,10 @@ const StatsModal = (props: StatsModalProps) => {
                   </Display>
                   <AccordionDisplay
                     title={t("boss_salmonids_defeated")}
-                    subChildren={coopsStats.bosses.map((boss) => (
+                    subChildren={coopBosses.map((boss) => (
                       <Display key={boss.id} level={1} title={t(boss.id)}>
                         <Text numberOfLines={1}>
-                          {(() => {
-                            switch (props.dimension || 0) {
-                              case 0:
-                                return `${boss.defeat} / ${boss.appear}`;
-                              case 1:
-                                return `${boss.defeatTeam} / ${boss.appear}`;
-                              default:
-                                throw new Error(`unexpected dimension ${props.dimension}`);
-                            }
-                          })()}
+                          {formatWinRateAndTotal(boss.defeat, boss.appear)}
                         </Text>
                       </Display>
                     ))}
@@ -484,9 +591,11 @@ const StatsModal = (props: StatsModalProps) => {
                   </AccordionDisplay>
                   <AccordionDisplay
                     title={t("king_salmonids_defeated")}
-                    subChildren={coopsStats.kings.map((king) => (
+                    subChildren={coopKings.map((king) => (
                       <Display key={king.id} level={1} title={t(king.id)}>
-                        <Text numberOfLines={1}>{`${king.defeat} / ${king.appear}`}</Text>
+                        <Text numberOfLines={1}>
+                          {formatWinRateAndTotal(king.defeat, king.appear)}
+                        </Text>
                       </Display>
                     ))}
                   >
@@ -564,7 +673,9 @@ const StatsModal = (props: StatsModalProps) => {
                         title={t("stage_stats")}
                         subChildren={coopStageStats.map((stage) => (
                           <Display key={stage.id} level={1} title={t(stage.id)}>
-                            <Text numberOfLines={1}>{stage.count}</Text>
+                            <Text numberOfLines={1}>
+                              {formatWinRateAndTotal(stage.clear, stage.appear)}
+                            </Text>
                           </Display>
                         ))}
                       />
@@ -572,7 +683,9 @@ const StatsModal = (props: StatsModalProps) => {
                         title={t("supplied_weapons")}
                         subChildren={coopWeaponStats.map((weapon) => (
                           <Display key={weapon.id} level={1} title={t(weapon.id)}>
-                            <Text numberOfLines={1}>{weapon.count}</Text>
+                            <Text numberOfLines={1}>
+                              {formatWinRateAndTotal(weapon.clear, weapon.appear)}
+                            </Text>
                           </Display>
                         ))}
                       />
@@ -587,7 +700,9 @@ const StatsModal = (props: StatsModalProps) => {
                               level={1}
                               title={t(specialWeapon.id)}
                             >
-                              <Text numberOfLines={1}>{specialWeapon.count}</Text>
+                              <Text numberOfLines={1}>
+                                {formatWinRateAndTotal(specialWeapon.clear, specialWeapon.appear)}
+                              </Text>
                             </Display>
                           )
                         )}

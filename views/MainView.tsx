@@ -101,7 +101,7 @@ import {
   registerBackgroundTask,
   unregisterBackgroundTask,
 } from "../utils/background";
-import { decode64String, encode64String } from "../utils/codec";
+import { decode64String, deepCopy, encode64String } from "../utils/codec";
 import * as Database from "../utils/database";
 import {
   AsyncStorageKey,
@@ -325,7 +325,7 @@ const MainView = () => {
           }
           // Remove players filter since we do not have their names now.
           if (filter?.players) {
-            const newFilter = JSON.parse(JSON.stringify(filter));
+            const newFilter = deepCopy(filter);
             newFilter.players = [];
             setFilter(newFilter);
           }
@@ -871,12 +871,12 @@ const MainView = () => {
       if (!filter.players) {
         filter.players = [];
       }
-      newFilter = JSON.parse(JSON.stringify(filter));
+      newFilter = deepCopy(filter);
     }
     newFilter.players!.push(id);
     setFilter(newFilter);
     if (players?.[id] !== name) {
-      const newPlayers = JSON.parse(JSON.stringify(players ?? {}));
+      const newPlayers = deepCopy(players ?? {});
       newPlayers[id] = name;
       setPlayers(newPlayers);
     }

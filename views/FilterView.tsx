@@ -19,6 +19,7 @@ import {
 } from "../components";
 import t from "../i18n";
 import coopStageList from "../models/coopStages.json";
+import { deepCopy } from "../utils/codec";
 import { FilterProps, isFilterEqual } from "../utils/database";
 
 interface FilterViewProps {
@@ -84,11 +85,11 @@ const FilterView = (props: FilterViewProps) => {
         props.filter[group] = [];
       }
       if (props.filter[group].includes(key)) {
-        const newFilter = JSON.parse(JSON.stringify(props.filter));
+        const newFilter = deepCopy(props.filter);
         newFilter[group] = newFilter[group].filter((item: string) => item !== key);
         props.onChange(newFilter);
       } else {
-        const newFilter = JSON.parse(JSON.stringify(props.filter));
+        const newFilter = deepCopy(props.filter);
         newFilter[group].push(key);
         props.onChange(newFilter);
       }

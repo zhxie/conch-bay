@@ -431,15 +431,18 @@ export interface CoopStats {
   }[];
   stages: {
     id: string;
-    count: number;
+    appear: number;
+    clear: number;
   }[];
   weapons: {
     id: string;
-    count: number;
+    appear: number;
+    clear: number;
   }[];
   specialWeapons: {
     id: string;
-    count: number;
+    appear: number;
+    clear: number;
   }[];
 }
 
@@ -654,9 +657,9 @@ export const getCoopStats = (...coops: CoopBrief[]): CoopStats => {
   const bossMap = new Map<string, { appear: number; defeat: number; defeatTeam: number }>(),
     kingMap = new Map<string, { appear: number; defeat: number }>(),
     waveMap = new Map<string, Map<number, { appear: number; clear: number }>>(),
-    stageMap = new Map<string, number>(),
-    weaponMap = new Map<string, number>(),
-    specialWeaponMap = new Map<string, number>();
+    stageMap = new Map<string, { appear: number; clear: number }>(),
+    weaponMap = new Map<string, { appear: number; clear: number }>(),
+    specialWeaponMap = new Map<string, { appear: number; clear: number }>();
   for (const coop of coops) {
     count += 1;
     const skip = coop.result < 0;
@@ -719,23 +722,32 @@ export const getCoopStats = (...coops: CoopBrief[]): CoopStats => {
       }
     }
     if (!stageMap.has(coop.stage)) {
-      stageMap.set(coop.stage, 0);
+      stageMap.set(coop.stage, { appear: 0, clear: 0 });
     }
-    stageMap.set(coop.stage, stageMap.get(coop.stage)! + 1);
-    for (const weapon of coop.players[0].weapons) {
-      if (!weaponMap.has(weapon)) {
-        weaponMap.set(weapon, 0);
+    const stage = stageMap.get(coop.stage)!;
+    stage.appear += 1;
+    if (coop.result === 0) {
+      stage.clear += 1;
+    }
+    for (let i = 0; i < coop.players[0].weapons.length; i++) {
+      if (!weaponMap.has(coop.players[0].weapons[i])) {
+        weaponMap.set(coop.players[0].weapons[i], { appear: 0, clear: 0 });
       }
-      weaponMap.set(weapon, weaponMap.get(weapon)! + 1);
+      const weapon = weaponMap.get(coop.players[0].weapons[i])!;
+      weapon.appear += 1;
+      if (coop.result === 0 || coop.result > i) {
+        weapon.clear += 1;
+      }
     }
     if (coop.players[0].specialWeapon) {
       if (!specialWeaponMap.has(coop.players[0].specialWeapon)) {
-        specialWeaponMap.set(coop.players[0].specialWeapon, 0);
+        specialWeaponMap.set(coop.players[0].specialWeapon, { appear: 0, clear: 0 });
       }
-      specialWeaponMap.set(
-        coop.players[0].specialWeapon,
-        specialWeaponMap.get(coop.players[0].specialWeapon)! + 1
-      );
+      const specialWeapon = specialWeaponMap.get(coop.players[0].specialWeapon)!;
+      specialWeapon.appear += 1;
+      if (coop.result === 0) {
+        specialWeapon.clear += 1;
+      }
     }
   }
   const kings = Array.from(kingMap, (king) => ({
@@ -753,7 +765,8 @@ export const getCoopStats = (...coops: CoopBrief[]): CoopStats => {
   bosses.sort(idSort);
   const stages = Array.from(stageMap, (stage) => ({
     id: stage[0],
-    count: stage[1],
+    appear: stage[1].appear,
+    clear: stage[1].clear,
   }));
   const waves = Array.from(waveMap, (wave) => {
     const levels = Array.from(wave[1], (level) => ({
@@ -788,12 +801,14 @@ export const getCoopStats = (...coops: CoopBrief[]): CoopStats => {
   stages.sort(idSort);
   const weapons = Array.from(weaponMap, (weapon) => ({
     id: weaponList.images[weapon[0]] ?? weapon[0],
-    count: weapon[1],
+    appear: weapon[1].appear,
+    clear: weapon[1].clear,
   }));
   weapons.sort(weaponSort);
   const specialWeapons = Array.from(specialWeaponMap, (specialWeapon) => ({
     id: coopSpecialWeaponList.images[specialWeapon[0]] ?? specialWeapon[0],
-    count: specialWeapon[1],
+    appear: specialWeapon[1].appear,
+    clear: specialWeapon[1].clear,
   }));
   specialWeapons.sort(weaponSort);
   return {
