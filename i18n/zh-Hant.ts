@@ -193,6 +193,9 @@ const zhHant = {
   team: "團隊",
   // Stats.
   stats: "統計",
+  default: "預設",
+  appearance: "出現數",
+  win_rate: "勝率",
   all: "全部",
   day: "日",
   week: "周",
@@ -236,7 +239,6 @@ const zhHant = {
   headgear: "頭部裝備",
   clothes: "服裝",
   shoes: "鞋子",
-  default: "預設",
   brand: "品牌",
   ability: "裝備能力",
   // Import.

@@ -24,6 +24,44 @@ import t from "../i18n";
 import { BattleBrief, Brief, CoopBrief, getBattleStats, getCoopStats } from "../utils/stats";
 import { roundPower } from "../utils/ui";
 
+const winRateSort = (a: { count: number; win: number }, b: { count: number; win: number }) => {
+  if (a.count === 0 && b.count === 0) {
+    return 0;
+  }
+  if (a.count === 0) {
+    return 1;
+  }
+  if (b.count === 0) {
+    return -1;
+  }
+  const aWinRate = a.win / a.count;
+  const bWinRate = b.win / b.count;
+  if (aWinRate == bWinRate) {
+    return b.win - a.win;
+  }
+  return bWinRate - aWinRate;
+};
+const clearRateSort = (
+  a: { appear: number; clear: number },
+  b: { appear: number; clear: number }
+) => {
+  if (a.appear === 0 && b.appear === 0) {
+    return 0;
+  }
+  if (a.appear === 0) {
+    return 1;
+  }
+  if (b.appear === 0) {
+    return -1;
+  }
+  const aWinRate = a.clear / a.appear;
+  const bWinRate = b.clear / b.appear;
+  if (aWinRate == bWinRate) {
+    return b.clear - a.clear;
+  }
+  return bWinRate - aWinRate;
+};
+
 interface StatsModalProps {
   briefs?: Brief[];
   dimension?: number;
@@ -36,6 +74,8 @@ interface StatsModalProps {
 }
 
 const StatsModal = (props: StatsModalProps) => {
+  const [sort, setSort] = useState(0);
+
   const battleStats = useMemo(
     () =>
       getBattleStats(
@@ -52,6 +92,133 @@ const StatsModal = (props: StatsModalProps) => {
       ),
     [props.briefs]
   );
+
+  const battleStageStats = useMemo(() => {
+    switch (sort) {
+      case 0:
+        return battleStats.stages;
+      case 1: {
+        const stages = JSON.parse(JSON.stringify(battleStats.stages));
+        for (const stage of stages) {
+          for (const rule of stage.rules) {
+            rule.weapons.sort((a, b) => b.count - a.count);
+          }
+          stage.rules.sort((a, b) => b.count - a.count);
+        }
+        stages.sort((a, b) => b.count - a.count);
+        return stages;
+      }
+      case 2: {
+        const stages = JSON.parse(JSON.stringify(battleStats.stages));
+        for (const stage of stages) {
+          for (const rule of stage.rules) {
+            rule.weapons.sort(winRateSort);
+          }
+          stage.rules.sort(winRateSort);
+        }
+        stages.sort(winRateSort);
+        return stages;
+      }
+      default:
+        throw new Error(`unexpected sort ${sort}`);
+    }
+  }, [battleStats, sort]);
+  const battleWeaponStats = useMemo(() => {
+    switch (sort) {
+      case 0:
+        return battleStats.weapons;
+      case 1: {
+        const weapons = JSON.parse(JSON.stringify(battleStats.weapons));
+        for (const weapon of weapons) {
+          for (const rule of weapon.rules) {
+            rule.stages.sort((a, b) => b.count - a.count);
+          }
+          weapon.rules.sort((a, b) => b.count - a.count);
+        }
+        weapons.sort((a, b) => b.count - a.count);
+        return weapons;
+      }
+      case 2: {
+        const weapons = JSON.parse(JSON.stringify(battleStats.weapons));
+        for (const weapon of weapons) {
+          for (const rule of weapon.rules) {
+            rule.stages.sort(winRateSort);
+          }
+          weapon.rules.sort(winRateSort);
+        }
+        weapons.sort(winRateSort);
+        return weapons;
+      }
+      default:
+        throw new Error(`unexpected sort ${sort}`);
+    }
+  }, [battleStats, sort]);
+  const coopWaveStats = useMemo(() => {
+    switch (sort) {
+      case 0:
+        return coopsStats.waves;
+      case 1: {
+        const waves = JSON.parse(JSON.stringify(coopsStats.waves));
+        for (const wave of waves) {
+          wave.levels.sort((a, b) => b.appear - a.appear);
+        }
+        waves.sort((a, b) => b.appear - a.appear);
+        return waves;
+      }
+      case 2: {
+        const waves = JSON.parse(JSON.stringify(coopsStats.waves));
+        for (const wave of waves) {
+          wave.levels.sort(clearRateSort);
+        }
+        waves.sort(clearRateSort);
+        return waves;
+      }
+      default:
+        throw new Error(`unexpected sort ${sort}`);
+    }
+  }, [coopsStats, sort]);
+  const coopStageStats = useMemo(() => {
+    switch (sort) {
+      case 0:
+        return coopsStats.stages;
+      case 1:
+      case 2: {
+        const stages = JSON.parse(JSON.stringify(coopsStats.stages));
+        stages.sort((a, b) => b.count - a.count);
+        return stages;
+      }
+      default:
+        throw new Error(`unexpected sort ${sort}`);
+    }
+  }, [coopsStats, sort]);
+  const coopWeaponStats = useMemo(() => {
+    switch (sort) {
+      case 0:
+        return coopsStats.weapons;
+      case 1:
+      case 2: {
+        const weapons = JSON.parse(JSON.stringify(coopsStats.weapons));
+        weapons.sort((a, b) => b.count - a.count);
+        return weapons;
+      }
+      default:
+        throw new Error(`unexpected sort ${sort}`);
+    }
+  }, [coopsStats, sort]);
+  const coopSpecialWeaponStats = useMemo(() => {
+    switch (sort) {
+      case 0:
+        return coopsStats.specialWeapons;
+      case 1:
+      case 2: {
+        const specialWeapons = JSON.parse(JSON.stringify(coopsStats.specialWeapons));
+        specialWeapons.sort((a, b) => b.count - a.count);
+        return specialWeapons;
+      }
+      default:
+        throw new Error(`unexpected sort ${sort}`);
+    }
+  }, [coopsStats, sort]);
 
   const battleDimension = useMemo(() => {
     switch (props.dimension || 0) {
@@ -126,6 +293,10 @@ const StatsModal = (props: StatsModalProps) => {
     }
   };
 
+  const onSortChange = (event: NativeSyntheticEvent<NativeSegmentedControlIOSChangeEvent>) => {
+    setSort(event.nativeEvent.selectedSegmentIndex);
+  };
+
   return (
     <Modal
       isVisible={props.isVisible}
@@ -134,6 +305,12 @@ const StatsModal = (props: StatsModalProps) => {
       style={ViewStyles.modal1}
     >
       {props.children}
+      <SegmentedControl
+        values={[t("default"), t("appearance"), t("win_rate")]}
+        selectedIndex={sort}
+        onChange={onSortChange}
+        style={ViewStyles.mb1}
+      />
       <SalmonRunSwitcher>
         <>
           {(!props.hideEmpty || battleStats.count > 0) && (
@@ -188,7 +365,7 @@ const StatsModal = (props: StatsModalProps) => {
                     <VStack>
                       <AccordionDisplay
                         title={t("stage_stats")}
-                        subChildren={battleStats.stages.map((stage) => (
+                        subChildren={battleStageStats.map((stage) => (
                           <AccordionDisplay
                             key={stage.id}
                             level={1}
@@ -213,10 +390,7 @@ const StatsModal = (props: StatsModalProps) => {
                             ))}
                           >
                             <Text numberOfLines={1}>
-                              {formatWinRateAndTotal(
-                                stage.rules.reduce((prev, current) => prev + current.win, 0),
-                                stage.rules.reduce((prev, current) => prev + current.count, 0)
-                              )}
+                              {formatWinRateAndTotal(stage.win, stage.count)}
                             </Text>
                           </AccordionDisplay>
                         ))}
@@ -224,7 +398,7 @@ const StatsModal = (props: StatsModalProps) => {
                       <AccordionDisplay
                         last
                         title={t("weapon_stats")}
-                        subChildren={battleStats.weapons.map((weapon, i, weapons) => (
+                        subChildren={battleWeaponStats.map((weapon, i, weapons) => (
                           <AccordionDisplay
                             key={weapon.id}
                             last={i === weapons.length - 1}
@@ -251,10 +425,7 @@ const StatsModal = (props: StatsModalProps) => {
                             ))}
                           >
                             <Text numberOfLines={1}>
-                              {formatWinRateAndTotal(
-                                weapon.rules.reduce((prev, current) => prev + current.win, 0),
-                                weapon.rules.reduce((prev, current) => prev + current.count, 0)
-                              )}
+                              {formatWinRateAndTotal(weapon.win, weapon.count)}
                             </Text>
                           </AccordionDisplay>
                         ))}
@@ -370,7 +541,7 @@ const StatsModal = (props: StatsModalProps) => {
                     <VStack>
                       <AccordionDisplay
                         title={t("wave_stats")}
-                        subChildren={coopsStats.waves.map((wave) => (
+                        subChildren={coopWaveStats.map((wave) => (
                           <AccordionDisplay
                             key={wave.id}
                             level={1}
@@ -384,17 +555,14 @@ const StatsModal = (props: StatsModalProps) => {
                             ))}
                           >
                             <Text numberOfLines={1}>
-                              {formatWinRateAndTotal(
-                                wave.levels.reduce((prev, current) => prev + current.clear, 0),
-                                wave.levels.reduce((prev, current) => prev + current.appear, 0)
-                              )}
+                              {formatWinRateAndTotal(wave.clear, wave.appear)}
                             </Text>
                           </AccordionDisplay>
                         ))}
                       />
                       <AccordionDisplay
                         title={t("stage_stats")}
-                        subChildren={coopsStats.stages.map((stage) => (
+                        subChildren={coopStageStats.map((stage) => (
                           <Display key={stage.id} level={1} title={t(stage.id)}>
                             <Text numberOfLines={1}>{stage.count}</Text>
                           </Display>
@@ -402,7 +570,7 @@ const StatsModal = (props: StatsModalProps) => {
                       />
                       <AccordionDisplay
                         title={t("supplied_weapons")}
-                        subChildren={coopsStats.weapons.map((weapon) => (
+                        subChildren={coopWeaponStats.map((weapon) => (
                           <Display key={weapon.id} level={1} title={t(weapon.id)}>
                             <Text numberOfLines={1}>{weapon.count}</Text>
                           </Display>
@@ -411,7 +579,7 @@ const StatsModal = (props: StatsModalProps) => {
                       <AccordionDisplay
                         last
                         title={t("supplied_special_weapons")}
-                        subChildren={coopsStats.specialWeapons.map(
+                        subChildren={coopSpecialWeaponStats.map(
                           (specialWeapon, i, specialWeapons) => (
                             <Display
                               key={specialWeapon.id}
@@ -510,7 +678,7 @@ const StatsView = (props: StatsViewProps) => {
           values={[t("all"), t("day"), t("week"), t("month"), t("season")]}
           selectedIndex={group}
           onChange={onGroupChange}
-          style={ViewStyles.mb2}
+          style={ViewStyles.mb1}
         />
       </StatsModal>
     </Center>

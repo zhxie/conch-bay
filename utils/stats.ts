@@ -63,6 +63,8 @@ export interface BattleStats {
   all: BattlePlayerStats;
   stages: {
     id: string;
+    count: number;
+    win: number;
     rules: {
       id: string;
       count: number;
@@ -76,6 +78,8 @@ export interface BattleStats {
   }[];
   weapons: {
     id: string;
+    count: number;
+    win: number;
     rules: {
       id: string;
       count: number;
@@ -170,20 +174,9 @@ export const getBattleStats = (...battles: BattleBrief[]): BattleStats => {
       death: 0,
       special: 0,
     };
-  const stageMap = new Map<
-      string,
-      Map<
-        string,
-        { count: number; win: number; weaponMap: Map<string, { count: number; win: number }> }
-      >
-    >(),
-    weaponMap = new Map<
-      string,
-      Map<
-        string,
-        { count: number; win: number; stageMap: Map<string, { count: number; win: number }> }
-      >
-    >();
+  // Stage-rule-weapon map and weapon-rule-stage map.
+  const stageMap = new Map<string, Map<string, Map<string, { count: number; win: number }>>>(),
+    weaponMap = new Map<string, Map<string, Map<string, { count: number; win: number }>>>();
   for (const battle of battles) {
     count += 1;
     switch (battle.result) {
@@ -230,20 +223,17 @@ export const getBattleStats = (...battles: BattleBrief[]): BattleStats => {
       stageMap.set(battle.stage, new Map());
     }
     if (!stageMap.get(battle.stage)!.has(battle.rule)) {
-      stageMap.get(battle.stage)!.set(battle.rule, { count: 0, win: 0, weaponMap: new Map() });
+      stageMap.get(battle.stage)!.set(battle.rule, new Map());
     }
-    if (!stageMap.get(battle.stage)!.get(battle.rule)!.weaponMap.has(selfPlayerBrief.weapon)) {
+    if (!stageMap.get(battle.stage)!.get(battle.rule)!.has(selfPlayerBrief.weapon)) {
       stageMap
         .get(battle.stage)!
         .get(battle.rule)!
-        .weaponMap.set(selfPlayerBrief.weapon, { count: 0, win: 0 });
+        .set(selfPlayerBrief.weapon, { count: 0, win: 0 });
     }
-    const stage = stageMap.get(battle.stage)!.get(battle.rule)!;
-    const stageWeapon = stage.weaponMap.get(selfPlayerBrief.weapon)!;
-    stage.count += 1;
+    const stageWeapon = stageMap.get(battle.stage)!.get(battle.rule)!.get(selfPlayerBrief.weapon)!;
     stageWeapon.count += 1;
     if (battle.result === Judgement.WIN) {
-      stage.win += 1;
       stageWeapon.win += 1;
     }
 
@@ -251,28 +241,23 @@ export const getBattleStats = (...battles: BattleBrief[]): BattleStats => {
       weaponMap.set(selfPlayerBrief.weapon, new Map());
     }
     if (!weaponMap.get(selfPlayerBrief.weapon)!.has(battle.rule)) {
-      weaponMap
-        .get(selfPlayerBrief.weapon)!
-        .set(battle.rule, { count: 0, win: 0, stageMap: new Map() });
+      weaponMap.get(selfPlayerBrief.weapon)!.set(battle.rule, new Map());
     }
-    if (!weaponMap.get(selfPlayerBrief.weapon)!.get(battle.rule)!.stageMap.has(battle.stage)) {
+    if (!weaponMap.get(selfPlayerBrief.weapon)!.get(battle.rule)!.has(battle.stage)) {
       weaponMap
         .get(selfPlayerBrief.weapon)!
         .get(battle.rule)!
-        .stageMap.set(battle.stage, { count: 0, win: 0 });
+        .set(battle.stage, { count: 0, win: 0 });
     }
-    const weapon = weaponMap.get(selfPlayerBrief.weapon)!.get(battle.rule)!;
-    const weaponStage = weapon.stageMap.get(battle.stage)!;
-    weapon.count += 1;
+    const weaponStage = weaponMap.get(selfPlayerBrief.weapon)!.get(battle.rule)!.get(battle.stage)!;
     weaponStage.count += 1;
     if (battle.result === Judgement.WIN) {
-      weapon.win += 1;
       weaponStage.win += 1;
     }
   }
   const stages = Array.from(stageMap, (stage) => {
     const rules = Array.from(stage[1], (rule) => {
-      const weapons = Array.from(rule[1].weaponMap, (weapon) => ({
+      const weapons = Array.from(rule[1], (weapon) => ({
         id: weapon[0],
         count: weapon[1].count,
         win: weapon[1].win,
@@ -280,21 +265,23 @@ export const getBattleStats = (...battles: BattleBrief[]): BattleStats => {
       weapons.sort((a, b) => decode64Index(a.id) - decode64Index(b.id));
       return {
         id: rule[0],
-        count: rule[1].count,
-        win: rule[1].win,
+        count: weapons.reduce((prev, current) => prev + current.count, 0),
+        win: weapons.reduce((prev, current) => prev + current.win, 0),
         weapons,
       };
     });
     rules.sort((a, b) => decode64Index(a.id) - decode64Index(b.id));
     return {
       id: stage[0],
+      count: rules.reduce((prev, current) => prev + current.count, 0),
+      win: rules.reduce((prev, current) => prev + current.win, 0),
       rules,
     };
   });
   stages.sort((a, b) => decode64Index(a.id) - decode64Index(b.id));
   const weapons = Array.from(weaponMap, (weapon) => {
     const rules = Array.from(weapon[1], (rule) => {
-      const stages = Array.from(rule[1].stageMap, (stage) => ({
+      const stages = Array.from(rule[1], (stage) => ({
         id: stage[0],
         count: stage[1].count,
         win: stage[1].win,
@@ -302,14 +289,16 @@ export const getBattleStats = (...battles: BattleBrief[]): BattleStats => {
       stages.sort((a, b) => decode64Index(a.id) - decode64Index(b.id));
       return {
         id: rule[0],
-        count: rule[1].count,
-        win: rule[1].win,
+        count: stages.reduce((prev, current) => prev + current.count, 0),
+        win: stages.reduce((prev, current) => prev + current.win, 0),
         stages,
       };
     });
     rules.sort((a, b) => decode64Index(a.id) - decode64Index(b.id));
     return {
       id: weapon[0],
+      count: rules.reduce((prev, current) => prev + current.count, 0),
+      win: rules.reduce((prev, current) => prev + current.win, 0),
       rules,
     };
   });
@@ -380,7 +369,14 @@ export interface CoopBrief {
   hazardLevel: number;
   grade?: { id: string; point: number };
   players: CoopPlayerBrief[];
-  waves: WaveStats[];
+  waves: {
+    id: string;
+    levels: {
+      id: number;
+      appear: number;
+      clear: number;
+    }[];
+  }[];
   bosses: BossSalmonidStats[];
   king?: {
     id: string;
@@ -408,7 +404,16 @@ export interface CoopStats {
     defeat: number;
   }[];
   scales: Scales;
-  waves: WaveStats[];
+  waves: {
+    id: string;
+    appear: number;
+    clear: number;
+    levels: {
+      id: number;
+      appear: number;
+      clear: number;
+    }[];
+  }[];
   stages: {
     id: string;
     count: number;
@@ -744,6 +749,8 @@ export const getCoopStats = (...coops: CoopBrief[]): CoopStats => {
     levels.sort((a, b) => a.id - b.id);
     return {
       id: wave[0],
+      appear: levels.reduce((prev, current) => prev + current.appear, 0),
+      clear: levels.reduce((prev, current) => prev + current.clear, 0),
       levels,
     };
   });

@@ -1784,7 +1784,7 @@ const ResultView = (props: ResultViewProps) => {
           values={[t("self"), t("team")]}
           selectedIndex={dimension}
           onChange={onDimensionChange}
-          style={ViewStyles.mb2}
+          style={ViewStyles.mb1}
         />
       </StatsModal>
     </VStack>

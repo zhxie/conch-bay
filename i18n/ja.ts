@@ -201,6 +201,9 @@ const ja = {
   team: "チーム",
   // Stats.
   stats: "統計",
+  default: "デフォルト",
+  appearance: "出現数",
+  win_rate: "勝率",
   all: "すべて",
   day: "日",
   week: "週",
@@ -246,7 +249,6 @@ const ja = {
   headgear: "アタマ",
   clothes: "フク",
   shoes: "クツ",
-  default: "デフォルト",
   brand: "ブランド",
   ability: "ギアパワー",
   // Import.

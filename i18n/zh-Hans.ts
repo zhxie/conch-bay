@@ -193,6 +193,9 @@ const zhHans = {
   team: "团队",
   // Stats.
   stats: "统计",
+  default: "默认",
+  appearance: "出现数量",
+  win_rate: "胜率",
   all: "全部",
   day: "日",
   week: "周",
@@ -236,7 +239,6 @@ const zhHans = {
   headgear: "头部装备",
   clothes: "服装",
   shoes: "鞋子",
-  default: "默认",
   brand: "品牌",
   ability: "装备能力",
   // Import.

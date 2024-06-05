@@ -200,6 +200,9 @@ const en = {
   team: "Team",
   // Stats.
   stats: "Stats",
+  default: "Default",
+  appearance: "Appearance",
+  win_rate: "Win Rate",
   all: "All",
   day: "Day",
   week: "Week",
@@ -246,7 +249,6 @@ const en = {
   headgear: "Headgear",
   clothes: "Clothes",
   shoes: "Shoes",
-  default: "Default",
   brand: "Brand",
   ability: "Ability",
   // Import.
