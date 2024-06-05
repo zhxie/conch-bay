@@ -277,8 +277,7 @@ export const getBattleStats = (...battles: BattleBrief[]): BattleStats => {
         count: weapon[1].count,
         win: weapon[1].win,
       }));
-      // sort weapon by win rate (`count` won't be 0)
-      weapons.sort((a, b) => b.win / b.count - a.win / a.count);
+      weapons.sort((a, b) => decode64Index(a.id) - decode64Index(b.id));
       return {
         id: rule[0],
         count: rule[1].count,
@@ -300,8 +299,7 @@ export const getBattleStats = (...battles: BattleBrief[]): BattleStats => {
         count: stage[1].count,
         win: stage[1].win,
       }));
-      // sort stage by win rate (`count` won't be 0)
-      stages.sort((a, b) => b.win / b.count - a.win / a.count);
+      stages.sort((a, b) => decode64Index(a.id) - decode64Index(b.id));
       return {
         id: rule[0],
         count: rule[1].count,
