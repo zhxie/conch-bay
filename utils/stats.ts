@@ -67,6 +67,11 @@ export interface BattleStats {
       id: string;
       count: number;
       win: number;
+      weapons: {
+        id: string;
+        count: number;
+        win: number;
+      }[];
     }[];
   }[];
   weapons: {
@@ -75,6 +80,11 @@ export interface BattleStats {
       id: string;
       count: number;
       win: number;
+      stages: {
+        id: string;
+        count: number;
+        win: number;
+      }[];
     }[];
   }[];
 }
@@ -160,8 +170,20 @@ export const getBattleStats = (...battles: BattleBrief[]): BattleStats => {
       death: 0,
       special: 0,
     };
-  const stageMap = new Map<string, Map<string, { count: number; win: number }>>(),
-    weaponMap = new Map<string, Map<string, { count: number; win: number }>>();
+  const stageMap = new Map<
+      string,
+      Map<
+        string,
+        { count: number; win: number; weaponMap: Map<string, { count: number; win: number }> }
+      >
+    >(),
+    weaponMap = new Map<
+      string,
+      Map<
+        string,
+        { count: number; win: number; stageMap: Map<string, { count: number; win: number }> }
+      >
+    >();
   for (const battle of battles) {
     count += 1;
     switch (battle.result) {
@@ -203,31 +225,66 @@ export const getBattleStats = (...battles: BattleBrief[]): BattleStats => {
     all = battle.otherTeams
       .flat()
       .reduce((prev, current) => addBattlePlayerStats(prev, current), all);
+
     if (!stageMap.has(battle.stage)) {
       stageMap.set(battle.stage, new Map());
     }
     if (!stageMap.get(battle.stage)!.has(battle.rule)) {
-      stageMap.get(battle.stage)!.set(battle.rule, { count: 0, win: 0 });
+      stageMap.get(battle.stage)!.set(battle.rule, { count: 0, win: 0, weaponMap: new Map() });
+    }
+    if (!stageMap.get(battle.stage)!.get(battle.rule)!.weaponMap.has(selfPlayerBrief.weapon)) {
+      stageMap
+        .get(battle.stage)!
+        .get(battle.rule)!
+        .weaponMap.set(selfPlayerBrief.weapon, { count: 0, win: 0 });
     }
     const stage = stageMap.get(battle.stage)!.get(battle.rule)!;
+    const stageWeapon = stage.weaponMap.get(selfPlayerBrief.weapon)!;
     stage.count += 1;
-    stage.win += battle.result === Judgement.WIN ? 1 : 0;
+    stageWeapon.count += 1;
+    if (battle.result === Judgement.WIN) {
+      stage.win += 1;
+      stageWeapon.win += 1;
+    }
+
     if (!weaponMap.has(selfPlayerBrief.weapon)) {
       weaponMap.set(selfPlayerBrief.weapon, new Map());
     }
     if (!weaponMap.get(selfPlayerBrief.weapon)!.has(battle.rule)) {
-      weaponMap.get(selfPlayerBrief.weapon)!.set(battle.rule, { count: 0, win: 0 });
+      weaponMap
+        .get(selfPlayerBrief.weapon)!
+        .set(battle.rule, { count: 0, win: 0, stageMap: new Map() });
+    }
+    if (!weaponMap.get(selfPlayerBrief.weapon)!.get(battle.rule)!.stageMap.has(battle.stage)) {
+      weaponMap
+        .get(selfPlayerBrief.weapon)!
+        .get(battle.rule)!
+        .stageMap.set(battle.stage, { count: 0, win: 0 });
     }
     const weapon = weaponMap.get(selfPlayerBrief.weapon)!.get(battle.rule)!;
+    const weaponStage = weapon.stageMap.get(battle.stage)!;
     weapon.count += 1;
-    weapon.win += battle.result === Judgement.WIN ? 1 : 0;
+    weaponStage.count += 1;
+    if (battle.result === Judgement.WIN) {
+      weapon.win += 1;
+      weaponStage.win += 1;
+    }
   }
   const stages = Array.from(stageMap, (stage) => {
-    const rules = Array.from(stage[1], (rule) => ({
-      id: rule[0],
-      count: rule[1].count,
-      win: rule[1].win,
-    }));
+    const rules = Array.from(stage[1], (rule) => {
+      const weapons = Array.from(rule[1].weaponMap, (weapon) => ({
+        id: weapon[0],
+        count: weapon[1].count,
+        win: weapon[1].win,
+      }));
+      weapons.sort((a, b) => decode64Index(a.id) - decode64Index(b.id));
+      return {
+        id: rule[0],
+        count: rule[1].count,
+        win: rule[1].win,
+        weapons,
+      };
+    });
     rules.sort((a, b) => decode64Index(a.id) - decode64Index(b.id));
     return {
       id: stage[0],
@@ -236,11 +293,20 @@ export const getBattleStats = (...battles: BattleBrief[]): BattleStats => {
   });
   stages.sort((a, b) => decode64Index(a.id) - decode64Index(b.id));
   const weapons = Array.from(weaponMap, (weapon) => {
-    const rules = Array.from(weapon[1], (rule) => ({
-      id: rule[0],
-      count: rule[1].count,
-      win: rule[1].win,
-    }));
+    const rules = Array.from(weapon[1], (rule) => {
+      const stages = Array.from(rule[1].stageMap, (stage) => ({
+        id: stage[0],
+        count: stage[1].count,
+        win: stage[1].win,
+      }));
+      stages.sort((a, b) => decode64Index(a.id) - decode64Index(b.id));
+      return {
+        id: rule[0],
+        count: rule[1].count,
+        win: rule[1].win,
+        stages,
+      };
+    });
     rules.sort((a, b) => decode64Index(a.id) - decode64Index(b.id));
     return {
       id: weapon[0],
