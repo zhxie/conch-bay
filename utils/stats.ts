@@ -735,7 +735,7 @@ export const getCoopStats = (...coops: CoopBrief[]): CoopStats => {
       }
       const weapon = weaponMap.get(coop.players[0].weapons[i])!;
       weapon.appear += 1;
-      if (coop.result === 0 || coop.result > i) {
+      if (i + 1 > coop.result) {
         weapon.clear += 1;
       }
     }
