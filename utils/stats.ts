@@ -601,14 +601,7 @@ export const getCoopBrief = (coop: CoopHistoryDetailResult): CoopBrief => {
           defeat: coop.coopHistoryDetail!.bossResult.hasDefeatBoss,
         }
       : undefined,
-    kings: coop.coopHistoryDetail!.bossResult
-      ? [
-          {
-            id: coop.coopHistoryDetail!.bossResult.boss.id,
-            defeat: coop.coopHistoryDetail!.bossResult.hasDefeatBoss,
-          },
-        ]
-      : coop.coopHistoryDetail!["bossResults"]
+    kings: coop.coopHistoryDetail!["bossResults"]
       ? coop
           .coopHistoryDetail!["bossResults"].map((bossResult) => ({
             id: bossResult.boss.id,
@@ -618,6 +611,13 @@ export const getCoopBrief = (coop: CoopHistoryDetailResult): CoopBrief => {
             id: coop.coopHistoryDetail!.bossResult!.boss.id,
             defeat: coop.coopHistoryDetail!.bossResult!.hasDefeatBoss,
           })
+      : coop.coopHistoryDetail!.bossResult
+      ? [
+          {
+            id: coop.coopHistoryDetail!.bossResult.boss.id,
+            defeat: coop.coopHistoryDetail!.bossResult.hasDefeatBoss,
+          },
+        ]
       : [],
     scales: coop.coopHistoryDetail!.scale
       ? {
