@@ -4,7 +4,6 @@ import * as TaskManager from "expo-task-manager";
 import { MMKV } from "react-native-mmkv";
 import t from "../i18n";
 import {
-  WebServiceToken,
   fetchCoopHistoryDetail,
   fetchCoopResult,
   fetchLatestBattleHistories,
@@ -29,49 +28,30 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
     // Update versions.
     await ok(Promise.all([updateNsoVersion(), updateSplatnetVersion()]));
 
-    // Check previous token.
+    // Always generate new bullet token.
     const storage = new MMKV();
     const language = storage.getString(Key.Language) || t("lang");
-    let webServiceToken: WebServiceToken | undefined = undefined;
-    let bulletToken = "";
-    const webServiceTokenString = storage.getString(Key.WebServiceToken);
-    if (webServiceTokenString) {
-      try {
-        webServiceToken = JSON.parse(webServiceTokenString) as WebServiceToken;
-        bulletToken = await getBulletToken(webServiceToken, language).catch(() => "");
-      } catch {
-        /* empty */
-      }
+    const sessionToken = storage.getString(Key.SessionToken);
+    if (!sessionToken || sessionToken.length === 0) {
+      throw new Error("no session token");
     }
-
-    // Reacquire tokens.
-    if (bulletToken.length === 0) {
-      const sessionToken = storage.getString(Key.SessionToken);
-      if (!sessionToken || sessionToken.length === 0) {
-        throw new Error("no session token");
-      }
-      const newWebServiceToken = await getWebServiceToken(sessionToken).catch((e) => e as Error);
-      if (newWebServiceToken instanceof Error) {
-        throw new Error(`failed to acquire web service token ${newWebServiceToken.message}`);
-      }
-      webServiceToken = newWebServiceToken;
-      storage.set(Key.WebServiceToken, JSON.stringify(webServiceToken));
-      const newBulletToken = await getBulletToken(webServiceToken, language).catch(
-        (e) => e as Error
-      );
-      if (newBulletToken instanceof Error) {
-        throw new Error(`failed to acquire bullet token ${newBulletToken.message}`);
-      }
-      bulletToken = newBulletToken;
+    const webServiceToken = await getWebServiceToken(sessionToken).catch((e) => e as Error);
+    if (webServiceToken instanceof Error) {
+      throw new Error(`failed to acquire web service token ${webServiceToken.message}`);
+    }
+    storage.set(Key.WebServiceToken, JSON.stringify(webServiceToken));
+    const bulletToken = await getBulletToken(webServiceToken, language).catch((e) => e as Error);
+    if (bulletToken instanceof Error) {
+      throw new Error(`failed to acquire bullet token ${bulletToken.message}`);
     }
 
     // Refresh results.
     const upgrade = await Database.open();
-    if (upgrade !== undefined) {
+    if (upgrade) {
       return BackgroundFetch.BackgroundFetchResult.NoData;
     }
     const [battle, coop] = await Promise.all([
-      fetchLatestBattleHistories(webServiceToken!, bulletToken, language)
+      fetchLatestBattleHistories(webServiceToken, bulletToken, language)
         .then(async (battleHistories) => {
           // Fetch details.
           const ids: string[] = [];
@@ -113,7 +93,7 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
             newIds.map((id, i) =>
               ok(
                 sleep(i * 750)
-                  .then(() => fetchVsHistoryDetail(webServiceToken!, bulletToken, language, id))
+                  .then(() => fetchVsHistoryDetail(webServiceToken, bulletToken, language, id))
                   .then((detail) => Database.addBattle(detail))
                   .then(() => {
                     results += 1;
@@ -126,7 +106,7 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
         .catch((e) => {
           return e as Error;
         }),
-      fetchCoopResult(webServiceToken!, bulletToken, language)
+      fetchCoopResult(webServiceToken, bulletToken, language)
         .then(async (coopResult) => {
           // Fetch details.
           const ids: string[] = [];
@@ -143,7 +123,7 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
             newIds.map((id, i) =>
               ok(
                 sleep(i * 750)
-                  .then(() => fetchCoopHistoryDetail(webServiceToken!, bulletToken, language, id))
+                  .then(() => fetchCoopHistoryDetail(webServiceToken, bulletToken, language, id))
                   .then((detail) => Database.addCoop(detail))
                   .then(() => {
                     results += 1;
@@ -188,14 +168,14 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
         });
       }
     }
+    if (total > 0) {
+      return BackgroundFetch.BackgroundFetchResult.NewData;
+    }
     if (battle instanceof Error) {
       throw new Error(`failed to load battles (${battle.message})`);
     }
     if (coop instanceof Error) {
       throw new Error(`failed to load coops (${coop.message})`);
-    }
-    if (total > 0) {
-      return BackgroundFetch.BackgroundFetchResult.NewData;
     }
     return BackgroundFetch.BackgroundFetchResult.NoData;
   } catch {
