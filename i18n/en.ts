@@ -142,6 +142,11 @@ const en = {
   working: "Working",
   online: "Online",
   offline: "Offline",
+  n_year_ago: "%{n} Year(s) Ago",
+  n_month_ago: "%{n} Month(s) Ago",
+  n_day_ago: "%{n} Day(s) Ago",
+  n_hour_ago: "%{n} Hour(s) Ago",
+  n_minute_ago: "%{n} Minute(s) Ago",
   // Filter.
   filter: "Filter",
   players: "Players",

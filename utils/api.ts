@@ -70,16 +70,29 @@ export const fetchXRankings = async (id: string) => {
   return json.length > 0;
 };
 
+let NSO_VERSION = versions.NSO_VERSION;
 let SPLATNET_VERSION = versions.SPLATNET_VERSION;
 let IMINK_F_API_NSO_VERSION: string | undefined;
 let NXAPI_ZNCA_API_NSO_VERSION: string | undefined;
 
 export interface WebServiceToken {
+  credential: string;
   accessToken: string;
   country: string;
   language: string;
 }
 
+export const updateNsoVersion = async () => {
+  // HACK: use jsDelivr to avoid any network issue in China Mainland.
+  const res = await axios.get(
+    "https://cdn.jsdelivr.net/gh/nintendoapis/nintendo-app-versions/data/coral-google-play.json",
+    {
+      timeout: AXIOS_TIMEOUT,
+    }
+  );
+
+  NSO_VERSION = res.data["version"];
+};
 export const updateSplatnetVersion = async () => {
   // HACK: use jsDelivr to avoid any network issue in China Mainland.
   const res = await axios.get(
@@ -347,7 +360,7 @@ export const getWebServiceToken = async (sessionToken: string) => {
         throw new Error(`/Game/GetWebServiceToken: ${res4.status}: ${JSON.stringify(res4.data)}`);
       }
       const accessToken = res4.data["result"]["accessToken"];
-      return { accessToken, country, language };
+      return { credential: idToken2, accessToken, country, language };
     } catch (e) {
       // Throw the first error which would be an error using imink f API.
       if (error === undefined) {
@@ -389,6 +402,41 @@ export const getBulletToken = async (webServiceToken: WebServiceToken, language:
     throw new Error(`/api/bullet_tokens: ${res.status}`);
   }
   return res.data["bulletToken"] as string;
+};
+
+export interface Presence {
+  nsaId: string;
+  presence: {
+    logoutAt: number;
+    game: {
+      name?: string;
+      shopUri?: string;
+    };
+  };
+}
+
+export const fetchPresences = async (webServiceToken: WebServiceToken): Promise<Presence[]> => {
+  const body = {
+    requestId: Crypto.randomUUID(),
+    parameter: {},
+  };
+  const res = await axios.post("https://api-lp1.znc.srv.nintendo.net/v3/Friend/List", body, {
+    headers: {
+      "Accept-Encoding": "gzip",
+      Authorization: `Bearer ${webServiceToken.credential}`,
+      "Content-Length": JSON.stringify(body).length,
+      "Content-Type": "application/json; charset=utf-8",
+      "User-Agent": `com.nintendo.znca/${NSO_VERSION}(Android/11)`,
+      "X-Platform": "Android",
+      "X-ProductVersion": NSO_VERSION,
+    },
+    timeout: AXIOS_TOKEN_TIMEOUT,
+  });
+  const friends = res.data;
+  if (friends.result?.friends === undefined) {
+    throw new Error(JSON.stringify(friends));
+  }
+  return friends.result.friends;
 };
 
 const fetchGraphQl = async <T>(

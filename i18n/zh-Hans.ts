@@ -137,6 +137,11 @@ const zhHans = {
   working: "打工中",
   online: "线上",
   offline: "离线",
+  n_year_ago: "%{n}年前",
+  n_month_ago: "%{n}月前",
+  n_day_ago: "%{n}日前",
+  n_hour_ago: "%{n}小时前",
+  n_minute_ago: "%{n}分前",
   // Filter.
   filter: "筛选",
   players: "玩家",

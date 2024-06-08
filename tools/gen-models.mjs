@@ -29,6 +29,13 @@ const getVersion = async () => {
   return await res.text();
 };
 
+const getNsoVersion = async () => {
+  const res = await fetch(
+    "https://raw.githubusercontent.com/nintendoapis/nintendo-app-versions/main/data/coral-google-play.json"
+  );
+  const json = await res.json();
+  return json["version"];
+};
 const getSplatnetVersion = async () => {
   const res = await fetch(
     "https://raw.githubusercontent.com/nintendoapis/nintendo-app-versions/main/data/splatnet3-app.json"
@@ -568,8 +575,8 @@ const getPlaceholderMap = async (version) => {
   return result;
 };
 
-const splatnet_version = await getSplatnetVersion();
-writeOut("models/versions.json", { SPLATNET_VERSION: splatnet_version });
+const [nso_version, splatnet_version] = await Promise.all([getNsoVersion(), getSplatnetVersion()]);
+writeOut("models/versions.json", { NSO_VERSION: nso_version, SPLATNET_VERSION: splatnet_version });
 
 const version = await getVersion();
 const [

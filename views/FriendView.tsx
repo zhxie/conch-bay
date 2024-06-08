@@ -1,4 +1,5 @@
 import { FlashList, ListRenderItemInfo } from "@shopify/flash-list";
+import dayjs from "dayjs";
 import { useMemo, useState } from "react";
 import { StyleProp, ViewStyle, useWindowDimensions } from "react-native";
 import {
@@ -22,6 +23,8 @@ import {
   FriendListResult,
   FriendOnlineState,
 } from "../models/types";
+import { Presence } from "../utils/api";
+import { decode64Suffix } from "../utils/codec";
 import {
   dodgeColor,
   getCoopRuleColor,
@@ -32,6 +35,7 @@ import {
 
 interface FriendViewProps {
   friends?: FriendListResult;
+  presences?: Presence[];
   voting?: DetailVotingStatusResult;
   style?: StyleProp<ViewStyle>;
 }
@@ -43,8 +47,16 @@ const FriendView = (props: FriendViewProps) => {
   const theme = useTheme();
 
   const [friend, setFriend] = useState<Friend>();
+  const [nsoFriend, setNsoFriend] = useState<Presence>();
   const [displayFriend, setDisplayFriend] = useState(false);
 
+  const presences = useMemo(() => {
+    const map = new Map<string, Presence>();
+    for (const friend of props.presences ?? []) {
+      map.set(friend.nsaId, friend);
+    }
+    return map;
+  }, [props.presences]);
   const voting = useMemo(() => {
     const map = new Map<
       string,
@@ -67,6 +79,12 @@ const FriendView = (props: FriendViewProps) => {
     return map;
   }, [props.voting]);
 
+  const isInSplatoon3 = (nsoFriend?: Presence) => {
+    if (nsoFriend === undefined) {
+      return undefined;
+    }
+    return nsoFriend.presence.game.shopUri?.includes("0100c2500fc20000");
+  };
   const getFriendColor = (friend: Friend) => {
     switch (friend.onlineState) {
       case FriendOnlineState.VS_MODE_FIGHTING:
@@ -83,13 +101,16 @@ const FriendView = (props: FriendViewProps) => {
         return "transparent";
     }
   };
-  const getFriendOutline = (friend: Friend) => {
+  const getFriendOutline = (friend: Friend, nsoFriend?: Presence) => {
     switch (friend.onlineState) {
       case FriendOnlineState.VS_MODE_MATCHING:
         return getVsModeColor(friend.vsMode!.id);
       case FriendOnlineState.COOP_MODE_MATCHING:
         return getCoopRuleColor(friend.coopRule!);
       case FriendOnlineState.ONLINE:
+        if (!isInSplatoon3(nsoFriend)) {
+          return Color.MiddleTerritory;
+        }
         return Color.Online;
       case FriendOnlineState.VS_MODE_FIGHTING:
       case FriendOnlineState.COOP_MODE_FIGHTING:
@@ -129,25 +150,52 @@ const FriendView = (props: FriendViewProps) => {
         return "offline";
     }
   };
+  const formatOfflineTime = (nsoFriend?: Presence) => {
+    if (!nsoFriend || nsoFriend.presence.logoutAt === 0) {
+      return undefined;
+    }
+    const logoutAt = dayjs(nsoFriend.presence.logoutAt * 1000);
+    const now = dayjs();
+    const year = now.diff(logoutAt, "year");
+    if (year > 0) {
+      return t("n_year_ago", { n: year });
+    }
+    const month = now.diff(logoutAt, "month");
+    if (month > 0) {
+      return t("n_month_ago", { n: month });
+    }
+    const day = now.diff(logoutAt, "day");
+    if (day > 0) {
+      return t("n_day_ago", { n: day });
+    }
+    const hour = now.diff(logoutAt, "hour");
+    if (hour > 0) {
+      return t("n_hour_ago", { n: hour });
+    }
+    const minute = now.diff(logoutAt, "minute");
+    return t("n_minute_ago", { n: minute });
+  };
 
   const onFriendDismiss = () => {
     setDisplayFriend(false);
   };
 
   const renderItem = (friend: ListRenderItemInfo<Friend>) => {
+    const id = decode64Suffix(friend.item.id);
     return (
       <AvatarButton
         size={48}
         image={getUserIconCacheSource(friend.item.userIcon.url)}
         badge={{
           color: getFriendColor(friend.item) ?? friend.extraData,
-          outline: getFriendOutline(friend.item),
+          outline: getFriendOutline(friend.item, presences.get(id)),
         }}
         style={
           friend.index !== props.friends!.friends.nodes.length - 1 ? ViewStyles.mr2 : undefined
         }
         onPress={() => {
           setFriend(friend.item);
+          setNsoFriend(presences.get(id));
           setDisplayFriend(true);
         }}
       />
@@ -227,6 +275,21 @@ const FriendView = (props: FriendViewProps) => {
                   style={ViewStyles.mr1}
                 />
               )}
+              {friend.onlineState === FriendOnlineState.ONLINE && !isInSplatoon3(nsoFriend) && (
+                <Badge
+                  color={getFriendOnlineStatusColor(friend)!}
+                  title={nsoFriend!.presence.game.name!}
+                  style={ViewStyles.mr1}
+                />
+              )}
+              {friend.onlineState === FriendOnlineState.OFFLINE &&
+                !formatOfflineTime(nsoFriend) && (
+                  <Badge
+                    color={getFriendOnlineStatusColor(friend)!}
+                    title={formatOfflineTime(nsoFriend)!}
+                    style={ViewStyles.mr1}
+                  />
+                )}
               {voting.has(friend.userIcon.url) && (
                 <Badge
                   color={voting.get(friend.userIcon.url)!.color}

@@ -144,6 +144,11 @@ const ja = {
   working: "バイト中",
   online: "オンライン",
   offline: "オフライン",
+  n_year_ago: "%{n}年前",
+  n_month_ago: "%{n}月前",
+  n_day_ago: "%{n}日前",
+  n_hour_ago: "%{n}時前",
+  n_minute_ago: "%{n}分前",
   // Filter.
   filter: "フィルター",
   players: "プレーヤー",

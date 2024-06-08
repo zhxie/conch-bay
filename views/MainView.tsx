@@ -76,6 +76,7 @@ import {
   fetchEquipments,
   fetchFriends,
   fetchLatestBattleHistories,
+  fetchPresences,
   fetchPrivateBattleHistories,
   fetchRegularBattleHistories,
   fetchReleaseVersion,
@@ -90,7 +91,9 @@ import {
   getBulletToken,
   getSessionToken,
   getWebServiceToken,
+  updateNsoVersion,
   updateSplatnetVersion,
+  Presence,
   WebServiceToken,
 } from "../utils/api";
 import {
@@ -240,6 +243,7 @@ const MainView = () => {
   const [schedules, setSchedules] = useState<Schedules>();
   const [shop, setShop] = useState<Shop>();
   const [friends, setFriends] = useState<FriendListResult>();
+  const [nsoFriends, setNsoFriends] = useState<Presence[]>();
   const [voting, setVoting] = useState<DetailVotingStatusResult>();
   const [briefs, setBriefs] = useState<Brief[]>();
   const [count, setCount] = useState(20);
@@ -496,7 +500,7 @@ const MainView = () => {
 
     // Update versions.
     if (!apiUpdated) {
-      await updateSplatnetVersion()
+      await Promise.all([updateNsoVersion(), updateSplatnetVersion()])
         .then(() => {
           setApiUpdated(true);
         })
@@ -579,6 +583,11 @@ const MainView = () => {
                   .catch((e) => {
                     showBanner(BannerLevel.Warn, t("failed_to_load_friends", { error: e }));
                   }),
+              ok(
+                fetchPresences(newWebServiceToken!).then((friends) => {
+                  setNsoFriends(friends);
+                })
+              ),
               fetchSplatfests(region)
                 .then(async (splatfests) => {
                   if (splatfests.festRecords.nodes[0]?.isVotable) {
@@ -1156,7 +1165,7 @@ const MainView = () => {
   const onGetWebServiceToken = async () => {
     // Update versions.
     if (!apiUpdated) {
-      await updateSplatnetVersion()
+      await Promise.all([updateNsoVersion(), updateSplatnetVersion()])
         .then(() => {
           setApiUpdated(true);
         })
@@ -1856,7 +1865,12 @@ const MainView = () => {
                 </ScheduleView>
                 {sessionToken.length > 0 &&
                   (friends === undefined || friends.friends.nodes.length > 0) && (
-                    <FriendView friends={friends} voting={voting} style={ViewStyles.mb4} />
+                    <FriendView
+                      friends={friends}
+                      presences={nsoFriends}
+                      voting={voting}
+                      style={ViewStyles.mb4}
+                    />
                   )}
                 <FilterView
                   disabled={loadingMore}
