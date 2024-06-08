@@ -74,6 +74,7 @@ let NSO_VERSION = versions.NSO_VERSION;
 let SPLATNET_VERSION = versions.SPLATNET_VERSION;
 
 export interface WebServiceToken {
+  credential: string;
   accessToken: string;
   country: string;
   language: string;
@@ -331,7 +332,7 @@ export const getWebServiceToken = async (sessionToken: string) => {
         );
       }
       const accessToken = res4.data["result"]["accessToken"];
-      return { accessToken, country, language };
+      return { credential: idToken2, accessToken, country, language };
     } catch (e) {
       // Throw the first error which would be an error using imink f API.
       if (error === undefined) {
@@ -375,6 +376,41 @@ export const getBulletToken = async (webServiceToken: WebServiceToken, language:
     throw new Error(`/api/bullet_tokens: ${res.statusText}`);
   }
   return res.data["bulletToken"] as string;
+};
+
+export interface NsoFriend {
+  nsaId: string;
+  presence: {
+    logoutAt: number;
+    game: {
+      name?: string;
+      shopUri?: string;
+    };
+  };
+}
+
+export const fetchNsoFriends = async (webServiceToken: WebServiceToken): Promise<NsoFriend[]> => {
+  const body = {
+    requestId: Crypto.randomUUID(),
+    parameter: {},
+  };
+  const res = await axios.post("https://api-lp1.znc.srv.nintendo.net/v3/Friend/List", body, {
+    headers: {
+      "Accept-Encoding": "gzip",
+      Authorization: `Bearer ${webServiceToken.credential}`,
+      "Content-Length": JSON.stringify(body).length,
+      "Content-Type": "application/json; charset=utf-8",
+      "User-Agent": `com.nintendo.znca/${NSO_VERSION}(Android/11)`,
+      "X-Platform": "Android",
+      "X-ProductVersion": NSO_VERSION,
+    },
+    timeout: AXIOS_TOKEN_TIMEOUT,
+  });
+  const friends = res.data;
+  if (friends.result?.friends === undefined) {
+    throw new Error(JSON.stringify(friends));
+  }
+  return friends.result.friends;
 };
 
 const fetchGraphQl = async <T>(

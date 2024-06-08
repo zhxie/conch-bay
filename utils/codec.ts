@@ -38,6 +38,11 @@ export const encode64String = (s: string) => {
   return encode64(data);
 };
 
+export const decode64Suffix = (base64: string) => {
+  const data = decode64(base64);
+  const s = Buffer.from(data).toString();
+  return s.split("-")[1];
+};
 export const decode64Index = (base64: string) => {
   const data = decode64(base64);
   const s = Buffer.from(data).toString();

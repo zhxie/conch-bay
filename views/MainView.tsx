@@ -76,6 +76,7 @@ import {
   fetchEquipments,
   fetchFriends,
   fetchLatestBattleHistories,
+  fetchNsoFriends,
   fetchPrivateBattleHistories,
   fetchRegularBattleHistories,
   fetchReleaseVersion,
@@ -92,6 +93,7 @@ import {
   getWebServiceToken,
   updateNsoVersion,
   updateSplatnetVersion,
+  NsoFriend,
   WebServiceToken,
 } from "../utils/api";
 import {
@@ -238,6 +240,7 @@ const MainView = () => {
   const [schedules, setSchedules] = useState<Schedules>();
   const [shop, setShop] = useState<Shop>();
   const [friends, setFriends] = useState<FriendListResult>();
+  const [nsoFriends, setNsoFriends] = useState<NsoFriend[]>();
   const [voting, setVoting] = useState<DetailVotingStatusResult>();
   const [briefs, setBriefs] = useState<Brief[]>();
   const [count, setCount] = useState(20);
@@ -561,6 +564,11 @@ const MainView = () => {
                   .catch((e) => {
                     showBanner(BannerLevel.Warn, t("failed_to_load_friends", { error: e }));
                   }),
+              ok(
+                fetchNsoFriends(newWebServiceToken!).then((friends) => {
+                  setNsoFriends(friends);
+                })
+              ),
               fetchSplatfests(region)
                 .then(async (splatfests) => {
                   if (splatfests.festRecords.nodes[0]?.isVotable) {
@@ -1829,7 +1837,12 @@ const MainView = () => {
                 </ScheduleView>
                 {sessionToken.length > 0 &&
                   (friends === undefined || friends.friends.nodes.length > 0) && (
-                    <FriendView friends={friends} voting={voting} style={ViewStyles.mb4} />
+                    <FriendView
+                      friends={friends}
+                      nsoFriends={nsoFriends}
+                      voting={voting}
+                      style={ViewStyles.mb4}
+                    />
                   )}
                 <FilterView
                   disabled={loadingMore}
