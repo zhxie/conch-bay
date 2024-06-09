@@ -2315,9 +2315,9 @@ const MainView = () => {
                 <Button
                   style={ViewStyles.accent}
                   textStyle={theme.reverseTextStyle}
-                  onPress={onDebugPress}
+                  onLongPress={onDebugPress}
                 >
-                  <Marquee style={theme.reverseTextStyle}>{t("debug_continue")}</Marquee>
+                  <Marquee style={theme.reverseTextStyle}>{t("enable_debugging")}</Marquee>
                 </Button>
               )}
               {debug && (

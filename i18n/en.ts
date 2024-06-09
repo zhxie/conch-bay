@@ -99,8 +99,8 @@ const en = {
   clear_database: "Clear Database",
   clearing_database: "Clearing Database",
   debug_notice:
-    "The leakage of debugging information may cause your account to be compromised or your personal information to be leaked. If you need to debug, please do not share debugging information with others.",
-  debug_continue: "I understand",
+    "The leakage of debugging information may cause your account to be compromised or your personal information to be leaked. If you need to debug, please long press on Enable Debugging and do not share debugging information with others.",
+  enable_debugging: "Enable Debugging",
   diagnose_network: "Diagnose Network",
   diagnosing_network: "Diagnosing Network",
   copy_session_token: "Copy Session Token",

@@ -95,8 +95,8 @@ const zhHant = {
   clear_database: "清除資料庫",
   clearing_database: "清除資料庫中",
   debug_notice:
-    "調試資訊的外洩可能導致您的帳號被盜用或個人資訊外洩。如果您需要調試，請不要與他人分享調試資訊。",
-  debug_continue: "我已瞭解",
+    "調試資訊的外洩可能導致您的帳號被盜用或個人資訊外洩。如果您需要調試，請長按啟用調試並不要與他人分享調試資訊。",
+  enable_debugging: "啟用調試",
   diagnose_network: "診斷網路",
   diagnosing_network: "診斷網路中",
   copy_session_token: "複製會話令牌",
