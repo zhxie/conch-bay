@@ -223,6 +223,9 @@ const getSalmonidMap = async (version) => {
     SakeRope: 24,
     SakeJaw: 25,
   };
+  const extraMap = {
+    30: "a29cdb61df1464ef45ddedc7a042fd8f4fab0fd1c7c0c694df708d0b61e21222",
+  };
   const res = await fetch(
     `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/CoopEnemyInfo.json`
   );
@@ -234,6 +237,10 @@ const getSalmonidMap = async (version) => {
       const image = createHash("sha256").update(salmonid["Type"]).digest("hex");
       salmonids[id] = image;
     }
+  }
+  for (const i in extraMap) {
+    const id = Buffer.from(`CoopEnemy-${i}`).toString("base64");
+    salmonids[id] = extraMap[i];
   }
   return { salmonids };
 };
