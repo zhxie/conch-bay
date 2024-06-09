@@ -1,5 +1,5 @@
 import { FlashList, ListRenderItemInfo } from "@shopify/flash-list";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { StyleProp, ViewStyle, useWindowDimensions } from "react-native";
 import {
   Avatar,
@@ -44,6 +44,28 @@ const FriendView = (props: FriendViewProps) => {
 
   const [friend, setFriend] = useState<Friend>();
   const [displayFriend, setDisplayFriend] = useState(false);
+
+  const voting = useMemo(() => {
+    const map = new Map<
+      string,
+      {
+        name: string;
+        color: string;
+      }
+    >();
+    for (const team of props.voting?.fest?.teams ?? []) {
+      for (const friend of team.votes?.nodes ?? []) {
+        map.set(friend.userIcon.url, { name: team.teamName, color: getSolidColor(team.color) });
+      }
+      for (const friend of team.preVotes?.nodes ?? []) {
+        map.set(friend.userIcon.url, {
+          name: team.teamName,
+          color: dodgeColor(getSolidColor(team.color)),
+        });
+      }
+    }
+    return map;
+  }, [props.voting]);
 
   const getFriendColor = (friend: Friend) => {
     switch (friend.onlineState) {
@@ -105,25 +127,6 @@ const FriendView = (props: FriendViewProps) => {
         return "online";
       case FriendOnlineState.OFFLINE:
         return "offline";
-    }
-  };
-  const findVoting = (friend: Friend) => {
-    if (!props.voting) {
-      return;
-    }
-    for (const team of props.voting.fest!.teams) {
-      if (team.votes?.nodes.find((node) => node.userIcon.url === friend.userIcon.url)) {
-        return {
-          name: team.teamName,
-          color: getSolidColor(team.color),
-        };
-      }
-      if (team.preVotes?.nodes.find((node) => node.userIcon.url === friend.userIcon.url)) {
-        return {
-          name: team.teamName,
-          color: dodgeColor(getSolidColor(team.color)),
-        };
-      }
     }
   };
 
@@ -224,14 +227,13 @@ const FriendView = (props: FriendViewProps) => {
                   style={ViewStyles.mr1}
                 />
               )}
-              {(() => {
-                const voting = findVoting(friend);
-                if (!voting) {
-                  return <></>;
-                }
-
-                return <Badge color={voting.color} title={voting.name} style={ViewStyles.mr1} />;
-              })()}
+              {voting.has(friend.userIcon.url) && (
+                <Badge
+                  color={voting.get(friend.userIcon.url)!.color}
+                  title={voting.get(friend.userIcon.url)!.name}
+                  style={ViewStyles.mr1}
+                />
+              )}
             </HStack>
           </VStack>
         )}
