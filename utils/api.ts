@@ -99,12 +99,6 @@ export const updateSplatnetVersion = async () => {
 
   SPLATNET_VERSION = res.data["web_app_ver"];
 };
-export const getCurrentVersions = () => {
-  return {
-    NSO_VERSION,
-    SPLATNET_VERSION,
-  };
-};
 const callIminkFApi = async (step: number, idToken: string, naId: string, coralUserId?: string) => {
   const body = {
     hash_method: step,

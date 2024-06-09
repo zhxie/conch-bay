@@ -1,6 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAppState } from "@react-native-community/hooks";
-import { AxiosError } from "axios";
 import dayjs from "dayjs";
 import * as Application from "expo-application";
 import { BlurView } from "expo-blur";
@@ -89,7 +88,6 @@ import {
   fetchXBattleHistories,
   generateLogIn,
   getBulletToken,
-  getCurrentVersions,
   getSessionToken,
   getWebServiceToken,
   updateNsoVersion,
@@ -190,7 +188,6 @@ const MainView = () => {
   const [preloadingResources, setPreloadingResources] = useState(false);
   const [clearingDatabase, setClearingDatabase] = useState(false);
   const [debug, setDebug] = useState(false);
-  const [diagnosingNetwork, setDiagnosingNetwork] = useState(false);
   const [notification, setNotification] = useState(false);
   const [acknowledgments, setAcknowledgments] = useState(false);
   const [fault, setFault] = useState<Error>();
@@ -1294,7 +1291,7 @@ const MainView = () => {
     setSupport(true);
   };
   const onSupportClose = () => {
-    if (!clearingCache && !preloadingResources && !clearingDatabase && !diagnosingNetwork) {
+    if (!clearingCache && !preloadingResources && !clearingDatabase) {
       setSupport(false);
     }
   };
@@ -1619,54 +1616,6 @@ const MainView = () => {
   };
   const onDebugPress = () => {
     setDebug(true);
-  };
-  const onDiagnoseNetworkPress = async () => {
-    setDiagnosingNetwork(true);
-    const versions = getCurrentVersions();
-    const result = {
-      NSO_VERSION: versions.NSO_VERSION,
-      SPLATNET_VERSION: versions.SPLATNET_VERSION,
-      sessionToken: sessionToken,
-      webServiceToken: webServiceToken,
-      bulletToken: bulletToken,
-      language: language,
-      tests: {
-        bulletToken: {},
-        webServiceToken: {},
-      },
-    };
-
-    // Diagnose bullet token.
-    if (webServiceToken) {
-      try {
-        const bulletToken = await getBulletToken(webServiceToken, language);
-        result.tests.bulletToken["bulletToken"] = bulletToken;
-      } catch (e) {
-        if (e instanceof AxiosError) {
-          result.tests.bulletToken["error"] = e.toJSON();
-        } else if (e instanceof Error) {
-          result.tests.bulletToken["error"] = e.message;
-        }
-      }
-    }
-
-    // Diagnose web service token.
-    try {
-      const res = await getWebServiceToken(sessionToken);
-      result.tests.webServiceToken["webServiceToken"] = res;
-      const bulletToken = await getBulletToken(res, language);
-      result.tests.webServiceToken["bulletToken"] = bulletToken;
-    } catch (e) {
-      if (e instanceof AxiosError) {
-        result.tests.webServiceToken["error"] = e.toJSON();
-      } else if (e instanceof Error) {
-        result.tests.webServiceToken["error"] = e.message;
-      }
-    }
-
-    await Clipboard.setStringAsync(JSON.stringify(result));
-    showBanner(BannerLevel.Info, t("copied_to_clipboard"));
-    setDiagnosingNetwork(false);
   };
   const onCopySessionTokenPress = async () => {
     if (sessionToken.length > 0) {
@@ -2322,15 +2271,6 @@ const MainView = () => {
               )}
               {debug && (
                 <VStack>
-                  <Button
-                    loading={diagnosingNetwork}
-                    loadingText={t("diagnosing_network")}
-                    style={[ViewStyles.mb2, ViewStyles.accent]}
-                    textStyle={theme.reverseTextStyle}
-                    onPress={onDiagnoseNetworkPress}
-                  >
-                    <Marquee style={theme.reverseTextStyle}>{t("diagnose_network")}</Marquee>
-                  </Button>
                   {sessionToken.length > 0 && (
                     <VStack style={ViewStyles.mb2}>
                       <Button

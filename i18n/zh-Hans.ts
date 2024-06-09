@@ -97,8 +97,6 @@ const zhHans = {
   debug_notice:
     "调试信息的泄漏可能导致您的账号被盗用或个人信息泄漏。如果您需要调试，请长按启用调试并不要与他人分享调试信息。",
   enable_debugging: "启用调试",
-  diagnose_network: "诊断网络",
-  diagnosing_network: "诊断网络中",
   copy_session_token: "复制会话令牌",
   copy_web_service_token: "复制Web服务令牌",
   copy_bullet_token: "复制Bullet令牌",

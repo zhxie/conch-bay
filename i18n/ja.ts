@@ -103,8 +103,6 @@ const ja = {
   debug_notice:
     "デバッグ情報の漏洩により、アカウントが不正使用されたり、個人情報が漏洩したりする可能性があります。デバッグが必要な場合は、デバッグを有効を長押しし、デバッグ情報を他の人と共有しないでください。",
   enable_debugging: "デバッグを有効",
-  diagnose_network: "ネットワークを診断",
-  diagnosing_network: "ネットワークを診断中",
   copy_session_token: "セッショントークンをコピー",
   copy_web_service_token: "Webサービストークンをコピー",
   copy_bullet_token: "ブレットトークンをコピー",
