@@ -1,12 +1,13 @@
 import dayjs from "dayjs";
 import "dayjs/plugin/advancedFormat";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { ScrollView, StyleProp, ViewStyle, useWindowDimensions } from "react-native";
 import {
   Color,
   HStack,
   Marquee,
   Modal,
+  ModalHandle,
   SalmonRunSwitcher,
   ScheduleBox,
   ScheduleButton,
@@ -59,7 +60,8 @@ const ScheduleView = (props: ScheduleViewProps) => {
   const theme = useTheme();
 
   const [scheduleList, setScheduleList] = useState<ScheduleList>();
-  const [schedules, setSchedules] = useState(false);
+
+  const ref = useRef<ModalHandle>(null);
 
   const getMatchSetting = (schedule: VsSchedule, mode?: BankaraMatchMode | FestMatchMode) => {
     const regularMatchSetting = schedule["regularMatchSetting"];
@@ -282,7 +284,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
       schedules: splatfestOpenSchedules,
       mode: FestMatchMode.REGULAR,
     });
-    setSchedules(true);
+    ref.current?.present();
   };
   const onSplatfestProSchedulePress = () => {
     setScheduleList({
@@ -291,7 +293,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
       schedules: splatfestProSchedules,
       mode: FestMatchMode.CHALLENGE,
     });
-    setSchedules(true);
+    ref.current?.present();
   };
   const onCurrentSplatfestPress = () => {
     setScheduleList({
@@ -299,7 +301,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
       color: Color.AccentColor,
       splatfest: currentSplatfest,
     });
-    setSchedules(true);
+    ref.current?.present();
   };
   const onRegularSchedulePress = () => {
     setScheduleList({
@@ -307,7 +309,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
       color: Color.RegularBattle,
       schedules: regularSchedules,
     });
-    setSchedules(true);
+    ref.current?.present();
   };
   const onAnarchySeriesSchedulePress = () => {
     setScheduleList({
@@ -316,7 +318,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
       schedules: anarchySeriesSchedules,
       mode: BankaraMatchMode.CHALLENGE,
     });
-    setSchedules(true);
+    ref.current?.present();
   };
   const onAnarchyOpenSchedulePress = () => {
     setScheduleList({
@@ -325,7 +327,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
       schedules: anarchyOpenSchedules,
       mode: BankaraMatchMode.OPEN,
     });
-    setSchedules(true);
+    ref.current?.present();
   };
   const onXSchedulePress = () => {
     setScheduleList({
@@ -333,7 +335,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
       color: Color.XBattle,
       schedules: xSchedules,
     });
-    setSchedules(true);
+    ref.current?.present();
   };
   const onChallengePress = () => {
     setScheduleList({
@@ -341,7 +343,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
       color: Color.Challenge,
       challenges: challenges,
     });
-    setSchedules(true);
+    ref.current?.present();
   };
   const onBigRunShiftPress = () => {
     setScheduleList({
@@ -349,7 +351,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
       color: Color.BigRun,
       shifts: bigRunShifts,
     });
-    setSchedules(true);
+    ref.current?.present();
   };
   const onEggstraWorkShiftPress = () => {
     setScheduleList({
@@ -357,7 +359,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
       color: Color.EggstraWork,
       shifts: eggstraWorkShifts,
     });
-    setSchedules(true);
+    ref.current?.present();
   };
   const onRegularShiftPress = () => {
     setScheduleList({
@@ -365,10 +367,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
       color: Color.SalmonRun,
       shifts: regularShifts,
     });
-    setSchedules(true);
-  };
-  const onDisplaySchedulesClose = () => {
-    setSchedules(false);
+    ref.current?.present();
   };
 
   return (
@@ -518,7 +517,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
         </SalmonRunSwitcher>
         {props.children}
       </HStack>
-      <Modal isVisible={schedules} onClose={onDisplaySchedulesClose} style={ViewStyles.modal1}>
+      <Modal ref={ref}>
         <TitledList color={scheduleList?.color} title={scheduleList?.title}>
           {scheduleList?.schedules &&
             scheduleList.schedules

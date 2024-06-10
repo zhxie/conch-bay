@@ -1,5 +1,5 @@
 import { FlashList, ListRenderItemInfo } from "@shopify/flash-list";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { StyleProp, ViewStyle, useWindowDimensions } from "react-native";
 import {
   Avatar,
@@ -9,6 +9,7 @@ import {
   HStack,
   Marquee,
   Modal,
+  ModalHandle,
   Text,
   TextStyles,
   VStack,
@@ -43,7 +44,8 @@ const FriendView = (props: FriendViewProps) => {
   const theme = useTheme();
 
   const [friend, setFriend] = useState<Friend>();
-  const [displayFriend, setDisplayFriend] = useState(false);
+
+  const ref = useRef<ModalHandle>(null);
 
   const voting = useMemo(() => {
     const map = new Map<
@@ -130,10 +132,6 @@ const FriendView = (props: FriendViewProps) => {
     }
   };
 
-  const onDisplayFriendClose = () => {
-    setDisplayFriend(false);
-  };
-
   const renderItem = (friend: ListRenderItemInfo<Friend>) => {
     return (
       <AvatarButton
@@ -148,7 +146,7 @@ const FriendView = (props: FriendViewProps) => {
         }
         onPress={() => {
           setFriend(friend.item);
-          setDisplayFriend(true);
+          ref.current?.present();
         }}
       />
     );
@@ -183,7 +181,7 @@ const FriendView = (props: FriendViewProps) => {
         }
         contentContainerStyle={ViewStyles.px4}
       />
-      <Modal isVisible={displayFriend} onClose={onDisplayFriendClose} style={ViewStyles.modal1}>
+      <Modal ref={ref}>
         {friend && (
           <VStack center>
             <Avatar

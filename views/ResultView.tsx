@@ -55,6 +55,7 @@ import {
   WorkSuitBox,
   useBanner,
   useTheme,
+  ModalHandle,
 } from "../components";
 import t, { td } from "../i18n";
 import abilityList from "../models/abilities.json";
@@ -135,28 +136,29 @@ const ResultView = (props: ResultViewProps) => {
   const showBanner = useBanner();
 
   const [result, setResult] = useState<Result>();
-  const [displayResult, setDisplayResult] = useState(false);
-  const [displayBattle, setDisplayBattle] = useState(false);
   const [battlePlayer, setBattlePlayer] = useState<VsPlayer>();
-  const [displayBattlePlayer, setDisplayBattlePlayer] = useState(false);
   const [xRankings, setXRankings] = useState(false);
   const [checkingXRankings, setCheckingXRankings] = useState(false);
-  const [displayCoop, setDisplayCoop] = useState(false);
   const [coopPlayer, setCoopPlayer] = useState<CoopPlayerResult>();
-  const [displayCoopPlayer, setDisplayCoopPlayer] = useState(false);
   const willDisplayNext = useRef<Result>();
   const willDisplayResult = useRef<boolean>(false);
   const [hidePlayerNames, setHidePlayerNames] = useState(false);
   const [group, setGroup] = useState<Brief[]>();
-  const [displayGroup, setDisplayGroup] = useState(false);
   const [dimension, setDimension] = useState(0);
 
-  const battleRef = useRef<ViewShot>(null);
+  const battleViewShotRef = useRef<ViewShot>(null);
   const battleDetailsRef = useRef<AccordionDisplayHandle>(null);
   const battleFade = useRef(new Animated.Value(1)).current;
-  const coopRef = useRef<ViewShot>(null);
+  const coopViewShotRef = useRef<ViewShot>(null);
   const coopDetailsRef = useRef<AccordionDisplayHandle>(null);
   const coopFade = useRef(new Animated.Value(1)).current;
+
+  const resultRef = useRef<ModalHandle>(null);
+  const battleRef = useRef<ModalHandle>(null);
+  const coopRef = useRef<ModalHandle>(null);
+  const battlePlayerRef = useRef<ModalHandle>(null);
+  const coopPlayerRef = useRef<ModalHandle>(null);
+  const statsRef = useRef<ModalHandle>(null);
 
   const briefsAndGroups: BriefOrGroup[] | undefined = useMemo(() => {
     if (!props.briefs) {
@@ -499,21 +501,6 @@ const ResultView = (props: ResultViewProps) => {
     return result.join("-");
   };
 
-  const onDisplayResultClose = () => {
-    setDisplayResult(false);
-  };
-  const onDisplayBattleClose = () => {
-    setDisplayBattle(false);
-  };
-  const onDisplayBattlePlayerClose = () => {
-    setDisplayBattlePlayer(false);
-  };
-  const onDisplayCoopClose = () => {
-    setDisplayCoop(false);
-  };
-  const onDisplayCoopPlayerClose = () => {
-    setDisplayCoopPlayer(false);
-  };
   const onShowNextResultPress = () => {
     // The first item in groupsAndResults is always a group.
     if (currentResultIndex !== undefined && currentResultIndex - 1 >= 1) {
@@ -524,16 +511,16 @@ const ResultView = (props: ResultViewProps) => {
       const target = briefsAndGroups![currentResultIndex - offset];
       const result = props.onQuery(target.battle?.id ?? target.coop!.id);
       if (
-        (displayBattle && target.battle) ||
-        (displayCoop && briefsAndGroups![currentResultIndex - offset].coop)
+        (result?.battle && target.battle) ||
+        (result?.coop && briefsAndGroups![currentResultIndex - offset].coop)
       ) {
         setResult(result);
         return;
       }
       willDisplayNext.current = result;
     }
-    setDisplayBattle(false);
-    setDisplayCoop(false);
+    battleRef.current?.dismiss();
+    coopRef.current?.dismiss();
   };
   const onShowPreviousResultPress = () => {
     if (currentResultIndex !== undefined && currentResultIndex + 1 < briefsAndGroups!.length) {
@@ -544,16 +531,16 @@ const ResultView = (props: ResultViewProps) => {
       const target = briefsAndGroups![currentResultIndex + offset];
       const result = props.onQuery(target.battle?.id ?? target.coop!.id);
       if (
-        (displayBattle && briefsAndGroups![currentResultIndex + offset].battle) ||
-        (displayCoop && briefsAndGroups![currentResultIndex + offset].coop)
+        (result?.battle && briefsAndGroups![currentResultIndex + offset].battle) ||
+        (result?.coop && briefsAndGroups![currentResultIndex + offset].coop)
       ) {
         setResult(result);
         return;
       }
       willDisplayNext.current = result;
     }
-    setDisplayBattle(false);
-    setDisplayCoop(false);
+    battleRef.current?.dismiss();
+    coopRef.current?.dismiss();
   };
   const onHidePlayerNamesPress = () => {
     setHidePlayerNames(!hidePlayerNames);
@@ -571,7 +558,7 @@ const ResultView = (props: ResultViewProps) => {
         useNativeDriver: true,
       }).start(async () => {
         try {
-          const uri = await battleRef.current!.capture!();
+          const uri = await battleViewShotRef.current!.capture!();
           await Sharing.shareAsync(`file://${uri}`, { UTI: "public.png" });
         } catch {
           /* empty */
@@ -593,7 +580,7 @@ const ResultView = (props: ResultViewProps) => {
         useNativeDriver: true,
       }).start(async () => {
         try {
-          const uri = await coopRef.current!.capture!();
+          const uri = await coopViewShotRef.current!.capture!();
           await Sharing.shareAsync(`file://${uri}`, { UTI: "public.png" });
         } catch {
           /* empty */
@@ -603,8 +590,8 @@ const ResultView = (props: ResultViewProps) => {
   };
   const onShowRawResultPress = () => {
     willDisplayResult.current = true;
-    setDisplayBattle(false);
-    setDisplayCoop(false);
+    battleRef.current?.dismiss();
+    coopRef.current?.dismiss();
   };
   const onCopyRawValue = async (value: any) => {
     await Clipboard.setStringAsync(value.toString());
@@ -615,7 +602,7 @@ const ResultView = (props: ResultViewProps) => {
     WebBrowser.openBrowserAsync(`https://splat.top/player/u-${id}`);
   };
   const onViewBattlesAndJobsWithThisPlayerPress = () => {
-    if (displayBattlePlayer) {
+    if (result?.battle) {
       // HACK: we cannot parse encrypted IDs from ikawidget3.
       let id: string;
       try {
@@ -625,9 +612,9 @@ const ResultView = (props: ResultViewProps) => {
         return;
       }
       props.onFilterPlayer(id, battlePlayer!.name);
-      setDisplayBattlePlayer(false);
-      setDisplayBattle(false);
-    } else if (displayCoopPlayer) {
+      battlePlayerRef.current?.dismiss();
+      battleRef.current?.dismiss();
+    } else if (result?.coop) {
       // HACK: we cannot parse encrypted IDs from ikawidget3.
       let id: string;
       try {
@@ -637,8 +624,8 @@ const ResultView = (props: ResultViewProps) => {
         return;
       }
       props.onFilterPlayer(id, coopPlayer!.player.name);
-      setDisplayCoopPlayer(false);
-      setDisplayCoop(false);
+      coopPlayerRef.current?.dismiss();
+      coopRef.current?.dismiss();
     }
   };
   const onAnalyzeBuildPress = () => {
@@ -662,23 +649,20 @@ const ResultView = (props: ResultViewProps) => {
       `https://sendou.ink/analyzer?weapon=${weapon}&build=${abilities.join(",")}`
     );
   };
-  const onModalHide = () => {
+  const onDismiss = () => {
     if (willDisplayResult.current) {
-      setDisplayResult(true);
+      resultRef.current?.present();
       willDisplayResult.current = false;
     } else if (willDisplayNext.current !== undefined) {
       if (willDisplayNext.current.battle) {
         setResult({ battle: willDisplayNext.current.battle });
-        setDisplayBattle(true);
+        battleRef.current?.present();
       } else if (willDisplayNext.current.coop) {
         setResult({ coop: willDisplayNext.current.coop });
-        setDisplayCoop(true);
+        coopRef.current?.present();
       }
       willDisplayNext.current = undefined;
     }
-  };
-  const onDisplayGroupClose = () => {
-    setDisplayGroup(false);
   };
   const onDimensionChange = (event: NativeSyntheticEvent<NativeSegmentedControlIOSChangeEvent>) => {
     setDimension(event.nativeEvent.selectedSegmentIndex);
@@ -688,19 +672,19 @@ const ResultView = (props: ResultViewProps) => {
     const result = props.onQuery(id);
     if (result?.battle) {
       setResult({ battle: result.battle });
-      setDisplayBattle(true);
+      battleRef.current?.present();
     }
   }, []);
   const onCoopPress = useCallback((id: string) => {
     const result = props.onQuery(id);
     if (result?.coop) {
       setResult({ coop: result.coop });
-      setDisplayCoop(true);
+      coopRef.current?.present();
     }
   }, []);
   const onGroupPress = useCallback((group: Brief[]) => {
     setGroup(group);
-    setDisplayGroup(true);
+    statsRef.current?.present();
   }, []);
 
   const renderItem = (result: ListRenderItemInfo<BriefOrGroup>) => {
@@ -850,17 +834,7 @@ const ResultView = (props: ResultViewProps) => {
         onMomentumScrollEnd={props.onMomentumScrollEnd}
         scrollEventThrottle={16}
       />
-      <Modal
-        isVisible={displayResult}
-        onClose={onDisplayResultClose}
-        style={[
-          ViewStyles.modal1,
-          {
-            height: ViewStyles.modal1.maxHeight,
-            backgroundColor: "#272822",
-          },
-        ]}
-      >
+      <Modal ref={resultRef} style={{ backgroundColor: "#272822" }}>
         {result && (
           <JSONTree
             theme="monokai"
@@ -871,16 +845,11 @@ const ResultView = (props: ResultViewProps) => {
           />
         )}
       </Modal>
-      <Modal
-        isVisible={displayBattle}
-        onClose={onDisplayBattleClose}
-        onModalHide={onModalHide}
-        style={[ViewStyles.modal2, { paddingHorizontal: 0 }]}
-      >
+      <Modal ref={battleRef} onDismiss={onDismiss} style={{ paddingHorizontal: 0 }}>
         {result?.battle && (
           <Animated.View style={{ opacity: battleFade }}>
             <ViewShot
-              ref={battleRef}
+              ref={battleViewShotRef}
               // HACK: add padding around view shot, withdraw 16px margin in the top and 32px in the bottom, and add back 8px (mb2) in the bottom.
               style={[theme.backgroundStyle, ViewStyles.p4, { top: -16, marginBottom: -24 }]}
             >
@@ -944,7 +913,7 @@ const ResultView = (props: ResultViewProps) => {
                           dragon={isVsPlayerDragon(player) ? getColor(team.color) : undefined}
                           onPress={async () => {
                             setBattlePlayer(player);
-                            setDisplayBattlePlayer(true);
+                            battlePlayerRef.current?.present();
                             setXRankings(false);
                             try {
                               const id = decode64BattlePlayerId(player.id);
@@ -1150,11 +1119,7 @@ const ResultView = (props: ResultViewProps) => {
                 <Marquee style={theme.reverseTextStyle}>{t("show_raw_data")}</Marquee>
               </Button>
             </VStack>
-            <Modal
-              isVisible={displayBattlePlayer}
-              onClose={onDisplayBattlePlayerClose}
-              style={ViewStyles.modal1}
-            >
+            <Modal ref={battlePlayerRef}>
               {battlePlayer && (
                 <VStack center>
                   <Splashtag
@@ -1271,16 +1236,11 @@ const ResultView = (props: ResultViewProps) => {
           </Animated.View>
         )}
       </Modal>
-      <Modal
-        isVisible={displayCoop}
-        onClose={onDisplayCoopClose}
-        onModalHide={onModalHide}
-        style={[ViewStyles.modal2, { paddingHorizontal: 0 }]}
-      >
+      <Modal ref={coopRef} onDismiss={onDismiss} style={{ paddingHorizontal: 0 }}>
         {result?.coop && (
           <Animated.View style={{ opacity: coopFade }}>
             <ViewShot
-              ref={coopRef}
+              ref={coopViewShotRef}
               // HACK: add padding around view shot, withdraw 16px margin in the top and 32px in the bottom, and add back 8px (mb2) in the bottom.
               style={[theme.backgroundStyle, ViewStyles.p4, { top: -16, marginBottom: -24 }]}
             >
@@ -1378,7 +1338,7 @@ const ResultView = (props: ResultViewProps) => {
                           rescued={memberResult.rescuedCount}
                           onPress={() => {
                             setCoopPlayer(memberResult);
-                            setDisplayCoopPlayer(true);
+                            coopPlayerRef.current?.present();
                           }}
                         />
                       ))}
@@ -1608,11 +1568,7 @@ const ResultView = (props: ResultViewProps) => {
                 <Marquee style={theme.reverseTextStyle}>{t("show_raw_data")}</Marquee>
               </Button>
             </VStack>
-            <Modal
-              isVisible={displayCoopPlayer}
-              onClose={onDisplayCoopPlayerClose}
-              style={ViewStyles.modal1}
-            >
+            <Modal ref={coopPlayerRef}>
               {coopPlayer && (
                 <VStack center>
                   <Splashtag
@@ -1680,13 +1636,7 @@ const ResultView = (props: ResultViewProps) => {
           </Animated.View>
         )}
       </Modal>
-      <StatsModal
-        briefs={group}
-        dimension={dimension}
-        hideEmpty
-        isVisible={displayGroup}
-        onClose={onDisplayGroupClose}
-      >
+      <StatsModal ref={statsRef} briefs={group} dimension={dimension} hideEmpty>
         <SegmentedControl
           values={[t("self"), t("team")]}
           selectedIndex={dimension}

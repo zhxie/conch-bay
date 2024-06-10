@@ -5,7 +5,7 @@ import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
 import * as SQLite from "expo-sqlite";
 import * as WebBrowser from "expo-web-browser";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Platform, StyleProp, ViewStyle } from "react-native";
 import { unzip } from "react-native-zip-archive";
 import {
@@ -16,6 +16,7 @@ import {
   Dialog,
   Marquee,
   Modal,
+  ModalHandle,
   ToolButton,
   ViewStyles,
   useBanner,
@@ -340,12 +341,14 @@ const ImportView = (props: ImportViewProps) => {
 
   const showBanner = useBanner();
 
-  const [import_, setImport] = useState(false);
-  const [ikawidget3, setIkawidget3] = useState(false);
-  const [salmdroidnw, setSalmdroidnw] = useState(false);
-  const [salmonia3Plus, setSalmonia3Plus] = useState(false);
   const [uri, setUri] = useState("");
   const [importing, setImporting] = useState(false);
+
+  const importRef = useRef<ModalHandle>(null);
+  const ikawidget3Ref = useRef<ModalHandle>(null);
+  const salmdroidnwRef = useRef<ModalHandle>(null);
+  const salmonia3PlusRef = useRef<ModalHandle>(null);
+  const splitAndImportRef = useRef<ModalHandle>(null);
 
   const showResultBanner = (n: number, skip: number, fail: number, error?: Error) => {
     if (fail > 0 && skip > 0) {
@@ -443,7 +446,7 @@ const ImportView = (props: ImportViewProps) => {
     props.onComplete(imported);
     setImporting(false);
     if (imported >= 0) {
-      setImport(false);
+      importRef.current?.dismiss();
     }
   };
   const importRawDirectly = async (uri: string) => {
@@ -466,7 +469,7 @@ const ImportView = (props: ImportViewProps) => {
     props.onComplete(imported);
     setImporting(false);
     if (imported >= 0) {
-      setImport(false);
+      importRef.current?.dismiss();
     }
   };
   const splitAndImportRaw = async (uri: string) => {
@@ -511,7 +514,7 @@ const ImportView = (props: ImportViewProps) => {
     props.onComplete(imported);
     setImporting(false);
     if (imported >= 0) {
-      setImport(false);
+      importRef.current?.dismiss();
     }
   };
 
@@ -578,12 +581,7 @@ const ImportView = (props: ImportViewProps) => {
   };
 
   const onImportPress = () => {
-    setImport(true);
-  };
-  const onImportClose = () => {
-    if (!importing) {
-      setImport(false);
-    }
+    importRef.current?.present();
   };
   const onConvertS3sOutputsPress = () => {
     WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay#import-data-from-s3s");
@@ -594,10 +592,7 @@ const ImportView = (props: ImportViewProps) => {
     );
   };
   const onImportIkawidget3Ikax3Press = () => {
-    setIkawidget3(true);
-  };
-  const onImportIkawidget3Ikax3Close = () => {
-    setIkawidget3(false);
+    ikawidget3Ref.current?.present();
   };
   const onImportIkawidget3Ikax3ContinuePress = async () => {
     setImporting(true);
@@ -611,7 +606,7 @@ const ImportView = (props: ImportViewProps) => {
       }
       uri = doc.assets[0].uri;
 
-      setIkawidget3(false);
+      ikawidget3Ref.current?.dismiss();
       props.onBegin();
       await unzip(uri, `${FileSystem.cacheDirectory!}/ikawidget3`);
       const account = JSON.parse(
@@ -734,10 +729,7 @@ const ImportView = (props: ImportViewProps) => {
     setImporting(false);
   };
   const onImportSalmdroidnwBackupPress = () => {
-    setSalmdroidnw(true);
-  };
-  const onImportSalmdroidnwBackupClose = () => {
-    setSalmdroidnw(false);
+    salmdroidnwRef.current?.present();
   };
   const onImportSalmdroidnwBackupContinuePress = async () => {
     setImporting(true);
@@ -754,7 +746,7 @@ const ImportView = (props: ImportViewProps) => {
       }
       uri = doc.assets[0].uri;
 
-      setSalmdroidnw(false);
+      salmdroidnwRef.current?.dismiss();
       props.onBegin();
       await unzip(uri, `${FileSystem.cacheDirectory!}/salmdroidNW`);
       const summary = JSON.parse(
@@ -857,14 +849,11 @@ const ImportView = (props: ImportViewProps) => {
     props.onComplete(imported);
     setImporting(false);
     if (imported >= 0) {
-      setImport(false);
+      importRef.current?.dismiss();
     }
   };
   const onImportSalmonia3PlusBackupPress = () => {
-    setSalmonia3Plus(true);
-  };
-  const onImportSalmonia3PlusBackupClose = () => {
-    setSalmonia3Plus(false);
+    salmonia3PlusRef.current?.present();
   };
   const onImportSalmonia3PlusBackupContinuePress = async () => {
     setImporting(true);
@@ -881,7 +870,7 @@ const ImportView = (props: ImportViewProps) => {
       }
       uri = doc.assets[0].uri;
 
-      setSalmonia3Plus(false);
+      salmonia3PlusRef.current?.dismiss();
       props.onBegin();
       await unzip(uri, `${FileSystem.cacheDirectory!}/Salmonia3+`);
       const file = (
@@ -1112,7 +1101,7 @@ const ImportView = (props: ImportViewProps) => {
     props.onComplete(imported);
     setImporting(false);
     if (imported >= 0) {
-      setImport(false);
+      importRef.current?.dismiss();
     }
   };
   const onImportContinuePress = async () => {
@@ -1136,6 +1125,7 @@ const ImportView = (props: ImportViewProps) => {
       const info = await FileSystem.getInfoAsync(uri, { size: true });
       if (info["size"] > FILE_READ_SIZE) {
         setUri(uri);
+        splitAndImportRef.current?.present();
       } else {
         importRawDirectly(uri);
       }
@@ -1148,12 +1138,15 @@ const ImportView = (props: ImportViewProps) => {
     await FileSystem.deleteAsync(uri, { idempotent: true });
     setImporting(false);
   };
-  const onImportContinueContinuePress = () => {
+  const onSplitAndImportDismiss = () => {
     setUri("");
+  };
+  const onImportContinueContinuePress = () => {
+    splitAndImportRef.current?.dismiss();
     importRawDirectly(uri);
   };
   const onSplitAndImportPress = () => {
-    setUri("");
+    splitAndImportRef.current?.dismiss();
     splitAndImportRaw(uri);
   };
 
@@ -1165,7 +1158,7 @@ const ImportView = (props: ImportViewProps) => {
         title={t("import")}
         onPress={onImportPress}
       />
-      <Modal isVisible={import_} onClose={onImportClose} style={ViewStyles.modal1}>
+      <Modal ref={importRef} dismissible={!importing}>
         <Dialog icon="download" text={t("import_notice")}>
           <Button
             style={[
@@ -1228,11 +1221,7 @@ const ImportView = (props: ImportViewProps) => {
             <Marquee style={theme.reverseTextStyle}>{t("import")}</Marquee>
           </Button>
         </Dialog>
-        <Modal
-          isVisible={ikawidget3}
-          onClose={onImportIkawidget3Ikax3Close}
-          style={ViewStyles.modal1}
-        >
+        <Modal ref={ikawidget3Ref}>
           <Dialog icon="info" text={t("import_ikawidget3_ikax3_notice")}>
             <Button
               disabled={importing}
@@ -1244,11 +1233,7 @@ const ImportView = (props: ImportViewProps) => {
             </Button>
           </Dialog>
         </Modal>
-        <Modal
-          isVisible={salmdroidnw}
-          onClose={onImportSalmdroidnwBackupClose}
-          style={ViewStyles.modal1}
-        >
+        <Modal ref={salmdroidnwRef}>
           <Dialog icon="info" text={t("import_salmdroidnw_backup_notice")}>
             <Button
               disabled={importing}
@@ -1260,11 +1245,7 @@ const ImportView = (props: ImportViewProps) => {
             </Button>
           </Dialog>
         </Modal>
-        <Modal
-          isVisible={salmonia3Plus}
-          onClose={onImportSalmonia3PlusBackupClose}
-          style={ViewStyles.modal1}
-        >
+        <Modal ref={salmonia3PlusRef}>
           <Dialog icon="info" text={t("import_salmonia3+_backup_notice")}>
             <Button
               disabled={importing}
@@ -1276,7 +1257,7 @@ const ImportView = (props: ImportViewProps) => {
             </Button>
           </Dialog>
         </Modal>
-        <Modal isVisible={uri.length > 0} style={ViewStyles.modal1}>
+        <Modal ref={splitAndImportRef} onDismiss={onSplitAndImportDismiss}>
           <Dialog icon="circle-alert" text={t("split_and_import_notice")}>
             <Button
               style={[ViewStyles.mb2, ViewStyles.accent]}

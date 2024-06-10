@@ -46,6 +46,7 @@ import {
   HStack,
   Marquee,
   Modal,
+  ModalHandle,
   Picker,
   SalmonRunSwitcherContext,
   Text,
@@ -171,10 +172,7 @@ const MainView = () => {
 
   const [ready, setReady] = useState(false);
   const [upgrade, setUpgrade] = useState(false);
-  const [update, setUpdate] = useState(false);
-  const [logIn, setLogIn] = useState(false);
   const [loggingIn, setLoggingIn] = useState(false);
-  const [logOut, setLogOut] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -182,13 +180,10 @@ const MainView = () => {
   const [loadingMore, setLoadingMore] = useState(false);
   const [refreshingGears, setRefreshingGears] = useState(false);
   const [exporting, setExporting] = useState(false);
-  const [support, setSupport] = useState(false);
   const [clearingCache, setClearingCache] = useState(false);
   const [preloadingResources, setPreloadingResources] = useState(false);
   const [clearingDatabase, setClearingDatabase] = useState(false);
   const [debug, setDebug] = useState(false);
-  const [notification, setNotification] = useState(false);
-  const [acknowledgments, setAcknowledgments] = useState(false);
   const [fault, setFault] = useState<Error>();
 
   const [sessionToken, setSessionToken, clearSessionToken, sessionTokenReady] = useStringMmkv(
@@ -263,6 +258,12 @@ const MainView = () => {
   });
 
   const splatNetViewRef = useRef<SplatNetViewRef>(null);
+  const updateRef = useRef<ModalHandle>(null);
+  const logInRef = useRef<ModalHandle>(null);
+  const logOutRef = useRef<ModalHandle>(null);
+  const supportRef = useRef<ModalHandle>(null);
+  const notificationRef = useRef<ModalHandle>(null);
+  const acknowledgmentsRef = useRef<ModalHandle>(null);
 
   useEffect(() => {
     if (
@@ -361,7 +362,7 @@ const MainView = () => {
           ok(
             fetchReleaseVersion().then((version) => {
               if (semver.compare(version.replace("v", ""), current) > 0) {
-                setUpdate(true);
+                updateRef.current?.present();
               }
             })
           );
@@ -937,9 +938,6 @@ const MainView = () => {
       onShowMorePress();
     }
   };
-  const onUpdateClose = () => {
-    setUpdate(false);
-  };
   const onGoToAppStore = () => {
     Linking.openURL("https://apps.apple.com/us/app/conch-bay/id1659268579");
   };
@@ -953,12 +951,7 @@ const MainView = () => {
     WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay/releases/latest");
   };
   const onLogInPress = () => {
-    setLogIn(true);
-  };
-  const onLogInClose = () => {
-    if (!loggingIn) {
-      setLogIn(false);
-    }
+    logInRef.current?.present();
   };
   const onPrivacyPolicyPress = () => {
     WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay/wiki/Privacy-Policy");
@@ -984,8 +977,8 @@ const MainView = () => {
       setSessionToken(res3);
 
       setLoggingIn(false);
-      setLogIn(false);
-      setLogOut(false);
+      logInRef.current?.dismiss();
+      logOutRef.current?.dismiss();
     } catch (e) {
       showBanner(BannerLevel.Error, e);
       setLoggingIn(false);
@@ -1002,8 +995,8 @@ const MainView = () => {
 
       setLoggingIn(false);
       if (sessionToken.length > 0) {
-        setLogIn(false);
-        setLogOut(false);
+        logInRef.current?.dismiss();
+        logOutRef.current?.dismiss();
       }
     } catch (e) {
       showBanner(BannerLevel.Error, e);
@@ -1011,12 +1004,7 @@ const MainView = () => {
     }
   };
   const onLogOutPress = () => {
-    setLogOut(true);
-  };
-  const onLogOutClose = () => {
-    if (!loggingIn && !loggingOut) {
-      setLogOut(false);
-    }
+    logOutRef.current?.present();
   };
   const onLogOutContinuePress = async () => {
     try {
@@ -1048,14 +1036,14 @@ const MainView = () => {
         }),
       ]);
       setLoggingOut(false);
-      setLogOut(false);
+      logOutRef.current?.dismiss();
     } catch (e) {
       showBanner(BannerLevel.Error, e);
       setLoggingOut(false);
     }
   };
   const onSplatNetPress = () => {
-    splatNetViewRef.current?.open();
+    splatNetViewRef.current?.present();
   };
   const onChangeFilterPress = (filter?: Database.FilterProps) => {
     if (filter) {
@@ -1287,12 +1275,7 @@ const MainView = () => {
     setExporting(false);
   };
   const onSupportPress = () => {
-    setSupport(true);
-  };
-  const onSupportClose = () => {
-    if (!clearingCache && !preloadingResources && !clearingDatabase) {
-      setSupport(false);
-    }
+    supportRef.current?.present();
   };
   const onAutoRefreshPress = () => {
     if (!autoRefresh) {
@@ -1317,7 +1300,7 @@ const MainView = () => {
           break;
         case ModulesCore.PermissionStatus.DENIED:
         case ModulesCore.PermissionStatus.UNDETERMINED:
-          setNotification(true);
+          notificationRef.current?.present();
           break;
       }
     }
@@ -1611,7 +1594,7 @@ const MainView = () => {
     clearPlayedTime();
     await loadBriefs();
     setClearingDatabase(false);
-    setSupport(false);
+    supportRef.current?.dismiss();
   };
   const onDebugPress = () => {
     setDebug(true);
@@ -1650,22 +1633,16 @@ const MainView = () => {
       showBanner(BannerLevel.Error, e);
     }
   };
-  const onNotificationClose = () => {
-    setNotification(false);
-  };
   const onNotificationContinue = async () => {
     await Notifications.requestPermissionsAsync();
     setBackgroundRefresh(true);
     await registerBackgroundTask().catch((e) => {
       showBanner(BannerLevel.Warn, t("failed_to_enable_background_refresh", { error: e }));
     });
-    setNotification(false);
+    notificationRef.current?.dismiss();
   };
   const onAcknowledgmentsPress = () => {
-    setAcknowledgments(true);
-  };
-  const onAcknowledgmentsClose = () => {
-    setAcknowledgments(false);
+    acknowledgmentsRef.current?.present();
   };
   const onSplatoon3InkPress = () => {
     WebBrowser.openBrowserAsync("https://splatoon3.ink/");
@@ -2012,7 +1989,7 @@ const MainView = () => {
             />
           )}
         </Animated.View>
-        <Modal isVisible={update} onClose={onUpdateClose} style={ViewStyles.modal1}>
+        <Modal ref={updateRef}>
           <Dialog icon="sparkles" text={t("update_notice")}>
             {Platform.OS === "ios" && (
               <Button
@@ -2040,7 +2017,7 @@ const MainView = () => {
             </Button>
           </Dialog>
         </Modal>
-        <Modal isVisible={logIn} onClose={onLogInClose} style={ViewStyles.modal1}>
+        <Modal ref={logInRef} dismissible={!loggingIn}>
           <CustomDialog icon="circle-alert">
             <Text
               style={[
@@ -2088,7 +2065,7 @@ const MainView = () => {
             </DialogSection>
           </CustomDialog>
         </Modal>
-        <Modal isVisible={logOut} onClose={onLogOutClose} style={ViewStyles.modal1}>
+        <Modal ref={logOutRef} dismissible={!loggingIn && !loggingOut}>
           <CustomDialog icon="circle-alert">
             <DialogSection text={t("relog_in_notice")} style={ViewStyles.mb4}>
               <Button
@@ -2126,7 +2103,10 @@ const MainView = () => {
             </DialogSection>
           </CustomDialog>
         </Modal>
-        <Modal isVisible={support} onClose={onSupportClose} style={ViewStyles.modal1}>
+        <Modal
+          ref={supportRef}
+          dismissible={!clearingCache && !preloadingResources && !clearingDatabase}
+        >
           <CustomDialog icon="circle-help">
             <DialogSection text={t("preference_notice")} style={ViewStyles.mb4}>
               {sessionToken.length > 0 && (
@@ -2305,7 +2285,7 @@ const MainView = () => {
               )}
             </DialogSection>
           </CustomDialog>
-          <Modal isVisible={notification} onClose={onNotificationClose} style={ViewStyles.modal1}>
+          <Modal ref={notificationRef}>
             <Dialog icon="bell-dot" text={t("notification_notice")}>
               <Button style={ViewStyles.accent} onPress={onNotificationContinue}>
                 <Marquee style={theme.reverseTextStyle}>{t("ok")}</Marquee>
@@ -2313,11 +2293,7 @@ const MainView = () => {
             </Dialog>
           </Modal>
         </Modal>
-        <Modal
-          isVisible={acknowledgments}
-          onClose={onAcknowledgmentsClose}
-          style={ViewStyles.modal1}
-        >
+        <Modal ref={acknowledgmentsRef}>
           <VStack center style={ViewStyles.mb3}>
             <Marquee style={[TextStyles.h3, ViewStyles.mb2]}>{t("creators")}</Marquee>
             <HStack center>

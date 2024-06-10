@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useRef } from "react";
 import { StyleProp, StyleSheet, TextStyle, ViewStyle } from "react-native";
 import Button from "./Button";
 import Marquee from "./Marquee";
-import { Modal } from "./Modal";
+import { Modal, ModalHandle } from "./Modal";
 import { VStack } from "./Stack";
 import { ViewStyles, useTheme } from "./Styles";
 
@@ -26,13 +26,10 @@ interface PickerProps {
 const Picker = (props: PickerProps) => {
   const theme = useTheme();
 
-  const [open, setOpen] = useState(false);
+  const ref = useRef<ModalHandle>(null);
 
   const onPress = () => {
-    setOpen(true);
-  };
-  const onClose = () => {
-    setOpen(false);
+    ref.current?.present();
   };
 
   return (
@@ -46,7 +43,7 @@ const Picker = (props: PickerProps) => {
       onLongPress={props.onPress ? onPress : undefined}
     >
       <Marquee style={[theme.reverseTextStyle, props.textStyle]}>{props.title}</Marquee>
-      <Modal isVisible={open} onClose={onClose} style={ViewStyles.modal0_67}>
+      <Modal ref={ref}>
         <VStack flex style={ViewStyles.wf}>
           {props.header}
           {props.items.map((item, i, items) => (
@@ -67,7 +64,7 @@ const Picker = (props: PickerProps) => {
                 },
               ]}
               onPress={() => {
-                onClose();
+                ref.current?.dismiss();
                 props.onSelected(item.key);
               }}
             >

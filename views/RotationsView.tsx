@@ -3,13 +3,14 @@ import SegmentedControl, {
 } from "@react-native-segmented-control/segmented-control";
 import { ListRenderItemInfo } from "@shopify/flash-list";
 import dayjs from "dayjs";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { NativeSyntheticEvent, StyleProp, ViewStyle } from "react-native";
 import {
   BattleRotationButton,
   Center,
   CoopRotationButton,
   FlashModal,
+  ModalHandle,
   ToolButton,
   VStack,
   ViewStyles,
@@ -27,9 +28,7 @@ interface RotationViewProps {
 }
 
 const RotationsView = (props: RotationViewProps) => {
-  const [rotations, setRotations] = useState(false);
   const [group, setGroup] = useState<Brief[]>();
-  const [displayGroup, setDisplayGroup] = useState(false);
   const [dimension, setDimension] = useState(0);
 
   const groups = useMemo(() => {
@@ -55,11 +54,11 @@ const RotationsView = (props: RotationViewProps) => {
     return groups;
   }, [props.briefs]);
 
+  const rotationsRef = useRef<ModalHandle>(null);
+  const statsRef = useRef<ModalHandle>(null);
+
   const onRotationPress = () => {
-    setRotations(true);
-  };
-  const onRotationClose = () => {
-    setRotations(false);
+    rotationsRef.current?.present();
   };
   const formatGroupPeriod = (start: number, end: number) => {
     const dateTimeFormat = "M/D HH:mm";
@@ -85,16 +84,13 @@ const RotationsView = (props: RotationViewProps) => {
     }
     return `${startTime} – ${endTime}`;
   };
-  const onGroupClose = () => {
-    setDisplayGroup(false);
-  };
   const onDimensionChange = (event: NativeSyntheticEvent<NativeSegmentedControlIOSChangeEvent>) => {
     setDimension(event.nativeEvent.selectedSegmentIndex);
   };
 
   const onPress = useCallback((group: Brief[]) => {
     setGroup(group);
-    setDisplayGroup(true);
+    statsRef.current?.present();
   }, []);
 
   const renderItem = (result: ListRenderItemInfo<Brief[]>) => {
@@ -175,7 +171,7 @@ const RotationsView = (props: RotationViewProps) => {
         onPress={onRotationPress}
       />
       <FlashModal
-        isVisible={rotations}
+        ref={rotationsRef}
         data={groups}
         keyExtractor={(group) =>
           group[0].battle ? group[0].battle.time.toString() : group[0].coop!.time.toString()
@@ -183,13 +179,7 @@ const RotationsView = (props: RotationViewProps) => {
         renderItem={renderItem}
         estimatedItemSize={64}
         ListHeaderComponent={
-          <StatsModal
-            briefs={group}
-            dimension={dimension}
-            hideEmpty
-            isVisible={displayGroup}
-            onClose={onGroupClose}
-          >
+          <StatsModal ref={statsRef} briefs={group} dimension={dimension} hideEmpty>
             <SegmentedControl
               values={[t("self"), t("team")]}
               selectedIndex={dimension}
@@ -198,9 +188,8 @@ const RotationsView = (props: RotationViewProps) => {
             />
           </StatsModal>
         }
-        onClose={onRotationClose}
         // HACK: fixed height should be provided to FlashList.
-        style={[ViewStyles.modal1, { height: 32 + 64 * groups.length, paddingHorizontal: 0 }]}
+        style={{ height: 32 + 64 * groups.length, paddingHorizontal: 0 }}
       />
     </Center>
   );

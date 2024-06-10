@@ -2,7 +2,7 @@ import SegmentedControl, {
   NativeSegmentedControlIOSChangeEvent,
 } from "@react-native-segmented-control/segmented-control";
 import dayjs from "dayjs";
-import { useMemo, useState } from "react";
+import { ForwardedRef, forwardRef, useImperativeHandle, useMemo, useRef, useState } from "react";
 import { NativeSyntheticEvent, StyleProp, ViewStyle } from "react-native";
 import {
   AccordionDisplay,
@@ -12,6 +12,7 @@ import {
   Display,
   Marquee,
   Modal,
+  ModalHandle,
   Notice,
   SalmonRunSwitcher,
   Text,
@@ -87,14 +88,12 @@ interface StatsModalProps {
   briefs?: Brief[];
   dimension?: number;
   hideEmpty?: boolean;
-  isVisible: boolean;
-  onClose: () => void;
-  onModalHide?: () => void;
+  onDismiss?: () => void;
   children?: React.ReactNode;
   footer?: React.ReactNode;
 }
 
-const StatsModal = (props: StatsModalProps) => {
+const StatsModal = forwardRef((props: StatsModalProps, ref: ForwardedRef<ModalHandle>) => {
   const [sort, setSort] = useState(0);
 
   const battleStats = useMemo(
@@ -357,6 +356,19 @@ const StatsModal = (props: StatsModalProps) => {
     }
   }, [coopsStats, props.dimension]);
 
+  const modal = useRef<ModalHandle>(null);
+
+  useImperativeHandle(ref, () => {
+    return {
+      present: () => {
+        modal.current?.present();
+      },
+      dismiss: () => {
+        modal.current?.dismiss();
+      },
+    };
+  });
+
   const formatPower = (total: number, max: number, count: number) => {
     return `${roundPower(max)} (${roundPower(total / count)})`;
   };
@@ -414,12 +426,7 @@ const StatsModal = (props: StatsModalProps) => {
   };
 
   return (
-    <Modal
-      isVisible={props.isVisible}
-      onClose={props.onClose}
-      onModalHide={props.onModalHide}
-      style={ViewStyles.modal1}
-    >
+    <Modal ref={modal} onDismiss={props.onDismiss}>
       {props.children}
       <SegmentedControl
         values={[t("default"), t("appearance"), t("win_rate")]}
@@ -721,7 +728,7 @@ const StatsModal = (props: StatsModalProps) => {
       {props.footer}
     </Modal>
   );
-};
+});
 
 interface StatsViewProps {
   disabled?: boolean;
@@ -730,8 +737,9 @@ interface StatsViewProps {
 }
 
 const StatsView = (props: StatsViewProps) => {
-  const [displayStats, setDisplayStats] = useState(false);
   const [group, setGroup] = useState(0);
+
+  const ref = useRef<ModalHandle>(null);
 
   const beginTime = useMemo(() => {
     switch (group) {
@@ -766,10 +774,7 @@ const StatsView = (props: StatsViewProps) => {
   }, [props.briefs, beginTime]);
 
   const onStatsPress = () => {
-    setDisplayStats(true);
-  };
-  const onStatsClose = () => {
-    setDisplayStats(false);
+    ref.current?.present();
   };
   const onGroupChange = (event: NativeSyntheticEvent<NativeSegmentedControlIOSChangeEvent>) => {
     setGroup(event.nativeEvent.selectedSegmentIndex);
@@ -783,12 +788,7 @@ const StatsView = (props: StatsViewProps) => {
         title={t("stats")}
         onPress={onStatsPress}
       />
-      <StatsModal
-        briefs={filtered}
-        isVisible={displayStats}
-        footer={<Notice title={t("stats_notice2")} />}
-        onClose={onStatsClose}
-      >
+      <StatsModal ref={ref} briefs={filtered} footer={<Notice title={t("stats_notice2")} />}>
         <SegmentedControl
           values={[t("all"), t("day"), t("week"), t("month"), t("season")]}
           selectedIndex={group}

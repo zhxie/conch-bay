@@ -1,8 +1,9 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef } from "react";
 import { StyleProp, ViewStyle } from "react-native";
 import {
   GearBox,
   Modal,
+  ModalHandle,
   Notice,
   ScheduleButton,
   TitledList,
@@ -22,7 +23,7 @@ interface ShopViewProps {
 const ShopView = (props: ShopViewProps) => {
   const theme = useTheme();
 
-  const [displayShop, setDisplayShop] = useState(false);
+  const ref = useRef<ModalHandle>(null);
 
   const isGearExpired = (gear: SaleGear | PickupBrand) => {
     const now = new Date().getTime();
@@ -40,10 +41,7 @@ const ShopView = (props: ShopViewProps) => {
   );
 
   const onShopPress = () => {
-    setDisplayShop(true);
-  };
-  const onDisplayShopClose = () => {
-    setDisplayShop(false);
+    ref.current?.present();
   };
 
   return (
@@ -63,7 +61,7 @@ const ShopView = (props: ShopViewProps) => {
         onPress={onShopPress}
         style={props.style}
       />
-      <Modal isVisible={displayShop} onClose={onDisplayShopClose} style={ViewStyles.modal1}>
+      <Modal ref={ref}>
         <TitledList color={theme.textColor} title={t("gesotown")}>
           {pickupBrand && (
             <VStack center style={ViewStyles.mb2}>

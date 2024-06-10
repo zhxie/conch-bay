@@ -1,14 +1,14 @@
 import * as Clipboard from "expo-clipboard";
-import { ForwardedRef, forwardRef, useImperativeHandle, useState } from "react";
+import { ForwardedRef, forwardRef, useImperativeHandle, useRef, useState } from "react";
 import { ActivityIndicator, Platform, Share, StyleProp, ViewStyle } from "react-native";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 import { WebView, WebViewMessageEvent } from "react-native-webview";
-import { Center, ModalBase, ToolButton, ViewStyles } from "../components";
+import { Center, ModalBase, ModalHandle, ToolButton, ViewStyles } from "../components";
 import t from "../i18n";
 import { WebServiceToken } from "../utils/api";
 
 interface SplatNetViewRef {
-  open: () => void;
+  present: () => void;
 }
 interface SplatNetViewProps {
   disabled?: boolean;
@@ -18,19 +18,18 @@ interface SplatNetViewProps {
 }
 
 const SplatNetView = (props: SplatNetViewProps, ref: ForwardedRef<SplatNetViewRef>) => {
-  useImperativeHandle(
-    ref,
-    () => ({
-      open: onWebViewPress,
-    }),
-    []
-  );
+  useImperativeHandle(ref, () => ({
+    present: onWebViewPress,
+  }));
 
   const [webView, setWebView] = useState(false);
   const [webServiceToken, setWebServiceToken] = useState<WebServiceToken>();
 
+  const modal = useRef<ModalHandle>(null);
+
   const onWebViewPress = async () => {
     setWebView(true);
+    modal.current?.present();
     const webServiceToken = await props.onGetWebServiceToken();
     if (webServiceToken) {
       setWebServiceToken(webServiceToken);
@@ -38,7 +37,7 @@ const SplatNetView = (props: SplatNetViewProps, ref: ForwardedRef<SplatNetViewRe
       setWebView(false);
     }
   };
-  const onModalHide = () => {
+  const onDismiss = () => {
     setWebServiceToken(undefined);
   };
   const onMessage = (event: WebViewMessageEvent) => {
@@ -80,7 +79,7 @@ const SplatNetView = (props: SplatNetViewProps, ref: ForwardedRef<SplatNetViewRe
           style={{ width: 0, height: 0 }}
         />
       )}
-      <ModalBase isVisible={webView} fullscreen onModalHide={onModalHide}>
+      <ModalBase ref={modal} onDismiss={onDismiss}>
         <SafeAreaProvider
           style={[
             ViewStyles.ff,

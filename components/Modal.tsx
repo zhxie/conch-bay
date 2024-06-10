@@ -1,87 +1,100 @@
+import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { FlashList, ListRenderItem } from "@shopify/flash-list";
+import { Component, ForwardedRef, forwardRef, RefObject, useImperativeHandle, useRef } from "react";
 import {
   LayoutChangeEvent,
-  NativeScrollEvent,
-  NativeSyntheticEvent,
   ScrollView,
   StyleProp,
   StyleSheet,
   View,
   ViewStyle,
-  useWindowDimensions,
 } from "react-native";
-import ReactNativeModal from "react-native-modal";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { VStack } from "./Stack";
 import { ViewStyles, useTheme } from "./Styles";
 
-const MAX_WIDTH = 648;
+interface ModalHandle {
+  present: () => void;
+  dismiss: () => void;
+}
 
 interface ModalBaseProps {
-  isVisible: boolean;
-  fullscreen?: boolean;
+  scrollRef?: RefObject<Component<unknown>>;
+  dismissible?: boolean;
   style?: StyleProp<ViewStyle>;
-  onClose?: () => void;
-  onModalHide?: () => void;
+  onPresent?: () => void;
+  onDismiss?: () => void;
   children?: React.ReactNode;
 }
 
-const ModalBase = (props: ModalBaseProps) => {
+const ModalBase = forwardRef((props: ModalBaseProps, ref: ForwardedRef<ModalHandle>) => {
+  const modal = useRef<TrueSheet>(null);
+
+  useImperativeHandle(ref, () => {
+    return {
+      present: async () => {
+        await modal.current?.present();
+      },
+      dismiss: async () => {
+        await modal.current?.dismiss();
+      },
+    };
+  });
+
   return (
-    <ReactNativeModal
-      isVisible={props.isVisible}
-      backdropOpacity={0.5}
-      onBackdropPress={props.onClose}
-      onBackButtonPress={props.onClose}
-      useNativeDriverForBackdrop
-      useNativeDriver
-      hideModalContentWhileAnimating
-      statusBarTranslucent
-      style={[props.fullscreen && { margin: 0 }, ViewStyles.c, props.style]}
-      onModalHide={props.onModalHide}
+    <TrueSheet
+      ref={modal}
+      scrollRef={props.scrollRef}
+      dismissible={props.dismissible}
+      sizes={["auto"]}
+      cornerRadius={24}
+      style={props.style}
+      onPresent={props.onPresent}
+      onDismiss={props.onDismiss}
     >
       {props.children}
-    </ReactNativeModal>
+    </TrueSheet>
   );
-};
+});
 
 interface ModalProps {
-  isVisible: boolean;
+  dismissible?: boolean;
   style?: StyleProp<ViewStyle>;
-  onClose?: () => void;
-  onModalHide?: () => void;
+  onPresent?: () => void;
+  onDismiss?: () => void;
   onLayout?: (event: LayoutChangeEvent) => void;
   children?: React.ReactNode;
 }
 
-const Modal = (props: ModalProps) => {
+const Modal = forwardRef((props: ModalProps, ref: ForwardedRef<ModalHandle>) => {
   const theme = useTheme();
 
-  const dimensions = useWindowDimensions();
   const insets = useSafeAreaInsets();
 
-  const onScrollEndDrag = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    if (!!props.onClose && event.nativeEvent.contentOffset.y < -80) {
-      props.onClose();
-    }
-  };
+  const modal = useRef<ModalHandle>(null);
+
+  useImperativeHandle(ref, () => {
+    return {
+      present: () => {
+        modal.current?.present();
+      },
+      dismiss: () => {
+        modal.current?.dismiss();
+      },
+    };
+  });
 
   return (
     <ModalBase
-      isVisible={props.isVisible}
-      fullscreen={dimensions.width <= MAX_WIDTH}
-      onClose={props.onClose}
-      onModalHide={props.onModalHide}
+      ref={modal}
+      dismissible={props.dismissible}
+      onPresent={props.onPresent}
+      onDismiss={props.onDismiss}
     >
       <ScrollView
         showsHorizontalScrollIndicator={false}
-        onScrollEndDrag={onScrollEndDrag}
         onLayout={props.onLayout}
-        style={[
-          dimensions.width <= MAX_WIDTH ? styles.panel : styles.fullscreenPanel,
-          theme.backgroundStyle,
-          props.style,
-        ]}
+        style={[styles.panel, theme.backgroundStyle, props.style]}
       >
         <View style={styles.padding} />
         {props.children}
@@ -93,47 +106,50 @@ const Modal = (props: ModalProps) => {
       </ScrollView>
     </ModalBase>
   );
-};
+});
 
 interface FlashModalProps<T> {
-  isVisible: boolean;
   data: T[];
   keyExtractor: (item: T, index: number) => string;
   renderItem: ListRenderItem<T>;
   estimatedItemSize: number;
   ListHeaderComponent?: React.ReactNode;
+  dismissible?: boolean;
   style?: StyleProp<ViewStyle>;
-  onClose?: () => void;
-  onModalHide?: () => void;
+  onPresent?: () => void;
+  onDismiss?: () => void;
 }
 
-const FlashModal = <T,>(props: FlashModalProps<T>) => {
+const FlashModal = forwardRef(<T,>(props: FlashModalProps<T>, ref: ForwardedRef<ModalHandle>) => {
   const theme = useTheme();
 
-  const dimensions = useWindowDimensions();
   const insets = useSafeAreaInsets();
 
-  const onScrollEndDrag = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    if (!!props.onClose && event.nativeEvent.contentOffset.y < -80) {
-      props.onClose();
-    }
-  };
+  const modal = useRef<ModalHandle>(null);
+  const scrollView = useRef<any>(null);
+
+  useImperativeHandle(ref, () => {
+    return {
+      present: () => {
+        modal.current?.present();
+      },
+      dismiss: () => {
+        modal.current?.dismiss();
+      },
+    };
+  });
 
   return (
     <ModalBase
-      fullscreen={dimensions.width <= MAX_WIDTH}
-      isVisible={props.isVisible}
-      onClose={props.onClose}
-      onModalHide={props.onModalHide}
+      ref={modal}
+      scrollRef={scrollView}
+      dismissible={props.dismissible}
+      onPresent={props.onPresent}
+      onDismiss={props.onDismiss}
     >
-      <VStack
-        style={[
-          dimensions.width <= MAX_WIDTH ? styles.panel : styles.fullscreenPanel,
-          theme.backgroundStyle,
-          props.style,
-        ]}
-      >
+      <VStack style={[styles.panel, theme.backgroundStyle, props.style]}>
         <FlashList
+          ref={scrollView}
           showsHorizontalScrollIndicator={false}
           data={props.data}
           keyExtractor={props.keyExtractor}
@@ -152,22 +168,15 @@ const FlashModal = <T,>(props: FlashModalProps<T>) => {
               }}
             />
           }
-          onScrollEndDrag={onScrollEndDrag}
         />
       </VStack>
     </ModalBase>
   );
-};
+});
 
 const styles = StyleSheet.create({
   panel: {
-    maxWidth: MAX_WIDTH,
     ...ViewStyles.rt2,
-    ...ViewStyles.px4,
-  },
-  fullscreenPanel: {
-    maxWidth: MAX_WIDTH,
-    ...ViewStyles.r2,
     ...ViewStyles.px4,
   },
   padding: {
@@ -175,4 +184,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export { ModalBase, Modal, FlashModal };
+export { ModalHandle, ModalBase, Modal, FlashModal };

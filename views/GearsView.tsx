@@ -1,9 +1,17 @@
 import SegmentedControl, {
   NativeSegmentedControlIOSChangeEvent,
 } from "@react-native-segmented-control/segmented-control";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { NativeSyntheticEvent, StyleProp, ViewStyle } from "react-native";
-import { Center, FlashModal, GearBox, ToolButton, ViewStyles, VStack } from "../components";
+import {
+  Center,
+  FlashModal,
+  GearBox,
+  ModalHandle,
+  ToolButton,
+  ViewStyles,
+  VStack,
+} from "../components";
 import t from "../i18n";
 import { MyGear, MyOutfitCommonDataEquipmentsResult } from "../models/types";
 import { getGearPadding, getImageCacheSource, getImageHash } from "../utils/ui";
@@ -33,7 +41,6 @@ const GearsView = (props: GearsViewProps) => {
   const [shoes, setShoes] = useState<MyGear[]>([]);
   const [gears, setGears] = useState<MyGear[]>([]);
   const [loading, setLoading] = useState(false);
-  const [display, setDisplay] = useState(false);
   const [filterIndex, setFilterIndex] = useState(0);
   const [sortIndex, setSortIndex] = useState(0);
 
@@ -92,6 +99,8 @@ const GearsView = (props: GearsViewProps) => {
     setGears(gears);
   }, [headgears, clothes, shoes, filterIndex, sortIndex]);
 
+  const ref = useRef<ModalHandle>(null);
+
   const formatGearTypeName = (type: GearType) => {
     switch (type) {
       case GearType.HeadGears:
@@ -108,7 +117,7 @@ const GearsView = (props: GearsViewProps) => {
     const equipments = await props.onPress();
     if (equipments) {
       setEquipments(equipments);
-      setDisplay(true);
+      ref.current?.present();
     }
     setLoading(false);
   };
@@ -118,10 +127,7 @@ const GearsView = (props: GearsViewProps) => {
   const onSortChange = (event: NativeSyntheticEvent<NativeSegmentedControlIOSChangeEvent>) => {
     setSortIndex(event.nativeEvent.selectedSegmentIndex);
   };
-  const onClose = () => {
-    setDisplay(false);
-  };
-  const onModalHide = () => {
+  const onDismiss = () => {
     setEquipments(undefined);
   };
 
@@ -153,7 +159,7 @@ const GearsView = (props: GearsViewProps) => {
         onPress={onPress}
       />
       <FlashModal
-        isVisible={display}
+        ref={ref}
         data={gears}
         keyExtractor={(gear) => gear.name}
         renderItem={renderItem}
@@ -174,10 +180,9 @@ const GearsView = (props: GearsViewProps) => {
             />
           </VStack>
         }
-        onClose={onClose}
-        onModalHide={onModalHide}
+        onDismiss={onDismiss}
         // HACK: fixed height should be provided to FlashList.
-        style={[ViewStyles.modal1, { height: 72 + 48 * gears.length, paddingHorizontal: 0 }]}
+        style={{ height: 72 + 48 * gears.length, paddingHorizontal: 0 }}
       />
     </Center>
   );

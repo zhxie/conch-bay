@@ -2,7 +2,7 @@ import SegmentedControl, {
   NativeSegmentedControlIOSChangeEvent,
 } from "@react-native-segmented-control/segmented-control";
 import dayjs from "dayjs";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
   LayoutChangeEvent,
   NativeSyntheticEvent,
@@ -19,6 +19,7 @@ import {
   HStack,
   Marquee,
   Modal,
+  ModalHandle,
   Notice,
   SalmonRunSwitcher,
   Text,
@@ -71,10 +72,11 @@ const TrendsView = (props: TrendViewProps) => {
   const theme = useTheme();
 
   const [point, setPoint] = useState(20);
-  const [trends, setTrends] = useState(false);
   const [group, setGroup] = useState(0);
   const [battleDimensions, setBattleDimensions] = useState<BattleDimension[]>(["VICTORY"]);
   const [coopDimensions, setCoopDimensions] = useState<CoopDimension[]>(["CLEAR"]);
+
+  const ref = useRef<ModalHandle>(null);
 
   const split = <T extends BattleBrief | CoopBrief>(arr: T[], count: number, group: number) => {
     const result: T[][] = [];
@@ -329,10 +331,7 @@ const TrendsView = (props: TrendViewProps) => {
   };
 
   const onTrendsPress = () => {
-    setTrends(true);
-  };
-  const onTrendsClose = () => {
-    setTrends(false);
+    ref.current?.present();
   };
   const onLayout = (event: LayoutChangeEvent) => {
     setPoint(Math.max(Math.round(event.nativeEvent.layout.width / 20), 20));
@@ -369,12 +368,7 @@ const TrendsView = (props: TrendViewProps) => {
         title={t("trends")}
         onPress={onTrendsPress}
       />
-      <Modal
-        isVisible={trends}
-        onClose={onTrendsClose}
-        onLayout={onLayout}
-        style={ViewStyles.modal1}
-      >
+      <Modal ref={ref} onLayout={onLayout}>
         <VStack style={ViewStyles.mb2}>
           <SegmentedControl
             values={[t("recent"), t("day"), t("week"), t("month"), t("season")]}

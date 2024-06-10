@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef } from "react";
 import { LayoutChangeEvent, ScrollView, StyleProp, ViewStyle } from "react-native";
 import {
   Button,
@@ -10,6 +10,7 @@ import {
   IconButton,
   Marquee,
   Modal,
+  ModalHandle,
   Notice,
   SalmonRunSwitcher,
   TextStyles,
@@ -55,10 +56,10 @@ const SalmonRunFilterProps = {
 const FilterView = (props: FilterViewProps) => {
   const theme = useTheme();
 
-  const [filter, setFilter] = useState(false);
+  const ref = useRef<ModalHandle>(null);
 
   const onFilterPress = () => {
-    setFilter(true);
+    ref.current?.present();
   };
   const onFilterLongPress = () => {
     if (!isFilterEqual(props.filter, EmptyFilterProps)) {
@@ -71,9 +72,6 @@ const FilterView = (props: FilterViewProps) => {
     } else {
       props.onChange(undefined);
     }
-  };
-  const onFilterClose = () => {
-    setFilter(false);
   };
   const onOptionPress = (group: string, key: string) => {
     if (!props.filter) {
@@ -204,11 +202,7 @@ const FilterView = (props: FilterViewProps) => {
           </HStack>
         </ScrollView>
       </HStack>
-      <Modal
-        isVisible={filter}
-        onClose={onFilterClose}
-        style={[ViewStyles.modal1, ViewStyles.pl4, ViewStyles.pr2]}
-      >
+      <Modal ref={ref} style={[ViewStyles.pl4, ViewStyles.pr2]}>
         <VStack flex>
           {(props.filter?.players?.length ?? 0) > 0 && (
             <VStack flex>
