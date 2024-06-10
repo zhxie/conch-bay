@@ -176,11 +176,8 @@ const GearsView = (props: GearsViewProps) => {
         }
         onClose={onClose}
         onModalHide={onModalHide}
-        style={[
-          ViewStyles.modal1,
-          // HACK: fixed height should be provided to FlashList.
-          { height: 72 + 48 * gears.length, paddingHorizontal: 0 },
-        ]}
+        // HACK: fixed height should be provided to FlashList.
+        style={[ViewStyles.modal1, { height: 72 + 48 * gears.length, paddingHorizontal: 0 }]}
       />
     </Center>
   );

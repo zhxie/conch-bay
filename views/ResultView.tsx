@@ -1273,7 +1273,7 @@ const ResultView = (props: ResultViewProps) => {
                   <VStack style={[ViewStyles.wf, ViewStyles.mb2]}>
                     {[battlePlayer.headGear, battlePlayer.clothingGear, battlePlayer.shoesGear].map(
                       (gear, i, gears) => (
-                        // TODO: show brands with its favorite.
+                        // TODO: show brands with its preference.
                         <GearBox
                           key={i}
                           first={i === 0}
