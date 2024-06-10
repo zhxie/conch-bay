@@ -5,7 +5,7 @@ import { TextStyles } from "./Styles";
 import Text from "./Text";
 
 interface BattleRotationButtonProps<T> {
-  stats?: T;
+  group?: T;
   color: string;
   first?: boolean;
   last?: boolean;
@@ -13,13 +13,13 @@ interface BattleRotationButtonProps<T> {
   time: string;
   stages: string;
   style?: StyleProp<ViewStyle>;
-  onPress?: (stats: T) => void;
+  onPress?: (group: T) => void;
 }
 
 const BattleRotationButton = <T,>(props: BattleRotationButtonProps<T>) => {
   const onPress = () => {
-    if (props.stats && props.onPress) {
-      props.onPress(props.stats);
+    if (props.group && props.onPress) {
+      props.onPress(props.group);
     }
   };
 

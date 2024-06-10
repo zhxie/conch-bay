@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import coopSpecialWeaponList from "../models/coopSpecialWeapons.json";
 import {
   CoopHistoryDetailResult,
@@ -842,3 +843,103 @@ export interface Stats {
   battle?: BattleStats;
   coop?: CoopStats;
 }
+
+export const canGroupBattle = (battle: BattleBrief, group: Brief[]) => {
+  // Battles with the same mode and in the 2 hours (24 hours for tricolors and unlimited for
+  // privates) period will be regarded in the same group. There is also a 2 minutes grace period
+  // for battles when certain conditions are met.
+  // TODO: these grade conditions are not completed. E.g., regular battles even with the same
+  // stages cannot be regarded as in the same rotation. We have to check the context (the above
+  // only now) to group correctly.
+  if (group[0]?.battle) {
+    if (battle.mode === group[0].battle.mode) {
+      switch (battle.mode) {
+        case "VnNNb2RlLTE=":
+        case "VnNNb2RlLTY=":
+        case "VnNNb2RlLTc=":
+          if (
+            Math.floor(dayjs(battle.time).valueOf() / 7200000) ===
+            Math.floor(dayjs(group[0].battle.time).valueOf() / 7200000)
+          ) {
+            return true;
+          }
+          break;
+        case "VnNNb2RlLTI=":
+        case "VnNNb2RlLTUx":
+        case "VnNNb2RlLTM=":
+        case "VnNNb2RlLTQ=":
+          if (
+            Math.floor(dayjs(battle.time).valueOf() / 7200000) ===
+              Math.floor(dayjs(group[0].battle.time).valueOf() / 7200000) ||
+            (battle.rule === group[0].battle.rule &&
+              Math.floor(dayjs(battle.time).valueOf() / 7200000) ===
+                Math.floor(dayjs(group[0].battle.time).subtract(2, "minute").valueOf() / 7200000))
+          ) {
+            return true;
+          }
+          break;
+        case "VnNNb2RlLTg=":
+          if (
+            Math.floor(dayjs(battle.time).valueOf() / 86400000) ===
+              Math.floor(dayjs(group[0].battle.time).valueOf() / 86400000) ||
+            Math.floor(dayjs(battle.time).valueOf() / 86400000) ===
+              Math.floor(dayjs(group[0].battle.time).subtract(2, "minute").valueOf() / 86400000)
+          ) {
+            return true;
+          }
+          break;
+        case "VnNNb2RlLTU=":
+        default:
+          return true;
+      }
+    }
+  }
+  return false;
+};
+export const canGroupCoop = (coop: CoopBrief, group: Brief[]) => {
+  // Coops with the same rule, stage (no restriction for Big Run, since there are random stages)
+  // and supplied weapons in the 80 hours (2 hours period) will be regarded in the same group.
+  // Coops without points will be regarded as privates and will be grouped without any condition.
+  // There is also a 2 minutes grace period for coops when certain conditions are met.
+  if (group[0]?.coop) {
+    if (coop.private || group[0].coop.private) {
+      if (coop.private && group[0].coop.private) {
+        return true;
+      }
+      return false;
+    }
+    switch (coop.rule) {
+      case CoopRule.REGULAR:
+      case CoopRule.TEAM_CONTEST:
+        if (
+          coop.rule === group[0].coop.rule &&
+          coop.stage === group[0].coop.stage &&
+          coop.suppliedWeapons.join(",") === group[0].coop.suppliedWeapons.join(",") &&
+          (Math.ceil(dayjs(coop.time).valueOf() / 7200000) -
+            Math.floor(dayjs(group[0].coop.time).valueOf() / 7200000) <=
+            40 ||
+            Math.ceil(dayjs(coop.time).valueOf() / 7200000) -
+              Math.floor(dayjs(group[0].coop.time).subtract(2, "minute").valueOf() / 7200000) <=
+              40)
+        ) {
+          return true;
+        }
+        break;
+      case CoopRule.BIG_RUN:
+        if (
+          coop.rule === group[0].coop.rule &&
+          coop.suppliedWeapons.join(",") === group[0].coop.suppliedWeapons.join(",") &&
+          (Math.ceil(dayjs(coop.time).valueOf() / 7200000) -
+            Math.floor(dayjs(group[0].coop.time).valueOf() / 7200000) <=
+            40 ||
+            Math.ceil(dayjs(coop.time).valueOf() / 7200000) -
+              Math.floor(dayjs(group[0].coop.time).subtract(2, "minute").valueOf() / 7200000) <=
+              40)
+        ) {
+          return true;
+        }
+        break;
+    }
+  }
+  return false;
+};

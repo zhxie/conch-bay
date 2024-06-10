@@ -7,7 +7,7 @@ import { Color, TextStyles, ViewStyles, useTheme } from "./Styles";
 import Text from "./Text";
 
 interface CoopRotationButtonProps<T> {
-  stats?: T;
+  group?: T;
   color: string;
   first?: boolean;
   last?: boolean;
@@ -16,7 +16,7 @@ interface CoopRotationButtonProps<T> {
   stage: string;
   weapons: ImageSource[];
   style?: StyleProp<ViewStyle>;
-  onPress?: (stats: T) => void;
+  onPress?: (group: T) => void;
 }
 
 const CoopRotationButton = <T,>(props: CoopRotationButtonProps<T>) => {
@@ -25,8 +25,8 @@ const CoopRotationButton = <T,>(props: CoopRotationButtonProps<T>) => {
     theme.colorScheme === "light" ? `${Color.MiddleTerritory}1f` : Color.DarkBackground;
 
   const onPress = () => {
-    if (props.stats && props.onPress) {
-      props.onPress(props.stats);
+    if (props.group && props.onPress) {
+      props.onPress(props.group);
     }
   };
 

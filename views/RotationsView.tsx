@@ -16,14 +16,9 @@ import {
 } from "../components";
 import t from "../i18n";
 import unknownList from "../models/unknowns.json";
-import { BattleBrief, Brief, CoopBrief } from "../utils/stats";
+import { Brief, canGroupBattle, canGroupCoop } from "../utils/stats";
 import { getCoopRuleColor, getImageCacheSource, getVsModeColor } from "../utils/ui";
 import { StatsModal } from "./StatsView";
-
-interface StatsGroup {
-  battles?: BattleBrief[];
-  coops?: CoopBrief[];
-}
 
 interface RotationViewProps {
   disabled?: boolean;
@@ -37,94 +32,25 @@ const RotationsView = (props: RotationViewProps) => {
   const [displayGroup, setDisplayGroup] = useState(false);
   const [dimension, setDimension] = useState(0);
 
-  const canGroup = (current: Brief, group: StatsGroup) => {
-    // TODO: reuse group codes.
-    if (current.battle && group.battles) {
-      const mode = current.battle.mode;
-      if (mode === group.battles[0].mode) {
-        switch (mode) {
-          case "VnNNb2RlLTE=":
-          case "VnNNb2RlLTY=":
-          case "VnNNb2RlLTc=":
-            if (
-              Math.floor(current.battle.time / 7200000) ===
-              Math.floor(group.battles[0].time / 7200000)
-            ) {
-              return true;
-            }
-            break;
-          case "VnNNb2RlLTI=":
-          case "VnNNb2RlLTUx":
-          case "VnNNb2RlLTM=":
-          case "VnNNb2RlLTQ=":
-            if (
-              Math.floor(current.battle.time / 7200000) ===
-                Math.floor(group.battles[0].time / 7200000) ||
-              (current.battle.rule === group.battles[0].rule &&
-                Math.floor(current.battle.time / 7200000) ===
-                  Math.floor((group.battles[0].time - 2 * 60 * 1000) / 7200000))
-            ) {
-              return true;
-            }
-            break;
-          case "VnNNb2RlLTg=":
-            if (
-              Math.floor(current.battle.time / 86400000) ===
-                Math.floor(group.battles[0].time / 86400000) ||
-              Math.floor(current.battle.time / 86400000) ===
-                Math.floor((group.battles[0].time - 2 * 60 * 1000) / 86400000)
-            ) {
-              return true;
-            }
-            break;
-          case "VnNNb2RlLTU=":
-          default:
-            return true;
-        }
-      }
-    }
-    if (current.coop && group.coops) {
-      if (
-        current.coop.rule === group.coops[0].rule &&
-        current.coop.stage === group.coops[0].stage &&
-        current.coop.suppliedWeapons.join() === group.coops[0].suppliedWeapons.join() &&
-        (Math.ceil(current.coop.time / 7200000) - Math.floor(group.coops[0].time / 7200000) <= 24 ||
-          Math.ceil(current.coop.time / 7200000) -
-            Math.floor((group.coops[0].time - 2 * 60 * 1000) / 7200000) <=
-            24)
-      ) {
-        return true;
-      }
-    }
-    return false;
-  };
-
   const groups = useMemo(() => {
-    const groups: StatsGroup[] = [];
+    const groups: Brief[][] = [];
     if (!props.briefs) {
       return groups;
     }
-    let group: StatsGroup = {};
-    for (const stat of props.briefs) {
-      if (canGroup(stat, group)) {
-        if (stat.battle) {
-          group.battles!.push(stat.battle);
+    for (const brief of props.briefs) {
+      if (brief.battle) {
+        if (groups.length === 0 || !canGroupBattle(brief.battle, groups[groups.length - 1])) {
+          groups.push([brief]);
         } else {
-          group.coops!.push(stat.coop!);
+          groups[groups.length - 1].push(brief);
         }
       } else {
-        if (group.battles || group.coops) {
-          groups.push(group);
-        }
-        if (stat.battle) {
-          group = { battles: [stat.battle] };
+        if (groups.length === 0 || !canGroupCoop(brief.coop!, groups[groups.length - 1])) {
+          groups.push([brief]);
         } else {
-          group = { coops: [stat.coop!] };
+          groups[groups.length - 1].push(brief);
         }
       }
-    }
-    if (group.battles || group.coops) {
-      groups.push(group);
     }
     return groups;
   }, [props.briefs]);
@@ -166,35 +92,31 @@ const RotationsView = (props: RotationViewProps) => {
     setDimension(event.nativeEvent.selectedSegmentIndex);
   };
 
-  const onPress = useCallback((group: StatsGroup) => {
-    if (group.battles) {
-      setGroup(group.battles.map((battle) => ({ battle })));
-    } else {
-      setGroup(group.coops!.map((coop) => ({ coop })));
-    }
+  const onPress = useCallback((group: Brief[]) => {
+    setGroup(group);
     setDisplayGroup(true);
   }, []);
 
-  const renderItem = (result: ListRenderItemInfo<StatsGroup>) => {
-    if (result.item.battles) {
+  const renderItem = (result: ListRenderItemInfo<Brief[]>) => {
+    if (result.item[0].battle) {
       const stageMap = new Map<string, number>();
-      for (const battle of result.item.battles) {
-        if (!stageMap.has(battle.stage)) {
-          stageMap.set(battle.stage, 0);
+      for (const brief of result.item) {
+        if (!stageMap.has(brief.battle!.stage)) {
+          stageMap.set(brief.battle!.stage, 0);
         }
-        stageMap.set(battle.stage, stageMap.get(battle.stage)! + 1);
+        stageMap.set(brief.battle!.stage, stageMap.get(brief.battle!.stage)! + 1);
       }
       return (
         <VStack style={ViewStyles.px4}>
           <BattleRotationButton
-            stats={result.item}
-            color={getVsModeColor(result.item.battles[0].mode)!}
+            group={result.item}
+            color={getVsModeColor(result.item[0].battle!.mode)!}
             first={result.index === 0}
             last={result.index === groups.length - 1}
-            rule={t(result.item.battles[0].rule)}
+            rule={t(result.item[0].battle.rule)}
             time={formatGroupPeriod(
-              result.item.battles[result.item.battles.length - 1].time,
-              result.item.battles[0].time
+              result.item[result.item.length - 1].battle!.time,
+              result.item[0].battle!.time
             )}
             stages={[...stageMap.entries()]
               .sort((a, b) => b[1] - a[1])
@@ -205,20 +127,30 @@ const RotationsView = (props: RotationViewProps) => {
         </VStack>
       );
     }
+    const stageMap = new Map<string, number>();
+    for (const brief of result.item) {
+      if (!stageMap.has(brief.coop!.stage)) {
+        stageMap.set(brief.coop!.stage, 0);
+      }
+      stageMap.set(brief.coop!.stage, stageMap.get(brief.coop!.stage)! + 1);
+    }
     return (
       <VStack style={ViewStyles.px4}>
         <CoopRotationButton
-          stats={result.item}
-          color={getCoopRuleColor(result.item.coops![0].rule)!}
+          group={result.item}
+          color={getCoopRuleColor(result.item[0].coop!.rule)!}
           first={result.index === 0}
           last={result.index === groups.length - 1}
-          rule={t(result.item.coops![0].rule)}
+          rule={t(result.item[0].coop!.rule)}
           time={formatGroupPeriod(
-            result.item.coops![result.item.coops!.length - 1].time,
-            result.item.coops![0].time
+            result.item[result.item.length - 1].coop!.time,
+            result.item[0].coop!.time
           )}
-          stage={t(result.item.coops![0].stage)}
-          weapons={result.item.coops![0].suppliedWeapons.map((weapon) => {
+          stage={[...stageMap.entries()]
+            .sort((a, b) => b[1] - a[1])
+            .map((stages) => t(stages[0]))
+            .join(" / ")}
+          weapons={result.item[0].coop!.suppliedWeapons.map((weapon) => {
             if (unknownList.images[weapon]) {
               return getImageCacheSource(
                 `https://splatoon3.ink/assets/splatnet/v2/ui_img/${weapon}_0.png`
@@ -246,7 +178,7 @@ const RotationsView = (props: RotationViewProps) => {
         isVisible={rotations}
         data={groups}
         keyExtractor={(group) =>
-          group.battles ? group.battles[0].time.toString() : group.coops![0].time.toString()
+          group[0].battle ? group[0].battle.time.toString() : group[0].coop!.time.toString()
         }
         renderItem={renderItem}
         estimatedItemSize={64}
