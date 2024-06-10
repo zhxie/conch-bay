@@ -104,10 +104,10 @@ import * as Database from "../utils/database";
 import {
   AsyncStorageKey,
   Key,
-  useBooleanMmvk,
+  useBooleanMmkv,
   useMmkv,
-  useNumberMmvk,
-  useStringMmvk,
+  useNumberMmkv,
+  useStringMmkv,
 } from "../utils/mmkv";
 import { ok, sleep } from "../utils/promise";
 import { Brief } from "../utils/stats";
@@ -192,47 +192,47 @@ const MainView = () => {
   const [acknowledgments, setAcknowledgments] = useState(false);
   const [fault, setFault] = useState<Error>();
 
-  const [sessionToken, setSessionToken, clearSessionToken, sessionTokenReady] = useStringMmvk(
+  const [sessionToken, setSessionToken, clearSessionToken, sessionTokenReady] = useStringMmkv(
     Key.SessionToken
   );
   const [webServiceToken, setWebServiceToken, clearWebServiceToken, webServiceTokenReady] =
     useMmkv<WebServiceToken>(Key.WebServiceToken);
-  const [bulletToken, setBulletToken, clearBulletToken, bulletTokenReady] = useStringMmvk(
+  const [bulletToken, setBulletToken, clearBulletToken, bulletTokenReady] = useStringMmkv(
     Key.BulletToken
   );
-  const [language, setLanguage, clearLanguage, languageReady] = useStringMmvk(
+  const [language, setLanguage, clearLanguage, languageReady] = useStringMmkv(
     Key.Language,
     t("lang")
   );
-  const [region, setRegion, clearRegion, regionReady] = useStringMmvk(Key.Region, t("region"));
+  const [region, setRegion, clearRegion, regionReady] = useStringMmkv(Key.Region, t("region"));
 
-  const [icon, setIcon, clearIcon] = useStringMmvk(Key.Icon);
-  const [level, setLevel, clearLevel] = useStringMmvk(Key.Level);
-  const [rank, setRank, clearRank] = useStringMmvk(Key.Rank);
-  const [splatZonesXPower, setSplatZonesXPower, clearSplatZonesXPower] = useStringMmvk(
+  const [icon, setIcon, clearIcon] = useStringMmkv(Key.Icon);
+  const [level, setLevel, clearLevel] = useStringMmkv(Key.Level);
+  const [rank, setRank, clearRank] = useStringMmkv(Key.Rank);
+  const [splatZonesXPower, setSplatZonesXPower, clearSplatZonesXPower] = useStringMmkv(
     Key.SplatZonesXPower
   );
-  const [towerControlXPower, setTowerControlXPower, clearTowerControlXPower] = useStringMmvk(
+  const [towerControlXPower, setTowerControlXPower, clearTowerControlXPower] = useStringMmkv(
     Key.TowerControlXPower
   );
-  const [rainmakerXPower, setRainmakerXPower, clearRainmakerXPower] = useStringMmvk(
+  const [rainmakerXPower, setRainmakerXPower, clearRainmakerXPower] = useStringMmkv(
     Key.RainmakerXPower
   );
-  const [clamBlitzXPower, setClamBlitzXPower, clearClamBlitzXPower] = useStringMmvk(
+  const [clamBlitzXPower, setClamBlitzXPower, clearClamBlitzXPower] = useStringMmkv(
     Key.ClamBlitzXPower
   );
-  const [grade, setGrade, clearGrade] = useStringMmvk(Key.Grade);
-  const [playedTime, setPlayedTime, clearPlayedTime] = useNumberMmvk(Key.PlayedTime);
+  const [grade, setGrade, clearGrade] = useStringMmkv(Key.Grade);
+  const [playedTime, setPlayedTime, clearPlayedTime] = useNumberMmkv(Key.PlayedTime);
 
   const [filter, setFilter, clearFilter, filterReady] = useMmkv<Database.FilterProps>(Key.Filter);
   const filterRef = useRef(filter);
-  const [backgroundRefresh, setBackgroundRefresh, clearBackgroundRefresh] = useBooleanMmvk(
+  const [backgroundRefresh, setBackgroundRefresh, clearBackgroundRefresh] = useBooleanMmkv(
     Key.BackgroundRefresh
   );
   const [salmonRunFriendlyMode, setSalmonRunFriendlyMode, clearSalmonRunFriendlyMode] =
-    useBooleanMmvk(Key.SalmonRunFriendlyMode);
-  const [autoRefresh, setAutoRefresh, clearAutoRefresh] = useBooleanMmvk(Key.AutoRefresh, false);
-  const [migrated, setMigrated, , migratedReady] = useBooleanMmvk(Key.Migrated, false);
+    useBooleanMmkv(Key.SalmonRunFriendlyMode);
+  const [autoRefresh, setAutoRefresh, clearAutoRefresh] = useBooleanMmkv(Key.AutoRefresh, false);
+  const [migrated, setMigrated, , migratedReady] = useBooleanMmkv(Key.Migrated, false);
 
   const [apiUpdated, setApiUpdated] = useState(false);
   const [schedules, setSchedules] = useState<Schedules>();

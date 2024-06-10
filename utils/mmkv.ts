@@ -37,7 +37,7 @@ const storage = new MMKV();
 
 type UseMmkv<T> = [T, (value: T) => void, () => void, boolean];
 
-export const useStringMmvk = (key: Key, initialValue?: string): UseMmkv<string> => {
+export const useStringMmkv = (key: Key, initialValue?: string): UseMmkv<string> => {
   const [data, setData] = useState(initialValue || "");
   const [ready, setReady] = useState(false);
 
@@ -62,7 +62,7 @@ export const useStringMmvk = (key: Key, initialValue?: string): UseMmkv<string> 
   return [data, setNewData, clearData, ready];
 };
 
-export const useNumberMmvk = (key: Key, initialValue?: number): UseMmkv<number> => {
+export const useNumberMmkv = (key: Key, initialValue?: number): UseMmkv<number> => {
   const [data, setData] = useState(initialValue || 0);
   const [ready, setReady] = useState(false);
 
@@ -87,7 +87,7 @@ export const useNumberMmvk = (key: Key, initialValue?: number): UseMmkv<number> 
   return [data, setNewData, clearData, ready];
 };
 
-export const useBooleanMmvk = (key: Key, initialValue?: boolean): UseMmkv<boolean> => {
+export const useBooleanMmkv = (key: Key, initialValue?: boolean): UseMmkv<boolean> => {
   const [data, setData] = useState(initialValue || false);
   const [ready, setReady] = useState(false);
 
