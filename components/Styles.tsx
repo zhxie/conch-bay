@@ -127,7 +127,7 @@ export const ViewStyles = StyleSheet.create({
     bottom: 0,
   },
   modal2: {
-    maxHeight: 622,
+    maxHeight: 672,
     width: "100%",
     position: "absolute",
     bottom: 0,
