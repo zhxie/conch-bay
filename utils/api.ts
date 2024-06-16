@@ -70,8 +70,9 @@ export const fetchXRankings = async (id: string) => {
   return json.length > 0;
 };
 
-let NSO_VERSION = versions.NSO_VERSION;
 let SPLATNET_VERSION = versions.SPLATNET_VERSION;
+let IMINK_F_API_NSO_VERSION: string | undefined;
+let NXAPI_ZNCA_API_NSO_VERSION: string | undefined;
 
 export interface WebServiceToken {
   accessToken: string;
@@ -79,17 +80,6 @@ export interface WebServiceToken {
   language: string;
 }
 
-export const updateNsoVersion = async () => {
-  // HACK: use jsDelivr to avoid any network issue in China Mainland.
-  const res = await axios.get(
-    "https://cdn.jsdelivr.net/gh/nintendoapis/nintendo-app-versions/data/coral-google-play.json",
-    {
-      timeout: AXIOS_TIMEOUT,
-    }
-  );
-
-  NSO_VERSION = res.data["version"];
-};
 export const updateSplatnetVersion = async () => {
   // HACK: use jsDelivr to avoid any network issue in China Mainland.
   const res = await axios.get(
@@ -100,6 +90,15 @@ export const updateSplatnetVersion = async () => {
   SPLATNET_VERSION = res.data["web_app_ver"];
 };
 const callIminkFApi = async (step: number, idToken: string, naId: string, coralUserId?: string) => {
+  if (!IMINK_F_API_NSO_VERSION) {
+    const res = await axios.get("https://api.imink.app/config", {
+      headers: {
+        "User-Agent": USER_AGENT,
+      },
+      timeout: AXIOS_TOKEN_TIMEOUT,
+    });
+    IMINK_F_API_NSO_VERSION = res.data["nso_version"];
+  }
   const body = {
     hash_method: step,
     token: idToken,
@@ -119,7 +118,12 @@ const callIminkFApi = async (step: number, idToken: string, naId: string, coralU
     // { error: true; reason: string; }
     throw new Error(`/f: ${res.statusText}: ${JSON.stringify(res.data)}`);
   }
-  return { f, requestId, timestamp } as { f: string; requestId: string; timestamp: string };
+  return { f, requestId, timestamp, version: IMINK_F_API_NSO_VERSION } as {
+    f: string;
+    requestId: string;
+    timestamp: string;
+    version: string;
+  };
 };
 const callNxapiZncaApi = async (
   step: number,
@@ -127,6 +131,15 @@ const callNxapiZncaApi = async (
   naId: string,
   coralUserId?: string
 ) => {
+  if (!NXAPI_ZNCA_API_NSO_VERSION) {
+    const res = await axios.get("https://nxapi-znca-api.fancy.org.uk/api/znca/config", {
+      headers: {
+        "User-Agent": USER_AGENT,
+      },
+      timeout: AXIOS_TOKEN_TIMEOUT,
+    });
+    NXAPI_ZNCA_API_NSO_VERSION = res.data["nso_version"];
+  }
   const body = {
     hash_method: step,
     token: idToken,
@@ -140,7 +153,7 @@ const callNxapiZncaApi = async (
       "Content-Type": "application/json; charset=utf-8",
       "User-Agent": USER_AGENT,
       "X-znca-Platform": "Android",
-      "X-znca-Version": NSO_VERSION,
+      "X-znca-Version": NXAPI_ZNCA_API_NSO_VERSION,
     },
     timeout: AXIOS_TOKEN_TIMEOUT,
   });
@@ -151,7 +164,12 @@ const callNxapiZncaApi = async (
     // { error: string; error_message: string; errors: { error: string; error_message: string }[]; warnings: { error: string; error_message: string }[]; }
     throw new Error(`/f: ${res.statusText}: ${JSON.stringify(res.data)}`);
   }
-  return { f, requestId, timestamp } as { f: string; requestId: string; timestamp: string };
+  return { f, requestId, timestamp, version: NXAPI_ZNCA_API_NSO_VERSION } as {
+    f: string;
+    requestId: string;
+    timestamp: string;
+    version: string;
+  };
 };
 export const generateLogIn = async () => {
   const state = encode64Url(encode64(Crypto.getRandomBytes(36)));
@@ -262,7 +280,7 @@ export const getWebServiceToken = async (sessionToken: string) => {
     try {
       // Get access token.
       const json = await callApi(1, idToken, id);
-      const { f, requestId, timestamp } = json;
+      const { f, requestId, timestamp, version } = json;
       const body3 = {
         parameter: {
           f: f,
@@ -282,9 +300,9 @@ export const getWebServiceToken = async (sessionToken: string) => {
             "Accept-Encoding": "gzip",
             "Content-Length": JSON.stringify(body3).length,
             "Content-Type": "application/json; charset=utf-8",
-            "User-Agent": `com.nintendo.znca/${NSO_VERSION}(Android/11)`,
+            "User-Agent": `com.nintendo.znca/${version}(Android/11)`,
             "X-Platform": "Android",
-            "X-ProductVersion": NSO_VERSION,
+            "X-ProductVersion": version,
           },
           timeout: AXIOS_TOKEN_TIMEOUT,
         }
@@ -317,9 +335,9 @@ export const getWebServiceToken = async (sessionToken: string) => {
             Authorization: `Bearer ${idToken2}`,
             "Content-Length": JSON.stringify(body4).length,
             "Content-Type": "application/json; charset=utf-8",
-            "User-Agent": `com.nintendo.znca/${NSO_VERSION}(Android/11)`,
+            "User-Agent": `com.nintendo.znca/${version}(Android/11)`,
             "X-Platform": "Android",
-            "X-ProductVersion": NSO_VERSION,
+            "X-ProductVersion": version,
           },
           timeout: AXIOS_TOKEN_TIMEOUT,
         }

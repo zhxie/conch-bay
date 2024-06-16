@@ -10,7 +10,6 @@ import {
   fetchVsHistoryDetail,
   getBulletToken,
   getWebServiceToken,
-  updateNsoVersion,
   updateSplatnetVersion,
 } from "./api";
 import { decode64String, encode64String } from "./codec";
@@ -26,7 +25,7 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
   }
   try {
     // Update versions.
-    await ok(Promise.all([updateNsoVersion(), updateSplatnetVersion()]));
+    await ok(updateSplatnetVersion());
 
     // Always generate new bullet token.
     const storage = new MMKV();

@@ -90,7 +90,6 @@ import {
   getBulletToken,
   getSessionToken,
   getWebServiceToken,
-  updateNsoVersion,
   updateSplatnetVersion,
   WebServiceToken,
 } from "../utils/api";
@@ -478,7 +477,7 @@ const MainView = () => {
 
     // Update versions.
     if (!apiUpdated) {
-      await Promise.all([updateNsoVersion(), updateSplatnetVersion()])
+      await updateSplatnetVersion()
         .then(() => {
           setApiUpdated(true);
         })
@@ -1138,7 +1137,7 @@ const MainView = () => {
   const onGetWebServiceToken = async () => {
     // Update versions.
     if (!apiUpdated) {
-      await Promise.all([updateNsoVersion(), updateSplatnetVersion()])
+      await updateSplatnetVersion()
         .then(() => {
           setApiUpdated(true);
         })
