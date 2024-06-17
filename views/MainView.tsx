@@ -1602,6 +1602,9 @@ const MainView = () => {
       Linking.openURL("mailto:conch-bay@outlook.com");
     }
   };
+  const onJoinDiscordServerPress = () => {
+    Linking.openURL("https://discord.gg/JfZJ6xzRZC");
+  };
   const onJoinTheBetaVersionPress = () => {
     WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay/wiki/Join-the-Beta-Version");
   };
@@ -2241,6 +2244,12 @@ const MainView = () => {
               </Button>
               <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onSendAMailPress}>
                 <Marquee style={theme.reverseTextStyle}>{t("send_a_mail")}</Marquee>
+              </Button>
+              <Button
+                style={[ViewStyles.mb2, ViewStyles.accent]}
+                onPress={onJoinDiscordServerPress}
+              >
+                <Marquee style={theme.reverseTextStyle}>{t("join_discord_server")}</Marquee>
               </Button>
               <Button style={ViewStyles.accent} onPress={onJoinTheBetaVersionPress}>
                 <Marquee style={theme.reverseTextStyle}>{t("join_the_beta_version")}</Marquee>

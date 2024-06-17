@@ -95,6 +95,7 @@ const ja = {
     "ホラガイベイの使用中にエラーが発生した場合、またはアドバイスがある場合は、お気軽にフィードバックをお寄せください。",
   create_a_github_issue: "GitHub Issueを作成",
   send_a_mail: "メールを送る",
+  join_discord_server: "Discordサーバーに参加",
   join_the_beta_version: "ベータ版に参加",
   database_notice:
     "データベースを消去したい場合は、データーベースを消去を長押ししてください。続行する前に、バックアップを完了してください。",
