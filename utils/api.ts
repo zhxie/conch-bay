@@ -116,7 +116,7 @@ const callIminkFApi = async (step: number, idToken: string, naId: string, coralU
   const timestamp = res.data["timestamp"];
   if (!f || !requestId || !timestamp) {
     // { error: true; reason: string; }
-    throw new Error(`/f: ${res.statusText}: ${JSON.stringify(res.data)}`);
+    throw new Error(`/f: ${res.status}: ${JSON.stringify(res.data)}`);
   }
   return { f, requestId, timestamp, version: IMINK_F_API_NSO_VERSION } as {
     f: string;
@@ -162,7 +162,7 @@ const callNxapiZncaApi = async (
   const timestamp = res.data["timestamp"];
   if (!f || !requestId || !timestamp) {
     // { error: string; error_message: string; errors: { error: string; error_message: string }[]; warnings: { error: string; error_message: string }[]; }
-    throw new Error(`/f: ${res.statusText}: ${JSON.stringify(res.data)}`);
+    throw new Error(`/f: ${res.status}: ${JSON.stringify(res.data)}`);
   }
   return { f, requestId, timestamp, version: NXAPI_ZNCA_API_NSO_VERSION } as {
     f: string;
@@ -225,7 +225,7 @@ export const getSessionToken = async (url: string, cv: string) => {
   const sessionToken = res.data["session_token"];
   if (!sessionToken) {
     // { error: string; error_description: string; }
-    throw new Error(`/api/session_token: ${res.statusText}: ${JSON.stringify(res.data)}`);
+    throw new Error(`/api/session_token: ${res.status}: ${JSON.stringify(res.data)}`);
   }
   return sessionToken as string;
 };
@@ -251,7 +251,7 @@ export const getWebServiceToken = async (sessionToken: string) => {
   const { access_token: accessToken, id_token: idToken } = res.data;
   if (!accessToken || !idToken) {
     // { error: string; error_description: string; }
-    throw new Error(`/api/token: ${res.statusText}: ${JSON.stringify(res.data)}`);
+    throw new Error(`/api/token: ${res.status}: ${JSON.stringify(res.data)}`);
   }
 
   // Get user info.
@@ -271,7 +271,7 @@ export const getWebServiceToken = async (sessionToken: string) => {
   const { birthday, language, country, id } = res2.data;
   if (!birthday || !language || !country || !id) {
     // { type: string; detail: string; instance: string; title: string; errorCode: string; status: number; }
-    throw new Error(`/users/me: ${res2.statusText}: ${JSON.stringify(res2.data)}`);
+    throw new Error(`/users/me: ${res2.status}: ${JSON.stringify(res2.data)}`);
   }
 
   const callApis = [callIminkFApi, callNxapiZncaApi];
@@ -311,7 +311,7 @@ export const getWebServiceToken = async (sessionToken: string) => {
       const coralUserId = res3.data["result"]?.["user"]?.["id"];
       if (!idToken2 || !coralUserId) {
         // { status: number; errorMessage: string; correlationId: string; }
-        throw new Error(`/Account/Login: ${res3.statusText}: ${JSON.stringify(res3.data)}`);
+        throw new Error(`/Account/Login: ${res3.status}: ${JSON.stringify(res3.data)}`);
       }
 
       // Get web service token.
@@ -344,9 +344,7 @@ export const getWebServiceToken = async (sessionToken: string) => {
       );
       if (!res4.data["result"]?.["accessToken"]) {
         // { status: number; errorMessage: string; correlationId: string; }
-        throw new Error(
-          `/Game/GetWebServiceToken: ${res4.statusText}: ${JSON.stringify(res4.data)}`
-        );
+        throw new Error(`/Game/GetWebServiceToken: ${res4.status}: ${JSON.stringify(res4.data)}`);
       }
       const accessToken = res4.data["result"]["accessToken"];
       return { accessToken, country, language };
@@ -354,12 +352,10 @@ export const getWebServiceToken = async (sessionToken: string) => {
       // Throw the first error which would be an error using imink f API.
       if (error === undefined) {
         error = e;
-      } else {
-        throw error;
       }
     }
   }
-  throw new Error("unreachable");
+  throw error;
 };
 export const getBulletToken = async (webServiceToken: WebServiceToken, language: string) => {
   await Cookies.clearAll();
@@ -390,7 +386,7 @@ export const getBulletToken = async (webServiceToken: WebServiceToken, language:
     }
   );
   if (res.status >= 400) {
-    throw new Error(`/api/bullet_tokens: ${res.statusText}`);
+    throw new Error(`/api/bullet_tokens: ${res.status}`);
   }
   return res.data["bulletToken"] as string;
 };
@@ -433,7 +429,7 @@ const fetchGraphQl = async <T>(
     },
   });
   if (res.status >= 400) {
-    throw new Error(`/api/graphql: ${res.statusText}`);
+    throw new Error(`/api/graphql: ${res.status}`);
   }
   return res;
 };
