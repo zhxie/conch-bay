@@ -116,6 +116,8 @@ const ja = {
   license: "ライセンス",
   oss_licenses: "オープンソースソフトウェアライセンス",
   source_code_repository: "ソースコードリポジトリ",
+  welcome_tip:
+    "ホラガイベイへようこそ。ホラガイベイの使用中にエラーが発生した場合、またはアドバイスがある場合は、お気軽にフィードバックをお寄せください。ホームページ下のサポートにあるGitHub Issue、メール、またはDiscordサーバーを通じて、いつでもご連絡いただけます。",
   auto_refresh_enabled: "自動更新が有効になりました",
   auto_refresh_disabled: "自動更新が無効になりました",
   notification_notice:

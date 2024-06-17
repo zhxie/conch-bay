@@ -31,6 +31,11 @@ export enum Key {
   SalmonRunFriendlyMode = "salmonRunFriendlyMode",
   AutoRefresh = "autoRefresh",
   Migrated = "migrated",
+  Tips = "tips",
+}
+
+export enum Tip {
+  Welcome = "welcome",
 }
 
 const storage = new MMKV();

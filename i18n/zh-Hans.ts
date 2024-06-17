@@ -110,6 +110,8 @@ const zhHans = {
   license: "许可",
   oss_licenses: "开源软件许可",
   source_code_repository: "源代码库",
+  welcome_tip:
+    "欢迎使用法螺湾。如果您在使用法螺湾时遇到任何问题或有任何建议，请随时分享您的反馈。您可以通过主页下方支持中的GitHub Issue、邮件或Discord服务器与我们联系。",
   auto_refresh_enabled: "已启用自动刷新",
   auto_refresh_disabled: "已停用自动刷新",
   notification_notice:

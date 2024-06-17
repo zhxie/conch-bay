@@ -103,6 +103,7 @@ import * as Database from "../utils/database";
 import {
   AsyncStorageKey,
   Key,
+  Tip,
   useBooleanMmkv,
   useMmkv,
   useNumberMmkv,
@@ -189,6 +190,7 @@ const MainView = () => {
   const [debug, setDebug] = useState(false);
   const [notification, setNotification] = useState(false);
   const [acknowledgments, setAcknowledgments] = useState(false);
+  const [welcomeTip, setWelcomeTip] = useState(false);
   const [fault, setFault] = useState<Error>();
 
   const [sessionToken, setSessionToken, clearSessionToken, sessionTokenReady] = useStringMmkv(
@@ -232,6 +234,7 @@ const MainView = () => {
     useBooleanMmkv(Key.SalmonRunFriendlyMode);
   const [autoRefresh, setAutoRefresh, clearAutoRefresh] = useBooleanMmkv(Key.AutoRefresh, false);
   const [migrated, setMigrated, , migratedReady] = useBooleanMmkv(Key.Migrated, false);
+  const [tips, setTips, , tipsReady] = useMmkv<string[]>(Key.Tips);
 
   const [apiUpdated, setApiUpdated] = useState(false);
   const [schedules, setSchedules] = useState<Schedules>();
@@ -369,6 +372,17 @@ const MainView = () => {
       });
     }
   }, [ready]);
+  useEffect(() => {
+    if (ready && tipsReady) {
+      if (!tips?.includes(Tip.Welcome)) {
+        setWelcomeTip(true);
+        const newTips = tips ?? [];
+        newTips.push(Tip.Welcome);
+        setTips(newTips);
+        return;
+      }
+    }
+  }, [ready, tipsReady]);
   useEffect(() => {
     if (ready) {
       // HACK: avoid animation racing.
@@ -1697,6 +1711,9 @@ const MainView = () => {
   const onSourceCodeRepositoryPress = () => {
     WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay");
   };
+  const onWelcomeTipClose = () => {
+    setWelcomeTip(false);
+  };
 
   return (
     <SalmonRunSwitcherContext.Provider value={{ salmonRun: salmonRunFriendlyMode }}>
@@ -2389,6 +2406,17 @@ const MainView = () => {
               </Text>
             </VStack>
           </VStack>
+        </Modal>
+        <Modal isVisible={welcomeTip} onClose={onWelcomeTipClose} style={ViewStyles.modal1}>
+          <Dialog icon="smile" text={t("welcome_tip")}>
+            <Button
+              style={ViewStyles.accent}
+              textStyle={theme.reverseTextStyle}
+              onPress={onJoinDiscordServerPress}
+            >
+              <Marquee style={theme.reverseTextStyle}>{t("join_discord_server")}</Marquee>
+            </Button>
+          </Dialog>
         </Modal>
       </VStack>
     </SalmonRunSwitcherContext.Provider>
