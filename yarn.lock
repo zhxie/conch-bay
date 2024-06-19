@@ -1362,6 +1362,11 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
+"@lodev09/react-native-true-sheet@^0.12.1":
+  version "0.12.1"
+  resolved "https://registry.yarnpkg.com/@lodev09/react-native-true-sheet/-/react-native-true-sheet-0.12.1.tgz#a38ca6d76eb76717e69372438df9d6329ab7b460"
+  integrity sha512-UQYM02tD9LgP6wROODbUrsANvB8W6LjePPV2FHlhqMhuHNHI6ooxj/Vs33YN/e5fnttVYGubErXtyWp6NCThpA==
+
 "@mmomtchev/expo-android-localized-app-name@^1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@mmomtchev/expo-android-localized-app-name/-/expo-android-localized-app-name-1.0.1.tgz#ce5e3b6d9d651c4badd88098762b72c017d30513"

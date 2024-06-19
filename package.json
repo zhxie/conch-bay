@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@hacceuee/s3-pixel-icons": "^2.4.0",
+    "@lodev09/react-native-true-sheet": "^0.12.1",
     "@react-native-async-storage/async-storage": "1.23.1",
     "@react-native-community/hooks": "^3.0.0",
     "@react-native-cookies/cookies": "^6.2.1",
