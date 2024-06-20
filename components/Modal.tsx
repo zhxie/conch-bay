@@ -53,11 +53,7 @@ const ModalBase = (props: ModalBaseProps) => {
       scrollOffset={props.scrollOffset}
       scrollOffsetMax={props.scrollOffsetMax}
       onMoveShouldSetResponderCapture={props.scrollOffset === 0 ? () => true : undefined}
-      style={[
-        props.fullscreen && { justifyContent: "flex-end", margin: 0 },
-        // ViewStyles.c,
-        props.style,
-      ]}
+      style={[props.fullscreen && { margin: 0 }, ViewStyles.c, props.style]}
       onModalHide={props.onModalHide}
     >
       {props.children}
