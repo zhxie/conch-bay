@@ -3,7 +3,9 @@ import {
   LayoutChangeEvent,
   NativeScrollEvent,
   NativeSyntheticEvent,
+  Platform,
   ScrollView,
+  StatusBar,
   StyleProp,
   StyleSheet,
   View,
@@ -27,9 +29,13 @@ interface ModalBaseProps {
 }
 
 const ModalBase = (props: ModalBaseProps) => {
+  const { height } = useWindowDimensions();
+
   return (
     <ReactNativeModal
       isVisible={props.isVisible}
+      // Fix react-native-modal/react-native-modal#571.
+      deviceHeight={height + (Platform.OS === "android" ? StatusBar.currentHeight ?? 0 : 0)}
       backdropOpacity={0.5}
       onBackdropPress={props.onClose}
       onBackButtonPress={props.onClose}
