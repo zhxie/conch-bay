@@ -85,7 +85,7 @@ const Modal = (props: ModalProps) => {
 
   const ref = useRef<ScrollView>(null);
 
-  const scrollTo = (p: any) => {
+  const scrollTo = (p: { animated: boolean; y: number }) => {
     ref.current?.scrollTo(p);
   };
   const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -152,16 +152,32 @@ const FlashModal = <T,>(props: FlashModalProps<T>) => {
   const dimensions = useWindowDimensions();
   const insets = useSafeAreaInsets();
 
-  const onScrollEndDrag = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    if (!!props.onClose && event.nativeEvent.contentOffset.y < -80) {
-      props.onClose();
-    }
+  const [scrollHeight, setScrollHeight] = useState(0);
+  const [contentHeight, setContentHeight] = useState(0);
+  const [offset, setOffset] = useState(0);
+
+  const ref = useRef<FlashList<any>>(null);
+
+  const scrollTo = (p: { animated: boolean; y: number }) => {
+    ref.current?.scrollToOffset({ animated: p.animated, offset: p.y });
+  };
+  const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    setOffset(event.nativeEvent.contentOffset.y);
+  };
+  const onLayout = (event: LayoutChangeEvent) => {
+    setScrollHeight(event.nativeEvent.layout.height);
+  };
+  const onContentSizeChange = (_width: number, height: number) => {
+    setContentHeight(height);
   };
 
   return (
     <ModalBase
-      fullscreen={dimensions.width <= MAX_WIDTH}
       isVisible={props.isVisible}
+      fullscreen={dimensions.width <= MAX_WIDTH}
+      scrollTo={scrollTo}
+      scrollOffset={offset}
+      scrollOffsetMax={contentHeight - scrollHeight}
       onClose={props.onClose}
       onModalHide={props.onModalHide}
     >
@@ -173,6 +189,7 @@ const FlashModal = <T,>(props: FlashModalProps<T>) => {
         ]}
       >
         <FlashList
+          ref={ref}
           showsHorizontalScrollIndicator={false}
           data={props.data}
           keyExtractor={props.keyExtractor}
@@ -191,7 +208,10 @@ const FlashModal = <T,>(props: FlashModalProps<T>) => {
               }}
             />
           }
-          onScrollEndDrag={onScrollEndDrag}
+          scrollEventThrottle={16}
+          onScroll={onScroll}
+          onLayout={onLayout}
+          onContentSizeChange={onContentSizeChange}
         />
       </VStack>
     </ModalBase>
