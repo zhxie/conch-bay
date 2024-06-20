@@ -1,4 +1,5 @@
 import { FlashList, ListRenderItem } from "@shopify/flash-list";
+import { useRef, useState } from "react";
 import {
   LayoutChangeEvent,
   NativeScrollEvent,
@@ -22,6 +23,9 @@ const MAX_WIDTH = 648;
 interface ModalBaseProps {
   isVisible: boolean;
   fullscreen?: boolean;
+  scrollTo?: (p: any) => void;
+  scrollOffset?: number;
+  scrollOffsetMax?: number;
   style?: StyleProp<ViewStyle>;
   onClose?: () => void;
   onModalHide?: () => void;
@@ -40,10 +44,19 @@ const ModalBase = (props: ModalBaseProps) => {
       onBackdropPress={props.onClose}
       onBackButtonPress={props.onClose}
       useNativeDriverForBackdrop
-      useNativeDriver
       hideModalContentWhileAnimating
       statusBarTranslucent
-      style={[props.fullscreen && { margin: 0 }, ViewStyles.c, props.style]}
+      propagateSwipe
+      swipeDirection="down"
+      onSwipeComplete={props.onClose}
+      scrollTo={props.scrollTo}
+      scrollOffset={props.scrollOffset}
+      scrollOffsetMax={props.scrollOffsetMax}
+      style={[
+        props.fullscreen && { justifyContent: "flex-end", margin: 0 },
+        // ViewStyles.c,
+        props.style,
+      ]}
       onModalHide={props.onModalHide}
     >
       {props.children}
@@ -66,23 +79,43 @@ const Modal = (props: ModalProps) => {
   const dimensions = useWindowDimensions();
   const insets = useSafeAreaInsets();
 
-  const onScrollEndDrag = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    if (!!props.onClose && event.nativeEvent.contentOffset.y < -80) {
-      props.onClose();
-    }
+  const [scrollHeight, setScrollHeight] = useState(0);
+  const [contentHeight, setContentHeight] = useState(0);
+  const [offset, setOffset] = useState(0);
+
+  const ref = useRef<ScrollView>(null);
+
+  const scrollTo = (p: any) => {
+    ref.current?.scrollTo(p);
+  };
+  const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    setOffset(event.nativeEvent.contentOffset.y);
+  };
+  const onLayout = (event: LayoutChangeEvent) => {
+    setScrollHeight(event.nativeEvent.layout.height);
+    props.onLayout?.(event);
+  };
+  const onContentSizeChange = (_width: number, height: number) => {
+    setContentHeight(height);
   };
 
   return (
     <ModalBase
       isVisible={props.isVisible}
       fullscreen={dimensions.width <= MAX_WIDTH}
+      scrollTo={scrollTo}
+      scrollOffset={offset}
+      scrollOffsetMax={contentHeight - scrollHeight}
       onClose={props.onClose}
       onModalHide={props.onModalHide}
     >
       <ScrollView
+        ref={ref}
         showsHorizontalScrollIndicator={false}
-        onScrollEndDrag={onScrollEndDrag}
-        onLayout={props.onLayout}
+        scrollEventThrottle={16}
+        onScroll={onScroll}
+        onLayout={onLayout}
+        onContentSizeChange={onContentSizeChange}
         style={[
           dimensions.width <= MAX_WIDTH ? styles.panel : styles.fullscreenPanel,
           theme.backgroundStyle,
