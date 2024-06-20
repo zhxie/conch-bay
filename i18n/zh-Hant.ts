@@ -88,6 +88,7 @@ const zhHant = {
   preload_resources: "預先載入資源",
   preloading_resources: "預先載入資源中",
   feedback_notice: "如果您在使用法螺灣時遇到任何問題或有任何建議，請隨時分享您的回饋。",
+  read_conch_bay_wiki: "閱讀法螺灣百科",
   create_a_github_issue: "創建GitHub Issue",
   send_a_mail: "傳送郵件",
   join_discord_server: "加入Discord伺服器",

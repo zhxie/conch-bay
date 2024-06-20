@@ -93,6 +93,7 @@ const ja = {
   preloading_resources: "リソースを読み込む中",
   feedback_notice:
     "ホラガイベイの使用中にエラーが発生した場合、またはアドバイスがある場合は、お気軽にフィードバックをお寄せください。",
+  read_conch_bay_wiki: "ホラガイベイ百科を読む",
   create_a_github_issue: "GitHub Issueを作成",
   send_a_mail: "メールを送る",
   join_discord_server: "Discordサーバーに参加",

@@ -91,6 +91,7 @@ const en = {
   preloading_resources: "Preloading Resources",
   feedback_notice:
     "If you encounter any problems using Conch Bay or have any advice, feel free to share your feedback.",
+  read_conch_bay_wiki: "Read Conch Bay Wiki",
   create_a_github_issue: "Create a GitHub Issue",
   send_a_mail: "Send a mail",
   join_discord_server: "Join Discord Server",

@@ -88,6 +88,7 @@ const zhHans = {
   preload_resources: "预加载资源",
   preloading_resources: "预加载资源中",
   feedback_notice: "如果您在使用法螺湾时遇到任何问题或有任何建议，请随时分享您的反馈。",
+  read_conch_bay_wiki: "阅读法螺湾百科",
   create_a_github_issue: "创建GitHub Issue",
   send_a_mail: "发送邮件",
   join_discord_server: "加入Discord服务器",

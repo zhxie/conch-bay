@@ -1598,6 +1598,9 @@ const MainView = () => {
     }
     setPreloadingResources(false);
   };
+  const onReadConchBayWikiPress = () => {
+    WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay/wiki");
+  };
   const onCreateAGithubIssuePress = () => {
     Linking.openURL("https://github.com/zhxie/conch-bay/issues/new");
   };
@@ -2253,6 +2256,9 @@ const MainView = () => {
               </Button>
             </DialogSection>
             <DialogSection text={t("feedback_notice")} style={ViewStyles.mb4}>
+              <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onReadConchBayWikiPress}>
+                <Marquee style={theme.reverseTextStyle}>{t("read_conch_bay_wiki")}</Marquee>
+              </Button>
               <Button
                 style={[ViewStyles.mb2, ViewStyles.accent]}
                 onPress={onCreateAGithubIssuePress}
@@ -2409,6 +2415,9 @@ const MainView = () => {
         </Modal>
         <Modal isVisible={welcomeTip} onClose={onWelcomeTipClose} style={ViewStyles.modal1}>
           <Dialog icon="smile" text={t("welcome_tip")}>
+            <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onReadConchBayWikiPress}>
+              <Marquee style={theme.reverseTextStyle}>{t("read_conch_bay_wiki")}</Marquee>
+            </Button>
             <Button
               style={ViewStyles.accent}
               textStyle={theme.reverseTextStyle}
