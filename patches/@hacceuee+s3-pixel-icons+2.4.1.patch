@@ -1,3 +1,4 @@
+# Fix unsupported plus mark in require.
 diff --git a/node_modules/@hacceuee/s3-pixel-icons/Weapons/Chargers/Z+F Splat Charger.png b/node_modules/@hacceuee/s3-pixel-icons/Weapons/Chargers/Z F Splat Charger.png
 similarity index 100%
 rename from node_modules/@hacceuee/s3-pixel-icons/Weapons/Chargers/Z+F Splat Charger.png
