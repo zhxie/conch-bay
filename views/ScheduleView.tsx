@@ -367,7 +367,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
     });
     setSchedules(true);
   };
-  const onDisplaySchedulesClose = () => {
+  const onSchedulesDismiss = () => {
     setSchedules(false);
   };
 
@@ -518,7 +518,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
         </SalmonRunSwitcher>
         {props.children}
       </HStack>
-      <Modal isVisible={schedules} onClose={onDisplaySchedulesClose} style={ViewStyles.modal1}>
+      <Modal isVisible={schedules} size="medium" onDismiss={onSchedulesDismiss}>
         <TitledList color={scheduleList?.color} title={scheduleList?.title}>
           {scheduleList?.schedules &&
             scheduleList.schedules

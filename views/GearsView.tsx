@@ -118,10 +118,8 @@ const GearsView = (props: GearsViewProps) => {
   const onSortChange = (event: NativeSyntheticEvent<NativeSegmentedControlIOSChangeEvent>) => {
     setSortIndex(event.nativeEvent.selectedSegmentIndex);
   };
-  const onClose = () => {
+  const onDismiss = () => {
     setDisplay(false);
-  };
-  const onModalHide = () => {
     setEquipments(undefined);
   };
 
@@ -154,10 +152,13 @@ const GearsView = (props: GearsViewProps) => {
       />
       <FlashModal
         isVisible={display}
+        size="medium"
+        noPadding
         data={gears}
         keyExtractor={(gear) => gear.name}
         renderItem={renderItem}
         estimatedItemSize={48}
+        estimatedHeight={72 + 48 * gears.length}
         ListHeaderComponent={
           <VStack style={ViewStyles.px4}>
             <SegmentedControl
@@ -174,10 +175,7 @@ const GearsView = (props: GearsViewProps) => {
             />
           </VStack>
         }
-        onClose={onClose}
-        onModalHide={onModalHide}
-        // HACK: fixed height should be provided to FlashList.
-        style={[ViewStyles.modal1, { height: 72 + 48 * gears.length, paddingHorizontal: 0 }]}
+        onDismiss={onDismiss}
       />
     </Center>
   );

@@ -88,8 +88,7 @@ interface StatsModalProps {
   dimension?: number;
   hideEmpty?: boolean;
   isVisible: boolean;
-  onClose: () => void;
-  onModalHide?: () => void;
+  onDismiss: () => void;
   children?: React.ReactNode;
   footer?: React.ReactNode;
 }
@@ -414,12 +413,7 @@ const StatsModal = (props: StatsModalProps) => {
   };
 
   return (
-    <Modal
-      isVisible={props.isVisible}
-      onClose={props.onClose}
-      onModalHide={props.onModalHide}
-      style={ViewStyles.modal1}
-    >
+    <Modal isVisible={props.isVisible} size="medium" onDismiss={props.onDismiss}>
       {props.children}
       <SegmentedControl
         values={[t("default"), t("appearance"), t("win_rate")]}
@@ -768,7 +762,7 @@ const StatsView = (props: StatsViewProps) => {
   const onStatsPress = () => {
     setDisplayStats(true);
   };
-  const onStatsClose = () => {
+  const onStatsDismiss = () => {
     setDisplayStats(false);
   };
   const onGroupChange = (event: NativeSyntheticEvent<NativeSegmentedControlIOSChangeEvent>) => {
@@ -787,7 +781,7 @@ const StatsView = (props: StatsViewProps) => {
         briefs={filtered}
         isVisible={displayStats}
         footer={<Notice title={t("stats_notice2")} />}
-        onClose={onStatsClose}
+        onDismiss={onStatsDismiss}
       >
         <SegmentedControl
           values={[t("all"), t("day"), t("week"), t("month"), t("season")]}

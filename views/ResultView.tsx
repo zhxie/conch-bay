@@ -145,7 +145,6 @@ const ResultView = (props: ResultViewProps) => {
   const [coopPlayer, setCoopPlayer] = useState<CoopPlayerResult>();
   const [displayCoopPlayer, setDisplayCoopPlayer] = useState(false);
   const willDisplayNext = useRef<Result>();
-  const willDisplayResult = useRef<boolean>(false);
   const [hidePlayerNames, setHidePlayerNames] = useState(false);
   const [group, setGroup] = useState<Brief[]>();
   const [displayGroup, setDisplayGroup] = useState(false);
@@ -499,19 +498,33 @@ const ResultView = (props: ResultViewProps) => {
     return result.join("-");
   };
 
-  const onDisplayResultClose = () => {
+  const displayNext = () => {
+    if (willDisplayNext.current !== undefined) {
+      if (willDisplayNext.current.battle) {
+        setResult({ battle: willDisplayNext.current.battle });
+        setDisplayBattle(true);
+      } else if (willDisplayNext.current.coop) {
+        setResult({ coop: willDisplayNext.current.coop });
+        setDisplayCoop(true);
+      }
+      willDisplayNext.current = undefined;
+    }
+  };
+  const onResultDismiss = () => {
     setDisplayResult(false);
   };
-  const onDisplayBattleClose = () => {
+  const onBattleDismiss = () => {
     setDisplayBattle(false);
+    displayNext();
   };
-  const onDisplayBattlePlayerClose = () => {
+  const onBattlePlayerDismiss = () => {
     setDisplayBattlePlayer(false);
   };
-  const onDisplayCoopClose = () => {
+  const onCoopDismiss = () => {
     setDisplayCoop(false);
+    displayNext();
   };
-  const onDisplayCoopPlayerClose = () => {
+  const onCoopPlayerDismiss = () => {
     setDisplayCoopPlayer(false);
   };
   const onShowNextResultPress = () => {
@@ -602,9 +615,7 @@ const ResultView = (props: ResultViewProps) => {
     });
   };
   const onShowRawResultPress = () => {
-    willDisplayResult.current = true;
-    setDisplayBattle(false);
-    setDisplayCoop(false);
+    setDisplayResult(true);
   };
   const onCopyRawValue = async (value: any) => {
     await Clipboard.setStringAsync(value.toString());
@@ -662,22 +673,7 @@ const ResultView = (props: ResultViewProps) => {
       `https://sendou.ink/analyzer?weapon=${weapon}&build=${abilities.join(",")}`
     );
   };
-  const onModalHide = () => {
-    if (willDisplayResult.current) {
-      setDisplayResult(true);
-      willDisplayResult.current = false;
-    } else if (willDisplayNext.current !== undefined) {
-      if (willDisplayNext.current.battle) {
-        setResult({ battle: willDisplayNext.current.battle });
-        setDisplayBattle(true);
-      } else if (willDisplayNext.current.coop) {
-        setResult({ coop: willDisplayNext.current.coop });
-        setDisplayCoop(true);
-      }
-      willDisplayNext.current = undefined;
-    }
-  };
-  const onDisplayGroupClose = () => {
+  const onGroupDismiss = () => {
     setDisplayGroup(false);
   };
   const onDimensionChange = (event: NativeSyntheticEvent<NativeSegmentedControlIOSChangeEvent>) => {
@@ -852,11 +848,10 @@ const ResultView = (props: ResultViewProps) => {
       />
       <Modal
         isVisible={displayResult}
-        onClose={onDisplayResultClose}
+        size="medium"
+        onDismiss={onResultDismiss}
         style={[
-          ViewStyles.modal1,
           {
-            height: ViewStyles.modal1.maxHeight,
             backgroundColor: "#272822",
           },
         ]}
@@ -871,12 +866,7 @@ const ResultView = (props: ResultViewProps) => {
           />
         )}
       </Modal>
-      <Modal
-        isVisible={displayBattle}
-        onClose={onDisplayBattleClose}
-        onModalHide={onModalHide}
-        style={[ViewStyles.modal2, { paddingHorizontal: 0 }]}
-      >
+      <Modal isVisible={displayBattle} size="large" noPadding onDismiss={onBattleDismiss}>
         {result?.battle && (
           <Animated.View style={{ opacity: battleFade }}>
             <ViewShot
@@ -1150,103 +1140,6 @@ const ResultView = (props: ResultViewProps) => {
                 <Marquee style={theme.reverseTextStyle}>{t("show_raw_data")}</Marquee>
               </Button>
             </VStack>
-            <Modal
-              isVisible={displayBattlePlayer}
-              onClose={onDisplayBattlePlayerClose}
-              style={ViewStyles.modal1}
-            >
-              {battlePlayer && (
-                <VStack center>
-                  <Splashtag
-                    color={getColor(battlePlayer.nameplate!.background.textColor)}
-                    name={
-                      battlePlayer.name.length > 10
-                        ? formatSpecies(battlePlayer.species)
-                        : battlePlayer.name
-                    }
-                    nameId={battlePlayer.nameId}
-                    title={formatByname(battlePlayer.byname)}
-                    banner={getImageCacheSource(battlePlayer.nameplate!.background.image.url)}
-                    badges={battlePlayer.nameplate!.badges.map(formatBadge)}
-                    style={ViewStyles.mb2}
-                  />
-                  <BattleWeaponBox
-                    image={getImageCacheSource(battlePlayer.weapon.image2d.url)}
-                    name={td(battlePlayer.weapon)}
-                    subWeapon={getImageCacheSource(battlePlayer.weapon.subWeapon.image.url)}
-                    specialWeapon={getImageCacheSource(battlePlayer.weapon.specialWeapon.image.url)}
-                    style={ViewStyles.mb2}
-                  />
-                  <VStack style={[ViewStyles.wf, ViewStyles.mb2]}>
-                    {[battlePlayer.headGear, battlePlayer.clothingGear, battlePlayer.shoesGear].map(
-                      (gear, i, gears) => (
-                        // TODO: show brands with its preference.
-                        <GearBox
-                          key={i}
-                          first={i === 0}
-                          last={i === gears.length - 1}
-                          image={getImageCacheSource(gear.originalImage.url)}
-                          brandImage={getImageCacheSource(gear.brand.image.url)}
-                          name={t(getImageHash(gear.originalImage.url), {
-                            defaultValue: gear.name,
-                          })}
-                          brand={t(gear.brand.id)}
-                          primaryAbility={getImageCacheSource(gear.primaryGearPower.image.url)}
-                          additionalAbility={gear.additionalGearPowers.map((gearPower) =>
-                            getImageCacheSource(gearPower.image.url)
-                          )}
-                          paddingTo={getGearPadding([
-                            battlePlayer.headGear,
-                            battlePlayer.clothingGear,
-                            battlePlayer.shoesGear,
-                          ])}
-                        />
-                      )
-                    )}
-                  </VStack>
-                  <VStack style={ViewStyles.wf}>
-                    <Button
-                      style={[ViewStyles.mb2, ViewStyles.accent]}
-                      onPress={onViewBattlesAndJobsWithThisPlayerPress}
-                    >
-                      <Marquee style={theme.reverseTextStyle}>
-                        {t("view_battles_and_jobs_with_this_player")}
-                      </Marquee>
-                    </Button>
-                    <Button
-                      style={[ViewStyles.mb2, ViewStyles.accent]}
-                      onPress={onAnalyzeBuildPress}
-                    >
-                      <Marquee style={[ViewStyles.mr1, theme.reverseTextStyle]}>
-                        {t("analyze_build")}
-                      </Marquee>
-                      <Icon
-                        name="external-link"
-                        size={TextStyles.h5.fontSize}
-                        color={theme.reverseTextStyle.color}
-                      />
-                    </Button>
-                    <Button
-                      disabled={!checkingXRankings && !xRankings}
-                      loading={checkingXRankings}
-                      loadingText={t("checking_x_rankings")}
-                      style={ViewStyles.accent}
-                      textStyle={theme.reverseTextStyle}
-                      onPress={onViewXRankings}
-                    >
-                      <Marquee style={[ViewStyles.mr1, theme.reverseTextStyle]}>
-                        {t("view_x_rankings")}
-                      </Marquee>
-                      <Icon
-                        name="external-link"
-                        size={TextStyles.h5.fontSize}
-                        color={theme.reverseTextStyle.color}
-                      />
-                    </Button>
-                  </VStack>
-                </VStack>
-              )}
-            </Modal>
             {currentResultIndex !== undefined && (
               <PureIconButton
                 disabled={currentResultIndex === 1}
@@ -1271,12 +1164,97 @@ const ResultView = (props: ResultViewProps) => {
           </Animated.View>
         )}
       </Modal>
-      <Modal
-        isVisible={displayCoop}
-        onClose={onDisplayCoopClose}
-        onModalHide={onModalHide}
-        style={[ViewStyles.modal2, { paddingHorizontal: 0 }]}
-      >
+      <Modal isVisible={displayBattlePlayer} size="medium" onDismiss={onBattlePlayerDismiss}>
+        {battlePlayer && (
+          <VStack center>
+            <Splashtag
+              color={getColor(battlePlayer.nameplate!.background.textColor)}
+              name={
+                battlePlayer.name.length > 10
+                  ? formatSpecies(battlePlayer.species)
+                  : battlePlayer.name
+              }
+              nameId={battlePlayer.nameId}
+              title={formatByname(battlePlayer.byname)}
+              banner={getImageCacheSource(battlePlayer.nameplate!.background.image.url)}
+              badges={battlePlayer.nameplate!.badges.map(formatBadge)}
+              style={ViewStyles.mb2}
+            />
+            <BattleWeaponBox
+              image={getImageCacheSource(battlePlayer.weapon.image2d.url)}
+              name={td(battlePlayer.weapon)}
+              subWeapon={getImageCacheSource(battlePlayer.weapon.subWeapon.image.url)}
+              specialWeapon={getImageCacheSource(battlePlayer.weapon.specialWeapon.image.url)}
+              style={ViewStyles.mb2}
+            />
+            <VStack style={[ViewStyles.wf, ViewStyles.mb2]}>
+              {[battlePlayer.headGear, battlePlayer.clothingGear, battlePlayer.shoesGear].map(
+                (gear, i, gears) => (
+                  // TODO: show brands with its preference.
+                  <GearBox
+                    key={i}
+                    first={i === 0}
+                    last={i === gears.length - 1}
+                    image={getImageCacheSource(gear.originalImage.url)}
+                    brandImage={getImageCacheSource(gear.brand.image.url)}
+                    name={t(getImageHash(gear.originalImage.url), {
+                      defaultValue: gear.name,
+                    })}
+                    brand={t(gear.brand.id)}
+                    primaryAbility={getImageCacheSource(gear.primaryGearPower.image.url)}
+                    additionalAbility={gear.additionalGearPowers.map((gearPower) =>
+                      getImageCacheSource(gearPower.image.url)
+                    )}
+                    paddingTo={getGearPadding([
+                      battlePlayer.headGear,
+                      battlePlayer.clothingGear,
+                      battlePlayer.shoesGear,
+                    ])}
+                  />
+                )
+              )}
+            </VStack>
+            <VStack style={ViewStyles.wf}>
+              <Button
+                style={[ViewStyles.mb2, ViewStyles.accent]}
+                onPress={onViewBattlesAndJobsWithThisPlayerPress}
+              >
+                <Marquee style={theme.reverseTextStyle}>
+                  {t("view_battles_and_jobs_with_this_player")}
+                </Marquee>
+              </Button>
+              <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onAnalyzeBuildPress}>
+                <Marquee style={[ViewStyles.mr1, theme.reverseTextStyle]}>
+                  {t("analyze_build")}
+                </Marquee>
+                <Icon
+                  name="external-link"
+                  size={TextStyles.h5.fontSize}
+                  color={theme.reverseTextStyle.color}
+                />
+              </Button>
+              <Button
+                disabled={!checkingXRankings && !xRankings}
+                loading={checkingXRankings}
+                loadingText={t("checking_x_rankings")}
+                style={ViewStyles.accent}
+                textStyle={theme.reverseTextStyle}
+                onPress={onViewXRankings}
+              >
+                <Marquee style={[ViewStyles.mr1, theme.reverseTextStyle]}>
+                  {t("view_x_rankings")}
+                </Marquee>
+                <Icon
+                  name="external-link"
+                  size={TextStyles.h5.fontSize}
+                  color={theme.reverseTextStyle.color}
+                />
+              </Button>
+            </VStack>
+          </VStack>
+        )}
+      </Modal>
+      <Modal isVisible={displayCoop} size="large" noPadding onDismiss={onCoopDismiss}>
         {result?.coop && (
           <Animated.View style={{ opacity: coopFade }}>
             <ViewShot
@@ -1608,54 +1586,6 @@ const ResultView = (props: ResultViewProps) => {
                 <Marquee style={theme.reverseTextStyle}>{t("show_raw_data")}</Marquee>
               </Button>
             </VStack>
-            <Modal
-              isVisible={displayCoopPlayer}
-              onClose={onDisplayCoopPlayerClose}
-              style={ViewStyles.modal1}
-            >
-              {coopPlayer && (
-                <VStack center>
-                  <Splashtag
-                    color={getColor(coopPlayer.player.nameplate!.background.textColor)}
-                    name={
-                      coopPlayer.player.name.length > 10
-                        ? formatSpecies(coopPlayer.player.species)
-                        : coopPlayer.player.name
-                    }
-                    nameId={coopPlayer.player.nameId}
-                    title={formatByname(coopPlayer.player.byname)}
-                    banner={getImageCacheSource(coopPlayer.player.nameplate!.background.image.url)}
-                    badges={coopPlayer.player.nameplate!.badges.map(formatBadge)}
-                    style={ViewStyles.mb2}
-                  />
-                  {coopPlayer.specialWeapon && (
-                    <CoopWeaponBox
-                      mainWeapons={coopPlayer.weapons.map((weapon) =>
-                        getImageCacheSource(weapon.image.url)
-                      )}
-                      specialWeapon={getImageCacheSource(coopPlayer.specialWeapon.image.url)}
-                      style={ViewStyles.mb2}
-                    />
-                  )}
-                  <WorkSuitBox
-                    image={getImageCacheSource(coopPlayer.player.uniform.image.url)}
-                    name={td(coopPlayer.player.uniform)}
-                    style={ViewStyles.mb2}
-                  />
-                  <VStack style={ViewStyles.wf}>
-                    <Button
-                      disabled={props.filterDisabled}
-                      style={ViewStyles.accent}
-                      onPress={onViewBattlesAndJobsWithThisPlayerPress}
-                    >
-                      <Marquee style={theme.reverseTextStyle}>
-                        {t("view_battles_and_jobs_with_this_player")}
-                      </Marquee>
-                    </Button>
-                  </VStack>
-                </VStack>
-              )}
-            </Modal>
             {currentResultIndex !== undefined && (
               <PureIconButton
                 disabled={currentResultIndex === 1}
@@ -1680,12 +1610,56 @@ const ResultView = (props: ResultViewProps) => {
           </Animated.View>
         )}
       </Modal>
+      <Modal isVisible={displayCoopPlayer} size="medium" onDismiss={onCoopPlayerDismiss}>
+        {coopPlayer && (
+          <VStack center>
+            <Splashtag
+              color={getColor(coopPlayer.player.nameplate!.background.textColor)}
+              name={
+                coopPlayer.player.name.length > 10
+                  ? formatSpecies(coopPlayer.player.species)
+                  : coopPlayer.player.name
+              }
+              nameId={coopPlayer.player.nameId}
+              title={formatByname(coopPlayer.player.byname)}
+              banner={getImageCacheSource(coopPlayer.player.nameplate!.background.image.url)}
+              badges={coopPlayer.player.nameplate!.badges.map(formatBadge)}
+              style={ViewStyles.mb2}
+            />
+            {coopPlayer.specialWeapon && (
+              <CoopWeaponBox
+                mainWeapons={coopPlayer.weapons.map((weapon) =>
+                  getImageCacheSource(weapon.image.url)
+                )}
+                specialWeapon={getImageCacheSource(coopPlayer.specialWeapon.image.url)}
+                style={ViewStyles.mb2}
+              />
+            )}
+            <WorkSuitBox
+              image={getImageCacheSource(coopPlayer.player.uniform.image.url)}
+              name={td(coopPlayer.player.uniform)}
+              style={ViewStyles.mb2}
+            />
+            <VStack style={ViewStyles.wf}>
+              <Button
+                disabled={props.filterDisabled}
+                style={ViewStyles.accent}
+                onPress={onViewBattlesAndJobsWithThisPlayerPress}
+              >
+                <Marquee style={theme.reverseTextStyle}>
+                  {t("view_battles_and_jobs_with_this_player")}
+                </Marquee>
+              </Button>
+            </VStack>
+          </VStack>
+        )}
+      </Modal>
       <StatsModal
         briefs={group}
         dimension={dimension}
         hideEmpty
         isVisible={displayGroup}
-        onClose={onDisplayGroupClose}
+        onDismiss={onGroupDismiss}
       >
         <SegmentedControl
           values={[t("self"), t("team")]}

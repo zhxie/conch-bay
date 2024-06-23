@@ -1,3 +1,4 @@
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import quarterOfYear from "dayjs/plugin/quarterOfYear";
@@ -6,6 +7,7 @@ import * as Font from "expo-font";
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
 import ErrorBoundary from "react-native-error-boundary";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ToastBannerProvider, ToastBannerPresenter } from "react-native-toast-banner";
 import { SplashtagContext, useTheme } from "./components";
@@ -41,15 +43,19 @@ const App = () => {
 
   return (
     <SafeAreaProvider style={theme.backgroundStyle}>
-      <ToastBannerProvider>
-        <SplashtagContext.Provider value={{ splatfont }}>
-          <StatusBar style={theme.colorScheme === "light" ? "dark" : "light"} />
-          <ErrorBoundary FallbackComponent={ErrorView}>
-            {fontsLoaded && <MainView />}
-            <ToastBannerPresenter />
-          </ErrorBoundary>
-        </SplashtagContext.Provider>
-      </ToastBannerProvider>
+      <ErrorBoundary FallbackComponent={ErrorView}>
+        <StatusBar style={theme.colorScheme === "light" ? "dark" : "light"} />
+        <ToastBannerProvider>
+          <SplashtagContext.Provider value={{ splatfont }}>
+            <GestureHandlerRootView style={{ flex: 1 }}>
+              <BottomSheetModalProvider>
+                {fontsLoaded && <MainView />}
+                <ToastBannerPresenter />
+              </BottomSheetModalProvider>
+            </GestureHandlerRootView>
+          </SplashtagContext.Provider>
+        </ToastBannerProvider>
+      </ErrorBoundary>
     </SafeAreaProvider>
   );
 };

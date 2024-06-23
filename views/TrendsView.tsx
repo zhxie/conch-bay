@@ -331,7 +331,7 @@ const TrendsView = (props: TrendViewProps) => {
   const onTrendsPress = () => {
     setTrends(true);
   };
-  const onTrendsClose = () => {
+  const onTrendsDismiss = () => {
     setTrends(false);
   };
   const onLayout = (event: LayoutChangeEvent) => {
@@ -369,12 +369,7 @@ const TrendsView = (props: TrendViewProps) => {
         title={t("trends")}
         onPress={onTrendsPress}
       />
-      <Modal
-        isVisible={trends}
-        onClose={onTrendsClose}
-        onLayout={onLayout}
-        style={ViewStyles.modal1}
-      >
+      <Modal isVisible={trends} size="medium" onDismiss={onTrendsDismiss} onLayout={onLayout}>
         <VStack style={ViewStyles.mb2}>
           <SegmentedControl
             values={[t("recent"), t("day"), t("week"), t("month"), t("season")]}

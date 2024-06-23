@@ -951,7 +951,7 @@ const MainView = () => {
       onShowMorePress();
     }
   };
-  const onUpdateClose = () => {
+  const onUpdateDismiss = () => {
     setUpdate(false);
   };
   const onGoToAppStore = () => {
@@ -969,7 +969,7 @@ const MainView = () => {
   const onLogInPress = () => {
     setLogIn(true);
   };
-  const onLogInClose = () => {
+  const onLogInDismiss = () => {
     if (!loggingIn) {
       setLogIn(false);
     }
@@ -1027,7 +1027,7 @@ const MainView = () => {
   const onLogOutPress = () => {
     setLogOut(true);
   };
-  const onLogOutClose = () => {
+  const onLogOutDismiss = () => {
     if (!loggingIn && !loggingOut) {
       setLogOut(false);
     }
@@ -1303,7 +1303,7 @@ const MainView = () => {
   const onSupportPress = () => {
     setSupport(true);
   };
-  const onSupportClose = () => {
+  const onSupportDismiss = () => {
     if (!clearingCache && !preloadingResources && !clearingDatabase) {
       setSupport(false);
     }
@@ -1670,7 +1670,7 @@ const MainView = () => {
       showBanner(BannerLevel.Error, e);
     }
   };
-  const onNotificationClose = () => {
+  const onNotificationDismiss = () => {
     setNotification(false);
   };
   const onNotificationContinue = async () => {
@@ -1684,7 +1684,7 @@ const MainView = () => {
   const onAcknowledgmentsPress = () => {
     setAcknowledgments(true);
   };
-  const onAcknowledgmentsClose = () => {
+  const onAcknowledgmentsDismiss = () => {
     setAcknowledgments(false);
   };
   const onSplatoon3InkPress = () => {
@@ -1714,7 +1714,7 @@ const MainView = () => {
   const onSourceCodeRepositoryPress = () => {
     WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay");
   };
-  const onWelcomeTipClose = () => {
+  const onWelcomeTipDismiss = () => {
     setWelcomeTip(false);
   };
 
@@ -2035,7 +2035,7 @@ const MainView = () => {
             />
           )}
         </Animated.View>
-        <Modal isVisible={update} onClose={onUpdateClose} style={ViewStyles.modal1}>
+        <Modal isVisible={update} size="medium" onDismiss={onUpdateDismiss}>
           <Dialog icon="sparkles" text={t("update_notice")}>
             {Platform.OS === "ios" && (
               <Button
@@ -2063,7 +2063,7 @@ const MainView = () => {
             </Button>
           </Dialog>
         </Modal>
-        <Modal isVisible={logIn} onClose={onLogInClose} style={ViewStyles.modal1}>
+        <Modal isVisible={logIn} size="medium" onDismiss={onLogInDismiss}>
           <CustomDialog icon="circle-alert">
             <Text
               style={[
@@ -2111,7 +2111,7 @@ const MainView = () => {
             </DialogSection>
           </CustomDialog>
         </Modal>
-        <Modal isVisible={logOut} onClose={onLogOutClose} style={ViewStyles.modal1}>
+        <Modal isVisible={logOut} size="medium" onDismiss={onLogOutDismiss}>
           <CustomDialog icon="circle-alert">
             <DialogSection text={t("relog_in_notice")} style={ViewStyles.mb4}>
               <Button
@@ -2149,7 +2149,7 @@ const MainView = () => {
             </DialogSection>
           </CustomDialog>
         </Modal>
-        <Modal isVisible={support} onClose={onSupportClose} style={ViewStyles.modal1}>
+        <Modal isVisible={support} size="medium" onDismiss={onSupportDismiss}>
           <CustomDialog icon="circle-help">
             <DialogSection text={t("preference_notice")} style={ViewStyles.mb4}>
               {sessionToken.length > 0 && (
@@ -2337,19 +2337,15 @@ const MainView = () => {
               )}
             </DialogSection>
           </CustomDialog>
-          <Modal isVisible={notification} onClose={onNotificationClose} style={ViewStyles.modal1}>
-            <Dialog icon="bell-dot" text={t("notification_notice")}>
-              <Button style={ViewStyles.accent} onPress={onNotificationContinue}>
-                <Marquee style={theme.reverseTextStyle}>{t("ok")}</Marquee>
-              </Button>
-            </Dialog>
-          </Modal>
         </Modal>
-        <Modal
-          isVisible={acknowledgments}
-          onClose={onAcknowledgmentsClose}
-          style={ViewStyles.modal1}
-        >
+        <Modal isVisible={notification} size="medium" onDismiss={onNotificationDismiss}>
+          <Dialog icon="bell-dot" text={t("notification_notice")}>
+            <Button style={ViewStyles.accent} onPress={onNotificationContinue}>
+              <Marquee style={theme.reverseTextStyle}>{t("ok")}</Marquee>
+            </Button>
+          </Dialog>
+        </Modal>
+        <Modal isVisible={acknowledgments} size="medium" onDismiss={onAcknowledgmentsDismiss}>
           <VStack center style={ViewStyles.mb3}>
             <Marquee style={[TextStyles.h3, ViewStyles.mb2]}>{t("creators")}</Marquee>
             <HStack center>
@@ -2413,7 +2409,7 @@ const MainView = () => {
             </VStack>
           </VStack>
         </Modal>
-        <Modal isVisible={welcomeTip} onClose={onWelcomeTipClose} style={ViewStyles.modal1}>
+        <Modal isVisible={welcomeTip} size="medium" onDismiss={onWelcomeTipDismiss}>
           <Dialog icon="smile" text={t("welcome_tip")}>
             <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onReadConchBayWikiPress}>
               <Marquee style={theme.reverseTextStyle}>{t("read_conch_bay_wiki")}</Marquee>

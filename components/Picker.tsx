@@ -31,7 +31,7 @@ const Picker = (props: PickerProps) => {
   const onPress = () => {
     setOpen(true);
   };
-  const onClose = () => {
+  const onDismiss = () => {
     setOpen(false);
   };
 
@@ -46,7 +46,7 @@ const Picker = (props: PickerProps) => {
       onLongPress={props.onPress ? onPress : undefined}
     >
       <Marquee style={[theme.reverseTextStyle, props.textStyle]}>{props.title}</Marquee>
-      <Modal isVisible={open} onClose={onClose} style={ViewStyles.modal0_67}>
+      <Modal isVisible={open} size="small" onDismiss={onDismiss}>
         <VStack flex style={ViewStyles.wf}>
           {props.header}
           {props.items.map((item, i, items) => (
@@ -67,7 +67,7 @@ const Picker = (props: PickerProps) => {
                 },
               ]}
               onPress={() => {
-                onClose();
+                onDismiss();
                 props.onSelected(item.key);
               }}
             >

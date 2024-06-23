@@ -130,7 +130,7 @@ const FriendView = (props: FriendViewProps) => {
     }
   };
 
-  const onDisplayFriendClose = () => {
+  const onFriendDismiss = () => {
     setDisplayFriend(false);
   };
 
@@ -183,7 +183,7 @@ const FriendView = (props: FriendViewProps) => {
         }
         contentContainerStyle={ViewStyles.px4}
       />
-      <Modal isVisible={displayFriend} onClose={onDisplayFriendClose} style={ViewStyles.modal1}>
+      <Modal isVisible={displayFriend} size="medium" onDismiss={onFriendDismiss}>
         {friend && (
           <VStack center>
             <Avatar

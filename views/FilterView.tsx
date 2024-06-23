@@ -72,7 +72,7 @@ const FilterView = (props: FilterViewProps) => {
       props.onChange(undefined);
     }
   };
-  const onFilterClose = () => {
+  const onFilterDismiss = () => {
     setFilter(false);
   };
   const onOptionPress = (group: string, key: string) => {
@@ -206,8 +206,9 @@ const FilterView = (props: FilterViewProps) => {
       </HStack>
       <Modal
         isVisible={filter}
-        onClose={onFilterClose}
-        style={[ViewStyles.modal1, ViewStyles.pl4, ViewStyles.pr2]}
+        size="medium"
+        onDismiss={onFilterDismiss}
+        style={[ViewStyles.pl4, ViewStyles.pr2]}
       >
         <VStack flex>
           {(props.filter?.players?.length ?? 0) > 0 && (

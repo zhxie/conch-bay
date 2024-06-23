@@ -58,7 +58,7 @@ const RotationsView = (props: RotationViewProps) => {
   const onRotationPress = () => {
     setRotations(true);
   };
-  const onRotationClose = () => {
+  const onRotationDismiss = () => {
     setRotations(false);
   };
   const formatGroupPeriod = (start: number, end: number) => {
@@ -85,7 +85,7 @@ const RotationsView = (props: RotationViewProps) => {
     }
     return `${startTime} – ${endTime}`;
   };
-  const onGroupClose = () => {
+  const onGroupDismiss = () => {
     setDisplayGroup(false);
   };
   const onDimensionChange = (event: NativeSyntheticEvent<NativeSegmentedControlIOSChangeEvent>) => {
@@ -176,19 +176,22 @@ const RotationsView = (props: RotationViewProps) => {
       />
       <FlashModal
         isVisible={rotations}
+        size="medium"
+        noPadding
         data={groups}
         keyExtractor={(group) =>
           group[0].battle ? group[0].battle.time.toString() : group[0].coop!.time.toString()
         }
         renderItem={renderItem}
         estimatedItemSize={64}
+        estimatedHeight={32 + 64 * groups.length}
         ListHeaderComponent={
           <StatsModal
             briefs={group}
             dimension={dimension}
             hideEmpty
             isVisible={displayGroup}
-            onClose={onGroupClose}
+            onDismiss={onGroupDismiss}
           >
             <SegmentedControl
               values={[t("self"), t("team")]}
@@ -198,9 +201,7 @@ const RotationsView = (props: RotationViewProps) => {
             />
           </StatsModal>
         }
-        onClose={onRotationClose}
-        // HACK: fixed height should be provided to FlashList.
-        style={[ViewStyles.modal1, { height: 32 + 64 * groups.length, paddingHorizontal: 0 }]}
+        onDismiss={onRotationDismiss}
       />
     </Center>
   );
