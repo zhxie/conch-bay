@@ -63,7 +63,7 @@ const Modal = (props: ModalProps) => {
   return (
     <BottomSheetModal
       ref={ref}
-      index={0}
+      stackBehavior="push"
       enablePanDownToClose
       enableDynamicSizing
       backgroundStyle={[theme.backgroundStyle, styles.panel, props.style]}
@@ -129,7 +129,7 @@ const FlashModal = <T,>(props: FlashModalProps<T>) => {
   return (
     <BottomSheetModal
       ref={ref}
-      index={0}
+      stackBehavior="push"
       snapPoints={[Math.min(ModalSize[props.size], props.estimatedHeight)]}
       enablePanDownToClose
       backgroundStyle={[theme.backgroundStyle, styles.panel, props.style]}
@@ -197,7 +197,7 @@ const FullscreenModal = (props: FullscreenModalProps) => {
   return (
     <BottomSheetModal
       ref={ref}
-      index={0}
+      stackBehavior="push"
       enableOverDrag={false}
       enablePanDownToClose={false}
       snapPoints={["100%"]}
