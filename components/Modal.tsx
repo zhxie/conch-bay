@@ -30,6 +30,8 @@ const Backdrop = (props: any) => {
   );
 };
 
+const MAX_WIDTH = 648;
+
 const ModalSize = {
   small: 384,
   medium: 576,
@@ -49,9 +51,9 @@ interface ModalProps {
 const Modal = (props: ModalProps) => {
   const theme = useTheme();
 
-  const { height } = useWindowDimensions();
-
   const insets = useSafeAreaInsets();
+
+  const { width, height } = useWindowDimensions();
 
   useEffect(() => {
     if (props.isVisible) {
@@ -67,20 +69,38 @@ const Modal = (props: ModalProps) => {
     <BottomSheetModal
       ref={ref}
       stackBehavior="push"
+      detached={width > MAX_WIDTH}
       enablePanDownToClose
       enableDynamicSizing
-      backgroundStyle={[theme.backgroundStyle, styles.panel, props.style]}
+      maxDynamicContentSize={Math.min(
+        ModalSize[props.size],
+        height - insets.top - (width > MAX_WIDTH ? Math.max(insets.bottom, 20) : 0)
+      )}
+      bottomInset={width > MAX_WIDTH ? Math.max(insets.bottom, 20) : 0}
+      containerStyle={width > MAX_WIDTH && { marginHorizontal: (width - MAX_WIDTH) / 2 }}
+      backgroundStyle={[
+        theme.backgroundStyle,
+        width > MAX_WIDTH ? styles.detachedPanel : styles.panel,
+        props.style,
+      ]}
+      onDismiss={props.onDismiss}
       handleComponent={null}
       backdropComponent={Backdrop}
-      maxDynamicContentSize={Math.min(ModalSize[props.size], height - insets.top)}
-      onDismiss={props.onDismiss}
     >
-      <BottomSheetScrollView style={[styles.panel, !props.noPadding && styles.padding]}>
-        <View onLayout={props.onLayout} style={[styles.inset, ViewStyles.rt2]} />
+      <BottomSheetScrollView
+        style={[
+          width > MAX_WIDTH ? styles.detachedPanel : styles.panel,
+          !props.noPadding && styles.padding,
+        ]}
+      >
+        <View onLayout={props.onLayout} style={styles.inset} />
         {props.children}
         <View
           style={{
-            height: Math.max(insets.bottom, styles.inset.height),
+            height:
+              width > MAX_WIDTH
+                ? styles.inset.height
+                : Math.max(insets.bottom, styles.inset.height),
           }}
         />
       </BottomSheetScrollView>
@@ -106,9 +126,9 @@ interface FlashModalProps<T> {
 const FlashModal = <T,>(props: FlashModalProps<T>) => {
   const theme = useTheme();
 
-  const { height } = useWindowDimensions();
-
   const insets = useSafeAreaInsets();
+
+  const { width, height } = useWindowDimensions();
 
   useEffect(() => {
     if (props.isVisible) {
@@ -124,20 +144,29 @@ const FlashModal = <T,>(props: FlashModalProps<T>) => {
     <BottomSheetModal
       ref={ref}
       stackBehavior="push"
+      detached={width > MAX_WIDTH}
       snapPoints={[
         Math.min(
           ModalSize[props.size],
           props.estimatedHeight +
             styles.inset.height +
-            Math.max(insets.bottom, styles.inset.height),
-          height - insets.top
+            (width > MAX_WIDTH
+              ? styles.inset.height
+              : Math.max(insets.bottom, styles.inset.height)),
+          height - insets.top - (width > MAX_WIDTH ? Math.max(insets.bottom, 20) : 0)
         ),
       ]}
       enablePanDownToClose
-      backgroundStyle={[theme.backgroundStyle, styles.panel, props.style]}
+      bottomInset={width > MAX_WIDTH ? Math.max(insets.bottom, 20) : 0}
+      containerStyle={width > MAX_WIDTH && { marginHorizontal: (width - MAX_WIDTH) / 2 }}
+      backgroundStyle={[
+        theme.backgroundStyle,
+        width > MAX_WIDTH ? styles.detachedPanel : styles.panel,
+        props.style,
+      ]}
+      onDismiss={props.onDismiss}
       handleComponent={null}
       backdropComponent={Backdrop}
-      onDismiss={props.onDismiss}
     >
       <FlashList
         showsHorizontalScrollIndicator={false}
@@ -156,7 +185,10 @@ const FlashModal = <T,>(props: FlashModalProps<T>) => {
         ListFooterComponent={
           <View
             style={{
-              height: Math.max(insets.bottom, styles.inset.height),
+              height:
+                width > MAX_WIDTH
+                  ? styles.inset.height
+                  : Math.max(insets.bottom, styles.inset.height),
             }}
           />
         }
@@ -175,6 +207,8 @@ interface FullscreenModalProps {
 }
 
 const FullscreenModal = (props: FullscreenModalProps) => {
+  const theme = useTheme();
+
   useEffect(() => {
     if (props.isVisible) {
       ref.current?.present();
@@ -189,13 +223,14 @@ const FullscreenModal = (props: FullscreenModalProps) => {
     <BottomSheetModal
       ref={ref}
       stackBehavior="push"
+      detached={false}
       enableOverDrag={false}
       enablePanDownToClose={false}
       snapPoints={["100%"]}
-      backgroundStyle={props.style}
+      backgroundStyle={[theme.backgroundStyle, props.style]}
+      onDismiss={props.onDismiss}
       handleComponent={null}
       backdropComponent={Backdrop}
-      onDismiss={props.onDismiss}
     >
       <BottomSheetView style={[ViewStyles.f]}>{props.children}</BottomSheetView>
     </BottomSheetModal>
@@ -205,6 +240,9 @@ const FullscreenModal = (props: FullscreenModalProps) => {
 const styles = StyleSheet.create({
   panel: {
     ...ViewStyles.rt2,
+  },
+  detachedPanel: {
+    ...ViewStyles.r2,
   },
   padding: {
     ...ViewStyles.px4,
