@@ -158,7 +158,7 @@ const GearsView = (props: GearsViewProps) => {
         keyExtractor={(gear) => gear.name}
         renderItem={renderItem}
         estimatedItemSize={48}
-        estimatedHeight={72 + 48 * gears.length}
+        estimatedHeight={76 + 48 * gears.length}
         ListHeaderComponent={
           <VStack style={ViewStyles.px4}>
             <SegmentedControl

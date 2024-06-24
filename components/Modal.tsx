@@ -18,6 +18,17 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { VStack } from "./Stack";
 import { ViewStyles, useTheme } from "./Styles";
 
+const Backdrop = (props: any) => {
+  return (
+    <BottomSheetBackdrop
+      appearsOnIndex={0}
+      disappearsOnIndex={-1}
+      pressBehavior="close"
+      {...props}
+    />
+  );
+};
+
 const ModalSize = {
   small: 384,
   medium: 576,
@@ -49,17 +60,6 @@ const Modal = (props: ModalProps) => {
 
   const ref = useRef<BottomSheetModal>(null);
 
-  const renderBackdrop = (props: any) => {
-    return (
-      <BottomSheetBackdrop
-        appearsOnIndex={0}
-        disappearsOnIndex={-1}
-        pressBehavior="close"
-        {...props}
-      />
-    );
-  };
-
   return (
     <BottomSheetModal
       ref={ref}
@@ -68,7 +68,7 @@ const Modal = (props: ModalProps) => {
       enableDynamicSizing
       backgroundStyle={[theme.backgroundStyle, styles.panel, props.style]}
       handleComponent={null}
-      backdropComponent={renderBackdrop}
+      backdropComponent={Backdrop}
       maxDynamicContentSize={ModalSize[props.size]}
       onDismiss={props.onDismiss}
     >
@@ -115,26 +115,20 @@ const FlashModal = <T,>(props: FlashModalProps<T>) => {
 
   const ref = useRef<BottomSheetModal>(null);
 
-  const renderBackdrop = (props: any) => {
-    return (
-      <BottomSheetBackdrop
-        appearsOnIndex={0}
-        disappearsOnIndex={-1}
-        pressBehavior="close"
-        {...props}
-      />
-    );
-  };
-
   return (
     <BottomSheetModal
       ref={ref}
       stackBehavior="push"
-      snapPoints={[Math.min(ModalSize[props.size], props.estimatedHeight)]}
+      snapPoints={[
+        Math.min(
+          ModalSize[props.size],
+          props.estimatedHeight + styles.inset.height + Math.max(insets.bottom, styles.inset.height)
+        ),
+      ]}
       enablePanDownToClose
       backgroundStyle={[theme.backgroundStyle, styles.panel, props.style]}
       handleComponent={null}
-      backdropComponent={renderBackdrop}
+      backdropComponent={Backdrop}
       onDismiss={props.onDismiss}
     >
       <FlashList
@@ -183,17 +177,6 @@ const FullscreenModal = (props: FullscreenModalProps) => {
 
   const ref = useRef<BottomSheetModal>(null);
 
-  const renderBackdrop = (props: any) => {
-    return (
-      <BottomSheetBackdrop
-        appearsOnIndex={0}
-        disappearsOnIndex={-1}
-        pressBehavior="close"
-        {...props}
-      />
-    );
-  };
-
   return (
     <BottomSheetModal
       ref={ref}
@@ -203,7 +186,7 @@ const FullscreenModal = (props: FullscreenModalProps) => {
       snapPoints={["100%"]}
       backgroundStyle={props.style}
       handleComponent={null}
-      backdropComponent={renderBackdrop}
+      backdropComponent={Backdrop}
       onDismiss={props.onDismiss}
     >
       <BottomSheetView style={[ViewStyles.f]}>{props.children}</BottomSheetView>

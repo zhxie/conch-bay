@@ -184,7 +184,7 @@ const RotationsView = (props: RotationViewProps) => {
         }
         renderItem={renderItem}
         estimatedItemSize={64}
-        estimatedHeight={32 + 64 * groups.length}
+        estimatedHeight={64 * groups.length}
         ListHeaderComponent={
           <StatsModal
             briefs={group}
