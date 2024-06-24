@@ -1,4 +1,5 @@
-import { StyleProp, TouchableOpacity, ViewStyle } from "react-native";
+import { TouchableOpacity } from "@gorhom/bottom-sheet";
+import { StyleProp, ViewStyle } from "react-native";
 import { ViewStyles, useTheme } from "./Styles";
 
 interface PressableProps {
