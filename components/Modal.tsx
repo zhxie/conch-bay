@@ -11,6 +11,7 @@ import {
   ScrollViewProps,
   StyleProp,
   StyleSheet,
+  useWindowDimensions,
   View,
   ViewStyle,
 } from "react-native";
@@ -48,6 +49,8 @@ interface ModalProps {
 const Modal = (props: ModalProps) => {
   const theme = useTheme();
 
+  const { height } = useWindowDimensions();
+
   const insets = useSafeAreaInsets();
 
   useEffect(() => {
@@ -69,7 +72,7 @@ const Modal = (props: ModalProps) => {
       backgroundStyle={[theme.backgroundStyle, styles.panel, props.style]}
       handleComponent={null}
       backdropComponent={Backdrop}
-      maxDynamicContentSize={ModalSize[props.size]}
+      maxDynamicContentSize={Math.min(ModalSize[props.size], height - insets.top)}
       onDismiss={props.onDismiss}
     >
       <BottomSheetScrollView style={[styles.panel, !props.noPadding && styles.padding]}>
@@ -103,6 +106,8 @@ interface FlashModalProps<T> {
 const FlashModal = <T,>(props: FlashModalProps<T>) => {
   const theme = useTheme();
 
+  const { height } = useWindowDimensions();
+
   const insets = useSafeAreaInsets();
 
   useEffect(() => {
@@ -122,7 +127,10 @@ const FlashModal = <T,>(props: FlashModalProps<T>) => {
       snapPoints={[
         Math.min(
           ModalSize[props.size],
-          props.estimatedHeight + styles.inset.height + Math.max(insets.bottom, styles.inset.height)
+          props.estimatedHeight +
+            styles.inset.height +
+            Math.max(insets.bottom, styles.inset.height),
+          height - insets.top
         ),
       ]}
       enablePanDownToClose
