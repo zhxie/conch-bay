@@ -5,8 +5,8 @@ import json
 import requests
 import sys
 import utils
+import uuid
 
-DUMMY_NPLN_USER_ID = "statinksalmonrunjson"
 WATER_LEVEL_MAP = {"low": 0, "normal": 1, "high": 2}
 EVENT_WAVE_MAP = {
     "rush": 1,
@@ -73,10 +73,24 @@ def get_id_in_aliases(obj):
     return m
 
 
-def construct_id(path, play_time, uuid, suffix=""):
+def generate_dummy_npln_user_id(name, number):
+    id = uuid.uuid5(uuid.NAMESPACE_OID, f"{name}#{number}")
+    user_int = id.int % pow(36, 10)
+    user_id = ""
+    for _ in range(10):
+        digit = user_int % 36
+        user_int = int(user_int / 36)
+        if digit >= 10:
+            user_id = chr(ord("a") + digit - 10) + user_id
+        else:
+            user_id = chr(ord("0") + digit) + user_id
+    return user_id
+
+
+def construct_id(path, npln_user_id, play_time, uuid, suffix=""):
     time = datetime.fromtimestamp(play_time).strftime("%Y%m%dT%H%M%S")
     return b64encode(
-        f"{path}-u-{DUMMY_NPLN_USER_ID}:{time}_{uuid.lower()}{suffix}".encode("utf-8")
+        f"{path}-u-{npln_user_id}:{time}_{uuid.lower()}{suffix}".encode("utf-8")
     ).decode("utf-8")
 
 
@@ -120,6 +134,7 @@ def construct_member_result(result, player):
     )
     if special_weapon != None:
         special_weapon["weaponId"] = SPECIAL_WEAPON_MAP[player["special"]["key"]]
+    user_id = generate_dummy_npln_user_id(player["name"], player["number"])
     return {
         "player": {
             "__isPlayer": "CoopPlayer",
@@ -137,9 +152,12 @@ def construct_member_result(result, player):
             ),
             "id": construct_id(
                 "CoopPlayer",
+                generate_dummy_npln_user_id(
+                    result["players"][0]["name"], result["players"][0]["number"]
+                ),
                 result["start_at"]["time"],
                 result["uuid"],
-                f":u-{DUMMY_NPLN_USER_ID}",
+                f":u-{user_id}",
             ),
             "species": "INKLING",
         },
@@ -248,6 +266,10 @@ def main():
                         "__typename": "CoopHistoryDetail",
                         "id": construct_id(
                             "CoopHistoryDetail",
+                            generate_dummy_npln_user_id(
+                                result["players"][0]["name"],
+                                result["players"][0]["number"],
+                            ),
                             result["start_at"]["time"],
                             result["uuid"],
                         ),
