@@ -28,10 +28,10 @@ index 95a9615..8ddb38f 100644
            .encodeQuality(100)
            .downsample(NoopDownsampleStrategy)
 diff --git a/node_modules/expo-image/ios/ImageModule.swift b/node_modules/expo-image/ios/ImageModule.swift
-index ca6718b..88fc0d4 100644
+index e4b7fca..d320407 100644
 --- a/node_modules/expo-image/ios/ImageModule.swift
 +++ b/node_modules/expo-image/ios/ImageModule.swift
-@@ -115,6 +115,13 @@ public final class ImageModule: Module {
+@@ -119,6 +119,13 @@ public final class ImageModule: Module {
        context[.storeCacheType] = SDImageCacheType.none.rawValue
        context[.originalQueryCacheType] = sdCacheType
        context[.originalStoreCacheType] = sdCacheType
