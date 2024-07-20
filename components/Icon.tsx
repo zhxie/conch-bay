@@ -3,7 +3,8 @@ import { StyleProp, ViewStyle } from "react-native";
 import { Lucide } from "../assets/fonts/Lucide";
 import glyphMap from "../assets/fonts/Lucide.json";
 
-const LucideIcon = createIconSet(glyphMap, "Lucide", "../assets/fonts/Lucide.ttf");
+// HACK: the 3rd argument expoAssetId actually is not used.
+const LucideIcon = createIconSet(glyphMap, "Lucide", "Lucide");
 
 interface IconProps {
   name: Lucide;
