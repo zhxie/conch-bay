@@ -15,6 +15,20 @@ index 1501aba..6f03231 100644
  }
  export declare enum FestDragonCert {
      NONE = "NONE",
+diff --git a/node_modules/splatnet3-types/dist/enum.js b/node_modules/splatnet3-types/dist/enum.js
+index 3cc140b..7c05ce0 100644
+--- a/node_modules/splatnet3-types/dist/enum.js
++++ b/node_modules/splatnet3-types/dist/enum.js
+@@ -46,6 +46,9 @@ export var DragonMatchType;
+     DragonMatchType["DECUPLE"] = "DECUPLE";
+     DragonMatchType["DRAGON"] = "DRAGON";
+     DragonMatchType["DOUBLE_DRAGON"] = "DOUBLE_DRAGON";
++    DragonMatchType["CONCH_SHELL_SCRAMBLE"] = "CONCH_SHELL_SCRAMBLE";
++    DragonMatchType["CONCH_SHELL_SCRAMBLE_10"] = "CONCH_SHELL_SCRAMBLE_10";
++    DragonMatchType["CONCH_SHELL_SCRAMBLE_33"] = "CONCH_SHELL_SCRAMBLE_33";
+ })(DragonMatchType = DragonMatchType || (DragonMatchType = {}));
+ export var FestDragonCert;
+ (function (FestDragonCert) {
 diff --git a/node_modules/splatnet3-types/dist/generated-type-helpers.d.ts b/node_modules/splatnet3-types/dist/generated-type-helpers.d.ts
 index c448e28..183a6fd 100644
 --- a/node_modules/splatnet3-types/dist/generated-type-helpers.d.ts
