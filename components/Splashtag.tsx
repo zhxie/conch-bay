@@ -92,6 +92,7 @@ const Splashtag = (props: SplashtagProps) => {
         })}
       </HStack>
       <Animated.Text
+        // TODO: maybe overflow due to font.
         numberOfLines={1}
         // TODO: use Splatfont 2. In certain locales, Splatfont 2 is replaced with other fonts.
         style={[
