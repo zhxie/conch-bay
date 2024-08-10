@@ -773,7 +773,7 @@ const StatsView = (props: StatsViewProps) => {
     <Center style={props.style}>
       <ToolButton
         disabled={props.disabled}
-        icon="bar-chart-2"
+        icon="chart-no-axes-column"
         title={t("stats")}
         onPress={onStatsPress}
       />
