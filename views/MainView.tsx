@@ -206,6 +206,12 @@ const MainView = () => {
     t("lang")
   );
   const [region, setRegion, clearRegion, regionReady] = useStringMmkv(Key.Region, t("region"));
+  useEffect(() => {
+    // HACK: fix for legacy data, can be removed later.
+    if (region === "NA") {
+      setRegion("US");
+    }
+  }, []);
 
   const [icon, setIcon, clearIcon] = useStringMmkv(Key.Icon);
   const [level, setLevel, clearLevel] = useStringMmkv(Key.Level);
