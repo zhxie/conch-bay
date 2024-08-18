@@ -206,12 +206,6 @@ const MainView = () => {
     t("lang")
   );
   const [region, setRegion, clearRegion, regionReady] = useStringMmkv(Key.Region, t("region"));
-  useEffect(() => {
-    // HACK: fix for legacy data, can be removed later.
-    if (region === "NA") {
-      setRegion("US");
-    }
-  }, []);
 
   const [icon, setIcon, clearIcon] = useStringMmkv(Key.Icon);
   const [level, setLevel, clearLevel] = useStringMmkv(Key.Level);
@@ -333,6 +327,11 @@ const MainView = () => {
             const newFilter = deepCopy(filter);
             newFilter.players = [];
             setFilter(newFilter);
+          }
+          // Fix for legacy data: "NA" was incorrectly used for the `the_americas_australia_new_zealand` region
+          // The `region` should match the key in the response of `splatoon3.ink/data/festivals.json`
+          if (region === "NA") {
+            setRegion("US");
           }
           const upgrade = await Database.open();
           if (upgrade) {
