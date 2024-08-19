@@ -153,7 +153,7 @@ enum TimeRange {
 
 enum Region {
   JP = "japan",
-  NA = "the_americas_australia_new_zealand",
+  US = "the_americas_australia_new_zealand",
   EU = "europe",
   AP = "hong_kong_south_korea",
 }
@@ -327,6 +327,11 @@ const MainView = () => {
             const newFilter = deepCopy(filter);
             newFilter.players = [];
             setFilter(newFilter);
+          }
+          // Fix for legacy data: "NA" was incorrectly used for the `the_americas_australia_new_zealand` region
+          // The `region` should match the key in the response of `splatoon3.ink/data/festivals.json`
+          if (region === "NA") {
+            setRegion("US");
           }
           const upgrade = await Database.open();
           if (upgrade) {
@@ -2218,7 +2223,7 @@ const MainView = () => {
                 title={t("change_splatfest_region", { region: t(Region[region]) })}
                 items={[
                   { key: "JP", value: t("japan") },
-                  { key: "NA", value: t("the_americas_australia_new_zealand") },
+                  { key: "US", value: t("the_americas_australia_new_zealand") },
                   { key: "EU", value: t("europe") },
                   { key: "AP", value: t("hong_kong_south_korea") },
                 ]}
