@@ -550,7 +550,7 @@ export const add = async (
     }
     for (const w of weapon.split(",")) {
       if (w) {
-        filterOptions.weapons.add(w);
+        filterOptions.weapons.add(weaponList.images[w] ?? w);
       }
     }
   }
