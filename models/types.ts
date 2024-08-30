@@ -82,6 +82,7 @@ export type VsSchedule =
   | SchedulesQuery["data"]["bankaraSchedules"]["nodes"][0]
   | SchedulesQuery["data"]["xSchedules"]["nodes"][0]
   | SchedulesQuery["data"]["festSchedules"]["nodes"][0];
+export type VsCurrentFestSchedule = NotNullable<CurrentFest["timetable"]>[0];
 
 export type Award = NotNullable<VsHistoryDetailResult["vsHistoryDetail"]>["awards"][0];
 export type Badge =
@@ -129,7 +130,8 @@ export type VsStage =
   | XMatchSetting["vsStages"][0]
   | EventMatchSetting["vsStages"][0]
   | FestMatchSetting["vsStages"][0]
-  | CurrentFest["tricolorStage"]
+  | CurrentFest["tricolorStages"][0]
+  | NotNullable<NotNullable<CurrentFest["timetable"]>[0]["festMatchSettings"]>[0]["vsStages"][0]
   | NotNullable<VsHistoryDetailResult["vsHistoryDetail"]>["vsStage"];
 export type VsTeam =
   | NotNullable<VsHistoryDetailResult["vsHistoryDetail"]>["myTeam"]

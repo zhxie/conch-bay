@@ -30,6 +30,7 @@ import {
   FestMatchSetting,
   RegularMatchSetting,
   Schedules,
+  VsCurrentFestSchedule,
   VsEventSchedule,
   VsSchedule,
   VsStage,
@@ -113,12 +114,6 @@ const ScheduleView = (props: ScheduleViewProps) => {
     const timestamp = date.getTime();
     return timestamp <= now;
   };
-  const isSplatfestExpired = (splatfest: CurrentFest) => {
-    const now = new Date().getTime();
-    const date = new Date(splatfest.endTime);
-    const timestamp = date.getTime();
-    return timestamp <= now;
-  };
 
   const splatfestOpenSchedules = useMemo(
     () =>
@@ -135,8 +130,9 @@ const ScheduleView = (props: ScheduleViewProps) => {
     [props.schedules]
   );
   const currentSplatfest =
-    props.schedules?.currentFest?.tricolorStage && !isSplatfestExpired(props.schedules.currentFest)
-      ? props.schedules.currentFest
+    (props.schedules?.currentFest?.tricolorStages.length ?? 0) > 0 &&
+    !isScheduleExpired(props.schedules!.currentFest!)
+      ? props.schedules!.currentFest!
       : undefined;
   const regularSchedules = useMemo(
     () =>
@@ -215,6 +211,17 @@ const ScheduleView = (props: ScheduleViewProps) => {
     const date = new Date(splatfest.midtermTime);
     const timestamp = date.getTime();
     return timestamp <= now;
+  };
+  const isSecondHalfSplatfestNeeded = (splatfest: CurrentFest) => {
+    let startTime = dayjs(splatfest.midtermTime);
+    if (splatfest.timetable && splatfest.timetable.length > 0) {
+      const endTime = dayjs(splatfest.timetable[splatfest.timetable.length - 1].endTime);
+      if (endTime > startTime) {
+        startTime = endTime;
+      }
+    }
+    const endTime = dayjs(splatfest.endTime);
+    return endTime > startTime;
   };
 
   const formatTime = (time: string, end: boolean, withDate: boolean) => {
@@ -418,11 +425,24 @@ const ScheduleView = (props: ScheduleViewProps) => {
                 style={ViewStyles.mr2}
               />
             )}
-            {currentSplatfest && (
+            {currentSplatfest && !currentSplatfest.timetable?.[0] && (
               <ScheduleButton
                 color={isSplatfestStarted(currentSplatfest) ? Color.AccentColor : undefined}
                 rule={t("VnNSdWxlLTU=")}
-                stages={[td(currentSplatfest.tricolorStage)]}
+                stages={currentSplatfest.tricolorStages.map((stage) => td(stage))}
+                onPress={onCurrentSplatfestPress}
+                style={ViewStyles.mr2}
+              />
+            )}
+            {currentSplatfest && currentSplatfest.timetable?.[0] && (
+              <ScheduleButton
+                color={
+                  isScheduleStarted(currentSplatfest.timetable[0]) ? Color.AccentColor : undefined
+                }
+                rule={t("VnNSdWxlLTU=")}
+                stages={currentSplatfest.timetable[0].festMatchSettings![0].vsStages.map((stage) =>
+                  td(stage)
+                )}
                 onPress={onCurrentSplatfestPress}
                 style={ViewStyles.mr2}
               />
@@ -557,13 +577,32 @@ const ScheduleView = (props: ScheduleViewProps) => {
                   ))}
               </VStack>
             ))}
-          {scheduleList?.splatfest && (
-            <ScheduleBox
-              rule={t("VnNSdWxlLTU=")}
-              time={formatSplatfestTimeRange(scheduleList.splatfest)}
-              stages={[formatStage(scheduleList.splatfest.tricolorStage)]}
-            />
-          )}
+          {scheduleList?.splatfest &&
+            scheduleList.splatfest.timetable &&
+            scheduleList.splatfest.timetable.map((schedule, i, schedules) => (
+              <ScheduleBox
+                key={i}
+                rule={t("VnNSdWxlLTU=")}
+                time={formatScheduleTimeRange(schedule, false)}
+                stages={(schedule as VsCurrentFestSchedule).festMatchSettings![0].vsStages.map(
+                  formatStage
+                )}
+                style={
+                  i !== schedules.length - 1 || isSecondHalfSplatfestNeeded(scheduleList.splatfest!)
+                    ? ViewStyles.mb2
+                    : undefined
+                }
+              />
+            ))}
+          {scheduleList?.splatfest &&
+            (!scheduleList.splatfest.timetable ||
+              isSecondHalfSplatfestNeeded(scheduleList.splatfest)) && (
+              <ScheduleBox
+                rule={t("VnNSdWxlLTU=")}
+                time={formatSplatfestTimeRange(scheduleList.splatfest)}
+                stages={scheduleList.splatfest.tricolorStages.map(formatStage)}
+              />
+            )}
           {scheduleList?.shifts &&
             scheduleList.shifts
               .filter((shift) => shift.setting)
