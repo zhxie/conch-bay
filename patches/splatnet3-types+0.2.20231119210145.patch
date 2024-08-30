@@ -55,18 +55,30 @@ index 48dfaea..92e6e81 100644
                  vsRule: LinkedFieldType<VsSetting, 'vsRule', {
                      id: VsRule['id'];
 diff --git a/node_modules/splatnet3-types/dist/graphql.d.ts b/node_modules/splatnet3-types/dist/graphql.d.ts
-index d1b0171..5f448c1 100644
+index d1b0171..6a8e921 100644
 --- a/node_modules/splatnet3-types/dist/graphql.d.ts
 +++ b/node_modules/splatnet3-types/dist/graphql.d.ts
-@@ -38,7 +38,7 @@ export declare enum RequestId {
+@@ -38,9 +38,9 @@ export declare enum RequestId {
      JourneyQuery = "c0cd04d2f0b00444853bae0d7e7f1ac534dfd7ff593c738ab9ba4456b1e85f8a",
      JourneyRefetchQuery = "d5fc5dd3a144139e89815b9e3af6499f58e5fc5185876840dd6edadb0ca214b4",
      CheckinQuery = "6dfce83d02761395758ae21454cb46924e81c22c3f151f91330b0602278a060e",
 -    CoopHistoryDetailQuery = "824a1e22c4ad4eece7ad94a9a0343ecd76784be4f77d8f6f563c165afc8cf602",
 +    CoopHistoryDetailQuery = "f2d55873a9281213ae27edc171e2b19131b3021a2ae263757543cdd3bf015cc8",
      CoopHistoryDetailRefetchQuery = "4bf516ccfd9a3f4efc32b215c59ae42c2a06dd2d8f73de95c2676dea6db74446",
-     CoopHistoryQuery = "0f8c33970a425683bb1bdecca50a0ca4fb3c3641c0b2a1237aedfde9c0cb2b8f",
+-    CoopHistoryQuery = "0f8c33970a425683bb1bdecca50a0ca4fb3c3641c0b2a1237aedfde9c0cb2b8f",
++    CoopHistoryQuery = "e11a8cf2c3de7348495dea5cdcaa25e0c153541c4ed63f044b6c174bc5b703df",
      RefetchableCoopHistory_CoopResultQuery = "bdb796803793ada1ee2ea28e2034a31f5c231448e80f5c992e94b021807f40f8",
+     CoopRecordBigRunRecordContainerPaginationQuery = "4e357d607d98fa3b0f919f3aa0061af717c55c16017e31040647159bdb14601b",
+     CoopRecordQuery = "940418e7b67b69420b7af50bdd292639e46fa8240ae57520a9cf7eed05a10760",
+@@ -64,7 +64,7 @@ export declare enum RequestId {
+     SaleGearDetailQuery = "b42e70a6873aa716d089f2c5ea219083d30f0fff6ed15b8f5630c01ef7a32015",
+     HeroHistoryQuery = "71019ce4389463d9e2a71632e111eb453ca528f4f794aefd861dff23d9c18147",
+     HeroHistoryRefetchQuery = "c6cb0b7cfd8721e90e3a85d3340d190c7f9c759b6b5e627900f5456fec61f6ff",
+-    HistoryRecordQuery = "0a62c0152f27c4218cf6c87523377521c2cff76a4ef0373f2da3300079bf0388",
++    HistoryRecordQuery = "f09666535a18dfe2a0953018a8e7138204fb9d007cc32bd2c85f3e0f7c1cc6ba",
+     HistoryRecordRefetchQuery = "a5d80de05d1d4bfce67a1fb0801495d8bc6bba6fd780341cb90ddfeb1249c986",
+     MyOutfitDetailQuery = "e2c9ea77f0469cb8109c54e93f3f35c930dfeb5b79cbf639397828a805ad9248",
+     MyOutfitsQuery = "5b32bb88c47222522d2bc3643b92759644f890a70189a0884ea2d456a8989342",
 @@ -97,7 +97,7 @@ export declare enum RequestId {
      CatalogRefetchQuery = "c4f5474dfc5d7937618d8a38357ad1e78cc83d6019833b1b68d86a0ce8d4b9e5",
      HomeQuery = "51fc56bbf006caf37728914aa8bc0e2c86a80cf195b4d4027d6822a3623098a8",
@@ -77,18 +89,30 @@ index d1b0171..5f448c1 100644
  export declare enum UsagiRequestId {
      IfTournamentManagerIsAvailableQuery = "8892ce4157248506f51735e2c9eb300c6c980c67ff8c317b927b05e8d35852d9",
 diff --git a/node_modules/splatnet3-types/dist/graphql.js b/node_modules/splatnet3-types/dist/graphql.js
-index 810aa77..d8da4b8 100644
+index 810aa77..0a89c74 100644
 --- a/node_modules/splatnet3-types/dist/graphql.js
 +++ b/node_modules/splatnet3-types/dist/graphql.js
-@@ -34,7 +34,7 @@ export var RequestId;
+@@ -34,9 +34,9 @@ export var RequestId;
      RequestId["JourneyQuery"] = "c0cd04d2f0b00444853bae0d7e7f1ac534dfd7ff593c738ab9ba4456b1e85f8a";
      RequestId["JourneyRefetchQuery"] = "d5fc5dd3a144139e89815b9e3af6499f58e5fc5185876840dd6edadb0ca214b4";
      RequestId["CheckinQuery"] = "6dfce83d02761395758ae21454cb46924e81c22c3f151f91330b0602278a060e";
 -    RequestId["CoopHistoryDetailQuery"] = "824a1e22c4ad4eece7ad94a9a0343ecd76784be4f77d8f6f563c165afc8cf602";
 +    RequestId["CoopHistoryDetailQuery"] = "f2d55873a9281213ae27edc171e2b19131b3021a2ae263757543cdd3bf015cc8";
      RequestId["CoopHistoryDetailRefetchQuery"] = "4bf516ccfd9a3f4efc32b215c59ae42c2a06dd2d8f73de95c2676dea6db74446";
-     RequestId["CoopHistoryQuery"] = "0f8c33970a425683bb1bdecca50a0ca4fb3c3641c0b2a1237aedfde9c0cb2b8f";
+-    RequestId["CoopHistoryQuery"] = "0f8c33970a425683bb1bdecca50a0ca4fb3c3641c0b2a1237aedfde9c0cb2b8f";
++    RequestId["CoopHistoryQuery"] = "e11a8cf2c3de7348495dea5cdcaa25e0c153541c4ed63f044b6c174bc5b703df";
      RequestId["RefetchableCoopHistory_CoopResultQuery"] = "bdb796803793ada1ee2ea28e2034a31f5c231448e80f5c992e94b021807f40f8";
+     RequestId["CoopRecordBigRunRecordContainerPaginationQuery"] = "4e357d607d98fa3b0f919f3aa0061af717c55c16017e31040647159bdb14601b";
+     RequestId["CoopRecordQuery"] = "940418e7b67b69420b7af50bdd292639e46fa8240ae57520a9cf7eed05a10760";
+@@ -60,7 +60,7 @@ export var RequestId;
+     RequestId["SaleGearDetailQuery"] = "b42e70a6873aa716d089f2c5ea219083d30f0fff6ed15b8f5630c01ef7a32015";
+     RequestId["HeroHistoryQuery"] = "71019ce4389463d9e2a71632e111eb453ca528f4f794aefd861dff23d9c18147";
+     RequestId["HeroHistoryRefetchQuery"] = "c6cb0b7cfd8721e90e3a85d3340d190c7f9c759b6b5e627900f5456fec61f6ff";
+-    RequestId["HistoryRecordQuery"] = "0a62c0152f27c4218cf6c87523377521c2cff76a4ef0373f2da3300079bf0388";
++    RequestId["HistoryRecordQuery"] = "f09666535a18dfe2a0953018a8e7138204fb9d007cc32bd2c85f3e0f7c1cc6ba";
+     RequestId["HistoryRecordRefetchQuery"] = "a5d80de05d1d4bfce67a1fb0801495d8bc6bba6fd780341cb90ddfeb1249c986";
+     RequestId["MyOutfitDetailQuery"] = "e2c9ea77f0469cb8109c54e93f3f35c930dfeb5b79cbf639397828a805ad9248";
+     RequestId["MyOutfitsQuery"] = "5b32bb88c47222522d2bc3643b92759644f890a70189a0884ea2d456a8989342";
 @@ -93,7 +93,7 @@ export var RequestId;
      RequestId["CatalogRefetchQuery"] = "c4f5474dfc5d7937618d8a38357ad1e78cc83d6019833b1b68d86a0ce8d4b9e5";
      RequestId["HomeQuery"] = "51fc56bbf006caf37728914aa8bc0e2c86a80cf195b4d4027d6822a3623098a8";
