@@ -341,7 +341,7 @@ const TrendsView = (props: TrendViewProps) => {
     setGroup(event.nativeEvent.selectedSegmentIndex);
   };
   const onBattleDimensionPress = (dimension: BattleDimension) => {
-    const newBattleDimensions = battleDimensions.map((dimension) => dimension);
+    const newBattleDimensions = JSON.parse(JSON.stringify(battleDimensions));
     if (newBattleDimensions.includes(dimension)) {
       const i = newBattleDimensions.indexOf(dimension);
       newBattleDimensions.splice(i, 1);
@@ -351,7 +351,7 @@ const TrendsView = (props: TrendViewProps) => {
     setBattleDimensions(newBattleDimensions);
   };
   const onCoopDimensionPress = (dimension: CoopDimension) => {
-    const newCoopDimensions = coopDimensions.map((dimension) => dimension);
+    const newCoopDimensions = JSON.parse(JSON.stringify(coopDimensions));
     if (newCoopDimensions.includes(dimension)) {
       const i = newCoopDimensions.indexOf(dimension);
       newCoopDimensions.splice(i, 1);
@@ -479,7 +479,7 @@ const TrendsView = (props: TrendViewProps) => {
                 </ScrollView>
                 {battleDimensions.length > 0 && (
                   <Chart
-                    dataGroup={battleDimensions.map((dimension) => getBattleData(dimension))}
+                    dataGroup={battleDimensions.map(getBattleData)}
                     style={[ViewStyles.rb2, theme.territoryStyle, { height: 150, width: "100%" }]}
                   />
                 )}
@@ -613,7 +613,7 @@ const TrendsView = (props: TrendViewProps) => {
                 </ScrollView>
                 {coopDimensions.length > 0 && (
                   <Chart
-                    dataGroup={coopDimensions.map((dimension) => getCoopData(dimension))}
+                    dataGroup={coopDimensions.map(getCoopData)}
                     style={[ViewStyles.rb2, theme.territoryStyle, { height: 150, width: "100%" }]}
                   />
                 )}

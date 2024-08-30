@@ -157,9 +157,9 @@ export const getBattleBrief = (battle: VsHistoryDetailResult): BattleBrief => {
     stage: battle.vsHistoryDetail!.vsStage.id,
     power: power === null ? undefined : power,
     dragon: battle.vsHistoryDetail!.festMatch?.dragonMatchType as DragonMatchType | undefined,
-    myTeam: battle.vsHistoryDetail!.myTeam.players.map((player) => getBattlePlayerBrief(player)),
+    myTeam: battle.vsHistoryDetail!.myTeam.players.map(getBattlePlayerBrief),
     otherTeams: battle.vsHistoryDetail!.otherTeams.map((team) =>
-      team.players.map((player) => getBattlePlayerBrief(player))
+      team.players.map(getBattlePlayerBrief)
     ),
   };
 };
@@ -590,9 +590,7 @@ export const getCoopBrief = (coop: CoopHistoryDetailResult): CoopBrief => {
         }
       : undefined,
     players: [getCoopPlayerBrief(coop.coopHistoryDetail!.myResult)].concat(
-      ...coop.coopHistoryDetail!.memberResults.map((memberResult) =>
-        getCoopPlayerBrief(memberResult)
-      )
+      ...coop.coopHistoryDetail!.memberResults.map(getCoopPlayerBrief)
     ),
     waves,
     bosses,

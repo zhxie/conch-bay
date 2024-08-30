@@ -406,7 +406,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
                 stages={getMatchSetting(
                   splatfestOpenSchedules[0],
                   FestMatchMode.REGULAR
-                )!.vsStages.map((stage) => td(stage))}
+                )!.vsStages.map(td)}
                 onPress={onSplatfestOpenSchedulePress}
                 style={ViewStyles.mr2}
               />
@@ -420,7 +420,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
                 stages={getMatchSetting(
                   splatfestProSchedules[0],
                   FestMatchMode.CHALLENGE
-                )!.vsStages.map((stage) => td(stage))}
+                )!.vsStages.map(td)}
                 onPress={onSplatfestProSchedulePress}
                 style={ViewStyles.mr2}
               />
@@ -429,7 +429,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
               <ScheduleButton
                 color={isSplatfestStarted(currentSplatfest) ? Color.AccentColor : undefined}
                 rule={t("VnNSdWxlLTU=")}
-                stages={currentSplatfest.tricolorStages.map((stage) => td(stage))}
+                stages={currentSplatfest.tricolorStages.map(td)}
                 onPress={onCurrentSplatfestPress}
                 style={ViewStyles.mr2}
               />
@@ -440,9 +440,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
                   isScheduleStarted(currentSplatfest.timetable[0]) ? Color.AccentColor : undefined
                 }
                 rule={t("VnNSdWxlLTU=")}
-                stages={currentSplatfest.timetable[0].festMatchSettings![0].vsStages.map((stage) =>
-                  td(stage)
-                )}
+                stages={currentSplatfest.timetable[0].festMatchSettings![0].vsStages.map(td)}
                 onPress={onCurrentSplatfestPress}
                 style={ViewStyles.mr2}
               />
@@ -451,7 +449,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
               <ScheduleButton
                 color={isScheduleStarted(regularSchedules[0]) ? Color.RegularBattle : undefined}
                 rule={td(getMatchSetting(regularSchedules[0])!.vsRule)}
-                stages={getMatchSetting(regularSchedules[0])!.vsStages.map((stage) => td(stage))}
+                stages={getMatchSetting(regularSchedules[0])!.vsStages.map(td)}
                 onPress={onRegularSchedulePress}
                 style={ViewStyles.mr2}
               />
@@ -467,7 +465,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
                 stages={getMatchSetting(
                   anarchySeriesSchedules[0],
                   BankaraMatchMode.CHALLENGE
-                )!.vsStages.map((stage) => td(stage))}
+                )!.vsStages.map(td)}
                 onPress={onAnarchySeriesSchedulePress}
                 style={ViewStyles.mr2}
               />
@@ -479,7 +477,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
                 stages={getMatchSetting(
                   anarchyOpenSchedules[0],
                   BankaraMatchMode.OPEN
-                )!.vsStages.map((stage) => td(stage))}
+                )!.vsStages.map(td)}
                 onPress={onAnarchyOpenSchedulePress}
                 style={ViewStyles.mr2}
               />
@@ -488,7 +486,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
               <ScheduleButton
                 color={isScheduleStarted(xSchedules[0]) ? Color.XBattle : undefined}
                 rule={td(getMatchSetting(xSchedules[0])!.vsRule)}
-                stages={getMatchSetting(xSchedules[0])!.vsStages.map((stage) => td(stage))}
+                stages={getMatchSetting(xSchedules[0])!.vsStages.map(td)}
                 onPress={onXSchedulePress}
                 style={ViewStyles.mr2}
               />
@@ -497,7 +495,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
               <ScheduleButton
                 color={isChallengeStarted(challenges[0]) ? Color.Challenge : undefined}
                 rule={td(challenges[0].leagueMatchSetting.vsRule)}
-                stages={challenges[0].leagueMatchSetting.vsStages.map((stage) => td(stage))}
+                stages={challenges[0].leagueMatchSetting.vsStages.map(td)}
                 onPress={onChallengePress}
                 style={ViewStyles.mr2}
               />

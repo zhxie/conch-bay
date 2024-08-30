@@ -488,7 +488,7 @@ const ResultView = (props: ResultViewProps) => {
       .forEach((specialWeapon, i) => orderMap.set(specialWeapon!.image.url, i));
     const result = waveResult.specialWeapons.map((specialWeapon) => specialWeapon.image.url);
     result.sort((a, b) => orderMap.get(a)! - orderMap.get(b)!);
-    return result.map((image) => getImageCacheSource(image));
+    return result.map(getImageCacheSource);
   };
   const formatScenarioCode = (scenarioCode: string) => {
     const result: string[] = [];

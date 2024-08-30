@@ -763,7 +763,7 @@ const MainView = () => {
           );
 
           const uniqueIds = ids.filter((id, i, ids) => ids.indexOf(id) === i);
-          const existed = await Promise.all(uniqueIds.map((id) => Database.isExist(id)));
+          const existed = await Promise.all(uniqueIds.map(Database.isExist));
           const newIds = uniqueIds.filter((_, i) => !existed[i]);
           if (n === -1) {
             n = newIds.length;
@@ -813,7 +813,7 @@ const MainView = () => {
             });
           });
 
-          const existed = await Promise.all(ids.map((id) => Database.isExist(id)));
+          const existed = await Promise.all(ids.map(Database.isExist));
           const newIds = ids.filter((_, i) => !existed[i]);
           setProgressTotal((progressTotal) => progressTotal + newIds.length);
           if (n === -1) {
