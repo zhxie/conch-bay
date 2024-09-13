@@ -82,7 +82,6 @@ export type VsSchedule =
   | SchedulesQuery["data"]["bankaraSchedules"]["nodes"][0]
   | SchedulesQuery["data"]["xSchedules"]["nodes"][0]
   | SchedulesQuery["data"]["festSchedules"]["nodes"][0];
-export type VsCurrentFestSchedule = NotNullable<CurrentFest["timetable"]>[0];
 
 export type Award = NotNullable<VsHistoryDetailResult["vsHistoryDetail"]>["awards"][0];
 export type Badge =
