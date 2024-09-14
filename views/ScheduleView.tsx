@@ -24,7 +24,6 @@ import {
   CoopGroupingSchedule,
   CoopStage,
   CoopSupplyWeapon,
-  CurrentFest,
   EventMatchTimePeriod,
   FestMatchMode,
   FestMatchSetting,
@@ -140,40 +139,28 @@ const ScheduleView = (props: ScheduleViewProps) => {
     [props.schedules]
   );
   const tricolorSchedules = useMemo(() => {
-    if (props.schedules?.currentFest) {
-      let timetableEndTime = dayjs(0);
-      const schedules: TricolorSchedule[] = [];
-      if (props.schedules.currentFest.timetable) {
-        for (const timetable of props.schedules.currentFest.timetable) {
-          schedules.push({
-            startTime: timetable.startTime,
-            endTime: timetable.endTime,
-            stages: timetable.festMatchSettings![0].vsStages,
-          });
-          timetableEndTime = dayjs(timetable.endTime);
-        }
-      }
-      const endTime = dayjs(props.schedules.currentFest.endTime);
-      if (endTime > timetableEndTime) {
-        let startTime = dayjs(props.schedules.currentFest.midtermTime);
-        if (timetableEndTime > startTime) {
-          startTime = timetableEndTime;
-        }
+    if (!props.schedules?.currentFest) {
+      return undefined;
+    }
+
+    const schedules: TricolorSchedule[] = [];
+    if (props.schedules.currentFest.timetable?.[0]) {
+      for (const timetable of props.schedules.currentFest.timetable) {
         schedules.push({
-          startTime: startTime.utc().format(),
-          endTime: endTime.utc().format(),
-          stages: props.schedules.currentFest.tricolorStages,
+          startTime: timetable.startTime,
+          endTime: timetable.endTime,
+          stages: timetable.festMatchSettings![0].vsStages,
         });
       }
-      return schedules;
+    } else {
+      schedules.push({
+        startTime: props.schedules.currentFest.midtermTime,
+        endTime: props.schedules.currentFest.endTime,
+        stages: props.schedules.currentFest.tricolorStages,
+      });
     }
-    return undefined;
+    return schedules.filter((schedule) => !isScheduleExpired(schedule));
   }, [props.schedules]);
-  const currentSplatfest =
-    (props.schedules?.currentFest?.tricolorStages.length ?? 0) > 0 &&
-    !isScheduleExpired(props.schedules!.currentFest!)
-      ? props.schedules!.currentFest!
-      : undefined;
   const regularSchedules = useMemo(
     () =>
       props.schedules?.regularSchedules.nodes
@@ -245,12 +232,6 @@ const ScheduleView = (props: ScheduleViewProps) => {
       return true;
     }
     return isScheduleStarted(schedule.timePeriods[i]);
-  };
-  const isSplatfestStarted = (splatfest: CurrentFest) => {
-    const now = new Date().getTime();
-    const date = new Date(splatfest.midtermTime);
-    const timestamp = date.getTime();
-    return timestamp <= now;
   };
 
   const formatTime = (time: string, end: boolean, withDate: boolean) => {
@@ -448,22 +429,11 @@ const ScheduleView = (props: ScheduleViewProps) => {
                 style={ViewStyles.mr2}
               />
             )}
-            {currentSplatfest && !currentSplatfest.timetable?.[0] && (
+            {tricolorSchedules?.[0] && (
               <ScheduleButton
-                color={isSplatfestStarted(currentSplatfest) ? Color.AccentColor : undefined}
+                color={isScheduleStarted(tricolorSchedules[0]) ? Color.AccentColor : undefined}
                 rule={t("VnNSdWxlLTU=")}
-                stages={currentSplatfest.tricolorStages.map(td)}
-                onPress={onCurrentSplatfestPress}
-                style={ViewStyles.mr2}
-              />
-            )}
-            {currentSplatfest && currentSplatfest.timetable?.[0] && (
-              <ScheduleButton
-                color={
-                  isScheduleStarted(currentSplatfest.timetable[0]) ? Color.AccentColor : undefined
-                }
-                rule={t("VnNSdWxlLTU=")}
-                stages={currentSplatfest.timetable[0].festMatchSettings![0].vsStages.map(td)}
+                stages={tricolorSchedules[0].stages.map(td)}
                 onPress={onCurrentSplatfestPress}
                 style={ViewStyles.mr2}
               />
