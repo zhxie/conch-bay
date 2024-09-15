@@ -33,7 +33,7 @@
     "expo-blur": "~13.0.2",
     "expo-clipboard": "~6.0.3",
     "expo-crypto": "~13.0.2",
-    "expo-dev-client": "~4.0.25",
+    "expo-dev-client": "~4.0.26",
     "expo-device": "~6.0.2",
     "expo-document-picker": "~12.0.2",
     "expo-image": "~1.12.15",
