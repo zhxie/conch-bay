@@ -1,6 +1,6 @@
 # Prefetch with certain cache keys after the hashtag of each URLs.
 diff --git a/node_modules/expo-image/android/src/main/java/expo/modules/image/ExpoImageModule.kt b/node_modules/expo-image/android/src/main/java/expo/modules/image/ExpoImageModule.kt
-index 95a9615..8ddb38f 100644
+index 221d29d..e8e47ea 100644
 --- a/node_modules/expo-image/android/src/main/java/expo/modules/image/ExpoImageModule.kt
 +++ b/node_modules/expo-image/android/src/main/java/expo/modules/image/ExpoImageModule.kt
 @@ -17,6 +17,7 @@ import com.facebook.react.uimanager.ViewProps
@@ -28,10 +28,10 @@ index 95a9615..8ddb38f 100644
            .encodeQuality(100)
            .downsample(NoopDownsampleStrategy)
 diff --git a/node_modules/expo-image/ios/ImageModule.swift b/node_modules/expo-image/ios/ImageModule.swift
-index e4b7fca..d320407 100644
+index 330f460..21387cc 100644
 --- a/node_modules/expo-image/ios/ImageModule.swift
 +++ b/node_modules/expo-image/ios/ImageModule.swift
-@@ -119,6 +119,13 @@ public final class ImageModule: Module {
+@@ -120,6 +120,13 @@ public final class ImageModule: Module {
        context[.storeCacheType] = SDImageCacheType.none.rawValue
        context[.originalQueryCacheType] = sdCacheType
        context[.originalStoreCacheType] = sdCacheType
