@@ -6,6 +6,7 @@ import { BlurView } from "expo-blur";
 import * as Clipboard from "expo-clipboard";
 import * as DevClient from "expo-dev-client";
 import { registerDevMenuItems } from "expo-dev-menu";
+// TODO: migrate to expo-file-system/next.
 import * as FileSystem from "expo-file-system";
 import { Image } from "expo-image";
 import * as IntentLauncher from "expo-intent-launcher";

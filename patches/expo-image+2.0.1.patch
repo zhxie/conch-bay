@@ -1,17 +1,17 @@
 # Prefetch with certain cache keys after the hashtag of each URLs.
 diff --git a/node_modules/expo-image/android/src/main/java/expo/modules/image/ExpoImageModule.kt b/node_modules/expo-image/android/src/main/java/expo/modules/image/ExpoImageModule.kt
-index 221d29d..e8e47ea 100644
+index ee9f440..442cbd6 100644
 --- a/node_modules/expo-image/android/src/main/java/expo/modules/image/ExpoImageModule.kt
 +++ b/node_modules/expo-image/android/src/main/java/expo/modules/image/ExpoImageModule.kt
-@@ -17,6 +17,7 @@ import com.facebook.react.uimanager.ViewProps
- import com.facebook.yoga.YogaConstants
+@@ -21,6 +21,7 @@ import com.github.penfeizhou.animation.gif.GifDrawable
+ import com.github.penfeizhou.animation.webp.WebPDrawable
  import expo.modules.image.enums.ContentFit
  import expo.modules.image.enums.Priority
 +import expo.modules.image.okhttp.GlideUrlWithCustomCacheKey
  import expo.modules.image.records.CachePolicy
  import expo.modules.image.records.ContentPosition
  import expo.modules.image.records.DecodeFormat
-@@ -54,9 +55,14 @@ class ExpoImageModule : Module() {
+@@ -68,9 +69,14 @@ class ExpoImageModule : Module() {
        } ?: Headers.DEFAULT
  
        urls.forEach {
@@ -28,10 +28,10 @@ index 221d29d..e8e47ea 100644
            .encodeQuality(100)
            .downsample(NoopDownsampleStrategy)
 diff --git a/node_modules/expo-image/ios/ImageModule.swift b/node_modules/expo-image/ios/ImageModule.swift
-index 330f460..21387cc 100644
+index 4bab386..478a826 100644
 --- a/node_modules/expo-image/ios/ImageModule.swift
 +++ b/node_modules/expo-image/ios/ImageModule.swift
-@@ -120,6 +120,13 @@ public final class ImageModule: Module {
+@@ -127,6 +127,13 @@ public final class ImageModule: Module {
        context[.storeCacheType] = SDImageCacheType.none.rawValue
        context[.originalQueryCacheType] = sdCacheType
        context[.originalStoreCacheType] = sdCacheType
