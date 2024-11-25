@@ -20,7 +20,19 @@ const config = {
     "zh-Hant": "./i18n/locales/zh-Hant.json",
   },
   assetBundlePatterns: ["**/*"],
-  plugins: [withAndroidLargeHeap, withAndroidLocalizedName, "expo-localization"],
+  plugins: [
+    withAndroidLargeHeap,
+    withAndroidLocalizedName,
+    "expo-localization",
+    [
+      "expo-build-properties",
+      {
+        ios: {
+          deploymentTarget: "15.5",
+        },
+      },
+    ],
+  ],
   splash: {
     image: "./assets/splash.png",
     backgroundColor: "#FAFAFA",
