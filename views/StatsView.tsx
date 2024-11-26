@@ -2,7 +2,7 @@ import SegmentedControl, {
   NativeSegmentedControlIOSChangeEvent,
 } from "@react-native-segmented-control/segmented-control";
 import dayjs from "dayjs";
-import { useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { NativeSyntheticEvent, StyleProp, ViewStyle } from "react-native";
 import {
   AccordionDisplay,

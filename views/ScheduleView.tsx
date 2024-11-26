@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import "dayjs/plugin/advancedFormat";
-import { useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { ScrollView, StyleProp, ViewStyle, useWindowDimensions } from "react-native";
 import {
   Color,

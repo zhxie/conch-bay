@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 import { StyleProp, ViewStyle } from "react-native";
 import {
   Area,
