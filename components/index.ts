@@ -39,5 +39,6 @@ export { default as TitledList } from "./TitledList";
 export { default as ToolButton } from "./ToolButton";
 export { default as WaveBox } from "./WaveBox";
 export { default as WorkSuitBox } from "./WorkSuitBox";
+export { default as XBox } from "./XBox";
 
 export * from "./Styles";

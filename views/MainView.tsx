@@ -112,7 +112,7 @@ import {
 } from "../utils/mmkv";
 import { ok, sleep } from "../utils/promise";
 import { Brief } from "../utils/stats";
-import { getImageCacheKey, getUserIconCacheSource, isImageExpired, roundPower } from "../utils/ui";
+import { getImageCacheKey, getUserIconCacheSource, isImageExpired } from "../utils/ui";
 import FilterView from "./FilterView";
 import FriendView from "./FriendView";
 import GearsView from "./GearsView";
@@ -124,6 +124,7 @@ import ShopView from "./ShopView";
 import SplatNetView, { SplatNetViewRef } from "./SplatNetView";
 import StatsView from "./StatsView";
 import TrendsView from "./TrendsView";
+import XView from "./XView";
 
 let enableDevelopmentBuildResultRefreshing = false;
 
@@ -1797,35 +1798,15 @@ const MainView = () => {
                           style={[ViewStyles.mr1, ViewStyles.mb1]}
                         />
                       )}
-                      {splatZonesXPower.length > 1 && (
-                        <Badge
-                          color={Color.XBattle}
-                          icon={"land-plot"}
-                          title={roundPower(parseFloat(splatZonesXPower))}
-                          style={[ViewStyles.mr1, ViewStyles.mb1]}
-                        />
-                      )}
-                      {towerControlXPower.length > 1 && (
-                        <Badge
-                          color={Color.XBattle}
-                          icon={"tower-control"}
-                          title={roundPower(parseFloat(towerControlXPower))}
-                          style={[ViewStyles.mr1, ViewStyles.mb1]}
-                        />
-                      )}
-                      {rainmakerXPower.length > 1 && (
-                        <Badge
-                          color={Color.XBattle}
-                          icon={"fish"}
-                          title={roundPower(parseFloat(rainmakerXPower))}
-                          style={[ViewStyles.mr1, ViewStyles.mb1]}
-                        />
-                      )}
-                      {clamBlitzXPower.length > 1 && (
-                        <Badge
-                          color={Color.XBattle}
-                          icon={"dribbble"}
-                          title={roundPower(parseFloat(clamBlitzXPower))}
+                      {(splatZonesXPower.length > 1 ||
+                        towerControlXPower.length > 1 ||
+                        rainmakerXPower.length > 1 ||
+                        clamBlitzXPower.length > 1) && (
+                        <XView
+                          splatZones={parseFloat(splatZonesXPower)}
+                          towerControl={parseFloat(towerControlXPower)}
+                          rainmaker={parseFloat(rainmakerXPower)}
+                          clamBlitz={parseFloat(clamBlitzXPower)}
                           style={[ViewStyles.mr1, ViewStyles.mb1]}
                         />
                       )}
