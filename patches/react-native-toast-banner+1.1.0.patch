@@ -1,0 +1,15 @@
+# Fix React 18 key spreading.
+diff --git a/node_modules/react-native-toast-banner/lib/src/toast-banner-container.js b/node_modules/react-native-toast-banner/lib/src/toast-banner-container.js
+index a9edd31..f3bf917 100644
+--- a/node_modules/react-native-toast-banner/lib/src/toast-banner-container.js
++++ b/node_modules/react-native-toast-banner/lib/src/toast-banner-container.js
+@@ -65,7 +65,8 @@ var ToastBannerPresenter = function () { return (<ToastBannerContext.Consumer>
+         if (!bannerConfig.disableHideOnPress)
+             hideBanner();
+     };
+-    return (bannerConfig.key && (<ToastBanner {...bannerConfig} transitions={bannerConfig.transitions} onPress={handlePress} onPostHide={removeBanner} hideRequested={hideRequested}/>));
++    const {key, ...rest} = bannerConfig;
++    return (bannerConfig.key && (<ToastBanner key={key} {...rest} transitions={bannerConfig.transitions} onPress={handlePress} onPostHide={removeBanner} hideRequested={hideRequested}/>));
+ }}
+   </ToastBannerContext.Consumer>); };
+ var useToastBannerToggler = function () {
