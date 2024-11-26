@@ -162,7 +162,9 @@ const GearsView = (props: GearsViewProps) => {
         ListHeaderComponent={
           <VStack style={ViewStyles.px4}>
             <SegmentedControl
-              values={Object.values(GearType).map(formatGearTypeName)}
+              values={Object.values(GearType)
+                .map(formatGearTypeName)
+                .map((type) => t(type))}
               selectedIndex={filterIndex}
               onChange={onFilterChange}
               style={ViewStyles.mb1}
