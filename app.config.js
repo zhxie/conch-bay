@@ -32,6 +32,7 @@ const config = {
         },
       },
     ],
+    ["expo-sqlite"],
   ],
   splash: {
     image: "./assets/splash.png",
