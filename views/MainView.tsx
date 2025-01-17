@@ -11,6 +11,7 @@ import * as FileSystem from "expo-file-system";
 import { Image } from "expo-image";
 import * as IntentLauncher from "expo-intent-launcher";
 import { activateKeepAwakeAsync, deactivateKeepAwake } from "expo-keep-awake";
+import * as Linking from "expo-linking";
 import * as MailComposer from "expo-mail-composer";
 import * as ModulesCore from "expo-modules-core";
 import * as Notifications from "expo-notifications";
@@ -21,7 +22,7 @@ import {
   ActivityIndicator,
   Animated,
   LayoutChangeEvent,
-  Linking,
+  Linking as RNLinking,
   NativeScrollEvent,
   NativeSyntheticEvent,
   Platform,
@@ -99,7 +100,7 @@ import {
   registerBackgroundTask,
   unregisterBackgroundTask,
 } from "../utils/background";
-import { decode64String, deepCopy, encode64String } from "../utils/codec";
+import { decode64String, decode64Url, deepCopy, encode64String, getParam } from "../utils/codec";
 import * as Database from "../utils/database";
 import {
   AsyncStorageKey,
@@ -164,6 +165,7 @@ let autoRefreshTimeout: NodeJS.Timeout | undefined;
 
 const MainView = () => {
   const appState = useAppState();
+  const url = Linking.useURL();
 
   const theme = useTheme();
 
@@ -363,6 +365,33 @@ const MainView = () => {
     migratedReady,
   ]);
   useEffect(() => {
+    if (ready && url && url.startsWith("conchbay://refresh?")) {
+      try {
+        const encoded = getParam(url, "requestHeaders");
+        const headers = decode64String(decode64Url(encoded)).split("\r\n");
+        const headerMap = new Map<string, string>();
+        for (const header of headers) {
+          const components = header.split(":", 2);
+          headerMap.set(components[0], components[1].trim());
+        }
+        const cookieMap = new Map<string, string>();
+        const cookies = headerMap.get("Cookie")?.split(";") ?? [];
+        for (const cookie of cookies) {
+          const components = cookie.trim().split("=", 2);
+          cookieMap.set(components[0], components[1]);
+        }
+        const referer = cookieMap.get("Referer") ?? "";
+        setWebServiceToken({
+          accessToken: cookieMap.get("_gtoken") ?? "",
+          country: getParam(referer, "na_country"),
+          language: getParam(referer, "na_lang"),
+        });
+      } catch (e) {
+        showBanner(BannerLevel.Error, t("failed_to_acquire_web_service_token", { error: e }));
+      }
+    }
+  }, [ready, url]);
+  useEffect(() => {
     if (ready) {
       Animated.timing(fade, {
         toValue: 1,
@@ -498,7 +527,7 @@ const MainView = () => {
   };
   const generateBulletToken = async () => {
     if (mudmouth) {
-      Linking.openURL("mudmouth://capture?name=Conch%20Bay");
+      RNLinking.openURL("mudmouth://capture?name=Conch%20Bay");
       throw new Error(t("acquiring_tokens_with_mudmouth"));
     }
 
@@ -972,7 +1001,7 @@ const MainView = () => {
     setUpdate(false);
   };
   const onGoToAppStore = () => {
-    Linking.openURL("https://apps.apple.com/us/app/conch-bay/id1659268579");
+    RNLinking.openURL("https://apps.apple.com/us/app/conch-bay/id1659268579");
   };
   const onGoToGooglePlay = () => {
     IntentLauncher.startActivityAsync("android.intent.action.VIEW", {
@@ -1100,7 +1129,7 @@ const MainView = () => {
     WebBrowser.openBrowserAsync("https://github.com/zhxie/Mudmouth/wiki/Join-the-Beta-Version");
   };
   const onAddMudmouthProfilePress = () => {
-    Linking.openURL(
+    RNLinking.openURL(
       "mudmouth://add?name=Conch%20Bay&url=https%3A%2F%2Fapi.lp1.av5ja.srv.nintendo.net%2Fapi%2Fbullet_tokens&preAction=1&preActionUrlScheme=com.nintendo.znca%3A%2F%2Fznca%2Fgame%2F4834290508791808&postAction=1&postActionUrlScheme=conchbay%3A%2F%2Frefresh"
     );
   };
@@ -1398,7 +1427,7 @@ const MainView = () => {
     }
   };
   const onChangeDisplayLanguagePress = () => {
-    Linking.openSettings();
+    RNLinking.openSettings();
   };
   const onClearCachePress = async () => {
     setClearingCache(true);
@@ -1642,7 +1671,7 @@ const MainView = () => {
     WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay/wiki");
   };
   const onCreateAGithubIssuePress = () => {
-    Linking.openURL("https://github.com/zhxie/conch-bay/issues/new");
+    RNLinking.openURL("https://github.com/zhxie/conch-bay/issues/new");
   };
   const onSendAMailPress = async () => {
     if (await MailComposer.isAvailableAsync()) {
@@ -1656,11 +1685,11 @@ const MainView = () => {
         `,
       });
     } else {
-      Linking.openURL("mailto:conch-bay@outlook.com");
+      RNLinking.openURL("mailto:conch-bay@outlook.com");
     }
   };
   const onJoinDiscordServerPress = () => {
-    Linking.openURL("https://discord.gg/JfZJ6xzRZC");
+    RNLinking.openURL("https://discord.gg/JfZJ6xzRZC");
   };
   const onJoinTheBetaVersionPress = () => {
     WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay/wiki/Join-the-Beta-Version");

@@ -102,6 +102,7 @@ const config = {
       },
     ],
   },
+  scheme: IS_DEV ? "conchbaydev" : "conchbay",
   extra: {
     eas: {
       projectId: "6dc18d15-fec6-4bb7-a5c3-b91f9137d933",

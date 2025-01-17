@@ -39,6 +39,7 @@
     "expo-document-picker": "~13.0.2",
     "expo-image": "~2.0.4",
     "expo-intent-launcher": "~12.0.2",
+    "expo-linking": "~7.0.4",
     "expo-localization": "~16.0.1",
     "expo-mail-composer": "~14.0.2",
     "expo-notifications": "~0.29.12",
