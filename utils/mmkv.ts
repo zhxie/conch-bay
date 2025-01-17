@@ -26,6 +26,7 @@ export enum Key {
   ClamBlitzXPower = "clamBlitzXPower",
   Grade = "grade",
   PlayedTime = "playedTime",
+  Mudmouth = "mudmouth",
   Filter = "filter",
   BackgroundRefresh = "backgroundRefresh",
   SalmonRunFriendlyMode = "salmonRunFriendlyMode",

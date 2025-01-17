@@ -27,6 +27,7 @@ const ja = {
   logging_out: "ログアウト中",
   upgrading_database: "データベースをアップグレード中",
   reacquiring_tokens: "トークン再取得中",
+  reacquiring_tokens_with_mudmouth: "Mudmouthを通じてトークン再取得中",
   failed_to_acquire_web_service_token: "Webサービストークンを取得できません (%{error})",
   failed_to_acquire_bullet_token: "ブレットトークンを取得できません (%{error})",
   failed_to_update_schedules: "スケジュールを更新できません (%{error})",
@@ -85,6 +86,11 @@ const ja = {
   relog_in_notice: "ホラガイベイがトークンを取得できない場合は、再ログインできます。",
   relog_in: "再ログイン",
   relog_in_with_session_token: "セッショントークンで再ログイン",
+  relog_in_with_mudmouth: "Mudmouthで再ログイン (%{enable})",
+  mudmouth_notice:
+    "Mudmouthはネットワーク診断ツールです。ホラガイベイはMudmouthを通じてNintendo Switch Onlineからトークンを取得できます。Mudmouthを有効にするには、Mudmouthアプリ内の手順を参照してください。",
+  install_mudmouth: "Mudmouthをインストール",
+  add_mudmouth_profile: "Mudmouthのプロファイルを追加",
   resource_notice:
     "ホラガイベイが画像を読み込めない場合は、キャッシュを消去するか、リソースを読み込むことができます。イカリング3の制限により、ホラガイベイは一部の画像しか事前に読み込むできないことに注意してください。",
   clear_cache: "キャッシュを消去",

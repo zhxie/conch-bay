@@ -27,6 +27,7 @@ const zhHans = {
   logging_out: "登出中",
   upgrading_database: "升级数据库中",
   reacquiring_tokens: "重新获取令牌中",
+  reacquiring_tokens_with_mudmouth: "通过Mudmouth重新获取令牌中",
   failed_to_acquire_web_service_token: "未能获取Web服务令牌 (%{error})",
   failed_to_acquire_bullet_token: "未能获取Bullet令牌 (%{error})",
   failed_to_update_schedules: "未能更新日程 (%{error})",
@@ -81,6 +82,11 @@ const zhHans = {
   relog_in_notice: "如果法螺湾无法获取令牌，您可以重新登录。",
   relog_in: "重新登录",
   relog_in_with_session_token: "通过会话令牌重新登录",
+  relog_in_with_mudmouth: "通过Mudmouth重新登录 (%{enable})",
+  mudmouth_notice:
+    "Mudmouth是一款网络诊断工具。法螺湾可以通过Mudmouth从Nintendo Switch Online获取令牌。请参考Mudmouth App内的说明启用Mudmouth。",
+  install_mudmouth: "安装Mudmouth",
+  add_mudmouth_profile: "添加Mudmouth配置",
   resource_notice:
     "如果法螺湾无法加载图像，您可以清除缓存或预加载资源。请注意，由于鱿鱼圈3的限制，法螺湾仅能预加载部分图片。",
   clear_cache: "清除缓存",

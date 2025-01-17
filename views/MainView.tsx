@@ -179,6 +179,7 @@ const MainView = () => {
   const [loggingIn, setLoggingIn] = useState(false);
   const [logOut, setLogOut] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
+  const [logInWithMudmouth, setLogInWithMudmouth] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [progress, setProgress] = useState(0);
   const [progressTotal, setProgressTotal] = useState(0);
@@ -226,6 +227,8 @@ const MainView = () => {
   );
   const [grade, setGrade, clearGrade] = useStringMmkv(Key.Grade);
   const [playedTime, setPlayedTime, clearPlayedTime] = useNumberMmkv(Key.PlayedTime);
+
+  const [mudmouth, setMudmouth, clearMudmouth, mudmouthReady] = useBooleanMmkv(Key.Mudmouth, false);
 
   const [filter, setFilter, clearFilter, filterReady] = useMmkv<Database.FilterProps>(Key.Filter);
   const filterRef = useRef(filter);
@@ -276,6 +279,7 @@ const MainView = () => {
       bulletTokenReady &&
       languageReady &&
       regionReady &&
+      mudmouthReady &&
       filterReady &&
       migratedReady
     ) {
@@ -354,6 +358,7 @@ const MainView = () => {
     bulletTokenReady,
     languageReady,
     regionReady,
+    mudmouthReady,
     filterReady,
     migratedReady,
   ]);
@@ -492,6 +497,11 @@ const MainView = () => {
     return false;
   };
   const generateBulletToken = async () => {
+    if (mudmouth) {
+      Linking.openURL("mudmouth://capture?name=Conch%20Bay");
+      throw new Error(t("acquiring_tokens_with_mudmouth"));
+    }
+
     if (bulletToken.length > 0) {
       showBanner(BannerLevel.Info, t("reacquiring_tokens"));
     }
@@ -1049,6 +1059,7 @@ const MainView = () => {
         clearWebServiceToken(),
         clearBulletToken(),
         clearAutoRefresh(),
+        clearMudmouth(),
         clearIcon(),
         clearLevel(),
         clearRank(),
@@ -1074,6 +1085,28 @@ const MainView = () => {
       showBanner(BannerLevel.Error, e);
       setLoggingOut(false);
     }
+  };
+  const onLogInWithMudmouthPress = () => {
+    if (!mudmouth) {
+      setLogInWithMudmouth(true);
+    } else {
+      setMudmouth(false);
+    }
+  };
+  const onLogInWithMudmouthDismiss = () => {
+    setLogInWithMudmouth(false);
+  };
+  const onInstallMudmouthPress = () => {
+    WebBrowser.openBrowserAsync("https://github.com/zhxie/Mudmouth/wiki/Join-the-Beta-Version");
+  };
+  const onAddMudmouthProfilePress = () => {
+    Linking.openURL(
+      "mudmouth://add?name=Conch%20Bay&url=https%3A%2F%2Fapi.lp1.av5ja.srv.nintendo.net%2Fapi%2Fbullet_tokens&preAction=1&preActionUrlScheme=com.nintendo.znca%3A%2F%2Fznca%2Fgame%2F4834290508791808&postAction=1&postActionUrlScheme=conchbay%3A%2F%2Frefresh"
+    );
+  };
+  const onLogInWithMudmouthContinuePress = () => {
+    setMudmouth(true);
+    setLogInWithMudmouth(false);
   };
   const onSplatNetPress = () => {
     splatNetViewRef.current?.open();
@@ -2115,12 +2148,28 @@ const MainView = () => {
                 disabled={refreshing}
                 loading={loggingIn}
                 loadingText={t("logging_in")}
-                style={ViewStyles.accent}
+                style={[Platform.OS === "ios" && ViewStyles.mb2, ViewStyles.accent]}
                 textStyle={theme.reverseTextStyle}
                 onPress={onAlternativeLogInPress}
               >
                 <Marquee style={theme.reverseTextStyle}>{t("relog_in_with_session_token")}</Marquee>
               </Button>
+              {Platform.OS === "ios" && (
+                <Button
+                  disabled={refreshing}
+                  loading={loggingIn}
+                  loadingText={t("logging_in")}
+                  style={ViewStyles.accent}
+                  textStyle={theme.reverseTextStyle}
+                  onPress={onLogInWithMudmouthPress}
+                >
+                  <Marquee style={theme.reverseTextStyle}>
+                    {t("relog_in_with_mudmouth", {
+                      enable: mudmouth ? t("enable") : t("disable"),
+                    })}
+                  </Marquee>
+                </Button>
+              )}
             </DialogSection>
             <DialogSection text={t("log_out_notice")}>
               <Button
@@ -2135,6 +2184,33 @@ const MainView = () => {
               </Button>
             </DialogSection>
           </CustomDialog>
+          <Modal isVisible={logInWithMudmouth} size="medium" onDismiss={onLogInWithMudmouthDismiss}>
+            <CustomDialog icon="globe-lock">
+              <DialogSection text={t("mudmouth_notice")} style={ViewStyles.mb4}>
+                <Button
+                  style={[ViewStyles.mb2, ViewStyles.accent]}
+                  textStyle={theme.reverseTextStyle}
+                  onPress={onInstallMudmouthPress}
+                >
+                  <Marquee style={theme.reverseTextStyle}>{t("install_mudmouth")}</Marquee>
+                </Button>
+                <Button
+                  style={[ViewStyles.mb2, ViewStyles.accent]}
+                  textStyle={theme.reverseTextStyle}
+                  onPress={onAddMudmouthProfilePress}
+                >
+                  <Marquee style={theme.reverseTextStyle}>{t("add_mudmouth_profile")}</Marquee>
+                </Button>
+                <Button
+                  style={ViewStyles.accent}
+                  textStyle={theme.reverseTextStyle}
+                  onPress={onLogInWithMudmouthContinuePress}
+                >
+                  <Marquee style={theme.reverseTextStyle}>{t("ok")}</Marquee>
+                </Button>
+              </DialogSection>
+            </CustomDialog>
+          </Modal>
         </Modal>
         <Modal isVisible={support} size="medium" onDismiss={onSupportDismiss}>
           <CustomDialog icon="circle-help">
