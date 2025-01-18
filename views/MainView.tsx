@@ -1,6 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAppState } from "@react-native-community/hooks";
 import dayjs from "dayjs";
+import { reloadAppAsync } from "expo";
 import * as Application from "expo-application";
 import { BlurView } from "expo-blur";
 import * as Clipboard from "expo-clipboard";
@@ -30,6 +31,7 @@ import {
   ScrollView,
   useWindowDimensions,
 } from "react-native";
+import { useMMKV } from "react-native-mmkv";
 import * as Progress from "react-native-progress";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { zip } from "react-native-zip-archive";
@@ -134,6 +136,30 @@ const devMenuItems = [
     name: "Enable Result Refreshing",
     callback: () => {
       enableDevelopmentBuildResultRefreshing = true;
+    },
+  },
+  {
+    name: "Invalidate Bullet Token",
+    callback: () => {
+      const storage = useMMKV();
+      const token = storage.getString(Key.SessionToken) ?? "";
+      storage.set(Key.SessionToken, token.split("").reverse().join(""));
+      // HACK: reload to refresh.
+      reloadAppAsync();
+    },
+  },
+  {
+    name: "Invalidate Web Service Token",
+    callback: () => {
+      const storage = useMMKV();
+      const text = storage.getString(Key.WebServiceToken) ?? "{}";
+      const token: WebServiceToken = JSON.parse(text);
+      if (token.accessToken) {
+        token.accessToken = token.accessToken.split("").reverse().join("");
+      }
+      storage.set(Key.SessionToken, JSON.stringify(token));
+      // HACK: reload to refresh.
+      reloadAppAsync();
     },
   },
   {
