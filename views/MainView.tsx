@@ -365,22 +365,26 @@ const MainView = () => {
     migratedReady,
   ]);
   useEffect(() => {
-    if (ready && url && url.startsWith("conchbay://refresh?")) {
+    if (
+      ready &&
+      url &&
+      url.startsWith(`conchbay${DevClient.isDevelopmentBuild() ? "dev" : ""}://refresh?`)
+    ) {
       try {
         const encoded = getParam(url, "requestHeaders");
         const headers = decode64String(decode64Url(encoded)).split("\r\n");
         const headerMap = new Map<string, string>();
         for (const header of headers) {
-          const components = header.split(":", 2);
-          headerMap.set(components[0], components[1].trim());
+          const components = header.split(":");
+          headerMap.set(components[0], components.slice(1).join(":").trim());
         }
         const cookieMap = new Map<string, string>();
         const cookies = headerMap.get("Cookie")?.split(";") ?? [];
         for (const cookie of cookies) {
-          const components = cookie.trim().split("=", 2);
-          cookieMap.set(components[0], components[1]);
+          const components = cookie.trim().split("=");
+          cookieMap.set(components[0], components.slice(1).join("="));
         }
-        const referer = cookieMap.get("Referer") ?? "";
+        const referer = headerMap.get("Referer") ?? "";
         setWebServiceToken({
           accessToken: cookieMap.get("_gtoken") ?? "",
           country: getParam(referer, "na_country"),
@@ -526,11 +530,6 @@ const MainView = () => {
     return false;
   };
   const generateBulletToken = async () => {
-    if (mudmouth) {
-      RNLinking.openURL("mudmouth://capture?name=Conch%20Bay");
-      throw new Error(t("acquiring_tokens_with_mudmouth"));
-    }
-
     if (bulletToken.length > 0) {
       showBanner(BannerLevel.Info, t("reacquiring_tokens"));
     }
@@ -553,6 +552,14 @@ const MainView = () => {
         setBulletToken(newBulletToken);
         return { webServiceToken, bulletToken: newBulletToken };
       }
+    }
+
+    // If Mudmouth is enabled, acquire web service token from Mudmouth.
+    if (mudmouth) {
+      RNLinking.openURL(
+        `mudmouth://capture?name=Conch%20Bay${DevClient.isDevelopmentBuild() ? "%20%28Dev%29" : ""}`
+      );
+      throw new Error(t("acquiring_tokens_with_mudmouth"));
     }
 
     // Acquire both web service token and bullet token.
@@ -1130,7 +1137,11 @@ const MainView = () => {
   };
   const onAddMudmouthProfilePress = () => {
     RNLinking.openURL(
-      "mudmouth://add?name=Conch%20Bay&url=https%3A%2F%2Fapi.lp1.av5ja.srv.nintendo.net%2Fapi%2Fbullet_tokens&preAction=1&preActionUrlScheme=com.nintendo.znca%3A%2F%2Fznca%2Fgame%2F4834290508791808&postAction=1&postActionUrlScheme=conchbay%3A%2F%2Frefresh"
+      `mudmouth://add?name=Conch%20Bay${
+        DevClient.isDevelopmentBuild() ? "%20%28Dev%29" : ""
+      }&url=https%3A%2F%2Fapi.lp1.av5ja.srv.nintendo.net%2Fapi%2Fbullet_tokens&preAction=1&preActionUrlScheme=com.nintendo.znca%3A%2F%2Fznca%2Fgame%2F4834290508791808&postAction=1&postActionUrlScheme=conchbay${
+        DevClient.isDevelopmentBuild() ? "dev" : ""
+      }%3A%2F%2Frefresh`
     );
   };
   const onLogInWithMudmouthContinuePress = () => {
