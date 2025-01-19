@@ -84,11 +84,12 @@ const en = {
   relog_in_notice: "If Conch Bay cannot acquire tokens, you can relog in.",
   relog_in: "Relog in",
   relog_in_with_session_token: "Relog in with Session Token",
-  relog_in_with_mudmouth: "Relog in with Mudmouth (%{enable})",
+  relog_in_with_mudmouth: "Relog in with Mudmouth",
   mudmouth_notice:
     "Mudmouth is a network diagnostic tool. Conch Bay can use Mudmouth to acquire tokens from Nintendo Switch Online. Please follow the instructions in the Mudmouth App to enable Mudmouth.",
   install_mudmouth: "Install Mudmouth",
   add_mudmouth_profile: "Add Mudmouth Profile",
+  log_in_with_mudmouth: "Log In with Mudmouth (%{enable})",
   resource_notice:
     "If Conch Bay cannot load images, you can clear cache or preload resources. Please note, due to SplatNet 3 restrictions, Conch Bay can only preload some images.",
   clear_cache: "Clear Cache",

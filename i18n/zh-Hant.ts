@@ -82,11 +82,12 @@ const zhHant = {
   relog_in_notice: "如果法螺灣無法取得令牌，您可以重新登入。",
   relog_in: "重新登入",
   relog_in_with_session_token: "通過會話令牌重新登入",
-  relog_in_with_mudmouth: "通過Mudmouth重新登入 (%{enable})",
+  relog_in_with_mudmouth: "通過Mudmouth重新登入",
   mudmouth_notice:
     "Mudmouth是一款網路診斷工具。法螺灣可以透過Mudmouth從Nintendo Switch Online取得令牌。請參考Mudmouth App內的說明啟用Mudmouth。",
   install_mudmouth: "安裝Mudmouth",
   add_mudmouth_profile: "加入Mudmouth設定",
+  log_in_with_mudmouth: "通過Mudmouth登入 (%{enable})",
   resource_notice:
     "如果法螺灣無法載入影像，您可以清除快取或預先載入資源。請注意，由於魷魚圈3的限制，法螺灣僅能預先載入部分圖片。",
   clear_cache: "清除快取",

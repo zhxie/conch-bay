@@ -585,7 +585,7 @@ const MainView = () => {
       RNLinking.openURL(
         `mudmouth://capture?name=Conch%20Bay${DevClient.isDevelopmentBuild() ? "%20%28Dev%29" : ""}`
       );
-      throw new Error(t("acquiring_tokens_with_mudmouth"));
+      throw new Error(t("reacquiring_tokens_with_mudmouth"));
     }
 
     // Acquire both web service token and bullet token.
@@ -1149,11 +1149,7 @@ const MainView = () => {
     }
   };
   const onLogInWithMudmouthPress = () => {
-    if (!mudmouth) {
-      setLogInWithMudmouth(true);
-    } else {
-      setMudmouth(false);
-    }
+    setLogInWithMudmouth(true);
   };
   const onLogInWithMudmouthDismiss = () => {
     setLogInWithMudmouth(false);
@@ -1171,8 +1167,11 @@ const MainView = () => {
     );
   };
   const onLogInWithMudmouthContinuePress = () => {
-    setMudmouth(true);
-    setLogInWithMudmouth(false);
+    if (!mudmouth) {
+      setMudmouth(true);
+    } else {
+      setMudmouth(false);
+    }
   };
   const onSplatNetPress = () => {
     splatNetViewRef.current?.open();
@@ -2229,11 +2228,7 @@ const MainView = () => {
                   textStyle={theme.reverseTextStyle}
                   onPress={onLogInWithMudmouthPress}
                 >
-                  <Marquee style={theme.reverseTextStyle}>
-                    {t("relog_in_with_mudmouth", {
-                      enable: mudmouth ? t("enable") : t("disable"),
-                    })}
-                  </Marquee>
+                  <Marquee style={theme.reverseTextStyle}>{t("relog_in_with_mudmouth")}</Marquee>
                 </Button>
               )}
             </DialogSection>
@@ -2272,7 +2267,9 @@ const MainView = () => {
                   textStyle={theme.reverseTextStyle}
                   onPress={onLogInWithMudmouthContinuePress}
                 >
-                  <Marquee style={theme.reverseTextStyle}>{t("ok")}</Marquee>
+                  <Marquee style={theme.reverseTextStyle}>
+                    {t("log_in_with_mudmouth", { enable: mudmouth ? t("enable") : t("disable") })}
+                  </Marquee>
                 </Button>
               </DialogSection>
             </CustomDialog>
