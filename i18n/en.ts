@@ -124,6 +124,8 @@ const en = {
   source_code_repository: "Source Code Repository",
   welcome_tip:
     "Welcome to Conch Bay. If you encounter any problems using Conch Bay or have any advice, feel free to share your feedback. You can always reach us through GitHub Issues, mails, or Discord Server in Support below the homepage.",
+  mudmouth_tip:
+    "Welcome to Conch Bay. Conch Bay supports acquiring tokens with Mudmouth. You can enable Mudmouth by pressing on your avatar. Please see Conch Bay Wiki for more information.",
   auto_refresh_enabled: "Auto refresh enabled",
   auto_refresh_disabled: "Auto refresh disabled",
   notification_notice:

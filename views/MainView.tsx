@@ -222,6 +222,7 @@ const MainView = () => {
   const [notification, setNotification] = useState(false);
   const [acknowledgments, setAcknowledgments] = useState(false);
   const [welcomeTip, setWelcomeTip] = useState(false);
+  const [mudmouthTip, setMudmouthTip] = useState(false);
   const [fault, setFault] = useState<Error>();
 
   const [sessionToken, setSessionToken, clearSessionToken, sessionTokenReady] = useStringMmkv(
@@ -449,6 +450,13 @@ const MainView = () => {
         setWelcomeTip(true);
         const newTips = tips ?? [];
         newTips.push(Tip.Welcome);
+        setTips(newTips);
+        return;
+      }
+      if (!tips.includes(Tip.Mudmouth) && Platform.OS === "ios" && sessionToken) {
+        setMudmouthTip(true);
+        const newTips = tips;
+        newTips.push(Tip.Mudmouth);
         setTips(newTips);
         return;
       }
@@ -1822,6 +1830,9 @@ const MainView = () => {
   const onWelcomeTipDismiss = () => {
     setWelcomeTip(false);
   };
+  const oMudmouthTipDismiss = () => {
+    setMudmouthTip(false);
+  };
 
   return (
     <SalmonRunSwitcherContext.Provider value={{ salmonRun: salmonRunFriendlyMode }}>
@@ -2537,6 +2548,20 @@ const MainView = () => {
         </Modal>
         <Modal isVisible={welcomeTip} size="medium" onDismiss={onWelcomeTipDismiss}>
           <Dialog icon="smile" text={t("welcome_tip")}>
+            <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onReadConchBayWikiPress}>
+              <Marquee style={theme.reverseTextStyle}>{t("read_conch_bay_wiki")}</Marquee>
+            </Button>
+            <Button
+              style={ViewStyles.accent}
+              textStyle={theme.reverseTextStyle}
+              onPress={onJoinDiscordServerPress}
+            >
+              <Marquee style={theme.reverseTextStyle}>{t("join_discord_server")}</Marquee>
+            </Button>
+          </Dialog>
+        </Modal>
+        <Modal isVisible={mudmouthTip} size="medium" onDismiss={oMudmouthTipDismiss}>
+          <Dialog icon="smile" text={t("mudmouth_tip")}>
             <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onReadConchBayWikiPress}>
               <Marquee style={theme.reverseTextStyle}>{t("read_conch_bay_wiki")}</Marquee>
             </Button>

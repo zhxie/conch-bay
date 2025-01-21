@@ -37,6 +37,7 @@ export enum Key {
 
 export enum Tip {
   Welcome = "welcome",
+  Mudmouth = "mudmouth",
 }
 
 const storage = new MMKV();

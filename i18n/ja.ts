@@ -126,6 +126,8 @@ const ja = {
   source_code_repository: "ソースコードリポジトリ",
   welcome_tip:
     "ホラガイベイへようこそ。ホラガイベイの使用中にエラーが発生した場合、またはアドバイスがある場合は、お気軽にフィードバックをお寄せください。ホームページ下のサポートにあるGitHub Issue、メール、またはDiscordサーバーを通じて、いつでもご連絡いただけます。",
+  mudmouth_tip:
+    "ホラガイベイへようこそ。ホラガイベイはMudmouthを通じてトークンの取得をサポートしています。アバターを押すと、Mudmouthを有効にできます。詳しくは、ホラガイベイ百科を参照してください。",
   auto_refresh_enabled: "自動更新が有効になりました",
   auto_refresh_disabled: "自動更新が無効になりました",
   notification_notice:

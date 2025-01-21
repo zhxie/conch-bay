@@ -120,6 +120,8 @@ const zhHant = {
   source_code_repository: "原始碼庫",
   welcome_tip:
     "歡迎使用法螺灣。如果您在使用法螺灣時遇到任何問題或有任何建議，請隨時分享您的回饋。您可以通過主頁下方支援中的GitHub Issues、郵件或Discord伺服器與我們聯繫",
+  mudmouth_tip:
+    "歡迎使用法螺灣。法螺灣已支援透過Mudmouth取得令牌。您可以透過點擊頭像啟用Mudmouth。請參閱法螺灣百科以取得更多資訊。",
   auto_refresh_enabled: "已啟用自動重新整理",
   auto_refresh_disabled: "已停用自動重新整理",
   notification_notice:

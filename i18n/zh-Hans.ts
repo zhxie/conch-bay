@@ -120,6 +120,8 @@ const zhHans = {
   source_code_repository: "源代码库",
   welcome_tip:
     "欢迎使用法螺湾。如果您在使用法螺湾时遇到任何问题或有任何建议，请随时分享您的反馈。您可以通过主页下方支持中的GitHub Issue、邮件或Discord服务器与我们联系。",
+  mudmouth_tip:
+    "欢迎使用法螺湾。法螺湾已支持通过Mudmouth获取令牌。您可以通过点击头像启用Mudmouth。请参阅法螺湾百科以获取更多信息。",
   auto_refresh_enabled: "已启用自动刷新",
   auto_refresh_disabled: "已停用自动刷新",
   notification_notice:
