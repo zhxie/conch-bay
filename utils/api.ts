@@ -31,7 +31,7 @@ import { encode64, encode64Url, getParam, parameterize } from "./codec";
 import { sleep } from "./promise";
 
 const AXIOS_TIMEOUT = 10000;
-const AXIOS_TOKEN_TIMEOUT = 15000;
+const AXIOS_TOKEN_TIMEOUT = 30000;
 const USER_AGENT = `ConchBay/${Constants.expoConfig!.version!}`;
 
 export const fetchReleaseVersion = async () => {
@@ -152,6 +152,7 @@ const callNxapiZncaApi = async (
     headers: {
       "Content-Type": "application/json; charset=utf-8",
       "User-Agent": USER_AGENT,
+      "X-znca-Client-Version": NXAPI_ZNCA_API_NSO_VERSION,
       "X-znca-Platform": "Android",
       "X-znca-Version": NXAPI_ZNCA_API_NSO_VERSION,
     },
@@ -274,7 +275,7 @@ export const getWebServiceToken = async (sessionToken: string) => {
     throw new Error(`/users/me: ${res2.status}: ${JSON.stringify(res2.data)}`);
   }
 
-  const callApis = [callIminkFApi, callNxapiZncaApi];
+  const callApis = [callNxapiZncaApi, callIminkFApi];
   let error: unknown = undefined;
   for (const callApi of callApis) {
     try {
@@ -301,6 +302,7 @@ export const getWebServiceToken = async (sessionToken: string) => {
             "Content-Length": JSON.stringify(body3).length,
             "Content-Type": "application/json; charset=utf-8",
             "User-Agent": `com.nintendo.znca/${version}(Android/11)`,
+            "X-IntegrityTokenError": "NETWORK_ERROR",
             "X-Platform": "Android",
             "X-ProductVersion": version,
           },
@@ -325,6 +327,7 @@ export const getWebServiceToken = async (sessionToken: string) => {
           requestId: requestId2,
           timestamp: timestamp2,
         },
+        requestId: Crypto.randomUUID(),
       };
       const res4 = await axios.post(
         "https://api-lp1.znc.srv.nintendo.net/v2/Game/GetWebServiceToken",
@@ -336,6 +339,7 @@ export const getWebServiceToken = async (sessionToken: string) => {
             "Content-Length": JSON.stringify(body4).length,
             "Content-Type": "application/json; charset=utf-8",
             "User-Agent": `com.nintendo.znca/${version}(Android/11)`,
+            "X-IntegrityTokenError": "NETWORK_ERROR",
             "X-Platform": "Android",
             "X-ProductVersion": version,
           },
