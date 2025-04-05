@@ -31,7 +31,8 @@ import { encode64, encode64Url, getParam, parameterize } from "./codec";
 import { sleep } from "./promise";
 
 const AXIOS_TIMEOUT = 10000;
-const AXIOS_TOKEN_TIMEOUT = 30000;
+const AXIOS_F_TIMEOUT = 60000;
+const AXIOS_TOKEN_TIMEOUT = 15000;
 const USER_AGENT = `ConchBay/${Constants.expoConfig!.version!}`;
 
 export const fetchReleaseVersion = async () => {
@@ -73,6 +74,7 @@ export const fetchXRankings = async (id: string) => {
 let SPLATNET_VERSION = versions.SPLATNET_VERSION;
 let IMINK_F_API_NSO_VERSION: string | undefined;
 let NXAPI_ZNCA_API_NSO_VERSION: string | undefined;
+const NSO_CLIENT_VERSION = "2.12.0";
 
 export interface WebServiceToken {
   accessToken: string;
@@ -95,7 +97,7 @@ const callIminkFApi = async (step: number, idToken: string, naId: string, coralU
       headers: {
         "User-Agent": USER_AGENT,
       },
-      timeout: AXIOS_TOKEN_TIMEOUT,
+      timeout: AXIOS_TIMEOUT,
     });
     IMINK_F_API_NSO_VERSION = res.data["nso_version"];
   }
@@ -108,8 +110,14 @@ const callIminkFApi = async (step: number, idToken: string, naId: string, coralU
     body["coral_user_id"] = coralUserId;
   }
   const res = await axios.post("https://api.imink.app/f", body, {
-    headers: { "Content-Type": "application/json; charset=utf-8", "User-Agent": USER_AGENT },
-    timeout: AXIOS_TOKEN_TIMEOUT,
+    headers: {
+      "Content-Type": "application/json; charset=utf-8",
+      "User-Agent": USER_AGENT,
+      "X-znca-Client-Version": NSO_CLIENT_VERSION,
+      "X-znca-Platform": "Android",
+      "X-znca-Version": IMINK_F_API_NSO_VERSION,
+    },
+    timeout: AXIOS_F_TIMEOUT,
   });
   const f = res.data["f"];
   const requestId = res.data["request_id"];
@@ -136,7 +144,7 @@ const callNxapiZncaApi = async (
       headers: {
         "User-Agent": USER_AGENT,
       },
-      timeout: AXIOS_TOKEN_TIMEOUT,
+      timeout: AXIOS_TIMEOUT,
     });
     NXAPI_ZNCA_API_NSO_VERSION = res.data["nso_version"];
   }
@@ -152,11 +160,11 @@ const callNxapiZncaApi = async (
     headers: {
       "Content-Type": "application/json; charset=utf-8",
       "User-Agent": USER_AGENT,
-      "X-znca-Client-Version": NXAPI_ZNCA_API_NSO_VERSION,
+      "X-znca-Client-Version": NSO_CLIENT_VERSION,
       "X-znca-Platform": "Android",
       "X-znca-Version": NXAPI_ZNCA_API_NSO_VERSION,
     },
-    timeout: AXIOS_TOKEN_TIMEOUT,
+    timeout: AXIOS_F_TIMEOUT,
   });
   const f = res.data["f"];
   const requestId = res.data["request_id"];
