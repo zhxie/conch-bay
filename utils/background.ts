@@ -152,12 +152,12 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
         unread -= 1;
       }
       if (unread > 0) {
-        Notifications.setBadgeCountAsync(unread);
+        await Notifications.setBadgeCountAsync(unread);
       }
 
       // Notify unread if there is new result.
       if (total > 0) {
-        Notifications.scheduleNotificationAsync({
+        await Notifications.scheduleNotificationAsync({
           content: {
             title: t("new_results"),
             body: t("loaded_n_results_in_the_background", { n: unread }),
