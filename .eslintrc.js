@@ -11,6 +11,7 @@ module.exports = {
     "@typescript-eslint/no-duplicate-enum-values": "off",
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-non-null-assertion": "off",
+    "@typescript-eslint/no-require-imports": "off",
     "@typescript-eslint/no-unnecessary-condition": ["warn", { allowConstantLoopConditions: true }],
     "@typescript-eslint/prefer-nullish-coalescing": "off",
     "@typescript-eslint/require-await": 2,

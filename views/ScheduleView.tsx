@@ -88,6 +88,8 @@ const ScheduleView = (props: ScheduleViewProps) => {
             return (anarchyMatchSettings as BankaraMatchSetting[]).find(
               (matchSetting) => matchSetting.bankaraMode === mode
             );
+          case FestMatchMode.REGULAR:
+          case FestMatchMode.CHALLENGE:
           default:
             throw new Error(`unexpected bankara match mode ${mode}`);
         }
@@ -109,6 +111,8 @@ const ScheduleView = (props: ScheduleViewProps) => {
           return (schedule["festMatchSettings"] as FestMatchSetting[]).find(
             (matchSetting) => matchSetting.festMode === mode
           );
+        case BankaraMatchMode.CHALLENGE:
+        case BankaraMatchMode.OPEN:
         default:
           throw new Error(`unexpected fest match mode ${mode}`);
       }
