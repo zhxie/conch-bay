@@ -44,7 +44,7 @@ const ToolButton = (props: ToolButtonProps) => {
           }
         })()}
         <Text numberOfLines={1} style={TextStyles.h3}>
-          {props.loading ? props.loadingText ?? props.title : props.title}
+          {props.loading ? (props.loadingText ?? props.title) : props.title}
         </Text>
       </HStack>
     </Pressable>

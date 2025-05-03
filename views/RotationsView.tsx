@@ -116,7 +116,7 @@ const RotationsView = (props: RotationViewProps) => {
             rule={t(result.item[0].battle.rule)}
             time={formatGroupPeriod(
               result.item[result.item.length - 1].battle!.time,
-              result.item[0].battle!.time
+              result.item[0].battle!.time,
             )}
             stages={[...stageMap.entries()]
               .sort((a, b) => b[1] - a[1])
@@ -144,7 +144,7 @@ const RotationsView = (props: RotationViewProps) => {
           rule={t(result.item[0].coop!.rule)}
           time={formatGroupPeriod(
             result.item[result.item.length - 1].coop!.time,
-            result.item[0].coop!.time
+            result.item[0].coop!.time,
           )}
           stage={[...stageMap.entries()]
             .sort((a, b) => b[1] - a[1])
@@ -153,11 +153,11 @@ const RotationsView = (props: RotationViewProps) => {
           weapons={result.item[0].coop!.suppliedWeapons.map((weapon) => {
             if (unknownList.images[weapon]) {
               return getImageCacheSource(
-                `https://splatoon3.ink/assets/splatnet/v2/ui_img/${weapon}_0.png`
+                `https://splatoon3.ink/assets/splatnet/v2/ui_img/${weapon}_0.png`,
               );
             }
             return getImageCacheSource(
-              `https://splatoon3.ink/assets/splatnet/v2/weapon_illust/${weapon}_0.png`
+              `https://splatoon3.ink/assets/splatnet/v2/weapon_illust/${weapon}_0.png`,
             );
           })}
           onPress={onPress}

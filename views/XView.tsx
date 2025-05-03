@@ -17,7 +17,7 @@ const XView = (props: XViewProps) => {
 
   const maxPower = useMemo(
     () => Math.max(props.splatZones, props.towerControl, props.rainmaker, props.clamBlitz),
-    [props.splatZones, props.towerControl, props.rainmaker, props.clamBlitz]
+    [props.splatZones, props.towerControl, props.rainmaker, props.clamBlitz],
   );
 
   const formatPower = (power: number) => {

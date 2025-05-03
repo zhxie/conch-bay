@@ -86,7 +86,7 @@ export const updateSplatnetVersion = async () => {
   // HACK: use jsDelivr to avoid any network issue in China Mainland.
   const res = await axios.get(
     "https://cdn.jsdelivr.net/gh/nintendoapis/nintendo-app-versions/data/splatnet3-app.json",
-    { timeout: AXIOS_TIMEOUT }
+    { timeout: AXIOS_TIMEOUT },
   );
 
   SPLATNET_VERSION = res.data["web_app_ver"];
@@ -145,7 +145,7 @@ const callNxapiZncaApi = async (
   step: number,
   idToken: string,
   naId: string,
-  coralUserId?: string
+  coralUserId?: string,
 ) => {
   if (!NXAPI_ZNCA_API_NSO_VERSION) {
     const res = await axios.get("https://nxapi-znca-api.fancy.org.uk/api/znca/config", {
@@ -245,7 +245,7 @@ export const getSessionToken = async (url: string, cv: string) => {
         },
         timeout: AXIOS_TOKEN_TIMEOUT,
         validateStatus: validateAllStatus,
-      }
+      },
     );
     const sessionToken = res.data["session_token"];
     if (!sessionToken) {
@@ -352,7 +352,7 @@ export const getWebServiceToken = async (sessionToken: string) => {
             },
             timeout: AXIOS_TOKEN_TIMEOUT,
             validateStatus: validateAllStatus,
-          }
+          },
         );
         idToken2 = res3.data["result"]?.["webApiServerCredential"]?.["accessToken"];
         coralUserId = res3.data["result"]?.["user"]?.["id"];
@@ -394,7 +394,7 @@ export const getWebServiceToken = async (sessionToken: string) => {
             },
             timeout: AXIOS_TOKEN_TIMEOUT,
             validateStatus: validateAllStatus,
-          }
+          },
         );
         if (!res4.data["result"]?.["accessToken"]) {
           // { status: number; errorMessage: string; correlationId: string; }
@@ -442,7 +442,7 @@ export const getBulletToken = async (webServiceToken: WebServiceToken, language:
         },
         timeout: AXIOS_TOKEN_TIMEOUT,
         validateStatus: validateAllStatus,
-      }
+      },
     );
     if (res.status >= 400) {
       throw new Error(res.status.toString());
@@ -458,7 +458,7 @@ const fetchGraphQl = async <T>(
   bulletToken: string,
   language: string,
   hash: string,
-  variables?: T
+  variables?: T,
 ) => {
   const body = {
     extensions: {
@@ -495,7 +495,7 @@ const fetchGraphQl = async <T>(
 export const fetchFriends = async (
   webServiceToken: WebServiceToken,
   bulletToken: string,
-  language: string
+  language: string,
 ) => {
   const res = await fetchGraphQl(webServiceToken, bulletToken, language, RequestId.FriendListQuery);
   const friends = res.data as GraphQLSuccessResponse<FriendListResult>;
@@ -507,13 +507,13 @@ export const fetchFriends = async (
 export const fetchSummary = async (
   webServiceToken: WebServiceToken,
   bulletToken: string,
-  language: string
+  language: string,
 ) => {
   const res = await fetchGraphQl(
     webServiceToken,
     bulletToken,
     language,
-    RequestId.HistoryRecordQuery
+    RequestId.HistoryRecordQuery,
   );
   const summary = res.data as GraphQLSuccessResponse<HistoryRecordResult>;
   if (summary.errors) {
@@ -525,13 +525,13 @@ export const fetchSummary = async (
 export const fetchWeaponRecords = async (
   webServiceToken: WebServiceToken,
   bulletToken: string,
-  language: string
+  language: string,
 ) => {
   const res = await fetchGraphQl(
     webServiceToken,
     bulletToken,
     language,
-    RequestId.WeaponRecordQuery
+    RequestId.WeaponRecordQuery,
   );
   const weaponRecords = res.data as GraphQLSuccessResponse<WeaponRecordResult>;
   if (weaponRecords.errors) {
@@ -542,13 +542,13 @@ export const fetchWeaponRecords = async (
 export const fetchEquipments = async (
   webServiceToken: WebServiceToken,
   bulletToken: string,
-  language: string
+  language: string,
 ) => {
   const res = await fetchGraphQl(
     webServiceToken,
     bulletToken,
     language,
-    RequestId.MyOutfitCommonDataEquipmentsQuery
+    RequestId.MyOutfitCommonDataEquipmentsQuery,
   );
   const gears = res.data as GraphQLSuccessResponse<MyOutfitCommonDataEquipmentsResult>;
   if (gears.errors) {
@@ -561,7 +561,7 @@ export const fetchDetailVotingStatus = async (
   webServiceToken: WebServiceToken,
   bulletToken: string,
   language: string,
-  id: string
+  id: string,
 ) => {
   const res = await fetchGraphQl<DetailVotingStatusVariables>(
     webServiceToken,
@@ -570,7 +570,7 @@ export const fetchDetailVotingStatus = async (
     RequestId.DetailVotingStatusQuery,
     {
       festId: id,
-    }
+    },
   );
   const detail = res.data as GraphQLSuccessResponse<DetailVotingStatusResult>;
   if (detail.errors) {
@@ -582,13 +582,13 @@ export const fetchDetailVotingStatus = async (
 export const fetchLatestBattleHistories = async (
   webServiceToken: WebServiceToken,
   bulletToken: string,
-  language: string
+  language: string,
 ) => {
   const res = await fetchGraphQl(
     webServiceToken,
     bulletToken,
     language,
-    RequestId.LatestBattleHistoriesQuery
+    RequestId.LatestBattleHistoriesQuery,
   );
   const result = res.data as GraphQLSuccessResponse<LatestBattleHistoriesResult>;
   if (result.errors) {
@@ -599,13 +599,13 @@ export const fetchLatestBattleHistories = async (
 export const fetchRegularBattleHistories = async (
   webServiceToken: WebServiceToken,
   bulletToken: string,
-  language: string
+  language: string,
 ) => {
   const res = await fetchGraphQl(
     webServiceToken,
     bulletToken,
     language,
-    RequestId.RegularBattleHistoriesQuery
+    RequestId.RegularBattleHistoriesQuery,
   );
   const result = res.data as GraphQLSuccessResponse<RegularBattleHistoriesResult>;
   if (result.errors) {
@@ -616,13 +616,13 @@ export const fetchRegularBattleHistories = async (
 export const fetchAnarchyBattleHistories = async (
   webServiceToken: WebServiceToken,
   bulletToken: string,
-  language: string
+  language: string,
 ) => {
   const res = await fetchGraphQl(
     webServiceToken,
     bulletToken,
     language,
-    RequestId.BankaraBattleHistoriesQuery
+    RequestId.BankaraBattleHistoriesQuery,
   );
   const result = res.data as GraphQLSuccessResponse<BankaraBattleHistoriesResult>;
   if (result.errors) {
@@ -633,13 +633,13 @@ export const fetchAnarchyBattleHistories = async (
 export const fetchXBattleHistories = async (
   webServiceToken: WebServiceToken,
   bulletToken: string,
-  language: string
+  language: string,
 ) => {
   const res = await fetchGraphQl(
     webServiceToken,
     bulletToken,
     language,
-    RequestId.XBattleHistoriesQuery
+    RequestId.XBattleHistoriesQuery,
   );
   const result = res.data as GraphQLSuccessResponse<XBattleHistoriesResult>;
   if (result.errors) {
@@ -650,13 +650,13 @@ export const fetchXBattleHistories = async (
 export const fetchChallengeHistories = async (
   webServiceToken: WebServiceToken,
   bulletToken: string,
-  language: string
+  language: string,
 ) => {
   const res = await fetchGraphQl(
     webServiceToken,
     bulletToken,
     language,
-    RequestId.EventBattleHistoriesQuery
+    RequestId.EventBattleHistoriesQuery,
   );
   const result = res.data as GraphQLSuccessResponse<EventBattleHistoriesResult>;
   if (result.errors) {
@@ -667,13 +667,13 @@ export const fetchChallengeHistories = async (
 export const fetchPrivateBattleHistories = async (
   webServiceToken: WebServiceToken,
   bulletToken: string,
-  language: string
+  language: string,
 ) => {
   const res = await fetchGraphQl(
     webServiceToken,
     bulletToken,
     language,
-    RequestId.PrivateBattleHistoriesQuery
+    RequestId.PrivateBattleHistoriesQuery,
   );
   const result = res.data as GraphQLSuccessResponse<PrivateBattleHistoriesResult>;
   if (result.errors) {
@@ -685,7 +685,7 @@ export const fetchVsHistoryDetail = async (
   webServiceToken: WebServiceToken,
   bulletToken: string,
   language: string,
-  id: string
+  id: string,
 ) => {
   const res = await fetchGraphQl<VsHistoryDetailVariables>(
     webServiceToken,
@@ -694,7 +694,7 @@ export const fetchVsHistoryDetail = async (
     RequestId.VsHistoryDetailQuery,
     {
       vsResultId: id,
-    }
+    },
   );
   const detail = res.data as GraphQLSuccessResponse<VsHistoryDetailResult>;
   if (detail.errors) {
@@ -705,13 +705,13 @@ export const fetchVsHistoryDetail = async (
 export const fetchCoopResult = async (
   webServiceToken: WebServiceToken,
   bulletToken: string,
-  language: string
+  language: string,
 ) => {
   const res = await fetchGraphQl(
     webServiceToken,
     bulletToken,
     language,
-    RequestId.CoopHistoryQuery
+    RequestId.CoopHistoryQuery,
   );
   const result = res.data as GraphQLSuccessResponse<CoopHistoryResult>;
   if (result.errors) {
@@ -723,7 +723,7 @@ export const fetchCoopHistoryDetail = async (
   webServiceToken: WebServiceToken,
   bulletToken: string,
   language: string,
-  id: string
+  id: string,
 ) => {
   const res = await fetchGraphQl<CoopHistoryDetailVariables>(
     webServiceToken,
@@ -732,7 +732,7 @@ export const fetchCoopHistoryDetail = async (
     RequestId.CoopHistoryDetailQuery,
     {
       coopHistoryDetailId: id,
-    }
+    },
   );
   const detail = res.data as GraphQLSuccessResponse<CoopHistoryDetailResult>;
   if (detail.errors) {

@@ -1,14 +1,14 @@
 import {
   BottomSheetBackdrop,
+  BottomSheetFlashList,
   BottomSheetModal,
   BottomSheetScrollView,
   BottomSheetView,
 } from "@gorhom/bottom-sheet";
-import { FlashList, ListRenderItem } from "@shopify/flash-list";
+import { ListRenderItem } from "@shopify/flash-list";
 import { useEffect, useRef } from "react";
 import {
   LayoutChangeEvent,
-  ScrollViewProps,
   StyleProp,
   StyleSheet,
   useWindowDimensions,
@@ -74,7 +74,7 @@ const Modal = (props: ModalProps) => {
       enableDynamicSizing
       maxDynamicContentSize={Math.min(
         ModalSize[props.size],
-        height - insets.top - (width > MAX_WIDTH ? Math.max(insets.bottom, 20) : 0)
+        height - insets.top - (width > MAX_WIDTH ? Math.max(insets.bottom, 20) : 0),
       )}
       bottomInset={width > MAX_WIDTH ? Math.max(insets.bottom, 20) : 0}
       containerStyle={width > MAX_WIDTH && { marginHorizontal: (width - MAX_WIDTH) / 2 }}
@@ -153,7 +153,7 @@ const FlashModal = <T,>(props: FlashModalProps<T>) => {
             (width > MAX_WIDTH
               ? styles.inset.height
               : Math.max(insets.bottom, styles.inset.height)),
-          height - insets.top - (width > MAX_WIDTH ? Math.max(insets.bottom, 20) : 0)
+          height - insets.top - (width > MAX_WIDTH ? Math.max(insets.bottom, 20) : 0),
         ),
       ]}
       enablePanDownToClose
@@ -167,15 +167,14 @@ const FlashModal = <T,>(props: FlashModalProps<T>) => {
       onDismiss={props.onDismiss}
       handleComponent={null}
       backdropComponent={Backdrop}
+      enableDynamicSizing={false}
     >
-      <FlashList
+      <BottomSheetFlashList
         showsHorizontalScrollIndicator={false}
         data={props.data}
         keyExtractor={props.keyExtractor}
         renderItem={props.renderItem}
         estimatedItemSize={props.estimatedItemSize}
-        // HACK: forcly cast.
-        renderScrollComponent={BottomSheetScrollView as React.ComponentType<ScrollViewProps>}
         ListHeaderComponent={
           <VStack>
             <View style={styles.inset} />

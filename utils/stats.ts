@@ -133,7 +133,7 @@ const getBattlePlayerBrief = (player: VsPlayer): BattlePlayerBrief => {
 };
 const addBattlePlayerStats = (
   stats: BattlePlayerStats,
-  player: BattlePlayerBrief
+  player: BattlePlayerBrief,
 ): BattlePlayerStats => {
   return {
     turf: stats.turf + player.turf,
@@ -159,7 +159,7 @@ export const getBattleBrief = (battle: VsHistoryDetailResult): BattleBrief => {
     dragon: battle.vsHistoryDetail!.festMatch?.dragonMatchType as DragonMatchType | undefined,
     myTeam: battle.vsHistoryDetail!.myTeam.players.map(getBattlePlayerBrief),
     otherTeams: battle.vsHistoryDetail!.otherTeams.map((team) =>
-      team.players.map(getBattlePlayerBrief)
+      team.players.map(getBattlePlayerBrief),
     ),
   };
 };
@@ -580,7 +580,7 @@ export const getCoopBrief = (coop: CoopHistoryDetailResult): CoopBrief => {
     rule: coop.coopHistoryDetail!.rule as CoopRule,
     stage: coop.coopHistoryDetail!.coopStage.id,
     suppliedWeapons: coop.coopHistoryDetail!.weapons.map((weapon) =>
-      getImageHash(weapon.image.url)
+      getImageHash(weapon.image.url),
     ),
     hazardLevel: coop.coopHistoryDetail!.dangerRate,
     grade: coop.coopHistoryDetail!.afterGrade
@@ -590,7 +590,7 @@ export const getCoopBrief = (coop: CoopHistoryDetailResult): CoopBrief => {
         }
       : undefined,
     players: [getCoopPlayerBrief(coop.coopHistoryDetail!.myResult)].concat(
-      ...coop.coopHistoryDetail!.memberResults.map(getCoopPlayerBrief)
+      ...coop.coopHistoryDetail!.memberResults.map(getCoopPlayerBrief),
     ),
     waves,
     bosses,
@@ -611,13 +611,13 @@ export const getCoopBrief = (coop: CoopHistoryDetailResult): CoopBrief => {
             defeat: coop.coopHistoryDetail!.bossResult!.hasDefeatBoss,
           })
       : coop.coopHistoryDetail!.bossResult
-      ? [
-          {
-            id: coop.coopHistoryDetail!.bossResult.boss.id,
-            defeat: coop.coopHistoryDetail!.bossResult.hasDefeatBoss,
-          },
-        ]
-      : [],
+        ? [
+            {
+              id: coop.coopHistoryDetail!.bossResult.boss.id,
+              defeat: coop.coopHistoryDetail!.bossResult.hasDefeatBoss,
+            },
+          ]
+        : [],
     scales: coop.coopHistoryDetail!.scale
       ? {
           gold: coop.coopHistoryDetail!.scale!.gold,

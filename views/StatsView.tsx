@@ -44,7 +44,7 @@ const winRateSort = (a: { count: number; win: number }, b: { count: number; win:
 };
 const clearRateSort = (
   a: { appear: number; clear: number },
-  b: { appear: number; clear: number }
+  b: { appear: number; clear: number },
 ) => {
   if (a.appear === 0 && b.appear === 0) {
     return 0;
@@ -64,7 +64,7 @@ const clearRateSort = (
 };
 const defeatRateSort = (
   a: { appear: number; defeat: number },
-  b: { appear: number; defeat: number }
+  b: { appear: number; defeat: number },
 ) => {
   if (a.appear === 0 && b.appear === 0) {
     return 0;
@@ -100,17 +100,17 @@ const StatsModal = (props: StatsModalProps) => {
     () =>
       getBattleStats(
         ...((props.briefs?.map((result) => result.battle).filter((battle) => battle) ??
-          []) as BattleBrief[])
+          []) as BattleBrief[]),
       ),
-    [props.briefs]
+    [props.briefs],
   );
   const coopsStats = useMemo(
     () =>
       getCoopStats(
         ...((props.briefs?.map((result) => result.coop).filter((coop) => coop) ??
-          []) as CoopBrief[])
+          []) as CoopBrief[]),
       ),
-    [props.briefs]
+    [props.briefs],
   );
 
   const battleStageStats = useMemo(() => {
@@ -442,7 +442,7 @@ const StatsModal = (props: StatsModalProps) => {
                         {formatPower(
                           battleStats.power.total,
                           battleStats.power.max,
-                          battleStats.power.count
+                          battleStats.power.count,
                         )}
                       </Text>
                     </Display>
@@ -457,7 +457,7 @@ const StatsModal = (props: StatsModalProps) => {
                       {formatTotalAndAverageKillAndAssist(
                         battleDimension.kill,
                         battleDimension.assist,
-                        battleStats.duration / 60
+                        battleStats.duration / 60,
                       )}
                     </Text>
                   </Display>
@@ -579,7 +579,7 @@ const StatsModal = (props: StatsModalProps) => {
                     <Text numberOfLines={1}>
                       {formatTotalAndAverage(
                         coopDimension.defeat,
-                        coopsStats.count - coopsStats.exempt
+                        coopsStats.count - coopsStats.exempt,
                       )}
                     </Text>
                   </AccordionDisplay>
@@ -613,14 +613,14 @@ const StatsModal = (props: StatsModalProps) => {
                     {formatTotalAndAverageGoldenEggs(
                       coopDimension.golden,
                       coopDimension.assist,
-                      coopsStats.count - coopsStats.exempt
+                      coopsStats.count - coopsStats.exempt,
                     )}
                   </Display>
                   <Display title={t("power_eggs_collected")}>
                     <Text numberOfLines={1}>
                       {formatTotalAndAverage(
                         coopDimension.power,
-                        coopsStats.count - coopsStats.exempt
+                        coopsStats.count - coopsStats.exempt,
                       )}
                     </Text>
                   </Display>
@@ -628,7 +628,7 @@ const StatsModal = (props: StatsModalProps) => {
                     <Text numberOfLines={1}>
                       {formatTotalAndAverage(
                         coopDimension.rescue,
-                        coopsStats.count - coopsStats.exempt
+                        coopsStats.count - coopsStats.exempt,
                       )}
                     </Text>
                   </Display>
@@ -636,7 +636,7 @@ const StatsModal = (props: StatsModalProps) => {
                     <Text numberOfLines={1}>
                       {formatTotalAndAverage(
                         coopDimension.rescued,
-                        coopsStats.count - coopsStats.exempt
+                        coopsStats.count - coopsStats.exempt,
                       )}
                     </Text>
                   </Display>
@@ -698,7 +698,7 @@ const StatsModal = (props: StatsModalProps) => {
                                 {formatWinRateAndTotal(specialWeapon.clear, specialWeapon.appear)}
                               </Text>
                             </Display>
-                          )
+                          ),
                         )}
                       />
                     </VStack>

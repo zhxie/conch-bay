@@ -98,7 +98,7 @@ const AccordionDisplay = forwardRef(
         {expand && subChildren}
       </VStack>
     );
-  }
+  },
 );
 
 export { Display, AccordionDisplay, AccordionDisplayHandle };

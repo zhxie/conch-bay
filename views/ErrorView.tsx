@@ -76,14 +76,14 @@ const ErrorView = (props: ErrorViewProps) => {
         coopDuplicate.set(time, sequence);
         await FileSystem.writeAsStringAsync(
           `${dir}/coops/${time}${sequence ? `-${sequence}` : ""}.json`,
-          row.detail
+          row.detail,
         );
       } else {
         const sequence = (battleDuplicate.get(time) ?? 0) + 1;
         battleDuplicate.set(time, sequence);
         await FileSystem.writeAsStringAsync(
           `${dir}/battles/${time}${sequence > 1 ? `-${sequence}` : ""}.json`,
-          row.detail
+          row.detail,
         );
       }
     }
@@ -158,7 +158,7 @@ const ErrorView = (props: ErrorViewProps) => {
             // HACK: cannot trust Application.applicationName in iOS since it will not
             // return localized application name.
             defaultValue: Application.applicationName,
-          }
+          },
         )} ${Application.nativeApplicationVersion} (${Application.nativeBuildVersion})`}</Text>
       </VStack>
     </Center>

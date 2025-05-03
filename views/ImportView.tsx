@@ -186,7 +186,7 @@ const parseFleece = (
   bytes: Uint8Array,
   sharedKeys?: string[],
   index?: number,
-  wide?: boolean
+  wide?: boolean,
 ): any => {
   if (index === undefined) {
     index = bytes.length - 2;
@@ -297,7 +297,7 @@ const parseFleece = (
         bytes,
         sharedKeys,
         index + 2 + (wide ? 8 : 4) * i + (wide ? 4 : 2),
-        wide
+        wide,
       );
     }
     return values;
@@ -331,7 +331,7 @@ interface ImportViewProps {
   onBegin: () => void;
   onResults: (
     battles: VsHistoryDetailResult[],
-    coops: CoopHistoryDetailResult[]
+    coops: CoopHistoryDetailResult[],
   ) => Promise<ImportResult>;
   onComplete: (n: number) => void;
 }
@@ -378,8 +378,8 @@ const ImportView = (props: ImportViewProps) => {
       for (const uri of battleUris) {
         const battle = JSON.parse(
           await FileSystem.readAsStringAsync(
-            `${FileSystem.cacheDirectory!}/conch-bay-import/battles/${uri}`
-          )
+            `${FileSystem.cacheDirectory!}/conch-bay-import/battles/${uri}`,
+          ),
         );
         battles.push(battle);
         if (battles.length >= BATCH_SIZE) {
@@ -405,8 +405,8 @@ const ImportView = (props: ImportViewProps) => {
       for (const uri of coopUris) {
         const coop = JSON.parse(
           await FileSystem.readAsStringAsync(
-            `${FileSystem.cacheDirectory!}/conch-bay-import/coops/${uri}`
-          )
+            `${FileSystem.cacheDirectory!}/conch-bay-import/coops/${uri}`,
+          ),
         );
         coops.push(coop);
         if (coops.length >= BATCH_SIZE) {
@@ -529,13 +529,13 @@ const ImportView = (props: ImportViewProps) => {
     nplnUserId: string,
     playedTime: string,
     uuid: string,
-    suffix?: string
+    suffix?: string,
   ) => {
     const timeStr = dayjs(playedTime).utc().format("YYYYMMDDTHHmmss");
     return encode64String(
       `${path}-u-${nplnUserId}:${timeStr}_${uuid.toLowerCase()}${
         suffix !== undefined ? suffix : ""
-      }`
+      }`,
     );
   };
   const formatSalmonia3PlusObject = (
@@ -547,7 +547,7 @@ const ImportView = (props: ImportViewProps) => {
       path: string;
       useSplatoon3ink?: boolean;
     },
-    ignoreId?: boolean
+    ignoreId?: boolean,
   ) => {
     const encoded = encode64String(`${path}-${id}`);
     const obj: any = {};
@@ -591,7 +591,7 @@ const ImportView = (props: ImportViewProps) => {
   };
   const onConvertStatInkSalmonRunJsonPress = () => {
     WebBrowser.openBrowserAsync(
-      "https://github.com/zhxie/conch-bay#import-salmon-run-data-from-statink"
+      "https://github.com/zhxie/conch-bay#import-salmon-run-data-from-statink",
     );
   };
   const onImportIkawidget3Ikax3Press = () => {
@@ -616,7 +616,7 @@ const ImportView = (props: ImportViewProps) => {
       props.onBegin();
       await unzip(uri, `${FileSystem.cacheDirectory!}/ikawidget3`);
       const account = JSON.parse(
-        await FileSystem.readAsStringAsync(`${FileSystem.cacheDirectory}/ikawidget3/account.json`)
+        await FileSystem.readAsStringAsync(`${FileSystem.cacheDirectory}/ikawidget3/account.json`),
       );
       const accountId = account["id"];
 
@@ -644,12 +644,12 @@ const ImportView = (props: ImportViewProps) => {
       let error: Error | undefined;
       const battleInfo = await battleDb.getFirstAsync<{ body: Uint8Array }>(
         "SELECT body FROM kv_info WHERE `key` = ?",
-        "SharedKeys"
+        "SharedKeys",
       );
       const battleSharedKeys = parseFleece(battleInfo!.body);
       let battles: VsHistoryDetailResult[] = [];
       for await (const row of battleDb.getEachAsync<{ body: Uint8Array }>(
-        "SELECT body FROM kv_default"
+        "SELECT body FROM kv_default",
       )) {
         const battle = parseFleece(row.body, battleSharedKeys);
         battles.push({ vsHistoryDetail: battle });
@@ -674,12 +674,12 @@ const ImportView = (props: ImportViewProps) => {
       }
       const coopInfo = await coopDb.getFirstAsync<{ body: Uint8Array }>(
         "SELECT body FROM kv_info WHERE `key` = ?",
-        "SharedKeys"
+        "SharedKeys",
       );
       const coopSharedKeys = parseFleece(coopInfo!.body);
       let coops: CoopHistoryDetailResult[] = [];
       for await (const row of coopDb.getEachAsync<{ body: Uint8Array }>(
-        "SELECT body FROM kv_default"
+        "SELECT body FROM kv_default",
       )) {
         const coop = parseFleece(row.body, coopSharedKeys);
         coops.push({ coopHistoryDetail: coop });
@@ -759,7 +759,7 @@ const ImportView = (props: ImportViewProps) => {
       props.onBegin();
       await unzip(uri, `${FileSystem.cacheDirectory!}/salmdroidNW`);
       const summary = JSON.parse(
-        await FileSystem.readAsStringAsync(`${FileSystem.cacheDirectory!}/salmdroidNW/summary`)
+        await FileSystem.readAsStringAsync(`${FileSystem.cacheDirectory!}/salmdroidNW/summary`),
       );
       const n = summary["results"];
       showBanner(BannerLevel.Info, t("loading_n_results", { n }));
@@ -773,7 +773,7 @@ const ImportView = (props: ImportViewProps) => {
       ) {
         const coops: CoopHistoryDetailResult[] = [];
         const data = JSON.parse(
-          await FileSystem.readAsStringAsync(`${FileSystem.cacheDirectory!}/salmdroidNW/${n}`)
+          await FileSystem.readAsStringAsync(`${FileSystem.cacheDirectory!}/salmdroidNW/${n}`),
         );
         const results = JSON.parse(data["results"]);
         for (const result of results) {
@@ -812,7 +812,7 @@ const ImportView = (props: ImportViewProps) => {
           if (coop.coopHistoryDetail!.bossResult) {
             formatSalmdroidnwImageUrl(
               coop.coopHistoryDetail!.bossResult.boss.image,
-              "coop_enemy_img"
+              "coop_enemy_img",
             );
           }
           for (const enemyResult of coop.coopHistoryDetail!.enemyResults) {
@@ -826,7 +826,7 @@ const ImportView = (props: ImportViewProps) => {
           formatSalmdroidnwImageUrl(
             coop.coopHistoryDetail!.coopStage.image,
             "stage_img/banner/high_resolution",
-            false
+            false,
           );
           for (const weapon of coop.coopHistoryDetail!.weapons) {
             if (!weaponList.images[getImageHash(weapon.image.url)]) {
@@ -890,7 +890,7 @@ const ImportView = (props: ImportViewProps) => {
       )[0];
       const coops: CoopHistoryDetailResult[] = [];
       const data = JSON.parse(
-        await FileSystem.readAsStringAsync(`${FileSystem.cacheDirectory!}/Salmonia3+/${file}`)
+        await FileSystem.readAsStringAsync(`${FileSystem.cacheDirectory!}/Salmonia3+/${file}`),
       );
       const n = data["schedules"].reduce((prev, current) => prev + current["results"].length, 0);
       showBanner(BannerLevel.Info, t("loading_n_results", { n }));
@@ -904,7 +904,7 @@ const ImportView = (props: ImportViewProps) => {
               {
                 images: backgroundList.backgrounds,
                 path: "npl_img",
-              }
+              },
             );
             return {
               player: {
@@ -941,7 +941,7 @@ const ImportView = (props: ImportViewProps) => {
                   result["nplnUserId"],
                   result["playTime"],
                   result["uuid"],
-                  `:u-${player["nplnUserId"]}`
+                  `:u-${player["nplnUserId"]}`,
                 ),
                 species: player["species"],
               },
@@ -954,11 +954,11 @@ const ImportView = (props: ImportViewProps) => {
                     images: weaponList.weapons,
                     path: "weapon_illust",
                     useSplatoon3ink: !weaponList.coopRareWeapons.find(
-                      (w) => w === encode64String(`Weapon-${weapon}`)
+                      (w) => w === encode64String(`Weapon-${weapon}`),
                     ),
                   },
-                  true
-                )
+                  true,
+                ),
               ),
               specialWeapon:
                 player["specialId"] !== null
@@ -971,7 +971,7 @@ const ImportView = (props: ImportViewProps) => {
                           images: coopSpecialWeaponList.specialWeapons,
                           path: "special_img/blue",
                         },
-                        true
+                        true,
                       ),
                       weaponId: player["specialId"],
                     }
@@ -991,7 +991,7 @@ const ImportView = (props: ImportViewProps) => {
                 "CoopHistoryDetail",
                 result["nplnUserId"],
                 result["playTime"],
-                result["uuid"]
+                result["uuid"],
               ),
               afterGrade:
                 result["gradeId"] !== null
@@ -1025,7 +1025,7 @@ const ImportView = (props: ImportViewProps) => {
                       {
                         images: salmonidList.salmonids,
                         path: "coop_enemy_img",
-                      }
+                      },
                     ),
                   };
                 })
@@ -1039,7 +1039,7 @@ const ImportView = (props: ImportViewProps) => {
                       formatSalmonia3PlusObject("SpecialWeapon", player["specialId"], true, {
                         images: coopSpecialWeaponList.specialWeapons,
                         path: "special_img/blue",
-                      })
+                      }),
                     );
                   }
                 }
@@ -1076,8 +1076,8 @@ const ImportView = (props: ImportViewProps) => {
                     path: "weapon_illust",
                     useSplatoon3ink: true,
                   },
-                  true
-                )
+                  true,
+                ),
               ),
               afterGradePoint: result["gradePoint"],
               scale:

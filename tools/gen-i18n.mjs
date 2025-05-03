@@ -14,7 +14,7 @@ const getVersion = async () => {
 
 const getLanguage = async (language) => {
   const res = fetch(
-    `https://raw.githubusercontent.com/Leanny/splat3/main/data/language/${language}_unicode.json`
+    `https://raw.githubusercontent.com/Leanny/splat3/main/data/language/${language}_unicode.json`,
   );
   const json = (await res).json();
   return json;
@@ -75,7 +75,7 @@ const genRuleLocales = (languages) => {
 };
 const getChallengeLocales = async (version, languages) => {
   const res = await fetch(
-    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/LeagueTypeInfo.json`
+    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/LeagueTypeInfo.json`,
   );
   const json = await res.json();
   const maps = [];
@@ -96,7 +96,7 @@ const getChallengeLocales = async (version, languages) => {
 };
 const getStageLocales = async (version, languages) => {
   const res = await fetch(
-    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/VersusSceneInfo.json`
+    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/VersusSceneInfo.json`,
   );
   const json = await res.json();
   const maps = [];
@@ -115,7 +115,7 @@ const getStageLocales = async (version, languages) => {
 };
 const getCoopStageLocales = async (version, languages) => {
   const res = await fetch(
-    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/CoopSceneInfo.json`
+    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/CoopSceneInfo.json`,
   );
   const json = await res.json();
   const maps = [];
@@ -134,7 +134,7 @@ const getCoopStageLocales = async (version, languages) => {
 };
 const getWeaponLocales = async (version, languages) => {
   const res = await fetch(
-    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/WeaponInfoMain.json`
+    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/WeaponInfoMain.json`,
   );
   const json = await res.json();
   const maps = [];
@@ -154,7 +154,7 @@ const getWeaponLocales = async (version, languages) => {
 };
 const getCoopSpecialWeaponLocales = async (version, languages) => {
   const res = await fetch(
-    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/WeaponInfoSpecial.json`
+    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/WeaponInfoSpecial.json`,
   );
   const json = await res.json();
   const maps = [];
@@ -183,7 +183,7 @@ const getTitleLocales = (languages) => {
       const id = `TitleAdjective-${adjective}`;
       maps[i][id] = languages[i]["CommonMsg/Byname/BynameAdjective"][adjective].replaceAll(
         /\[.+?\]/g,
-        ""
+        "",
       );
     }
     for (const subject of Object.keys(languages[i]["CommonMsg/Byname/BynameSubject"])) {
@@ -196,15 +196,15 @@ const getTitleLocales = (languages) => {
         if (languages[i]["CommonMsg/Byname/BynameSubject"][altSubject].includes("group=0001")) {
           maps[i][neutralId] = languages[i]["CommonMsg/Byname/BynameSubject"][subject].replaceAll(
             /\[.+?\]/g,
-            ""
+            "",
           );
           maps[i][id] = languages[i]["CommonMsg/Byname/BynameSubject"][subject].replaceAll(
             /\[.+?\]/g,
-            ""
+            "",
           );
           maps[i][altId] = languages[i]["CommonMsg/Byname/BynameSubject"][subject].replaceAll(
             /\[.+?\]/g,
-            ""
+            "",
           );
         } else {
           maps[i][neutralId] = `${languages[i]["CommonMsg/Byname/BynameSubject"][
@@ -214,11 +214,11 @@ const getTitleLocales = (languages) => {
           ].replaceAll(/\[.+?\]/g, "")}`;
           maps[i][id] = languages[i]["CommonMsg/Byname/BynameSubject"][subject].replaceAll(
             /\[.+?\]/g,
-            ""
+            "",
           );
           maps[i][altId] = languages[i]["CommonMsg/Byname/BynameSubject"][altSubject].replaceAll(
             /\[.+?\]/g,
-            ""
+            "",
           );
         }
       }
@@ -242,7 +242,7 @@ const getBrandLocales = (languages) => {
 };
 const getHeadgearLocales = async (version, languages) => {
   const res = await fetch(
-    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/GearInfoHead.json`
+    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/GearInfoHead.json`,
   );
   const json = await res.json();
   const maps = [];
@@ -261,7 +261,7 @@ const getHeadgearLocales = async (version, languages) => {
 };
 const getClothesLocales = async (version, languages) => {
   const res = await fetch(
-    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/GearInfoClothes.json`
+    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/GearInfoClothes.json`,
   );
   const json = await res.json();
   const maps = [];
@@ -280,7 +280,7 @@ const getClothesLocales = async (version, languages) => {
 };
 const getShoesLocales = async (version, languages) => {
   const res = await fetch(
-    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/GearInfoShoes.json`
+    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/GearInfoShoes.json`,
   );
   const json = await res.json();
   const maps = [];
@@ -322,7 +322,7 @@ const getGradeLocales = (languages) => {
     for (const grade of Object.keys(languages[i]["CommonMsg/Coop/CoopGrade"])) {
       if (grade.match(/Grade_\d\d/)) {
         const id = Buffer.from(
-          `CoopGrade-${Number.parseInt(grade.replace("Grade_", ""))}`
+          `CoopGrade-${Number.parseInt(grade.replace("Grade_", ""))}`,
         ).toString("base64");
         const name = languages[i]["CommonMsg/Coop/CoopGrade"][grade];
         maps[i][id] = name;
@@ -343,7 +343,7 @@ const getEventLocales = async (version, languages) => {
     EventTamaire: 8,
   };
   const res = await fetch(
-    `https://raw.githubusercontent.com/Leanny/splat3/main/data/parameter/${version}/misc/spl__CoopLevelsConfig.spl__CoopLevelsConfig.json`
+    `https://raw.githubusercontent.com/Leanny/splat3/main/data/parameter/${version}/misc/spl__CoopLevelsConfig.spl__CoopLevelsConfig.json`,
   );
   const json = await res.json();
   const maps = [];
@@ -382,7 +382,7 @@ const getSalmonidLocales = async (version, languages) => {
     SakeJaw: 25,
   };
   const res = await fetch(
-    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/CoopEnemyInfo.json`
+    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/CoopEnemyInfo.json`,
   );
   const json = await res.json();
   const maps = [];
@@ -402,7 +402,7 @@ const getSalmonidLocales = async (version, languages) => {
 };
 const getWorkSuitLocales = async (version, languages) => {
   const res = await fetch(
-    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/CoopSkinInfo.json`
+    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/CoopSkinInfo.json`,
   );
   const json = await res.json();
   const maps = [];

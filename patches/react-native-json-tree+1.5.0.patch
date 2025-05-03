@@ -1,0 +1,78 @@
+# Add onValuePress callback and fix text wrap.
+diff --git a/node_modules/react-native-json-tree/src/Nodes.js b/node_modules/react-native-json-tree/src/Nodes.js
+index c95657e..3e8fd95 100644
+--- a/node_modules/react-native-json-tree/src/Nodes.js
++++ b/node_modules/react-native-json-tree/src/Nodes.js
+@@ -39,13 +39,19 @@ const JSONValueNode = ({
+   keyPath,
+   valueRenderer,
+   value,
++  onValuePress,
+   valueGetter = (value) => value,
+ }) => (
+   <View {...styling('value', nodeType, keyPath)}>
+     <Text {...styling(['label', 'valueLabel'], nodeType, keyPath)}>
+       {labelRenderer(keyPath, nodeType, false, false)}
+     </Text>
+-    <Text {...styling('valueText', nodeType, keyPath)}>
++    <Text
++      {...styling('valueText', nodeType, keyPath)}
++      onPress={() => {
++        onValuePress(value);
++      }}
++    >
+       {valueRenderer(valueGetter(value), value, ...keyPath)}
+     </Text>
+   </View>
+@@ -72,6 +78,7 @@ export const JSONNode = ({
+   styling,
+   value,
+   valueRenderer,
++  onValuePress,
+   ...rest
+ }) => {
+   const nodeType = isCustomNode(value) ? 'Custom' : objType(value)
+@@ -86,6 +93,7 @@ export const JSONNode = ({
+     styling,
+     value,
+     valueRenderer,
++    onValuePress,
+   }
+ 
+   const nestedNodeProps = {
+diff --git a/node_modules/react-native-json-tree/src/createStylingFromTheme.js b/node_modules/react-native-json-tree/src/createStylingFromTheme.js
+index aea79a5..1a80f85 100644
+--- a/node_modules/react-native-json-tree/src/createStylingFromTheme.js
++++ b/node_modules/react-native-json-tree/src/createStylingFromTheme.js
+@@ -59,6 +59,7 @@ const getStylingFromBase16 = (base16Theme) => {
+       style: {
+         color: valueColorMap(colors)[nodeType],
+         marginLeft: 5,
++        flexShrink: 1,
+         ...style,
+       },
+     }),
+diff --git a/node_modules/react-native-json-tree/src/index.js b/node_modules/react-native-json-tree/src/index.js
+index c6a197c..6da7e36 100644
+--- a/node_modules/react-native-json-tree/src/index.js
++++ b/node_modules/react-native-json-tree/src/index.js
+@@ -98,6 +98,7 @@ class JSONTree extends React.Component {
+     collectionLimit: 50,
+     invertTheme: true,
+     sortObjectKeys: true,
++    onValuePress: identity,
+   };
+ 
+   constructor(props) {
+diff --git a/node_modules/react-native-json-tree/src/types/index.d.ts b/node_modules/react-native-json-tree/src/types/index.d.ts
+index 1780dc4..f59cfb9 100644
+--- a/node_modules/react-native-json-tree/src/types/index.d.ts
++++ b/node_modules/react-native-json-tree/src/types/index.d.ts
+@@ -24,6 +24,7 @@ declare module 'react-native-json-tree' {
+     shouldExpandNode?: (_keyName: any, _data: any, level: number) => boolean;
+     theme?: Theme;
+     valueRenderer?: (value: Renderable | undefined) => ReactNode;
++    onValuePress?: (value: any) => void;
+   }
+ 
+   export default class JSONTree extends Component<JSONTreeProps> {}

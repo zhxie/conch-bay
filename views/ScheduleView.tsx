@@ -86,7 +86,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
           case BankaraMatchMode.CHALLENGE:
           case BankaraMatchMode.OPEN:
             return (anarchyMatchSettings as BankaraMatchSetting[]).find(
-              (matchSetting) => matchSetting.bankaraMode === mode
+              (matchSetting) => matchSetting.bankaraMode === mode,
             );
           case FestMatchMode.REGULAR:
           case FestMatchMode.CHALLENGE:
@@ -109,7 +109,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
         case FestMatchMode.CHALLENGE:
         case FestMatchMode.REGULAR:
           return (schedule["festMatchSettings"] as FestMatchSetting[]).find(
-            (matchSetting) => matchSetting.festMode === mode
+            (matchSetting) => matchSetting.festMode === mode,
           );
         case BankaraMatchMode.CHALLENGE:
         case BankaraMatchMode.OPEN:
@@ -120,7 +120,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
     return (schedule["festMatchSettings"] as FestMatchSetting[])[0];
   };
   const isScheduleExpired = (
-    schedule: VsSchedule | EventMatchTimePeriod | CoopGroupingSchedule
+    schedule: VsSchedule | EventMatchTimePeriod | CoopGroupingSchedule,
   ) => {
     const now = new Date().getTime();
     const date = new Date(schedule.endTime);
@@ -133,14 +133,14 @@ const ScheduleView = (props: ScheduleViewProps) => {
       props.schedules?.festSchedules.nodes
         .filter((node) => getMatchSetting(node, FestMatchMode.REGULAR))
         .filter((node) => !isScheduleExpired(node)),
-    [props.schedules]
+    [props.schedules],
   );
   const splatfestProSchedules = useMemo(
     () =>
       props.schedules?.festSchedules.nodes
         .filter((node) => getMatchSetting(node, FestMatchMode.CHALLENGE))
         .filter((node) => !isScheduleExpired(node)),
-    [props.schedules]
+    [props.schedules],
   );
   const tricolorSchedules = useMemo(() => {
     if (!props.schedules?.currentFest) {
@@ -170,60 +170,60 @@ const ScheduleView = (props: ScheduleViewProps) => {
       props.schedules?.regularSchedules.nodes
         .filter((node) => getMatchSetting(node))
         .filter((node) => !isScheduleExpired(node)),
-    [props.schedules]
+    [props.schedules],
   );
   const anarchySeriesSchedules = useMemo(
     () =>
       props.schedules?.bankaraSchedules.nodes
         .filter((node) => getMatchSetting(node, BankaraMatchMode.CHALLENGE))
         .filter((node) => !isScheduleExpired(node)),
-    [props.schedules]
+    [props.schedules],
   );
   const anarchyOpenSchedules = useMemo(
     () =>
       props.schedules?.bankaraSchedules.nodes
         .filter((node) => getMatchSetting(node, BankaraMatchMode.OPEN))
         .filter((node) => !isScheduleExpired(node)),
-    [props.schedules]
+    [props.schedules],
   );
   const xSchedules = useMemo(
     () =>
       props.schedules?.xSchedules.nodes
         .filter((node) => getMatchSetting(node))
         .filter((node) => !isScheduleExpired(node)),
-    [props.schedules]
+    [props.schedules],
   );
   const challenges = useMemo(
     () =>
       props.schedules?.eventSchedules.nodes
         .filter((node) => node.timePeriods.length > 0)
         .filter((node) => !isScheduleExpired(node.timePeriods[node.timePeriods.length - 1])),
-    [props.schedules]
+    [props.schedules],
   );
   const bigRunShifts = useMemo(
     () =>
       props.schedules?.coopGroupingSchedule.bigRunSchedules.nodes.filter(
-        (node) => !isScheduleExpired(node)
+        (node) => !isScheduleExpired(node),
       ),
-    [props.schedules]
+    [props.schedules],
   );
   const eggstraWorkShifts = useMemo(
     () =>
       props.schedules?.coopGroupingSchedule.teamContestSchedules.nodes.filter(
-        (node) => !isScheduleExpired(node)
+        (node) => !isScheduleExpired(node),
       ),
-    [props.schedules]
+    [props.schedules],
   );
   const regularShifts = useMemo(
     () =>
       props.schedules?.coopGroupingSchedule.regularSchedules.nodes.filter(
-        (node) => !isScheduleExpired(node)
+        (node) => !isScheduleExpired(node),
       ),
-    [props.schedules]
+    [props.schedules],
   );
 
   const isScheduleStarted = (
-    schedule: VsSchedule | EventMatchTimePeriod | CoopGroupingSchedule
+    schedule: VsSchedule | EventMatchTimePeriod | CoopGroupingSchedule,
   ) => {
     const now = new Date().getTime();
     const date = new Date(schedule.startTime);
@@ -265,7 +265,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
   };
   const formatScheduleTimeRange = (
     schedule: VsSchedule | EventMatchTimePeriod | CoopGroupingSchedule,
-    withDate: boolean
+    withDate: boolean,
   ) => {
     const startTime = formatTime(schedule.startTime, false, withDate);
     const endTime = formatTime(schedule.endTime, true, withDate);
@@ -413,7 +413,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
                 rule={td(getMatchSetting(splatfestOpenSchedules[0], FestMatchMode.REGULAR)!.vsRule)}
                 stages={getMatchSetting(
                   splatfestOpenSchedules[0],
-                  FestMatchMode.REGULAR
+                  FestMatchMode.REGULAR,
                 )!.vsStages.map(td)}
                 onPress={onSplatfestOpenSchedulePress}
                 style={ViewStyles.mr2}
@@ -423,11 +423,11 @@ const ScheduleView = (props: ScheduleViewProps) => {
               <ScheduleButton
                 color={isScheduleStarted(splatfestProSchedules[0]) ? Color.AccentColor : undefined}
                 rule={td(
-                  getMatchSetting(splatfestProSchedules[0], FestMatchMode.CHALLENGE)!.vsRule
+                  getMatchSetting(splatfestProSchedules[0], FestMatchMode.CHALLENGE)!.vsRule,
                 )}
                 stages={getMatchSetting(
                   splatfestProSchedules[0],
-                  FestMatchMode.CHALLENGE
+                  FestMatchMode.CHALLENGE,
                 )!.vsStages.map(td)}
                 onPress={onSplatfestProSchedulePress}
                 style={ViewStyles.mr2}
@@ -457,11 +457,11 @@ const ScheduleView = (props: ScheduleViewProps) => {
                   isScheduleStarted(anarchySeriesSchedules[0]) ? Color.AnarchyBattle : undefined
                 }
                 rule={td(
-                  getMatchSetting(anarchySeriesSchedules[0], BankaraMatchMode.CHALLENGE)!.vsRule
+                  getMatchSetting(anarchySeriesSchedules[0], BankaraMatchMode.CHALLENGE)!.vsRule,
                 )}
                 stages={getMatchSetting(
                   anarchySeriesSchedules[0],
-                  BankaraMatchMode.CHALLENGE
+                  BankaraMatchMode.CHALLENGE,
                 )!.vsStages.map(td)}
                 onPress={onAnarchySeriesSchedulePress}
                 style={ViewStyles.mr2}
@@ -473,7 +473,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
                 rule={td(getMatchSetting(anarchyOpenSchedules[0], BankaraMatchMode.OPEN)!.vsRule)}
                 stages={getMatchSetting(
                   anarchyOpenSchedules[0],
-                  BankaraMatchMode.OPEN
+                  BankaraMatchMode.OPEN,
                 )!.vsStages.map(td)}
                 onPress={onAnarchyOpenSchedulePress}
                 style={ViewStyles.mr2}
@@ -559,7 +559,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
                 {challenge.timePeriods
                   .slice(
                     // A magic to keep at least 1 time period even if all of them are expired.
-                    challenge.timePeriods.findIndex((timePeriod) => !isScheduleExpired(timePeriod))
+                    challenge.timePeriods.findIndex((timePeriod) => !isScheduleExpired(timePeriod)),
                   )
                   .map((timePeriod, j, timePeriods) => (
                     <ScheduleBox

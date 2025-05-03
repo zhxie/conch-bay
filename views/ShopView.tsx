@@ -36,7 +36,7 @@ const ShopView = (props: ShopViewProps) => {
     : props.shop.gesotown.pickupBrand;
   const limitedGears = useMemo(
     () => props.shop.gesotown.limitedGears.filter((gear) => !isGearExpired(gear)),
-    [props.shop]
+    [props.shop],
   );
 
   const onShopPress = () => {
@@ -58,7 +58,7 @@ const ShopView = (props: ShopViewProps) => {
                   defaultValue: limitedGears[0].gear.name,
                 }),
               ]
-            : []
+            : [],
         )}
         onPress={onShopPress}
         style={props.style}
@@ -78,7 +78,7 @@ const ShopView = (props: ShopViewProps) => {
                   brand={t(gear.gear.brand.id)}
                   primaryAbility={getImageCacheSource(gear.gear.primaryGearPower.image.url)}
                   additionalAbility={gear.gear.additionalGearPowers.map((gearPower) =>
-                    getImageCacheSource(gearPower.image.url)
+                    getImageCacheSource(gearPower.image.url),
                   )}
                   paddingTo={getGearPadding(gears.map((gear) => gear.gear))}
                 />
@@ -98,7 +98,7 @@ const ShopView = (props: ShopViewProps) => {
                   brand={t(gear.gear.brand.id)}
                   primaryAbility={getImageCacheSource(gear.gear.primaryGearPower.image.url)}
                   additionalAbility={gear.gear.additionalGearPowers.map((gearPower) =>
-                    getImageCacheSource(gearPower.image.url)
+                    getImageCacheSource(gearPower.image.url),
                   )}
                   paddingTo={getGearPadding(gears.map((gear) => gear.gear))}
                 />

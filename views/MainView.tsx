@@ -226,16 +226,16 @@ const MainView = () => {
   const [fault, setFault] = useState<Error>();
 
   const [sessionToken, setSessionToken, clearSessionToken, sessionTokenReady] = useStringMmkv(
-    Key.SessionToken
+    Key.SessionToken,
   );
   const [webServiceToken, setWebServiceToken, clearWebServiceToken, webServiceTokenReady] =
     useMmkv<WebServiceToken>(Key.WebServiceToken);
   const [bulletToken, setBulletToken, clearBulletToken, bulletTokenReady] = useStringMmkv(
-    Key.BulletToken
+    Key.BulletToken,
   );
   const [language, setLanguage, clearLanguage, languageReady] = useStringMmkv(
     Key.Language,
-    t("lang")
+    t("lang"),
   );
   const [region, setRegion, clearRegion, regionReady] = useStringMmkv(Key.Region, t("region"));
 
@@ -243,16 +243,16 @@ const MainView = () => {
   const [level, setLevel, clearLevel] = useStringMmkv(Key.Level);
   const [rank, setRank, clearRank] = useStringMmkv(Key.Rank);
   const [splatZonesXPower, setSplatZonesXPower, clearSplatZonesXPower] = useStringMmkv(
-    Key.SplatZonesXPower
+    Key.SplatZonesXPower,
   );
   const [towerControlXPower, setTowerControlXPower, clearTowerControlXPower] = useStringMmkv(
-    Key.TowerControlXPower
+    Key.TowerControlXPower,
   );
   const [rainmakerXPower, setRainmakerXPower, clearRainmakerXPower] = useStringMmkv(
-    Key.RainmakerXPower
+    Key.RainmakerXPower,
   );
   const [clamBlitzXPower, setClamBlitzXPower, clearClamBlitzXPower] = useStringMmkv(
-    Key.ClamBlitzXPower
+    Key.ClamBlitzXPower,
   );
   const [grade, setGrade, clearGrade] = useStringMmkv(Key.Grade);
   const [playedTime, setPlayedTime, clearPlayedTime] = useNumberMmkv(Key.PlayedTime);
@@ -262,7 +262,7 @@ const MainView = () => {
   const [filter, setFilter, clearFilter, filterReady] = useMmkv<Database.FilterProps>(Key.Filter);
   const filterRef = useRef(filter);
   const [backgroundRefresh, setBackgroundRefresh, clearBackgroundRefresh] = useBooleanMmkv(
-    Key.BackgroundRefresh
+    Key.BackgroundRefresh,
   );
   const [salmonRunFriendlyMode, setSalmonRunFriendlyMode, clearSalmonRunFriendlyMode] =
     useBooleanMmkv(Key.SalmonRunFriendlyMode);
@@ -438,7 +438,7 @@ const MainView = () => {
               if (semver.compare(version.replace("v", ""), current) > 0) {
                 setUpdate(true);
               }
-            })
+            }),
           );
         }, 100);
       });
@@ -591,7 +591,7 @@ const MainView = () => {
     // If Mudmouth is enabled, acquire web service token from Mudmouth.
     if (mudmouth) {
       RNLinking.openURL(
-        `mudmouth://capture?name=Conch%20Bay${DevClient.isDevelopmentBuild() ? "%20%28Dev%29" : ""}`
+        `mudmouth://capture?name=Conch%20Bay${DevClient.isDevelopmentBuild() ? "%20%28Dev%29" : ""}`,
       );
       throw new Error(t("reacquiring_tokens_with_mudmouth"));
     }
@@ -668,7 +668,7 @@ const MainView = () => {
                       newWebServiceToken!,
                       newBulletToken,
                       language,
-                      splatfests.festRecords.nodes[0].id
+                      splatfests.festRecords.nodes[0].id,
                     )
                       .then((voting) => {
                         setVoting(voting);
@@ -676,7 +676,7 @@ const MainView = () => {
                       .catch((e) => {
                         showBanner(
                           BannerLevel.Warn,
-                          t("failed_to_load_friends_splatfest_voting", { error: e })
+                          t("failed_to_load_friends_splatfest_voting", { error: e }),
                         );
                       });
                   }
@@ -707,7 +707,7 @@ const MainView = () => {
   const refreshResults = async (
     webServiceToken: WebServiceToken,
     bulletToken: string,
-    latestOnly: boolean
+    latestOnly: boolean,
   ) => {
     // Fetch results.
     let n = -1;
@@ -796,19 +796,19 @@ const MainView = () => {
               : fetchXBattleHistories(webServiceToken, bulletToken, language).then(
                   (historyDetail) => {
                     setSplatZonesXPower(
-                      historyDetail.xBattleHistories.summary.xPowerAr?.lastXPower?.toString() ?? ""
+                      historyDetail.xBattleHistories.summary.xPowerAr?.lastXPower?.toString() ?? "",
                     );
                     setTowerControlXPower(
-                      historyDetail.xBattleHistories.summary.xPowerLf?.lastXPower?.toString() ?? ""
+                      historyDetail.xBattleHistories.summary.xPowerLf?.lastXPower?.toString() ?? "",
                     );
                     setRainmakerXPower(
-                      historyDetail.xBattleHistories.summary.xPowerGl?.lastXPower?.toString() ?? ""
+                      historyDetail.xBattleHistories.summary.xPowerGl?.lastXPower?.toString() ?? "",
                     );
                     setClamBlitzXPower(
-                      historyDetail.xBattleHistories.summary.xPowerCl?.lastXPower?.toString() ?? ""
+                      historyDetail.xBattleHistories.summary.xPowerCl?.lastXPower?.toString() ?? "",
                     );
                     return historyDetail;
-                  }
+                  },
                 ),
             skipChallenge
               ? undefined
@@ -822,26 +822,30 @@ const MainView = () => {
           regularBattleHistories?.regularBattleHistories.historyGroups.nodes.forEach(
             (historyGroup) =>
               historyGroup.historyDetails.nodes.forEach((historyDetail) =>
-                ids.push(historyDetail.id)
-              )
+                ids.push(historyDetail.id),
+              ),
           );
           anarchyBattleHistories?.bankaraBattleHistories.historyGroups.nodes.forEach(
             (historyGroup) =>
               historyGroup.historyDetails.nodes.forEach((historyDetail) =>
-                ids.push(historyDetail.id)
-              )
+                ids.push(historyDetail.id),
+              ),
           );
           xBattleHistories?.xBattleHistories.historyGroups.nodes.forEach((historyGroup) =>
-            historyGroup.historyDetails.nodes.forEach((historyDetail) => ids.push(historyDetail.id))
+            historyGroup.historyDetails.nodes.forEach((historyDetail) =>
+              ids.push(historyDetail.id),
+            ),
           );
           challengeHistories?.eventBattleHistories.historyGroups.nodes.forEach((historyGroup) =>
-            historyGroup.historyDetails.nodes.forEach((historyDetail) => ids.push(historyDetail.id))
+            historyGroup.historyDetails.nodes.forEach((historyDetail) =>
+              ids.push(historyDetail.id),
+            ),
           );
           privateBattleHistories?.privateBattleHistories.historyGroups.nodes.forEach(
             (historyGroup) =>
               historyGroup.historyDetails.nodes.forEach((historyDetail) =>
-                ids.push(historyDetail.id)
-              )
+                ids.push(historyDetail.id),
+              ),
           );
 
           const uniqueIds = ids.filter((id, i, ids) => ids.indexOf(id) === i);
@@ -873,8 +877,8 @@ const MainView = () => {
                     error = e;
                   }
                   results += 1;
-                })
-            )
+                }),
+            ),
           );
           return results;
         })
@@ -924,8 +928,8 @@ const MainView = () => {
                     error = e;
                   }
                   results += 1;
-                })
-            )
+                }),
+            ),
           );
           return results;
         })
@@ -1171,7 +1175,7 @@ const MainView = () => {
         DevClient.isDevelopmentBuild() ? "%20%28Dev%29" : ""
       }&url=https%3A%2F%2Fapi.lp1.av5ja.srv.nintendo.net%2Fapi%2Fbullet_tokens&preAction=1&preActionUrlScheme=com.nintendo.znca%3A%2F%2Fznca%2Fgame%2F4834290508791808&postAction=1&postActionUrlScheme=conchbay${
         DevClient.isDevelopmentBuild() ? "dev" : ""
-      }%3A%2F%2Frefresh`
+      }%3A%2F%2Frefresh`,
     );
   };
   const onLogInWithMudmouthContinuePress = () => {
@@ -1212,7 +1216,7 @@ const MainView = () => {
       case TimeRange.ThisSeason:
         num = await Database.count(
           filter,
-          dayjs().utc().startOf("quarter").subtract(1, "month").valueOf()
+          dayjs().utc().startOf("quarter").subtract(1, "month").valueOf(),
         );
         break;
       case TimeRange.AllResults:
@@ -1300,7 +1304,7 @@ const MainView = () => {
   };
   const onImportResults = async (
     battles: VsHistoryDetailResult[],
-    coops: CoopHistoryDetailResult[]
+    coops: CoopHistoryDetailResult[],
   ) => {
     const n = battles.length + coops.length;
     // There is a bug introduced in 1.9.0 where all IDs imported from Salmonia3+ backup are suffixed with undefined.
@@ -1314,10 +1318,10 @@ const MainView = () => {
       }
     }
     const battleExisted = await Promise.all(
-      battles.map((battle: VsHistoryDetailResult) => Database.isExist(battle.vsHistoryDetail!.id))
+      battles.map((battle: VsHistoryDetailResult) => Database.isExist(battle.vsHistoryDetail!.id)),
     );
     const coopExisted = await Promise.all(
-      coops.map((coop: CoopHistoryDetailResult) => Database.isExist(coop.coopHistoryDetail!.id))
+      coops.map((coop: CoopHistoryDetailResult) => Database.isExist(coop.coopHistoryDetail!.id)),
     );
     const newBattles = battles.filter((_, i: number) => !battleExisted[i]);
     const newCoops = coops
@@ -1336,8 +1340,8 @@ const MainView = () => {
               error = e;
             }
             return false;
-          })
-      )
+          }),
+      ),
     );
     const coopResults = await Promise.all(
       newCoops.map((coop) =>
@@ -1350,8 +1354,8 @@ const MainView = () => {
               error = e;
             }
             return false;
-          })
-      )
+          }),
+      ),
     );
     return {
       skip,
@@ -1388,14 +1392,14 @@ const MainView = () => {
           coopDuplicate.set(time, sequence);
           await FileSystem.writeAsStringAsync(
             `${dir}/coops/${time}${sequence ? `-${sequence}` : ""}.json`,
-            row.detail
+            row.detail,
           );
         } else {
           const sequence = (battleDuplicate.get(time) ?? 0) + 1;
           battleDuplicate.set(time, sequence);
           await FileSystem.writeAsStringAsync(
             `${dir}/battles/${time}${sequence > 1 ? `-${sequence}` : ""}.json`,
-            row.detail
+            row.detail,
           );
         }
       }
@@ -1518,7 +1522,7 @@ const MainView = () => {
 
             // Splashtags.
             const backgroundCacheKey = getImageCacheKey(
-              memberResult.player.nameplate!.background.image.url
+              memberResult.player.nameplate!.background.image.url,
             );
             if (
               !resources.has(backgroundCacheKey) &&
@@ -1526,7 +1530,7 @@ const MainView = () => {
             ) {
               resources.set(
                 backgroundCacheKey,
-                memberResult.player.nameplate!.background.image.url
+                memberResult.player.nameplate!.background.image.url,
               );
             }
             for (const badge of memberResult.player.nameplate!.badges) {
@@ -1623,17 +1627,17 @@ const MainView = () => {
               weaponRecordsAttempt = await fetchWeaponRecords(
                 webServiceToken,
                 bulletToken,
-                language
+                language,
               );
               weaponRecordsAttempt.weaponRecords.nodes.forEach((record) => {
                 resources.set(getImageCacheKey(record.image2d.url), record.image2d.url);
                 resources.set(
                   getImageCacheKey(record.subWeapon.image.url),
-                  record.subWeapon.image.url
+                  record.subWeapon.image.url,
                 );
                 resources.set(
                   getImageCacheKey(record.specialWeapon.image.url),
-                  record.specialWeapon.image.url
+                  record.specialWeapon.image.url,
                 );
               });
               newWebServiceToken = webServiceToken;
@@ -1660,15 +1664,15 @@ const MainView = () => {
                       resources.set(getImageCacheKey(record.image2d.url), record.image2d.url);
                       resources.set(
                         getImageCacheKey(record.subWeapon.image.url),
-                        record.subWeapon.image.url
+                        record.subWeapon.image.url,
                       );
                       resources.set(
                         getImageCacheKey(record.specialWeapon.image.url),
-                        record.specialWeapon.image.url
+                        record.specialWeapon.image.url,
                       );
                     });
-                  }
-                )
+                  },
+                ),
               ),
             ok(
               fetchEquipments(newWebServiceToken!, newBulletToken, language).then((equipments) => {
@@ -1681,20 +1685,20 @@ const MainView = () => {
                   resources.set(getImageCacheKey(gear.brand.image.url), gear.brand.image.url);
                   resources.set(
                     getImageCacheKey(gear.primaryGearPower.image.url),
-                    gear.primaryGearPower.image.url
+                    gear.primaryGearPower.image.url,
                   );
                   gear.additionalGearPowers.forEach((gearPower) => {
                     resources.set(getImageCacheKey(gearPower.image.url), gearPower.image.url);
                   });
                 });
-              })
+              }),
             ),
             ok(
               fetchSummary(newWebServiceToken!, newBulletToken, language).then((summary) => {
                 summary.playHistory.allBadges.forEach((badge) => {
                   resources.set(getImageCacheKey(badge.image.url), badge.image.url);
                 });
-              })
+              }),
             ),
           ]);
         }
@@ -2051,7 +2055,7 @@ const MainView = () => {
                           // HACK: cannot trust Application.applicationName in iOS since it will not
                           // return localized application name.
                           defaultValue: Application.applicationName,
-                        }
+                        },
                       )} ${Application.nativeApplicationVersion} (${
                         Application.nativeBuildVersion
                       })`}</Text>
@@ -2489,7 +2493,7 @@ const MainView = () => {
               <AvatarButton
                 size={48}
                 image={getUserIconCacheSource(
-                  "https://cdn-image-e0d67c509fb203858ebcb2fe3f88c2aa.baas.nintendo.com/1/1afd1450a5a5ebec"
+                  "https://cdn-image-e0d67c509fb203858ebcb2fe3f88c2aa.baas.nintendo.com/1/1afd1450a5a5ebec",
                 )}
                 onPress={() => {
                   WebBrowser.openBrowserAsync("https://weibo.com/u/2269567390");
@@ -2499,7 +2503,7 @@ const MainView = () => {
               <AvatarButton
                 size={48}
                 image={getUserIconCacheSource(
-                  "https://cdn-image-e0d67c509fb203858ebcb2fe3f88c2aa.baas.nintendo.com/1/4b98d8291ae60b8c"
+                  "https://cdn-image-e0d67c509fb203858ebcb2fe3f88c2aa.baas.nintendo.com/1/4b98d8291ae60b8c",
                 )}
                 onPress={() => {
                   WebBrowser.openBrowserAsync("https://weibo.com/u/6622470330");

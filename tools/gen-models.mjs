@@ -31,7 +31,7 @@ const getVersion = async () => {
 
 const getSplatnetVersion = async () => {
   const res = await fetch(
-    "https://raw.githubusercontent.com/nintendoapis/nintendo-app-versions/main/data/splatnet3-app.json"
+    "https://raw.githubusercontent.com/nintendoapis/nintendo-app-versions/main/data/splatnet3-app.json",
   );
   const json = await res.json();
   return json["web_app_ver"];
@@ -39,7 +39,7 @@ const getSplatnetVersion = async () => {
 
 const getCoopStageMap = async (version) => {
   const res = await fetch(
-    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/CoopSceneInfo.json`
+    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/CoopSceneInfo.json`,
   );
   const json = await res.json();
   const coopStages = {};
@@ -56,7 +56,7 @@ const getCoopStageMap = async (version) => {
 };
 const getWeaponMap = async (version) => {
   const res = await fetch(
-    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/WeaponInfoMain.json`
+    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/WeaponInfoMain.json`,
   );
   const json = await res.json();
   const weapons = {};
@@ -79,7 +79,7 @@ const getWeaponMap = async (version) => {
 };
 const getCoopSpecialWeaponMap = async (version) => {
   const res = await fetch(
-    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/WeaponInfoSpecial.json`
+    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/WeaponInfoSpecial.json`,
   );
   const json = await res.json();
   const specialWeapons = {};
@@ -98,7 +98,7 @@ const getCoopSpecialWeaponMap = async (version) => {
 };
 const getBackgroundMap = async (version) => {
   const res = await fetch(
-    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/NamePlateBgInfo.json`
+    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/NamePlateBgInfo.json`,
   );
   const json = await res.json();
   const backgrounds = {};
@@ -111,7 +111,7 @@ const getBackgroundMap = async (version) => {
 };
 const getBadgeMap = async (version) => {
   const res = await fetch(
-    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/BadgeInfo.json`
+    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/BadgeInfo.json`,
   );
   const json = await res.json();
   const badges = {};
@@ -220,7 +220,7 @@ const getSalmonidMap = async (version) => {
     30: "a29cdb61df1464ef45ddedc7a042fd8f4fab0fd1c7c0c694df708d0b61e21222",
   };
   const res = await fetch(
-    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/CoopEnemyInfo.json`
+    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/CoopEnemyInfo.json`,
   );
   const json = await res.json();
   const salmonids = {};
@@ -239,7 +239,7 @@ const getSalmonidMap = async (version) => {
 };
 const getWorkSuitMap = async (version) => {
   const res = await fetch(
-    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/CoopSkinInfo.json`
+    `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/CoopSkinInfo.json`,
   );
   const json = await res.json();
   const workSuits = {};
@@ -516,13 +516,13 @@ const getPlaceholderMap = async (version) => {
   };
   const res = await Promise.all([
     fetch(
-      `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/WeaponInfoMain.json`
+      `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/WeaponInfoMain.json`,
     ),
     fetch(
-      `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/WeaponInfoSub.json`
+      `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/WeaponInfoSub.json`,
     ),
     fetch(
-      `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/WeaponInfoSpecial.json`
+      `https://raw.githubusercontent.com/Leanny/splat3/main/data/mush/${version}/WeaponInfoSpecial.json`,
     ),
   ]);
   const jsons = await Promise.all(res.map((r) => r.json()));
@@ -531,39 +531,34 @@ const getPlaceholderMap = async (version) => {
     if (weapon["Type"] === "Versus" || (weapon["Type"] === "Coop" && weapon["IsCoopRare"])) {
       const name = weaponMap[weapon["Id"]];
       const image = createHash("sha256").update(weapon["__RowId"]).digest("hex");
-      result[
-        `/weapon_illust/${image}_0.png`
-      ] = `require("@hacceuee/s3-pixel-icons/Weapons/${name}.png")`;
+      result[`/weapon_illust/${image}_0.png`] =
+        `require("@hacceuee/s3-pixel-icons/Weapons/${name}.png")`;
     }
   }
   for (const subWeapon of jsons[1]) {
     if (subWeapon["Type"] === "Versus") {
       const name = subWeaponMap[subWeapon["Id"]];
       const image = createHash("sha256").update(subWeapon["__RowId"]).digest("hex");
-      result[
-        `/sub_img/blue/${image}_0.png`
-      ] = `require("@hacceuee/s3-pixel-icons/Subs & Specials/Sub - ${name}.png")`;
+      result[`/sub_img/blue/${image}_0.png`] =
+        `require("@hacceuee/s3-pixel-icons/Subs & Specials/Sub - ${name}.png")`;
     }
   }
   for (const specialWeapon of jsons[2]) {
     if (specialWeapon["Type"] === "Versus" && specialWeapon["Id"] < 20) {
       const name = specialWeaponMap[specialWeapon["Id"]];
       const image = createHash("sha256").update(specialWeapon["__RowId"]).digest("hex");
-      result[
-        `/special_img/blue/${image}_0.png`
-      ] = `require("@hacceuee/s3-pixel-icons/Subs & Specials/Special - ${name}.png")`;
+      result[`/special_img/blue/${image}_0.png`] =
+        `require("@hacceuee/s3-pixel-icons/Subs & Specials/Special - ${name}.png")`;
     }
   }
   for (const ability in abilityMap) {
     const image = createHash("sha256").update(ability).digest("hex");
-    result[
-      `/skill_img/${image}_0.png`
-    ] = `require("@hacceuee/s3-pixel-icons/Chunks Icons/No Frames/Chunk - ${abilityMap[ability]}.png")`;
+    result[`/skill_img/${image}_0.png`] =
+      `require("@hacceuee/s3-pixel-icons/Chunks Icons/No Frames/Chunk - ${abilityMap[ability]}.png")`;
   }
   for (const unknown in unknownMap) {
-    result[
-      `/ui_img/${unknown}_0.png`
-    ] = `require("@hacceuee/s3-pixel-icons/${unknownMap[unknown]}.png")`;
+    result[`/ui_img/${unknown}_0.png`] =
+      `require("@hacceuee/s3-pixel-icons/${unknownMap[unknown]}.png")`;
   }
   return result;
 };

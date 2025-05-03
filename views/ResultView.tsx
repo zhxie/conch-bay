@@ -193,7 +193,7 @@ const ResultView = (props: ResultViewProps) => {
     const id = result?.battle?.vsHistoryDetail?.id || result?.coop?.coopHistoryDetail?.id;
     if (id) {
       return briefsAndGroups?.findIndex(
-        (result) => result.battle?.id === id || result.coop?.id === id
+        (result) => result.battle?.id === id || result.coop?.id === id,
       );
     }
   };
@@ -657,12 +657,12 @@ const ResultView = (props: ResultViewProps) => {
     const abilities: string[] = [];
     for (const type of ["headGear", "clothingGear", "shoesGear"]) {
       abilities.push(
-        abilityList.images[getImageHash(battlePlayer![type].primaryGearPower.image.url)]
+        abilityList.images[getImageHash(battlePlayer![type].primaryGearPower.image.url)],
       );
       for (let i = 0; i < 3; i++) {
         if (battlePlayer![type].additionalGearPowers.length > i) {
           abilities.push(
-            abilityList.images[getImageHash(battlePlayer![type].additionalGearPowers[i].image.url)]
+            abilityList.images[getImageHash(battlePlayer![type].additionalGearPowers[i].image.url)],
           );
         } else {
           abilities.push("U");
@@ -670,7 +670,7 @@ const ResultView = (props: ResultViewProps) => {
       }
     }
     WebBrowser.openBrowserAsync(
-      `https://sendou.ink/analyzer?weapon=${weapon}&build=${abilities.join(",")}`
+      `https://sendou.ink/analyzer?weapon=${weapon}&build=${abilities.join(",")}`,
     );
   };
   const onGroupDismiss = () => {
@@ -739,7 +739,7 @@ const ResultView = (props: ResultViewProps) => {
       const powerEgg = result.item.coop.players.reduce((prev, current) => prev + current.power, 0);
       const goldenEgg = result.item.coop.players.reduce(
         (prev, current) => prev + current.golden,
-        0
+        0,
       );
       return (
         <VStack flex style={ViewStyles.px4}>
@@ -777,13 +777,13 @@ const ResultView = (props: ResultViewProps) => {
       mode = result.item.group![0].battle!.mode;
       period = formatGroupPeriod(
         result.item.group![result.item.group!.length - 1].battle!.time,
-        result.item.group![0].battle!.time
+        result.item.group![0].battle!.time,
       );
     } else {
       mode = result.item.group![0].coop!.rule;
       period = formatGroupPeriod(
         result.item.group![result.item.group!.length - 1].coop!.time,
-        result.item.group![0].coop!.time
+        result.item.group![0].coop!.time,
       );
     }
     return (
@@ -970,11 +970,11 @@ const ResultView = (props: ResultViewProps) => {
                               {`${td(result.battle.vsHistoryDetail!.vsRule)}${
                                 formatDragon(
                                   result.battle.vsHistoryDetail!.festMatch
-                                    ?.dragonMatchType as DragonMatchType
+                                    ?.dragonMatchType as DragonMatchType,
                                 )
                                   ? ` (${formatDragon(
                                       result.battle.vsHistoryDetail!.festMatch
-                                        ?.dragonMatchType as DragonMatchType
+                                        ?.dragonMatchType as DragonMatchType,
                                     )})`
                                   : ""
                               }`}
@@ -991,7 +991,7 @@ const ResultView = (props: ResultViewProps) => {
                               <Display level={1} title={t("rank_points")}>
                                 <Text numberOfLines={1}>
                                   {formatRankPoints(
-                                    result.battle.vsHistoryDetail!.bankaraMatch.earnedUdemaePoint
+                                    result.battle.vsHistoryDetail!.bankaraMatch.earnedUdemaePoint,
                                   )}
                                 </Text>
                               </Display>
@@ -1007,7 +1007,7 @@ const ResultView = (props: ResultViewProps) => {
                                   {roundPower(
                                     result.battle.vsHistoryDetail!.bankaraMatch["bankaraPower"][
                                       "power"
-                                    ]
+                                    ],
                                   )}
                                 </Text>
                               </Display>
@@ -1017,7 +1017,7 @@ const ResultView = (props: ResultViewProps) => {
                               <Display level={1} title={t("x_power")}>
                                 <Text numberOfLines={1}>
                                   {`${roundPower(
-                                    result.battle.vsHistoryDetail!.xMatch.lastXPower
+                                    result.battle.vsHistoryDetail!.xMatch.lastXPower,
                                   )}`}
                                 </Text>
                               </Display>
@@ -1028,7 +1028,7 @@ const ResultView = (props: ResultViewProps) => {
                                 <Display level={1} title={t("challenge_e")}>
                                   <Text numberOfLines={1}>
                                     {td(
-                                      result.battle.vsHistoryDetail!.leagueMatch.leagueMatchEvent
+                                      result.battle.vsHistoryDetail!.leagueMatch.leagueMatchEvent,
                                     )}
                                   </Text>
                                 </Display>
@@ -1040,7 +1040,7 @@ const ResultView = (props: ResultViewProps) => {
                                   <Display level={1} title={t("challenge_power")}>
                                     <Text numberOfLines={1}>
                                       {`${roundPower(
-                                        result.battle.vsHistoryDetail!.leagueMatch["myLeaguePower"]
+                                        result.battle.vsHistoryDetail!.leagueMatch["myLeaguePower"],
                                       )}`}
                                     </Text>
                                   </Display>
@@ -1053,7 +1053,7 @@ const ResultView = (props: ResultViewProps) => {
                                 <Display level={1} title={t("splatfest_power")}>
                                   <Text numberOfLines={1}>
                                     {`${result.battle.vsHistoryDetail!.festMatch.myFestPower.toFixed(
-                                      1
+                                      1,
                                     )}`}
                                   </Text>
                                 </Display>
@@ -1203,7 +1203,7 @@ const ResultView = (props: ResultViewProps) => {
                     brand={t(gear.brand.id)}
                     primaryAbility={getImageCacheSource(gear.primaryGearPower.image.url)}
                     additionalAbility={gear.additionalGearPowers.map((gearPower) =>
-                      getImageCacheSource(gearPower.image.url)
+                      getImageCacheSource(gearPower.image.url),
                     )}
                     paddingTo={getGearPadding([
                       battlePlayer.headGear,
@@ -1211,7 +1211,7 @@ const ResultView = (props: ResultViewProps) => {
                       battlePlayer.shoesGear,
                     ])}
                   />
-                )
+                ),
               )}
             </VStack>
             <VStack style={ViewStyles.wf}>
@@ -1313,7 +1313,7 @@ const ResultView = (props: ResultViewProps) => {
                               appearance={waveResult.goldenPopCount}
                               specialWeapons={formatWaveSpecialWeapons(result.coop!, waveResult)}
                             />
-                          )
+                          ),
                         )}
                       </VStack>
                     )}
@@ -1338,11 +1338,11 @@ const ResultView = (props: ResultViewProps) => {
                           name={formatName(
                             memberResult.player.name,
                             memberResult.player.species,
-                            i === 0
+                            i === 0,
                           )}
                           subtitle={`${t("boss_salmonids")} x${memberResult.defeatEnemyCount}`}
                           mainWeapons={memberResult.weapons.map((weapon) =>
-                            getImageCacheSource(weapon.image.url)
+                            getImageCacheSource(weapon.image.url),
                           )}
                           specialWeapon={
                             memberResult.specialWeapon
@@ -1364,7 +1364,7 @@ const ResultView = (props: ResultViewProps) => {
                     {result.coop.coopHistoryDetail!.enemyResults.length > 0 && (
                       <VStack>
                         {new Array(
-                          Math.floor((result.coop.coopHistoryDetail!.enemyResults.length + 2) / 3)
+                          Math.floor((result.coop.coopHistoryDetail!.enemyResults.length + 2) / 3),
                         )
                           .fill(0)
                           .map((_, i, rows) => (
@@ -1404,7 +1404,7 @@ const ResultView = (props: ResultViewProps) => {
                                       }
                                       name={td(
                                         result.coop!.coopHistoryDetail!.enemyResults[i * 3 + j]
-                                          .enemy
+                                          .enemy,
                                       )}
                                       defeat={
                                         result.coop!.coopHistoryDetail!.enemyResults[i * 3 + j]
@@ -1419,7 +1419,7 @@ const ResultView = (props: ResultViewProps) => {
                                           .popCount
                                       }
                                     />
-                                  )
+                                  ),
                                 )}
                             </HStack>
                           ))}
@@ -1491,7 +1491,7 @@ const ResultView = (props: ResultViewProps) => {
                           {result.coop.coopHistoryDetail!.afterGrade && (
                             <Display level={1} title={t("job_title")}>
                               <Text numberOfLines={1}>{`${td(
-                                result.coop.coopHistoryDetail!.afterGrade
+                                result.coop.coopHistoryDetail!.afterGrade,
                               )} ${result.coop.coopHistoryDetail!.afterGradePoint}`}</Text>
                             </Display>
                           )}
@@ -1541,7 +1541,7 @@ const ResultView = (props: ResultViewProps) => {
                                           backgroundColor:
                                             result.coop!.coopHistoryDetail!.smellMeter! >= i + 1
                                               ? getCoopRuleColor(
-                                                  result.coop!.coopHistoryDetail!.rule
+                                                  result.coop!.coopHistoryDetail!.rule,
                                                 )!
                                               : Color.MiddleTerritory,
                                         },
@@ -1629,7 +1629,7 @@ const ResultView = (props: ResultViewProps) => {
             {coopPlayer.specialWeapon && (
               <CoopWeaponBox
                 mainWeapons={coopPlayer.weapons.map((weapon) =>
-                  getImageCacheSource(weapon.image.url)
+                  getImageCacheSource(weapon.image.url),
                 )}
                 specialWeapon={getImageCacheSource(coopPlayer.specialWeapon.image.url)}
                 style={ViewStyles.mb2}

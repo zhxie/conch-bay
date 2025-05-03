@@ -112,7 +112,7 @@ const FilterView = (props: FilterViewProps) => {
                 ? Color.AccentColor
                 : undefined
             }
-            icon="filter"
+            icon="funnel"
             style={{ paddingTop: 2 }}
             onPress={onFilterPress}
             onLongPress={onFilterLongPress}

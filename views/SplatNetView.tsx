@@ -23,7 +23,7 @@ const SplatNetView = (props: SplatNetViewProps, ref: ForwardedRef<SplatNetViewRe
     () => ({
       open: onWebViewPress,
     }),
-    []
+    [],
   );
 
   const [webView, setWebView] = useState(false);

@@ -44,7 +44,7 @@ export const getUserIconCacheSource = (userIcon: string) => {
 
 export const getColor = (color: { a: number; b: number; g: number; r: number }) => {
   return `rgba(${Math.round(color.r * 255)}, ${Math.round(color.g * 255)}, ${Math.round(
-    color.b * 255
+    color.b * 255,
   )}, ${Math.round(color.a * 255)})`;
 };
 export const getSolidColor = (color: { a: number; b: number; g: number; r: number }) => {

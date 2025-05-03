@@ -96,9 +96,9 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
                   .then((detail) => Database.addBattle(detail))
                   .then(() => {
                     results += 1;
-                  })
-              )
-            )
+                  }),
+              ),
+            ),
           );
           return results;
         })
@@ -126,9 +126,9 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
                   .then((detail) => Database.addCoop(detail))
                   .then(() => {
                     results += 1;
-                  })
-              )
-            )
+                  }),
+              ),
+            ),
           );
           return results;
         })

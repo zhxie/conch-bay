@@ -28,6 +28,6 @@ rl.on("close", () => {
       Object.keys(map)
         .map((key) => `  | "${key}"`)
         .join("\n") +
-      ";\n"
+      ";\n",
   );
 });

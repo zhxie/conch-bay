@@ -134,7 +134,7 @@ const GearsView = (props: GearsViewProps) => {
         brand={t(gear.item.brand.id)}
         primaryAbility={getImageCacheSource(gear.item.primaryGearPower.image.url)}
         additionalAbility={gear.item.additionalGearPowers.map((gearPower) =>
-          getImageCacheSource(gearPower.image.url)
+          getImageCacheSource(gearPower.image.url),
         )}
         paddingTo={getGearPadding(gears)}
       />

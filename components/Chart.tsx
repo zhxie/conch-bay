@@ -114,9 +114,9 @@ const Chart = (props: ChartProps) => {
             }
             return Math.max(...data.data);
           }),
-        0
+        0,
       ) || 100,
-    [props.dataGroup]
+    [props.dataGroup],
   );
 
   const normalize = (data: ChartData) => {
@@ -156,7 +156,7 @@ const Chart = (props: ChartProps) => {
           <AreaLine key={i} data={normalize(data)} color={data.color} dash={data.dash} />
         ) : (
           <ScatterLine key={i} data={normalize(data)} color={data.color} dash={data.dash} />
-        )
+        ),
       )}
     </RLChart>
   );

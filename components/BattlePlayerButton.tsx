@@ -36,8 +36,8 @@ const BattlePlayerButton = (props: BattlePlayerButtonProps) => {
     props.kill === undefined
       ? "-"
       : props.assist! > 0
-      ? `${props.kill}(${props.assist})`
-      : props.kill;
+        ? `${props.kill}(${props.assist})`
+        : props.kill;
 
   return (
     <ResultButton

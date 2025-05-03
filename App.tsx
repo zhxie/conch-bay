@@ -24,7 +24,7 @@ const App = () => {
 
   const [fontsLoaded] = Font.useFonts({
     Lucide: require("lucide-static/font/lucide.ttf"),
-    MPLUSRounded1cExtraBold: require("@expo-google-fonts/m-plus-rounded-1c/MPLUSRounded1c_800ExtraBold.ttf"),
+    MPLUSRounded1cExtraBold: require("@expo-google-fonts/m-plus-rounded-1c/800ExtraBold/MPLUSRounded1c_800ExtraBold.ttf"),
   });
 
   const [splatfont, setSplatfont] = useState(false);
@@ -35,7 +35,7 @@ const App = () => {
       Font.loadAsync({
         Splatfont:
           "https://cdn.jsdelivr.net/gh/frozenpandaman/frozenpandaman.github.io/Splatoon1.otf",
-      })
+      }),
     ).then((res) => {
       setSplatfont(res);
     });
