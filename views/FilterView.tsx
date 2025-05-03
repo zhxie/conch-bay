@@ -20,7 +20,7 @@ import {
 import t from "../i18n";
 import coopStageList from "../models/coopStages.json";
 import { deepCopy } from "../utils/codec";
-import { FilterProps, isFilterEqual } from "../utils/database";
+import { FilterProps, isFilterEqual, isFilterInclude } from "../utils/database";
 
 interface FilterViewProps {
   disabled?: boolean;
@@ -130,7 +130,7 @@ const FilterView = (props: FilterViewProps) => {
                 <ColorFilterButton
                   disabled={props.disabled}
                   color={
-                    isFilterEqual(props.filter, RegularBattleFilterProps)
+                    isFilterInclude(props.filter, RegularBattleFilterProps)
                       ? Color.RegularBattle
                       : undefined
                   }
@@ -143,7 +143,7 @@ const FilterView = (props: FilterViewProps) => {
                 <ColorFilterButton
                   disabled={props.disabled}
                   color={
-                    isFilterEqual(props.filter, AnarchyBattleFilterProps)
+                    isFilterInclude(props.filter, AnarchyBattleFilterProps)
                       ? Color.AnarchyBattle
                       : undefined
                   }
@@ -156,7 +156,7 @@ const FilterView = (props: FilterViewProps) => {
                 <ColorFilterButton
                   disabled={props.disabled}
                   color={
-                    isFilterEqual(props.filter, XBattleFilterProps) ? Color.XBattle : undefined
+                    isFilterInclude(props.filter, XBattleFilterProps) ? Color.XBattle : undefined
                   }
                   title={t("x_battle")}
                   style={ViewStyles.mr2}
@@ -167,7 +167,9 @@ const FilterView = (props: FilterViewProps) => {
                 <ColorFilterButton
                   disabled={props.disabled}
                   color={
-                    isFilterEqual(props.filter, ChallengeFilterProps) ? Color.Challenge : undefined
+                    isFilterInclude(props.filter, ChallengeFilterProps)
+                      ? Color.Challenge
+                      : undefined
                   }
                   title={t("challenge_b")}
                   style={ViewStyles.mr2}
@@ -178,7 +180,7 @@ const FilterView = (props: FilterViewProps) => {
                 <ColorFilterButton
                   disabled={props.disabled}
                   color={
-                    isFilterEqual(props.filter, PrivateBattleFilterProps)
+                    isFilterInclude(props.filter, PrivateBattleFilterProps)
                       ? Color.PrivateBattle
                       : undefined
                   }
@@ -192,7 +194,7 @@ const FilterView = (props: FilterViewProps) => {
               <ColorFilterButton
                 disabled={props.disabled}
                 color={
-                  isFilterEqual(props.filter, SalmonRunFilterProps) ? Color.SalmonRun : undefined
+                  isFilterInclude(props.filter, SalmonRunFilterProps) ? Color.SalmonRun : undefined
                 }
                 title={t("salmon_run")}
                 style={ViewStyles.mr2}

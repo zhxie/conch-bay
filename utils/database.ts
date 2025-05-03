@@ -298,6 +298,26 @@ export const isFilterEqual = (a?: FilterProps, b?: FilterProps) => {
   return true;
 };
 
+export const isFilterInclude = (parent?: FilterProps, child?: FilterProps) => {
+  if (!parent && !child) {
+    return true;
+  }
+  if (!parent) {
+    return false;
+  }
+  if (!child) {
+    return true;
+  }
+  for (const group of ["players", "modes", "rules", "stages", "weapons"]) {
+    for (const item of child[group] ?? []) {
+      if (!parent[group]?.includes(item)) {
+        return false;
+      }
+    }
+  }
+  return true;
+};
+
 const convertFilter = (filter?: FilterProps, from?: number) => {
   const filters: string[] = [];
   if (filter) {
