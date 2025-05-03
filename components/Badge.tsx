@@ -37,7 +37,9 @@ const Badge = (props: BadgeProps) => {
           style={ViewStyles.mr1}
         />
       )}
-      <Text style={[textStyles[props.size ?? "large"], { color: fontColor }]}>{props.title}</Text>
+      <Text
+        style={[textStyles[props.size ?? "large"], { color: fontColor }]}
+      >{` ${props.title} `}</Text>
     </HStack>
   );
 };
@@ -63,11 +65,11 @@ const BadgeButton = (props: BadgeButtonProps) => {
 
 const viewStyles = StyleSheet.create({
   small: {
-    ...ViewStyles.px1,
+    ...ViewStyles.px0_5,
     ...ViewStyles.py0_5,
   },
   large: {
-    ...ViewStyles.px2,
+    ...ViewStyles.px1,
     ...ViewStyles.py1,
   },
 });
