@@ -997,6 +997,14 @@ const MainView = () => {
     if (event.nativeEvent.contentOffset.y < 8) {
       onScrollEnd(event);
     }
+    if (loadingMore || allResultsShown) {
+      return;
+    }
+    const overHeight =
+      event.nativeEvent.contentOffset.y + height - event.nativeEvent.contentSize.height;
+    if (overHeight > 80) {
+      onShowMorePress();
+    }
   };
   const onScrollBegin = () => {
     // HACK: blur view shows following the extra 8px padding in the top.
@@ -1030,16 +1038,6 @@ const MainView = () => {
         delay: 100,
         useNativeDriver: true,
       }).start();
-    }
-  };
-  const onScrollEndDrag = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    onScrollEnd(event);
-    if (loadingMore || allResultsShown) {
-      return;
-    }
-    const overHeight = event.nativeEvent.contentSize.height - height;
-    if (overHeight >= 0 && event.nativeEvent.contentOffset.y - 80 > overHeight) {
-      onShowMorePress();
     }
   };
   const onUpdateDismiss = () => {
@@ -2089,7 +2087,7 @@ const MainView = () => {
             onQuery={onQuery}
             onScroll={onScroll}
             onScrollBeginDrag={onScrollBegin}
-            onScrollEndDrag={onScrollEndDrag}
+            onScrollEndDrag={onScrollEnd}
             onMomentumScrollBegin={onScrollBegin}
             onMomentumScrollEnd={onScrollEnd}
           />
