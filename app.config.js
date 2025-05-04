@@ -23,7 +23,6 @@ const config = {
   plugins: [
     withAndroidLargeHeap,
     withAndroidLocalizedName,
-    "expo-localization",
     [
       "expo-build-properties",
       {
@@ -32,12 +31,16 @@ const config = {
         },
       },
     ],
-    ["expo-sqlite"],
+    "expo-localization",
+    "expo-mail-composer",
+    "expo-sqlite",
+    "expo-web-browser",
   ],
   splash: {
     image: "./assets/splash.png",
     backgroundColor: "#FAFAFA",
   },
+  newArchEnabled: false,
   ios: {
     bundleIdentifier: IS_DEV ? "name.sketch.ConchBay.dev" : "name.sketch.ConchBay",
     buildNumber: "176",

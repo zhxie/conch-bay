@@ -140,7 +140,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest]
+        os: [macos-15, ubuntu-latest]
 
     runs-on: ${{ matrix.os }}
 

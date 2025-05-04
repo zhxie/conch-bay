@@ -1,18 +1,13 @@
-import {
-  CoopHistoryDetailQuery_379f0d9,
-  CoopHistoryDetailQuery_3cc5f82,
-  CoopHistoryDetailQuery_9ade2aa,
-  CoopHistoryDetailQuery_f3799a0,
-  VsHistoryDetailQuery_291295a,
-  VsHistoryDetailQuery_2b08598,
-  VsHistoryDetailQuery_9ee0099,
-  VsHistoryDetailQuery_cd82f2a,
-} from "splatnet3-types/dist/generated/types";
-import {
-  Friend_friendList,
-  MyOutfitCommonDataEquipmentsResult,
-} from "splatnet3-types/dist/splatnet3";
-import { Gear as ShopQuery, Schedules as SchedulesQuery } from "splatnet3-types/dist/splatoon3ink";
+import { VsHistoryDetailQuery_2b08598 } from "splatnet3-types/graphql/2b085984f729cd51938fc069ceef784a";
+import { CoopHistoryDetailQuery_3cc5f82 } from "splatnet3-types/graphql/3cc5f826a6646b85f3ae45db51bd0707";
+import { CoopHistoryDetailQuery_9ade2aa } from "splatnet3-types/graphql/9ade2aa3656324870ccec023636aed32";
+import { VsHistoryDetailQuery_9ee0099 } from "splatnet3-types/graphql/9ee0099fbe3d8db2a838a75cf42856dd";
+import { CoopHistoryDetailQuery_379f0d9 } from "splatnet3-types/graphql/379f0d9b78b531be53044bcac031b34b";
+import { VsHistoryDetailQuery_291295a } from "splatnet3-types/graphql/291295ad311b99a6288fc95a5c4cb2d2";
+import { VsHistoryDetailQuery_cd82f2a } from "splatnet3-types/graphql/cd82f2ade8aca7687947c5f3210805a6";
+import { CoopHistoryDetailQuery_f3799a0 } from "splatnet3-types/graphql/f3799a033f0a7ad4b1b396f9a3bafb1e";
+import { Friend_friendList, MyOutfitCommonDataEquipmentsResult } from "splatnet3-types/splatnet3";
+import { Gear as ShopQuery, Schedules as SchedulesQuery } from "splatnet3-types/splatoon3ink";
 
 export {
   AwardRank,
@@ -41,12 +36,12 @@ export {
   VsHistoryDetailVariables,
   WeaponRecordResult,
   XBattleHistoriesResult,
-} from "splatnet3-types/dist/splatnet3";
+} from "splatnet3-types/splatnet3";
 export {
   Festivals as FestivalsQuery,
   Gear as ShopQuery,
   Schedules as SchedulesQuery,
-} from "splatnet3-types/dist/splatoon3ink";
+} from "splatnet3-types/splatoon3ink";
 
 export type NotNullable<T> = T extends null | undefined ? never : T;
 export type Enum<T extends Record<string, any>> = T | keyof T;
