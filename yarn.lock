@@ -5237,10 +5237,10 @@ react-native-edge-to-edge@1.6.0:
   resolved "https://registry.yarnpkg.com/react-native-edge-to-edge/-/react-native-edge-to-edge-1.6.0.tgz#2ba63b941704a7f713e298185c26cde4d9e4b973"
   integrity sha512-2WCNdE3Qd6Fwg9+4BpbATUxCLcouF6YRY7K+J36KJ4l3y+tWN6XCqAC4DuoGblAAbb2sLkhEDp4FOlbOIot2Og==
 
-react-native-error-boundary@^1.2.9:
-  version "1.2.9"
-  resolved "https://registry.yarnpkg.com/react-native-error-boundary/-/react-native-error-boundary-1.2.9.tgz#ac504db7c0eeb95ec06a22d50de3674059a651bd"
-  integrity sha512-G2C4hUpRjwVgQ1efQ6fVfxDvThG/Qhyr/uXhwvMqvIjqlpndvpuNyJc5wOeYfn/ePtgin30Pk7KhmxuHAkyiSQ==
+react-native-error-boundary@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/react-native-error-boundary/-/react-native-error-boundary-2.0.0.tgz#5d19145bb78dfedad788f6ccca85d811fd3a8023"
+  integrity sha512-Od5jZH5DEDuxFI1x+AzCwufpMMJleEJAAj5qOBDA6Ez5+EN2rw5/59/uwW4oGMCgjsB6rpx7yIKHCMx5aIlpdQ==
 
 react-native-gesture-handler@~2.24.0:
   version "2.24.0"
