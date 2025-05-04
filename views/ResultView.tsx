@@ -144,7 +144,7 @@ const ResultView = (props: ResultViewProps) => {
   const [displayCoop, setDisplayCoop] = useState(false);
   const [coopPlayer, setCoopPlayer] = useState<CoopPlayerResult>();
   const [displayCoopPlayer, setDisplayCoopPlayer] = useState(false);
-  const willDisplayNext = useRef<Result>();
+  const willDisplayNext = useRef<Result>(undefined);
   const [hidePlayerNames, setHidePlayerNames] = useState(false);
   const [group, setGroup] = useState<Brief[]>();
   const [displayGroup, setDisplayGroup] = useState(false);

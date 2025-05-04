@@ -28,7 +28,7 @@ index 73641a0..27c27cd 100644
            .encodeQuality(100)
            .downsample(NoopDownsampleStrategy)
 diff --git a/node_modules/expo-image/ios/ImageModule.swift b/node_modules/expo-image/ios/ImageModule.swift
-index 4bab386..478a826 100644
+index 1145411..3205cd9 100644
 --- a/node_modules/expo-image/ios/ImageModule.swift
 +++ b/node_modules/expo-image/ios/ImageModule.swift
 @@ -127,6 +127,13 @@ public final class ImageModule: Module {
