@@ -1350,10 +1350,10 @@
   dependencies:
     nanoid "^3.3.1"
 
-"@hacceuee/s3-pixel-icons@^2.4.1":
-  version "2.4.1"
-  resolved "https://registry.yarnpkg.com/@hacceuee/s3-pixel-icons/-/s3-pixel-icons-2.4.1.tgz#d97f42d22f3e43997bea7a3b3bb0db6703e449ca"
-  integrity sha512-8u/98ype5siBMzJ6HAC6K1Nf0WA0C9R3CKQ0REO1xT4cdqeq8IX00T1UUnE+XJRaQz8IjYX7SaoXvD288k3N8g==
+"@hacceuee/s3-pixel-icons@^3.1.2":
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/@hacceuee/s3-pixel-icons/-/s3-pixel-icons-3.1.2.tgz#b1d008e32a8f873594c63d76fc4d8630d11bf66c"
+  integrity sha512-qIsnYakoLpFWcEpw3mD2eVHqxjDeojcjkrzb7DIYobueYZq7PUjF/MaJ/nIJ62zIdYEGyb5v3UWicqgwHHh5Yg==
 
 "@humanwhocodes/config-array@^0.13.0":
   version "0.13.0"

@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@gorhom/bottom-sheet": "^5.1.2",
-    "@hacceuee/s3-pixel-icons": "^2.4.1",
+    "@hacceuee/s3-pixel-icons": "^3.1.2",
     "@react-native-async-storage/async-storage": "1.23.1",
     "@react-native-community/hooks": "^100.1.0",
     "@react-native-cookies/cookies": "^6.2.1",
