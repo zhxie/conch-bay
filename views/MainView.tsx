@@ -102,7 +102,7 @@ import {
   registerBackgroundTask,
   unregisterBackgroundTask,
 } from "../utils/background";
-import { decode64String, decode64Url, deepCopy, encode64String, getParam } from "../utils/codec";
+import { decode64String, decode64Url, deepCopy, encode64String } from "../utils/codec";
 import * as Database from "../utils/database";
 import {
   AsyncStorageKey,
@@ -398,7 +398,7 @@ const MainView = () => {
       url.startsWith(`conchbay${DevClient.isDevelopmentBuild() ? "dev" : ""}://refresh?`)
     ) {
       try {
-        const encoded = getParam(url, "requestHeaders");
+        const encoded = new URL(url).searchParams.get("requestHeaders")!;
         const headers = decode64String(decode64Url(encoded)).split("\r\n");
         const headerMap = new Map<string, string>();
         for (const header of headers) {
@@ -412,10 +412,11 @@ const MainView = () => {
           cookieMap.set(components[0], components.slice(1).join("="));
         }
         const referer = headerMap.get("Referer") ?? "";
+        const refererUrl = new URL(referer);
         setWebServiceToken({
           accessToken: cookieMap.get("_gtoken") ?? "",
-          country: getParam(referer, "na_country"),
-          language: getParam(referer, "na_lang"),
+          country: refererUrl.searchParams.get("na_country")!,
+          language: refererUrl.searchParams.get("na_lang")!,
         });
       } catch (e) {
         showBanner(BannerLevel.Error, t("failed_to_acquire_web_service_token", { error: e }));

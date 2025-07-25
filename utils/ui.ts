@@ -1,7 +1,6 @@
 import * as Convert from "color-convert";
 import { Color } from "../components";
 import { VsHistoryDetailResult, CoopRule, Gear } from "../models/types";
-import { getAuthorityAndPath } from "./codec";
 
 export const getImageExpires = (image: string) => {
   const regex = /Expires=(\d*)&/;
@@ -19,13 +18,15 @@ export const isImageExpired = (image: string) => {
   return false;
 };
 export const getImageCacheKey = (image: string) => {
-  const path = getAuthorityAndPath(image);
+  const url = new URL(image);
+  const path = `${url.protocol}://${url.host}${url.pathname}`;
   // HACK: we only take SplatNet 3 and Splatoon3.ink into consideration now.
   const splitted = path.split(/prod|splatnet|v\d*/g);
   return splitted[splitted.length - 1];
 };
 export const getImageHash = (image: string) => {
-  const path = getAuthorityAndPath(image);
+  const url = new URL(image);
+  const path = `${url.protocol}://${url.host}${url.pathname}`;
   const splitted = path.split("/");
   return splitted[splitted.length - 1].split("_")[0];
 };

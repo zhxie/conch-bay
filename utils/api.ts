@@ -27,7 +27,7 @@ import {
   XBattleHistoriesResult,
 } from "../models/types";
 import versions from "../models/versions.json";
-import { encode64, encode64Url, getParam, parameterize } from "./codec";
+import { encode64, encode64Url } from "./codec";
 import { sleep } from "./promise";
 
 const AXIOS_TIMEOUT = 10000;
@@ -237,14 +237,15 @@ export const generateLogIn = async () => {
     session_token_code_challenge_method: "S256",
     theme: "login_form",
   };
-  const url = "https://accounts.nintendo.com/connect/1.0.0/authorize?" + parameterize(body);
+  const url =
+    "https://accounts.nintendo.com/connect/1.0.0/authorize?" + new URLSearchParams(body).toString();
   return {
     url: encodeURI(url),
     cv,
   };
 };
 export const getSessionToken = async (url: string, cv: string) => {
-  const sessionTokenCode = getParam(url.replace("#", "?"), "session_token_code");
+  const sessionTokenCode = new URL(url.replace("#", "?")).searchParams.get("session_token_code");
   if (!sessionTokenCode) {
     return undefined;
   }
