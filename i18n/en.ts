@@ -12,7 +12,7 @@ const en = {
   // UI.
   log_in: "Log In",
   log_in_notice:
-    "You can use Conch Bay to view schedules and SplatNet Shop, import results, and analyze stats and trends without logging in. Logging in will allow you to load results and friends, view gears, and access SplatNet 3. Logging in involves sending non-identifying information to non-Nintendo imink or nxapi. This information will not be logged or stored, please see the privacy policy for more information.",
+    "You can use Conch Bay to view schedules and SplatNet Shop, import results, and analyze stats and trends without logging in. Logging in will allow you to load results and friends, view gears, and access SplatNet 3. Logging in involves sending non-identifying information to non-Nintendo nxapi. This information will not be logged or stored, please see the privacy policy for more information.",
   log_in_warning:
     "Conch Bay will not cause your account to be compromised or your personal information to be leaked. However, due to Nintendo's continued negative attitude towards 3rd party apps, you should use Conch Bay at your own risk.",
   log_in_continue: "I have read and understand",

@@ -1805,9 +1805,6 @@ const MainView = () => {
   const onSplatoon3InkPress = () => {
     WebBrowser.openBrowserAsync("https://splatoon3.ink/");
   };
-  const onIminkFApiPress = () => {
-    WebBrowser.openBrowserAsync("https://github.com/imink-app/f-API");
-  };
   const onNxapiZncaApiPress = () => {
     WebBrowser.openBrowserAsync("https://github.com/samuelthomas2774/nxapi-znca-api");
   };
@@ -2515,9 +2512,6 @@ const MainView = () => {
             <VStack center>
               <Text style={[TextStyles.link, ViewStyles.mb1]} onPress={onSplatoon3InkPress}>
                 Splatoon3.ink
-              </Text>
-              <Text style={[TextStyles.link, ViewStyles.mb1]} onPress={onIminkFApiPress}>
-                imink f API
               </Text>
               <Text style={[TextStyles.link, ViewStyles.mb1]} onPress={onNxapiZncaApiPress}>
                 nxapi znca API
