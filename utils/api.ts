@@ -90,10 +90,77 @@ export const updateSplatnetVersion = async () => {
 
   SPLATNET_VERSION = res.data["web_app_ver"];
 };
+
 const validateAllStatus = () => {
   return true;
 };
-const callNxapiZncaFApi = async (
+
+const callNxapiZncaApiAuthenticate = async () => {
+  let authorizationServer: any;
+  try {
+    const res = await axios.get(
+      "https://nxapi-znca-api.fancy.org.uk/.well-known/oauth-protected-resource",
+      {
+        headers: {
+          "User-Agent": USER_AGENT,
+        },
+        timeout: AXIOS_TIMEOUT,
+        validateStatus: validateAllStatus,
+      },
+    );
+    authorizationServer = res.data["authorization_servers"][0];
+    if (!authorizationServer) {
+      throw new Error(`${res.status}: ${JSON.stringify(res.data)}`);
+    }
+  } catch (e) {
+    throw new Error(`/f/oauth-protected-resource: ${(e as Error).message}`);
+  }
+
+  let tokenEndpoint: any, clientAssertionAud: any;
+  try {
+    const url = new URL(authorizationServer);
+    url.pathname =
+      "/.well-known/oauth-authorization-server" + (url.pathname === "/" ? "" : url.pathname);
+    const res = await axios.get(url.toString(), {
+      headers: {
+        "User-Agent": USER_AGENT,
+      },
+      timeout: AXIOS_TIMEOUT,
+      validateStatus: validateAllStatus,
+    });
+    tokenEndpoint = res.data["token_endpoint"];
+    clientAssertionAud = res.data["issuer"];
+    if (!tokenEndpoint || !clientAssertionAud) {
+      throw new Error(`${res.status}: ${JSON.stringify(res.data)}`);
+    }
+  } catch (e) {
+    throw new Error(`/f/oauth-authorization-server: ${(e as Error).message}`);
+  }
+
+  try {
+    const body = {
+      client_id: "dzZNtWfQxWR_xNFcVijXPQ",
+      grant_type: "client_credentials",
+      scope: "ca:gf",
+    };
+    const res = await axios.post(tokenEndpoint, new URLSearchParams(body), {
+      headers: {
+        "User-Agent": USER_AGENT,
+      },
+      timeout: AXIOS_TIMEOUT,
+      validateStatus: validateAllStatus,
+    });
+    const accessToken = res.data["access_token"];
+    if (!accessToken) {
+      throw new Error(`${res.status}: ${JSON.stringify(res.data)}`);
+    }
+    return accessToken as string;
+  } catch (e) {
+    throw new Error(`/f/token: ${(e as Error).message}`);
+  }
+};
+const callNxapiZncaApiF = async (
+  accessToken: string,
   step: number,
   idToken: string,
   naId: string,
@@ -119,6 +186,7 @@ const callNxapiZncaFApi = async (
   try {
     const res = await axios.post("https://nxapi-znca-api.fancy.org.uk/api/znca/f", body, {
       headers: {
+        Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json; charset=utf-8",
         "User-Agent": USER_AGENT,
         "X-znca-Client-Version": NSO_CLIENT_VERSION,
@@ -135,7 +203,12 @@ const callNxapiZncaFApi = async (
       // { error: string; error_message: string; errors: { error: string; error_message: string }[]; warnings: { error: string; error_message: string }[]; }
       throw new Error(`${res.status}: ${JSON.stringify(res.data)}`);
     }
-    return { f, requestId, timestamp, version: NXAPI_ZNCA_API_NSO_VERSION } as {
+    return {
+      f,
+      requestId,
+      timestamp,
+      version: NXAPI_ZNCA_API_NSO_VERSION,
+    } as {
       f: string;
       requestId: string;
       timestamp: string;
@@ -145,6 +218,7 @@ const callNxapiZncaFApi = async (
     throw new Error(`/f/${step}: ${(e as Error).message}`);
   }
 };
+
 export const generateLogIn = async () => {
   const state = encode64Url(encode64(Crypto.getRandomBytes(36)));
   const cv = encode64Url(encode64(Crypto.getRandomBytes(32)));
@@ -269,9 +343,14 @@ export const getWebServiceToken = async (sessionToken: string) => {
     throw new Error(`/users/me: ${(e as Error).message}`);
   }
 
-  // Get access token.
-  const json = await callNxapiZncaFApi(1, idToken, id);
+  // Authenticate nxapi-znca-api.
+  const nxapiZncaApiAccessToken = await callNxapiZncaApiAuthenticate();
+
+  // Generate login f.
+  const json = await callNxapiZncaApiF(nxapiZncaApiAccessToken, 1, idToken, id);
   const { f, requestId, timestamp, version } = json;
+
+  // Get access token.
   const body3 = {
     parameter: {
       f: f,
@@ -308,9 +387,17 @@ export const getWebServiceToken = async (sessionToken: string) => {
     throw new Error(`/Account/Login: ${(e as Error).message}`);
   }
 
-  // Get web service token.
-  const json2 = await callNxapiZncaFApi(2, idToken2, id, coralUserId.toString());
+  // Generate web service f.
+  const json2 = await callNxapiZncaApiF(
+    nxapiZncaApiAccessToken,
+    2,
+    idToken2,
+    id,
+    coralUserId.toString(),
+  );
   const { f: f2, requestId: requestId2, timestamp: timestamp2 } = json2;
+
+  // Get web service token.
   const body4 = {
     parameter: {
       f: f2,
