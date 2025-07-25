@@ -96,10 +96,15 @@ const validateAllStatus = () => {
 };
 
 const callNxapiZncaApiAuthenticate = async () => {
-  let authorizationServer: any;
   try {
-    const res = await axios.get(
-      "https://nxapi-znca-api.fancy.org.uk/.well-known/oauth-protected-resource",
+    const body = {
+      client_id: "dzZNtWfQxWR_xNFcVijXPQ",
+      grant_type: "client_credentials",
+      scope: "ca:gf",
+    };
+    const res = await axios.post(
+      "https://nxapi-auth.fancy.org.uk/api/oauth/token",
+      new URLSearchParams(body),
       {
         headers: {
           "User-Agent": USER_AGENT,
@@ -108,48 +113,6 @@ const callNxapiZncaApiAuthenticate = async () => {
         validateStatus: validateAllStatus,
       },
     );
-    authorizationServer = res.data["authorization_servers"][0];
-    if (!authorizationServer) {
-      throw new Error(`${res.status}: ${JSON.stringify(res.data)}`);
-    }
-  } catch (e) {
-    throw new Error(`/f/oauth-protected-resource: ${(e as Error).message}`);
-  }
-
-  let tokenEndpoint: any, clientAssertionAud: any;
-  try {
-    const url = new URL(authorizationServer);
-    url.pathname =
-      "/.well-known/oauth-authorization-server" + (url.pathname === "/" ? "" : url.pathname);
-    const res = await axios.get(url.toString(), {
-      headers: {
-        "User-Agent": USER_AGENT,
-      },
-      timeout: AXIOS_TIMEOUT,
-      validateStatus: validateAllStatus,
-    });
-    tokenEndpoint = res.data["token_endpoint"];
-    clientAssertionAud = res.data["issuer"];
-    if (!tokenEndpoint || !clientAssertionAud) {
-      throw new Error(`${res.status}: ${JSON.stringify(res.data)}`);
-    }
-  } catch (e) {
-    throw new Error(`/f/oauth-authorization-server: ${(e as Error).message}`);
-  }
-
-  try {
-    const body = {
-      client_id: "dzZNtWfQxWR_xNFcVijXPQ",
-      grant_type: "client_credentials",
-      scope: "ca:gf",
-    };
-    const res = await axios.post(tokenEndpoint, new URLSearchParams(body), {
-      headers: {
-        "User-Agent": USER_AGENT,
-      },
-      timeout: AXIOS_TIMEOUT,
-      validateStatus: validateAllStatus,
-    });
     const accessToken = res.data["access_token"];
     if (!accessToken) {
       throw new Error(`${res.status}: ${JSON.stringify(res.data)}`);
