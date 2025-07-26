@@ -27,7 +27,7 @@ import {
   XBattleHistoriesResult,
 } from "../models/types";
 import versions from "../models/versions.json";
-import { encode64, encode64Url } from "./codec";
+import { decode64, encode64, encode64Url } from "./codec";
 import { sleep } from "./promise";
 
 const AXIOS_TIMEOUT = 10000;
@@ -100,7 +100,7 @@ const callNxapiZncaApiAuthenticate = async () => {
     const body = {
       client_id: "dzZNtWfQxWR_xNFcVijXPQ",
       grant_type: "client_credentials",
-      scope: "ca:gf",
+      scope: "ca:gf ca:er ca:dr",
     };
     const res = await axios.post(
       "https://nxapi-auth.fancy.org.uk/api/oauth/token",
@@ -122,10 +122,38 @@ const callNxapiZncaApiAuthenticate = async () => {
     throw new Error(`/f/token: ${(e as Error).message}`);
   }
 };
+const callNxapiZncaApiDecrypt = async (accessToken: string, data: Uint8Array) => {
+  try {
+    const body = { data: encode64(data) };
+    const res = await axios.post(
+      "https://nxapi-znca-api.fancy.org.uk/api/znca/decrypt-response",
+      body,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json; charset=utf-8",
+          "User-Agent": USER_AGENT,
+          "X-znca-Client-Version": NSO_CLIENT_VERSION,
+          "X-znca-Platform": "Android",
+          "X-znca-Version": NXAPI_ZNCA_API_NSO_VERSION,
+        },
+        timeout: AXIOS_TIMEOUT,
+        validateStatus: validateAllStatus,
+      },
+    );
+    if (res.status !== 200) {
+      throw new Error(`${res.status}: ${JSON.stringify(res.data)}`);
+    }
+    return res.data as any;
+  } catch (e) {
+    throw new Error(`/f/decrypt: ${(e as Error).message}`);
+  }
+};
 const callNxapiZncaApiF = async (
   accessToken: string,
   step: number,
   idToken: string,
+  encryptTokenRequest: { url: string; parameter: any },
   naId: string,
   coralUserId?: string,
 ) => {
@@ -141,6 +169,7 @@ const callNxapiZncaApiF = async (
   const body = {
     hash_method: step,
     token: idToken,
+    encrypt_token_request: encryptTokenRequest,
     na_id: naId,
   };
   if (coralUserId) {
@@ -159,23 +188,17 @@ const callNxapiZncaApiF = async (
       timeout: AXIOS_F_TIMEOUT,
       validateStatus: validateAllStatus,
     });
-    const f = res.data["f"];
-    const requestId = res.data["request_id"];
-    const timestamp = res.data["timestamp"];
-    if (!f || !requestId || !timestamp) {
+    const encryptedTokenRequest = res.data["encrypted_token_request"];
+    if (!encryptedTokenRequest) {
       // { error: string; error_message: string; errors: { error: string; error_message: string }[]; warnings: { error: string; error_message: string }[]; }
       throw new Error(`${res.status}: ${JSON.stringify(res.data)}`);
     }
     return {
-      f,
-      requestId,
-      timestamp,
       version: NXAPI_ZNCA_API_NSO_VERSION,
+      encryptedTokenRequest: decode64(encryptedTokenRequest),
     } as {
-      f: string;
-      requestId: string;
-      timestamp: string;
       version: string;
+      encryptedTokenRequest: Uint8Array;
     };
   } catch (e) {
     throw new Error(`/f/${step}: ${(e as Error).message}`);
@@ -311,38 +334,49 @@ export const getWebServiceToken = async (sessionToken: string) => {
   const nxapiZncaApiAccessToken = await callNxapiZncaApiAuthenticate();
 
   // Generate login f.
-  const json = await callNxapiZncaApiF(nxapiZncaApiAccessToken, 1, idToken, id);
-  const { f, requestId, timestamp, version } = json;
+  const json = await callNxapiZncaApiF(
+    nxapiZncaApiAccessToken,
+    1,
+    idToken,
+    {
+      url: "https://api-lp1.znc.srv.nintendo.net/v3/Account/Login",
+      parameter: {
+        f: "",
+        language: language,
+        naBirthday: birthday,
+        naCountry: country,
+        naIdToken: idToken,
+        requestId: "",
+        timestamp: 0,
+      },
+    },
+    id,
+  );
+  const { version, encryptedTokenRequest } = json;
 
   // Get access token.
-  const body3 = {
-    parameter: {
-      f: f,
-      language: language,
-      naBirthday: birthday,
-      naCountry: country,
-      naIdToken: idToken,
-      requestId: requestId,
-      timestamp: timestamp,
-    },
-  };
   let idToken2: any, coralUserId: any;
   try {
-    const res3 = await axios.post("https://api-lp1.znc.srv.nintendo.net/v3/Account/Login", body3, {
-      headers: {
-        "Accept-Encoding": "gzip",
-        "Content-Length": JSON.stringify(body3).length,
-        "Content-Type": "application/json; charset=utf-8",
-        "User-Agent": `com.nintendo.znca/${version}(Android/11)`,
-        "X-IntegrityTokenError": "NETWORK_ERROR",
-        "X-Platform": "Android",
-        "X-ProductVersion": version,
+    const res3 = await axios.post(
+      "https://api-lp1.znc.srv.nintendo.net/v3/Account/Login",
+      encryptedTokenRequest,
+      {
+        headers: {
+          "Accept-Encoding": "gzip",
+          "Content-Length": encryptedTokenRequest.length,
+          "Content-Type": "application/octet-stream",
+          "User-Agent": `com.nintendo.znca/${version}(Android/11)`,
+          "X-Platform": "Android",
+          "X-ProductVersion": version,
+        },
+        responseType: "arraybuffer",
+        timeout: AXIOS_TOKEN_TIMEOUT,
+        validateStatus: validateAllStatus,
       },
-      timeout: AXIOS_TOKEN_TIMEOUT,
-      validateStatus: validateAllStatus,
-    });
-    idToken2 = res3.data["result"]?.["webApiServerCredential"]?.["accessToken"];
-    coralUserId = res3.data["result"]?.["user"]?.["id"];
+    );
+    const json = await callNxapiZncaApiDecrypt(nxapiZncaApiAccessToken, new Uint8Array(res3.data));
+    idToken2 = json["result"]?.["webApiServerCredential"]?.["accessToken"];
+    coralUserId = json["result"]?.["user"]?.["id"];
     if (!idToken2 || !coralUserId) {
       // { status: number; errorMessage: string; correlationId: string; }
       throw new Error(`${res3.status}: ${JSON.stringify(res3.data)}`);
@@ -356,46 +390,47 @@ export const getWebServiceToken = async (sessionToken: string) => {
     nxapiZncaApiAccessToken,
     2,
     idToken2,
+    {
+      url: "https://api-lp1.znc.srv.nintendo.net/v4/Game/GetWebServiceToken",
+      parameter: {
+        f: "",
+        registrationToken: "",
+        id: 4834290508791808,
+        requestId: "",
+        timestamp: 0,
+      },
+    },
     id,
     coralUserId.toString(),
   );
-  const { f: f2, requestId: requestId2, timestamp: timestamp2 } = json2;
+  const { encryptedTokenRequest: encryptedTokenRequest2 } = json2;
 
   // Get web service token.
-  const body4 = {
-    parameter: {
-      f: f2,
-      id: 4834290508791808,
-      registrationToken: "",
-      requestId: requestId2,
-      timestamp: timestamp2,
-    },
-    requestId: Crypto.randomUUID(),
-  };
   try {
     const res4 = await axios.post(
-      "https://api-lp1.znc.srv.nintendo.net/v2/Game/GetWebServiceToken",
-      body4,
+      "https://api-lp1.znc.srv.nintendo.net/v4/Game/GetWebServiceToken",
+      encryptedTokenRequest2,
       {
         headers: {
           "Accept-Encoding": "gzip",
           Authorization: `Bearer ${idToken2}`,
-          "Content-Length": JSON.stringify(body4).length,
-          "Content-Type": "application/json; charset=utf-8",
+          "Content-Length": encryptedTokenRequest2.length,
+          "Content-Type": "application/octet-stream",
           "User-Agent": `com.nintendo.znca/${version}(Android/11)`,
-          "X-IntegrityTokenError": "NETWORK_ERROR",
           "X-Platform": "Android",
           "X-ProductVersion": version,
         },
+        responseType: "arraybuffer",
         timeout: AXIOS_TOKEN_TIMEOUT,
         validateStatus: validateAllStatus,
       },
     );
-    if (!res4.data["result"]?.["accessToken"]) {
+    const json = await callNxapiZncaApiDecrypt(nxapiZncaApiAccessToken, new Uint8Array(res4.data));
+    const accessToken = json["result"]?.["accessToken"];
+    if (!accessToken) {
       // { status: number; errorMessage: string; correlationId: string; }
       throw new Error(`${res4.status}: ${JSON.stringify(res4.data)}`);
     }
-    const accessToken = res4.data["result"]["accessToken"];
     return { accessToken, country, language };
   } catch (e) {
     throw new Error(`/Game/GetWebServiceToken: ${(e as Error).message}`);
