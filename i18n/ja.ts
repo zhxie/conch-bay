@@ -176,6 +176,7 @@ const ja = {
   rule: "ルール",
   stage: "ステージ",
   rank_points: "ウデマエポイント",
+  series_weapon_power: "ブキチャレパワー",
   anarchy_power: "バンカラパワー",
   x_power: "Xパワー",
   challenge_e: "イベント",

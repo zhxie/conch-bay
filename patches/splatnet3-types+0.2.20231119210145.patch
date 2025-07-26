@@ -85,7 +85,7 @@ index 48dfaea..0243fc3 100644
                  vsRule: LinkedFieldType<VsSetting, 'vsRule', {
                      id: VsRule['id'];
 diff --git a/node_modules/splatnet3-types/dist/graphql.d.ts b/node_modules/splatnet3-types/dist/graphql.d.ts
-index d1b0171..6a8e921 100644
+index d1b0171..0dfd8e6 100644
 --- a/node_modules/splatnet3-types/dist/graphql.d.ts
 +++ b/node_modules/splatnet3-types/dist/graphql.d.ts
 @@ -38,9 +38,9 @@ export declare enum RequestId {
@@ -114,12 +114,12 @@ index d1b0171..6a8e921 100644
      HomeQuery = "51fc56bbf006caf37728914aa8bc0e2c86a80cf195b4d4027d6822a3623098a8",
      VsHistoryDetailPagerRefetchQuery = "973ca7012d8e94da97506cd39dfbb2a45eaae6e382607b650533d4f5077d840d",
 -    VsHistoryDetailQuery = "f893e1ddcfb8a4fd645fd75ced173f18b2750e5cfba41d2669b9814f6ceaec46"
-+    VsHistoryDetailQuery = "20f88b10d0b1d264fcb2163b0866de26bbf6f2b362f397a0258a75b7fa900943"
++    VsHistoryDetailQuery = "94faa2ff992222d11ced55e0f349920a82ac50f414ae33c83d1d1c9d8161c5dd"
  }
  export declare enum UsagiRequestId {
      IfTournamentManagerIsAvailableQuery = "8892ce4157248506f51735e2c9eb300c6c980c67ff8c317b927b05e8d35852d9",
 diff --git a/node_modules/splatnet3-types/dist/graphql.js b/node_modules/splatnet3-types/dist/graphql.js
-index 810aa77..0a89c74 100644
+index 810aa77..e485563 100644
 --- a/node_modules/splatnet3-types/dist/graphql.js
 +++ b/node_modules/splatnet3-types/dist/graphql.js
 @@ -34,9 +34,9 @@ export var RequestId;
@@ -148,7 +148,7 @@ index 810aa77..0a89c74 100644
      RequestId["HomeQuery"] = "51fc56bbf006caf37728914aa8bc0e2c86a80cf195b4d4027d6822a3623098a8";
      RequestId["VsHistoryDetailPagerRefetchQuery"] = "973ca7012d8e94da97506cd39dfbb2a45eaae6e382607b650533d4f5077d840d";
 -    RequestId["VsHistoryDetailQuery"] = "f893e1ddcfb8a4fd645fd75ced173f18b2750e5cfba41d2669b9814f6ceaec46";
-+    RequestId["VsHistoryDetailQuery"] = "20f88b10d0b1d264fcb2163b0866de26bbf6f2b362f397a0258a75b7fa900943";
++    RequestId["VsHistoryDetailQuery"] = "94faa2ff992222d11ced55e0f349920a82ac50f414ae33c83d1d1c9d8161c5dd";
  })(RequestId = RequestId || (RequestId = {}));
  export var UsagiRequestId;
  (function (UsagiRequestId) {
@@ -199,7 +199,7 @@ index 20ce97d..a0ce888 100644
  };
  declare type CoopSupplyWeapon_splatoon3ink = Pick<CoopSupplyWeapon, 'name' | 'image'> & {
 diff --git a/node_modules/splatnet3-types/dist/types.d.ts b/node_modules/splatnet3-types/dist/types.d.ts
-index 20f737f..82c9146 100644
+index 20f737f..76ca231 100644
 --- a/node_modules/splatnet3-types/dist/types.d.ts
 +++ b/node_modules/splatnet3-types/dist/types.d.ts
 @@ -258,13 +258,14 @@ export interface CoopHistoryDetail {
@@ -248,7 +248,15 @@ index 20f737f..82c9146 100644
  }
  export interface VsHistoryGroup {
      __typename: 'VsHistoryGroup';
-@@ -1039,6 +1041,7 @@ export interface FestMatchHistory {
+@@ -1013,6 +1015,7 @@ export interface BankaraMatchHistory {
+     earnedUdemaePoint: number | null;
+     mode: BankaraMatchMode | keyof typeof BankaraMatchMode;
+     bankaraPower: BankaraMatchPower;
++    weaponPower: number | null;
+ }
+ export interface BankaraMatchPower {
+     power: unknown;
+@@ -1039,6 +1042,7 @@ export interface FestMatchHistory {
      contribution: number;
      jewel: number;
      myFestPower: number | null;

@@ -100,19 +100,25 @@ export const getGearPadding = (gears: Gear[]) => {
 export const getVsPower = (battle: VsHistoryDetailResult) => {
   if (
     battle.vsHistoryDetail?.bankaraMatch &&
+    battle.vsHistoryDetail.bankaraMatch["weaponPower"] !== undefined
+  ) {
+    return battle.vsHistoryDetail.bankaraMatch["weaponPower"] as number | null;
+  }
+  if (
+    battle.vsHistoryDetail?.bankaraMatch &&
     battle.vsHistoryDetail.bankaraMatch["bankaraPower"] &&
     battle.vsHistoryDetail.bankaraMatch["bankaraPower"]["power"] !== undefined
   ) {
-    return battle.vsHistoryDetail.bankaraMatch["bankaraPower"]["power"] as number;
+    return battle.vsHistoryDetail.bankaraMatch["bankaraPower"]["power"] as number | null;
   }
   if (battle.vsHistoryDetail?.xMatch) {
-    return battle.vsHistoryDetail!.xMatch!.lastXPower as number;
+    return battle.vsHistoryDetail!.xMatch!.lastXPower as number | null;
   }
   if (
     battle.vsHistoryDetail?.leagueMatch &&
     battle.vsHistoryDetail.leagueMatch["myLeaguePower"] !== undefined
   ) {
-    return battle.vsHistoryDetail.leagueMatch["myLeaguePower"] as number;
+    return battle.vsHistoryDetail.leagueMatch["myLeaguePower"] as number | null;
   }
   if (battle.vsHistoryDetail?.festMatch) {
     return battle.vsHistoryDetail.festMatch.myFestPower;

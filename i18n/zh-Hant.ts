@@ -169,6 +169,7 @@ const zhHant = {
   rule: "規則",
   stage: "場地",
   rank_points: "技術點數",
+  series_weapon_power: "武器挑戰力",
   anarchy_power: "蠻頹戰力",
   x_power: "X戰力",
   challenge_e: "活動",

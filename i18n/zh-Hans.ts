@@ -169,6 +169,7 @@ const zhHans = {
   rule: "规则",
   stage: "场地",
   rank_points: "技术点数",
+  series_weapon_power: "武器挑战力",
   anarchy_power: "蛮颓战力",
   x_power: "X战力",
   challenge_e: "活动",

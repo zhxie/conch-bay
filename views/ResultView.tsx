@@ -997,6 +997,18 @@ const ResultView = (props: ResultViewProps) => {
                               </Display>
                             )}
                           {result.battle.vsHistoryDetail!.bankaraMatch &&
+                            result.battle.vsHistoryDetail!.bankaraMatch["weaponPower"] !==
+                              undefined &&
+                            result.battle.vsHistoryDetail!.bankaraMatch["weaponPower"] !== null && (
+                              <Display level={1} title={t("series_weapon_power")}>
+                                <Text numberOfLines={1}>
+                                  {roundPower(
+                                    result.battle.vsHistoryDetail!.bankaraMatch["weaponPower"],
+                                  )}
+                                </Text>
+                              </Display>
+                            )}
+                          {result.battle.vsHistoryDetail!.bankaraMatch &&
                             result.battle.vsHistoryDetail!.bankaraMatch["bankaraPower"] &&
                             result.battle.vsHistoryDetail!.bankaraMatch["bankaraPower"]["power"] !==
                               undefined &&

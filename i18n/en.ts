@@ -175,6 +175,7 @@ const en = {
   rule: "Rule",
   stage: "Stage",
   rank_points: "Rank Points",
+  series_weapon_power: "Series Weapon Power",
   anarchy_power: "Anarchy Power",
   x_power: "X Power",
   challenge_e: "Challenge",
