@@ -1,5 +1,5 @@
 import Cookies from "@react-native-cookies/cookies";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import Constants from "expo-constants";
 import * as Crypto from "expo-crypto";
 import {
@@ -32,6 +32,7 @@ import { sleep } from "./promise";
 
 const AXIOS_TIMEOUT = 10000;
 const AXIOS_F_TIMEOUT = 60000;
+const AXIOS_F_RETRY = 2;
 const AXIOS_TOKEN_TIMEOUT = 15000;
 const USER_AGENT = `ConchBay/${Constants.expoConfig!.version!}`;
 
@@ -94,6 +95,25 @@ export const updateSplatnetVersion = async () => {
 const validateAllStatus = () => {
   return true;
 };
+const retry = async (req: () => Promise<AxiosResponse>, attempt: number) => {
+  while (true) {
+    try {
+      const res = await req();
+      if (res.status < 400) {
+        return res;
+      }
+      if (attempt <= 0) {
+        return res;
+      }
+      attempt--;
+    } catch (e) {
+      if (attempt <= 0) {
+        throw e;
+      }
+      attempt--;
+    }
+  }
+};
 
 const callNxapiZncaApiAuthenticate = async () => {
   try {
@@ -125,21 +145,21 @@ const callNxapiZncaApiAuthenticate = async () => {
 const callNxapiZncaApiDecrypt = async (accessToken: string, data: Uint8Array) => {
   try {
     const body = { data: encode64(data) };
-    const res = await axios.post(
-      "https://nxapi-znca-api.fancy.org.uk/api/znca/decrypt-response",
-      body,
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json; charset=utf-8",
-          "User-Agent": USER_AGENT,
-          "X-znca-Client-Version": NSO_CLIENT_VERSION,
-          "X-znca-Platform": "Android",
-          "X-znca-Version": NXAPI_ZNCA_API_NSO_VERSION,
-        },
-        timeout: AXIOS_TIMEOUT,
-        validateStatus: validateAllStatus,
-      },
+    const res = await retry(
+      async () =>
+        await axios.post("https://nxapi-znca-api.fancy.org.uk/api/znca/decrypt-response", body, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json; charset=utf-8",
+            "User-Agent": USER_AGENT,
+            "X-znca-Client-Version": NSO_CLIENT_VERSION,
+            "X-znca-Platform": "Android",
+            "X-znca-Version": NXAPI_ZNCA_API_NSO_VERSION,
+          },
+          timeout: AXIOS_F_TIMEOUT,
+          validateStatus: validateAllStatus,
+        }),
+      AXIOS_F_RETRY,
     );
     if (res.status !== 200) {
       throw new Error(`${res.status}: ${JSON.stringify(res.data)}`);
@@ -176,18 +196,22 @@ const callNxapiZncaApiF = async (
     body["coral_user_id"] = coralUserId;
   }
   try {
-    const res = await axios.post("https://nxapi-znca-api.fancy.org.uk/api/znca/f", body, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json; charset=utf-8",
-        "User-Agent": USER_AGENT,
-        "X-znca-Client-Version": NSO_CLIENT_VERSION,
-        "X-znca-Platform": "Android",
-        "X-znca-Version": NXAPI_ZNCA_API_NSO_VERSION,
-      },
-      timeout: AXIOS_F_TIMEOUT,
-      validateStatus: validateAllStatus,
-    });
+    const res = await retry(
+      async () =>
+        await axios.post("https://nxapi-znca-api.fancy.org.uk/api/znca/f", body, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json; charset=utf-8",
+            "User-Agent": USER_AGENT,
+            "X-znca-Client-Version": NSO_CLIENT_VERSION,
+            "X-znca-Platform": "Android",
+            "X-znca-Version": NXAPI_ZNCA_API_NSO_VERSION,
+          },
+          timeout: AXIOS_F_TIMEOUT,
+          validateStatus: validateAllStatus,
+        }),
+      AXIOS_F_RETRY,
+    );
     const encryptedTokenRequest = res.data["encrypted_token_request"];
     if (!encryptedTokenRequest) {
       // { error: string; error_message: string; errors: { error: string; error_message: string }[]; warnings: { error: string; error_message: string }[]; }
