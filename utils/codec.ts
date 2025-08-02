@@ -3,6 +3,16 @@ import { Buffer } from "buffer";
 
 export { toByteArray as decode64, fromByteArray as encode64 } from "base64-js";
 
+export const parameterize = (params: Record<string, string>) => {
+  const body: string[] = [];
+  for (const param in params) {
+    const key = param;
+    const value = params[param];
+    body.push(`${key}=${value}`);
+  }
+  return body.join("&");
+};
+
 export const encode64Url = (base64: string) => {
   return base64.replaceAll("+", "-").replaceAll("/", "_").replaceAll("=", "");
 };

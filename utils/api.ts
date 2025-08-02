@@ -27,7 +27,7 @@ import {
   XBattleHistoriesResult,
 } from "../models/types";
 import versions from "../models/versions.json";
-import { decode64, encode64, encode64Url } from "./codec";
+import { decode64, encode64, encode64Url, parameterize } from "./codec";
 import { sleep } from "./promise";
 
 const AXIOS_TIMEOUT = 10000;
@@ -247,8 +247,8 @@ export const generateLogIn = async () => {
     session_token_code_challenge_method: "S256",
     theme: "login_form",
   };
-  const url =
-    "https://accounts.nintendo.com/connect/1.0.0/authorize?" + new URLSearchParams(body).toString();
+  // We will delay URL escaping in WebBrowser.openAuthSessionAsync.
+  const url = "https://accounts.nintendo.com/connect/1.0.0/authorize?" + parameterize(body);
   return {
     url: encodeURI(url),
     cv,
