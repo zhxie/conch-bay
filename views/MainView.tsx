@@ -2166,7 +2166,12 @@ const MainView = () => {
                 ViewStyles.mb2,
                 ViewStyles.p1,
                 ViewStyles.r2,
-                { borderWidth: 2, borderColor: theme.textColor },
+                {
+                  borderWidth: 2,
+                  borderColor: Color.Special,
+                  backgroundColor: `${Color.Special}1f`,
+                  overflow: "hidden",
+                },
               ]}
             >
               {t("log_in_warning")}

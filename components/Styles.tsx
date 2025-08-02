@@ -45,6 +45,7 @@ export const TextStyles = StyleSheet.create({
   },
   p: {
     fontSize: 14,
+    lineHeight: 16.8,
     fontWeight: "normal",
   },
   b: {
@@ -58,30 +59,37 @@ export const TextStyles = StyleSheet.create({
   },
   h1: {
     fontSize: 18,
+    lineHeight: 21.6,
     fontWeight: "bold",
   },
   h2: {
     fontSize: 16,
+    lineHeight: 19.2,
     fontWeight: "bold",
   },
   h3: {
     fontSize: 16,
+    lineHeight: 19.2,
     fontWeight: "normal",
   },
   h5: {
     fontSize: 12,
+    lineHeight: 14.4,
     fontWeight: "bold",
   },
   h6: {
     fontSize: 12,
+    lineHeight: 14.4,
     fontWeight: "normal",
   },
   h7: {
     fontSize: 10,
+    lineHeight: 12,
     fontWeight: "bold",
   },
   h9: {
     fontSize: 8,
+    lineHeight: 9.6,
     fontWeight: "bold",
   },
   c: {
