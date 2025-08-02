@@ -23,7 +23,6 @@ import {
   ShopQuery,
   VsHistoryDetailResult,
   VsHistoryDetailVariables,
-  WeaponRecordResult,
   XBattleHistoriesResult,
 } from "../models/types";
 import versions from "../models/versions.json";
@@ -322,7 +321,7 @@ export const getWebServiceToken = async (sessionToken: string) => {
       throw new Error(`${res.status}: ${JSON.stringify(res.data)}`);
     }
   } catch (e) {
-    throw new Error(`/api/token: ${(e as Error).message}`);
+    throw new Error(`/token: ${(e as Error).message}`);
   }
 
   // Get user info.
@@ -568,23 +567,6 @@ export const fetchSummary = async (
   return summary.data;
 };
 
-export const fetchWeaponRecords = async (
-  webServiceToken: WebServiceToken,
-  bulletToken: string,
-  language: string,
-) => {
-  const res = await fetchGraphQl(
-    webServiceToken,
-    bulletToken,
-    language,
-    RequestId.WeaponRecordQuery,
-  );
-  const weaponRecords = res.data as GraphQLSuccessResponse<WeaponRecordResult>;
-  if (weaponRecords.errors) {
-    throw new Error(weaponRecords.errors[0].message);
-  }
-  return weaponRecords.data;
-};
 export const fetchEquipments = async (
   webServiceToken: WebServiceToken,
   bulletToken: string,

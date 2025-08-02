@@ -563,9 +563,6 @@ const getPlaceholderMap = async (version) => {
       const image = createHash("sha256").update(weapon["__RowId"]).digest("hex");
       result[`/weapon_illust/${image}_0.png`] =
         `require("@hacceuee/s3-pixel-icons/Weapons/${name}.png")`;
-      if (!name) {
-        console.log(weapon["Id"]);
-      }
     }
   }
   for (const subWeapon of jsons[1]) {

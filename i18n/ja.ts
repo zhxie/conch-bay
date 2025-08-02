@@ -92,16 +92,12 @@ const ja = {
   install_mudmouth: "Mudmouthをインストール",
   add_mudmouth_profile: "Mudmouthのプロファイルを追加",
   log_in_with_mudmouth: "Mudmouthでログイン (%{enable})",
-  resource_notice:
-    "ホラガイベイが画像を読み込めない場合は、キャッシュを消去するか、リソースを読み込むことができます。イカリング3の制限により、ホラガイベイは一部の画像しか事前に読み込むできないことに注意してください。",
+  resource_notice: "ホラガイベイが画像を読み込めない場合は、キャッシュを消去するができます。",
   clear_cache: "キャッシュを消去",
   clearing_cache: "キャッシュを消去中",
-  preload_resources: "リソースを読み込む",
-  preloading_resources: "リソースを読み込む中",
   feedback_notice:
     "ホラガイベイの使用中にエラーが発生した場合、またはアドバイスがある場合は、お気軽にフィードバックをお寄せください。",
   read_conch_bay_wiki: "ホラガイベイ百科を読む",
-  create_a_github_issue: "GitHub Issueを作成",
   send_a_mail: "メールを送る",
   join_discord_server: "Discordサーバーに参加",
   join_the_beta_version: "ベータ版に参加",

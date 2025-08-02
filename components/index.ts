@@ -19,7 +19,7 @@ export { FilterButton, ColorFilterButton } from "./FilterButton";
 export { default as FloatingActionButton } from "./FloatingActionButton";
 export { default as GearBox } from "./GearBox";
 export { default as GroupButton } from "./GroupButton";
-export { default as Icon } from "./Icon";
+export { default as Icon, AnimatedIcon } from "./Icon";
 export { IconButton, PureIconButton } from "./IconButton";
 export { default as Image } from "./Image";
 export { default as Marquee } from "./Marquee";

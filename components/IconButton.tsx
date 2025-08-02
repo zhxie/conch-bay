@@ -1,6 +1,5 @@
-import { useEffect, useRef } from "react";
-import { Animated, Easing, StyleProp, ViewStyle } from "react-native";
-import Icon, { IconName } from "./Icon";
+import { StyleProp, ViewStyle } from "react-native";
+import Icon, { AnimatedIcon, IconName } from "./Icon";
 import Pressable from "./Pressable";
 import { Center } from "./Stack";
 import { Color } from "./Styles";
@@ -18,39 +17,6 @@ interface IconButtonProps {
 }
 
 const IconButton = (props: IconButtonProps) => {
-  const spinValue = useRef(new Animated.Value(0)).current;
-  const spin = spinValue.interpolate({
-    inputRange: [0, 1],
-    outputRange: ["0deg", "360deg"],
-  });
-
-  useEffect(() => {
-    if (props.spin) {
-      startSpinning();
-    } else {
-      stopSpinning();
-    }
-  }, [props.spin]);
-
-  const startSpinning = () => {
-    spinValue.setValue(0);
-    Animated.timing(spinValue, {
-      toValue: 1,
-      duration: 2000,
-      easing: Easing.linear,
-      useNativeDriver: true,
-    }).start((result) => {
-      if (result.finished) {
-        startSpinning();
-      } else {
-        spinValue.setValue(0);
-      }
-    });
-  };
-  const stopSpinning = () => {
-    spinValue.stopAnimation();
-  };
-
   return (
     <Pressable
       disabled={props.disabled}
@@ -68,19 +34,12 @@ const IconButton = (props: IconButtonProps) => {
       onLongPress={props.onLongPress}
     >
       <Center flex>
-        <Animated.View
-          style={{
-            width: props.size * 0.5,
-            height: props.size * 0.5,
-            transform: [{ rotate: spin }],
-          }}
-        >
-          <Icon
-            name={props.icon}
-            size={props.size * 0.5}
-            color={props.color ? "white" : Color.MiddleTerritory}
-          />
-        </Animated.View>
+        <AnimatedIcon
+          name={props.icon}
+          size={props.size * 0.5}
+          color={props.color ? "white" : Color.MiddleTerritory}
+          spin={props.spin}
+        />
       </Center>
     </Pressable>
   );

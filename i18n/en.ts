@@ -90,16 +90,12 @@ const en = {
   install_mudmouth: "Install Mudmouth",
   add_mudmouth_profile: "Add Mudmouth Profile",
   log_in_with_mudmouth: "Log In with Mudmouth (%{enable})",
-  resource_notice:
-    "If Conch Bay cannot load images, you can clear cache or preload resources. Please note, due to SplatNet 3 restrictions, Conch Bay can only preload some images.",
+  resource_notice: "If Conch Bay cannot load images, you can clear cache.",
   clear_cache: "Clear Cache",
   clearing_cache: "Clearing Cache",
-  preload_resources: "Preload Resources",
-  preloading_resources: "Preloading Resources",
   feedback_notice:
     "If you encounter any problems using Conch Bay or have any advice, feel free to share your feedback.",
   read_conch_bay_wiki: "Read Conch Bay Wiki",
-  create_a_github_issue: "Create a GitHub Issue",
   send_a_mail: "Send a mail",
   join_discord_server: "Join Discord Server",
   join_the_beta_version: "Join the Beta Version",

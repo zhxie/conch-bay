@@ -57,10 +57,20 @@ export const TextStyles = StyleSheet.create({
   link: {
     textDecorationLine: "underline",
   },
+  h0: {
+    fontSize: 40,
+    lineHeight: 48,
+    fontWeight: "bold",
+  },
   h1: {
     fontSize: 18,
     lineHeight: 21.6,
     fontWeight: "bold",
+  },
+  h15: {
+    fontSize: 18,
+    lineHeight: 21.6,
+    fontWeight: "normal",
   },
   h2: {
     fontSize: 16,

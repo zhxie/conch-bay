@@ -2,21 +2,6 @@ import * as Convert from "color-convert";
 import { Color } from "../components";
 import { VsHistoryDetailResult, CoopRule, Gear } from "../models/types";
 
-export const getImageExpires = (image: string) => {
-  const regex = /Expires=(\d*)&/;
-  const match = regex.exec(image);
-  if (!match) {
-    return null;
-  }
-  return match[1];
-};
-export const isImageExpired = (image: string) => {
-  const expires = getImageExpires(image);
-  if (expires && parseInt(expires) * 1000 < new Date().valueOf()) {
-    return true;
-  }
-  return false;
-};
 export const getImageCacheKey = (image: string) => {
   const url = new URL(image);
   const path = `${url.protocol}://${url.host}${url.pathname}`;

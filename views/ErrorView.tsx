@@ -29,9 +29,6 @@ const ErrorView = (props: ErrorViewProps) => {
 
   const [exporting, setExporting] = useState(false);
 
-  const onCreateAGithubIssuePress = () => {
-    Linking.openURL("https://github.com/zhxie/conch-bay/issues/new");
-  };
   const onSendAMailPress = async () => {
     if (await MailComposer.isAvailableAsync()) {
       MailComposer.composeAsync({
@@ -106,31 +103,9 @@ const ErrorView = (props: ErrorViewProps) => {
   return (
     <Center style={[ViewStyles.p4, ViewStyles.ff]}>
       <VStack>
-        <Text
-          style={[
-            ViewStyles.mb2,
-            TextStyles.b,
-            {
-              fontSize: 40,
-            },
-          ]}
-        >
-          {t("sorry")}
-        </Text>
-        <Text
-          style={[
-            ViewStyles.mb2,
-            {
-              fontSize: 18,
-            },
-          ]}
-        >
-          {t("sorry_notice")}
-        </Text>
+        <Text style={[TextStyles.h0, ViewStyles.mb2]}>{t("sorry")}</Text>
+        <Text style={[TextStyles.h15, ViewStyles.mb2]}>{t("sorry_notice")}</Text>
         <Text style={ViewStyles.mb4}>{props.error.message}</Text>
-        <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onCreateAGithubIssuePress}>
-          <Marquee style={theme.reverseTextStyle}>{t("create_a_github_issue")}</Marquee>
-        </Button>
         <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onSendAMailPress}>
           <Marquee style={theme.reverseTextStyle}>{t("send_a_mail")}</Marquee>
         </Button>

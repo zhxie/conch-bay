@@ -65,11 +65,9 @@ import {
   CoopHistoryDetailResult,
   DetailVotingStatusResult,
   FriendListResult,
-  MyOutfitCommonDataEquipmentsResult,
   Schedules,
   Shop,
   VsHistoryDetailResult,
-  WeaponRecordResult,
 } from "../models/types";
 import {
   fetchAnarchyBattleHistories,
@@ -88,7 +86,6 @@ import {
   fetchSplatfests,
   fetchSummary,
   fetchVsHistoryDetail,
-  fetchWeaponRecords,
   fetchXBattleHistories,
   generateLogIn,
   getBulletToken,
@@ -115,7 +112,7 @@ import {
 } from "../utils/mmkv";
 import { ok, sleep } from "../utils/promise";
 import { Brief } from "../utils/stats";
-import { getImageCacheKey, getUserIconCacheSource, isImageExpired } from "../utils/ui";
+import { getUserIconCacheSource } from "../utils/ui";
 import FilterView from "./FilterView";
 import FriendView from "./FriendView";
 import GearsView from "./GearsView";
@@ -216,7 +213,6 @@ const MainView = () => {
   const [exporting, setExporting] = useState(false);
   const [support, setSupport] = useState(false);
   const [clearingCache, setClearingCache] = useState(false);
-  const [preloadingResources, setPreloadingResources] = useState(false);
   const [clearingDatabase, setClearingDatabase] = useState(false);
   const [debug, setDebug] = useState(false);
   const [notification, setNotification] = useState(false);
@@ -1227,36 +1223,14 @@ const MainView = () => {
   const onRefreshGears = async () => {
     try {
       setRefreshingGears(true);
-      let newWebServiceToken: WebServiceToken | undefined = undefined;
-      let newBulletToken = "";
-      let equipmentsAttempt: MyOutfitCommonDataEquipmentsResult | undefined;
-      if (apiUpdated && webServiceToken && bulletToken.length > 0) {
-        try {
-          equipmentsAttempt = await fetchEquipments(webServiceToken, bulletToken, language);
-          newWebServiceToken = webServiceToken;
-          newBulletToken = bulletToken;
-        } catch {
-          /* empty */
-        }
-      }
-
-      // Regenerate bullet token if necessary.
-      if (!newBulletToken) {
-        const res = await generateBulletToken();
-        newWebServiceToken = res.webServiceToken;
-        newBulletToken = res.bulletToken;
-      }
-
-      const equipments =
-        equipmentsAttempt ||
-        (await fetchEquipments(newWebServiceToken!, newBulletToken, language)
-          .then((equipments) => {
-            return equipments;
-          })
-          .catch((e) => {
-            showBanner(BannerLevel.Warn, t("failed_to_load_gears", { error: e }));
-            return undefined;
-          }));
+      const equipments = await fetchEquipments(webServiceToken!, bulletToken, language)
+        .then((equipments) => {
+          return equipments;
+        })
+        .catch((e) => {
+          showBanner(BannerLevel.Warn, t("failed_to_load_gears", { error: e }));
+          return undefined;
+        });
       setRefreshingGears(false);
       return equipments;
     } catch (e) {
@@ -1277,25 +1251,13 @@ const MainView = () => {
     }
 
     // Attempt to acquire bullet token from web service token.
-    if (webServiceToken) {
-      const newBulletToken = await getBulletToken(webServiceToken, language).catch(() => undefined);
-      if (newBulletToken) {
-        setBulletToken(newBulletToken);
-        return webServiceToken;
-      }
-    }
-
-    // Acquire web service token.
-    showBanner(BannerLevel.Info, t("reacquiring_tokens"));
-    const res = await getWebServiceToken(sessionToken).catch((e) => {
-      showBanner(BannerLevel.Error, t("failed_to_acquire_web_service_token", { error: e }));
+    try {
+      await getBulletToken(webServiceToken!, language);
+      return webServiceToken;
+    } catch (e) {
+      showBanner(BannerLevel.Error, t("failed_to_acquire_bullet_token", { error: e }));
       return undefined;
-    });
-    if (res) {
-      setWebServiceToken(res);
-      return res;
     }
-    return undefined;
   };
   const onImportBegin = () => {
     setRefreshing(true);
@@ -1420,7 +1382,7 @@ const MainView = () => {
     setSupport(true);
   };
   const onSupportDismiss = () => {
-    if (!clearingCache && !preloadingResources && !clearingDatabase) {
+    if (!clearingCache && !clearingDatabase) {
       setSupport(false);
     }
   };
@@ -1481,244 +1443,8 @@ const MainView = () => {
     await Image.clearDiskCache();
     setClearingCache(false);
   };
-  const onPreloadResourcesPress = async () => {
-    setPreloadingResources(true);
-    try {
-      // Preload images from saved results.
-      const resources = new Map<string, string>();
-      for await (const row of Database.queryDetailEach()) {
-        if (row.mode === "salmon_run") {
-          const coop = JSON.parse(row.detail) as CoopHistoryDetailResult;
-          for (const memberResult of [
-            coop.coopHistoryDetail!.myResult,
-            ...coop.coopHistoryDetail!.memberResults,
-          ]) {
-            // Weapons.
-            for (const weapon of memberResult.weapons) {
-              const cacheKey = getImageCacheKey(weapon.image.url);
-              if (!resources.has(cacheKey) && !isImageExpired(weapon.image.url)) {
-                resources.set(cacheKey, weapon.image.url);
-              }
-            }
-            if (memberResult.specialWeapon) {
-              const cacheKey = getImageCacheKey(memberResult.specialWeapon.image.url);
-              if (
-                !resources.has(cacheKey) &&
-                !isImageExpired(memberResult.specialWeapon.image.url)
-              ) {
-                resources.set(cacheKey, memberResult.specialWeapon.image.url);
-              }
-            }
-
-            // Work suits.
-            const uniformCacheKey = getImageCacheKey(memberResult.player.uniform.image.url);
-            if (
-              !resources.has(uniformCacheKey) &&
-              !isImageExpired(memberResult.player.uniform.image.url)
-            ) {
-              resources.set(uniformCacheKey, memberResult.player.uniform.image.url);
-            }
-
-            // Splashtags.
-            const backgroundCacheKey = getImageCacheKey(
-              memberResult.player.nameplate!.background.image.url,
-            );
-            if (
-              !resources.has(backgroundCacheKey) &&
-              !isImageExpired(memberResult.player.nameplate!.background.image.url)
-            ) {
-              resources.set(
-                backgroundCacheKey,
-                memberResult.player.nameplate!.background.image.url,
-              );
-            }
-            for (const badge of memberResult.player.nameplate!.badges) {
-              if (badge) {
-                const cacheKey = getImageCacheKey(badge.image.url);
-                if (!resources.has(cacheKey) && !isImageExpired(badge.image.url)) {
-                  resources.set(getImageCacheKey(badge.image.url), badge.image.url);
-                }
-              }
-            }
-          }
-        } else {
-          const battle = JSON.parse(row.detail) as VsHistoryDetailResult;
-          for (const team of [
-            battle.vsHistoryDetail!.myTeam,
-            ...battle.vsHistoryDetail!.otherTeams,
-          ]) {
-            for (const player of team.players) {
-              // Weapons.
-              const weaponCacheKey = getImageCacheKey(player.weapon.image2d.url);
-              if (!resources.has(weaponCacheKey) && !isImageExpired(player.weapon.image2d.url)) {
-                resources.set(weaponCacheKey, player.weapon.image2d.url);
-              }
-              const subWeaponCacheKey = getImageCacheKey(player.weapon.subWeapon.image.url);
-              if (
-                !resources.has(subWeaponCacheKey) &&
-                !isImageExpired(player.weapon.subWeapon.image.url)
-              ) {
-                resources.set(subWeaponCacheKey, player.weapon.subWeapon.image.url);
-              }
-              const specialWeaponCacheKey = getImageCacheKey(player.weapon.specialWeapon.image.url);
-              if (
-                !resources.has(specialWeaponCacheKey) &&
-                !isImageExpired(player.weapon.specialWeapon.image.url)
-              ) {
-                resources.set(specialWeaponCacheKey, player.weapon.specialWeapon.image.url);
-              }
-
-              // Gears.
-              for (const gear of [player.headGear, player.clothingGear, player.shoesGear]) {
-                const gearCacheKey = getImageCacheKey(gear.originalImage.url);
-                if (!resources.has(gearCacheKey) && !isImageExpired(gear.originalImage.url)) {
-                  resources.set(gearCacheKey, gear.originalImage.url);
-                }
-                const brandCacheKey = getImageCacheKey(gear.brand.image.url);
-                if (!resources.has(brandCacheKey) && !isImageExpired(gear.brand.image.url)) {
-                  resources.set(brandCacheKey, gear.brand.image.url);
-                }
-                const primaryGearPowerCacheKey = getImageCacheKey(gear.primaryGearPower.image.url);
-                if (
-                  !resources.has(primaryGearPowerCacheKey) &&
-                  !isImageExpired(gear.primaryGearPower.image.url)
-                ) {
-                  resources.set(primaryGearPowerCacheKey, gear.primaryGearPower.image.url);
-                }
-                for (const gearPower of gear.additionalGearPowers) {
-                  const cacheKey = getImageCacheKey(gearPower.image.url);
-                  if (!resources.has(cacheKey) && !isImageExpired(gearPower.image.url)) {
-                    resources.set(cacheKey, gearPower.image.url);
-                  }
-                }
-              }
-
-              // Splashtags.
-              const backgroundCacheKey = getImageCacheKey(player.nameplate!.background.image.url);
-              if (
-                !resources.has(backgroundCacheKey) &&
-                !isImageExpired(player.nameplate!.background.image.url)
-              ) {
-                resources.set(backgroundCacheKey, player.nameplate!.background.image.url);
-              }
-              for (const badge of player.nameplate!.badges) {
-                if (badge) {
-                  const cacheKey = getImageCacheKey(badge.image.url);
-                  if (!resources.has(cacheKey) && !isImageExpired(badge.image.url)) {
-                    resources.set(getImageCacheKey(badge.image.url), badge.image.url);
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-
-      // Attempt to preload weapon images from API.
-      // TODO: need better error message.
-      try {
-        if (sessionToken.length > 0) {
-          let newWebServiceToken: WebServiceToken | undefined = undefined;
-          let newBulletToken = "";
-          let weaponRecordsAttempt: WeaponRecordResult | undefined;
-          if (apiUpdated && webServiceToken && bulletToken.length > 0) {
-            try {
-              weaponRecordsAttempt = await fetchWeaponRecords(
-                webServiceToken,
-                bulletToken,
-                language,
-              );
-              weaponRecordsAttempt.weaponRecords.nodes.forEach((record) => {
-                resources.set(getImageCacheKey(record.image2d.url), record.image2d.url);
-                resources.set(
-                  getImageCacheKey(record.subWeapon.image.url),
-                  record.subWeapon.image.url,
-                );
-                resources.set(
-                  getImageCacheKey(record.specialWeapon.image.url),
-                  record.specialWeapon.image.url,
-                );
-              });
-              newWebServiceToken = webServiceToken;
-              newBulletToken = bulletToken;
-            } catch {
-              /* empty */
-            }
-          }
-
-          // Regenerate bullet token if necessary.
-          if (!newBulletToken) {
-            const res = await generateBulletToken();
-            newWebServiceToken = res.webServiceToken;
-            newBulletToken = res.bulletToken;
-          }
-
-          // Preload weapon, equipments, badge images from API.
-          await Promise.all([
-            weaponRecordsAttempt ||
-              ok(
-                fetchWeaponRecords(newWebServiceToken!, newBulletToken, language).then(
-                  (weaponRecords) => {
-                    weaponRecords.weaponRecords.nodes.forEach((record) => {
-                      resources.set(getImageCacheKey(record.image2d.url), record.image2d.url);
-                      resources.set(
-                        getImageCacheKey(record.subWeapon.image.url),
-                        record.subWeapon.image.url,
-                      );
-                      resources.set(
-                        getImageCacheKey(record.specialWeapon.image.url),
-                        record.specialWeapon.image.url,
-                      );
-                    });
-                  },
-                ),
-              ),
-            ok(
-              fetchEquipments(newWebServiceToken!, newBulletToken, language).then((equipments) => {
-                [
-                  ...equipments.headGears.nodes,
-                  ...equipments.clothingGears.nodes,
-                  ...equipments.shoesGears.nodes,
-                ].forEach((gear) => {
-                  resources.set(getImageCacheKey(gear.image.url), gear.image.url);
-                  resources.set(getImageCacheKey(gear.brand.image.url), gear.brand.image.url);
-                  resources.set(
-                    getImageCacheKey(gear.primaryGearPower.image.url),
-                    gear.primaryGearPower.image.url,
-                  );
-                  gear.additionalGearPowers.forEach((gearPower) => {
-                    resources.set(getImageCacheKey(gearPower.image.url), gearPower.image.url);
-                  });
-                });
-              }),
-            ),
-            ok(
-              fetchSummary(newWebServiceToken!, newBulletToken, language).then((summary) => {
-                summary.playHistory.allBadges.forEach((badge) => {
-                  resources.set(getImageCacheKey(badge.image.url), badge.image.url);
-                });
-              }),
-            ),
-          ]);
-        }
-      } catch {
-        /* empty */
-      }
-
-      // Preload images.
-      // HACK: add a hashtag do not break the URL. Here the cache key will be appended after the
-      // hashtag.
-      Image.prefetch(Array.from(resources).map((resource) => `${resource[1]}#${resource[0]}`));
-    } catch (e) {
-      showBanner(BannerLevel.Error, e);
-    }
-    setPreloadingResources(false);
-  };
   const onReadConchBayWikiPress = () => {
     WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay/wiki");
-  };
-  const onCreateAGithubIssuePress = () => {
-    RNLinking.openURL("https://github.com/zhxie/conch-bay/issues/new");
   };
   const onSendAMailPress = async () => {
     if (await MailComposer.isAvailableAsync()) {
@@ -2381,31 +2107,16 @@ const MainView = () => {
               <Button
                 loading={clearingCache}
                 loadingText={t("clearing_cache")}
-                style={[ViewStyles.accent, ViewStyles.mb2]}
+                style={ViewStyles.accent}
                 textStyle={theme.reverseTextStyle}
                 onPress={onClearCachePress}
               >
                 <Marquee style={theme.reverseTextStyle}>{t("clear_cache")}</Marquee>
               </Button>
-              <Button
-                loading={preloadingResources}
-                loadingText={t("preloading_resources")}
-                style={ViewStyles.accent}
-                textStyle={theme.reverseTextStyle}
-                onPress={onPreloadResourcesPress}
-              >
-                <Marquee style={theme.reverseTextStyle}>{t("preload_resources")}</Marquee>
-              </Button>
             </DialogSection>
             <DialogSection text={t("feedback_notice")} style={ViewStyles.mb4}>
               <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onReadConchBayWikiPress}>
                 <Marquee style={theme.reverseTextStyle}>{t("read_conch_bay_wiki")}</Marquee>
-              </Button>
-              <Button
-                style={[ViewStyles.mb2, ViewStyles.accent]}
-                onPress={onCreateAGithubIssuePress}
-              >
-                <Marquee style={theme.reverseTextStyle}>{t("create_a_github_issue")}</Marquee>
               </Button>
               <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onSendAMailPress}>
                 <Marquee style={theme.reverseTextStyle}>{t("send_a_mail")}</Marquee>

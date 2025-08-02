@@ -39,7 +39,6 @@ export {
   RequestId,
   Species,
   VsHistoryDetailVariables,
-  WeaponRecordResult,
   XBattleHistoriesResult,
 } from "splatnet3-types/dist/splatnet3";
 export {
