@@ -154,6 +154,7 @@ const GearsView = (props: GearsViewProps) => {
         isVisible={display}
         size="medium"
         noPadding
+        allowDismiss
         data={gears}
         keyExtractor={(gear) => gear.name}
         renderItem={renderItem}

@@ -582,9 +582,7 @@ const ImportView = (props: ImportViewProps) => {
     setImport(true);
   };
   const onImportDismiss = () => {
-    if (!importing) {
-      setImport(false);
-    }
+    setImport(false);
   };
   const onConvertS3sOutputsPress = () => {
     WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay#import-data-from-s3s");
@@ -1166,7 +1164,12 @@ const ImportView = (props: ImportViewProps) => {
         title={t("import")}
         onPress={onImportPress}
       />
-      <Modal isVisible={import_} size="medium" onDismiss={onImportDismiss}>
+      <Modal
+        isVisible={import_}
+        size="medium"
+        allowDismiss={!importing}
+        onDismiss={onImportDismiss}
+      >
         <Dialog icon="download" text={t("import_notice")}>
           <Button
             style={[
@@ -1229,7 +1232,12 @@ const ImportView = (props: ImportViewProps) => {
             <Marquee style={theme.reverseTextStyle}>{t("import")}</Marquee>
           </Button>
         </Dialog>
-        <Modal isVisible={ikawidget3} size="medium" onDismiss={onImportIkawidget3Ikax3Dismiss}>
+        <Modal
+          isVisible={ikawidget3}
+          size="medium"
+          allowDismiss
+          onDismiss={onImportIkawidget3Ikax3Dismiss}
+        >
           <Dialog icon="info" text={t("import_ikawidget3_ikax3_notice")}>
             <Button
               disabled={importing}
@@ -1241,7 +1249,12 @@ const ImportView = (props: ImportViewProps) => {
             </Button>
           </Dialog>
         </Modal>
-        <Modal isVisible={salmdroidnw} size="medium" onDismiss={onImportSalmdroidnwBackupDismiss}>
+        <Modal
+          isVisible={salmdroidnw}
+          size="medium"
+          allowDismiss
+          onDismiss={onImportSalmdroidnwBackupDismiss}
+        >
           <Dialog icon="info" text={t("import_salmdroidnw_backup_notice")}>
             <Button
               disabled={importing}
@@ -1256,6 +1269,7 @@ const ImportView = (props: ImportViewProps) => {
         <Modal
           isVisible={salmonia3Plus}
           size="medium"
+          allowDismiss
           onDismiss={onImportSalmonia3PlusBackupDismiss}
         >
           <Dialog icon="info" text={t("import_salmonia3+_backup_notice")}>
@@ -1269,7 +1283,7 @@ const ImportView = (props: ImportViewProps) => {
             </Button>
           </Dialog>
         </Modal>
-        <Modal isVisible={uri.length > 0} size="medium">
+        <Modal isVisible={uri.length > 0} size="medium" allowDismiss>
           <Dialog icon="circle-alert" text={t("split_and_import_notice")}>
             <Button
               style={[ViewStyles.mb2, ViewStyles.accent]}

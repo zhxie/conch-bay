@@ -37,7 +37,7 @@ const XView = (props: XViewProps) => {
   return (
     <Center style={props.style}>
       <BadgeButton color={Color.XBattle} title={formatPower(maxPower)} onPress={onXPress} />
-      <Modal isVisible={x} size="small" onDismiss={onXDismiss}>
+      <Modal isVisible={x} size="small" allowDismiss onDismiss={onXDismiss}>
         <VStack center>
           <XBox first name={t("splat_zones")} power={formatPower(props.splatZones)} />
           <XBox name={t("tower_control")} power={formatPower(props.towerControl)} />

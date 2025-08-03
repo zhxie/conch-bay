@@ -63,7 +63,7 @@ const ShopView = (props: ShopViewProps) => {
         onPress={onShopPress}
         style={props.style}
       />
-      <Modal isVisible={displayShop} size="medium" onDismiss={onShopDismiss}>
+      <Modal isVisible={displayShop} size="medium" allowDismiss onDismiss={onShopDismiss}>
         <TitledList color={theme.textColor} title={t("gesotown")}>
           {pickupBrand && (
             <VStack center style={ViewStyles.mb2}>

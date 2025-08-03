@@ -178,6 +178,7 @@ const RotationsView = (props: RotationViewProps) => {
         isVisible={rotations}
         size="medium"
         noPadding
+        allowDismiss
         data={groups}
         keyExtractor={(group) =>
           group[0].battle ? group[0].battle.time.toString() : group[0].coop!.time.toString()

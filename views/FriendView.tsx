@@ -183,7 +183,7 @@ const FriendView = (props: FriendViewProps) => {
         }
         contentContainerStyle={ViewStyles.px4}
       />
-      <Modal isVisible={displayFriend} size="medium" onDismiss={onFriendDismiss}>
+      <Modal isVisible={displayFriend} size="medium" allowDismiss onDismiss={onFriendDismiss}>
         {friend && (
           <VStack center>
             <Avatar

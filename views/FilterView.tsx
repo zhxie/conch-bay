@@ -209,6 +209,7 @@ const FilterView = (props: FilterViewProps) => {
       <Modal
         isVisible={filter}
         size="medium"
+        allowDismiss
         onDismiss={onFilterDismiss}
         style={[ViewStyles.pl4, ViewStyles.pr2]}
       >

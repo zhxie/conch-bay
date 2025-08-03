@@ -849,6 +849,7 @@ const ResultView = (props: ResultViewProps) => {
       <Modal
         isVisible={displayResult}
         size="medium"
+        allowDismiss
         onDismiss={onResultDismiss}
         style={[
           {
@@ -866,7 +867,13 @@ const ResultView = (props: ResultViewProps) => {
           />
         )}
       </Modal>
-      <Modal isVisible={displayBattle} size="large" noPadding onDismiss={onBattleDismiss}>
+      <Modal
+        isVisible={displayBattle}
+        size="large"
+        noPadding
+        allowDismiss
+        onDismiss={onBattleDismiss}
+      >
         {result?.battle && (
           <Animated.View style={{ opacity: battleFade }}>
             <ViewShot
@@ -1176,7 +1183,12 @@ const ResultView = (props: ResultViewProps) => {
           </Animated.View>
         )}
       </Modal>
-      <Modal isVisible={displayBattlePlayer} size="medium" onDismiss={onBattlePlayerDismiss}>
+      <Modal
+        isVisible={displayBattlePlayer}
+        size="medium"
+        allowDismiss
+        onDismiss={onBattlePlayerDismiss}
+      >
         {battlePlayer && (
           <VStack center>
             <Splashtag
@@ -1266,7 +1278,7 @@ const ResultView = (props: ResultViewProps) => {
           </VStack>
         )}
       </Modal>
-      <Modal isVisible={displayCoop} size="large" noPadding onDismiss={onCoopDismiss}>
+      <Modal isVisible={displayCoop} size="large" noPadding allowDismiss onDismiss={onCoopDismiss}>
         {result?.coop && (
           <Animated.View style={{ opacity: coopFade }}>
             <ViewShot
@@ -1622,7 +1634,12 @@ const ResultView = (props: ResultViewProps) => {
           </Animated.View>
         )}
       </Modal>
-      <Modal isVisible={displayCoopPlayer} size="medium" onDismiss={onCoopPlayerDismiss}>
+      <Modal
+        isVisible={displayCoopPlayer}
+        size="medium"
+        allowDismiss
+        onDismiss={onCoopPlayerDismiss}
+      >
         {coopPlayer && (
           <VStack center>
             <Splashtag

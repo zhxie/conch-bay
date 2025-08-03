@@ -1056,9 +1056,7 @@ const MainView = () => {
     setLogIn(true);
   };
   const onLogInDismiss = () => {
-    if (!loggingIn) {
-      setLogIn(false);
-    }
+    setLogIn(false);
   };
   const onPrivacyPolicyPress = () => {
     WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay/wiki/Privacy-Policy");
@@ -1114,9 +1112,7 @@ const MainView = () => {
     setLogOut(true);
   };
   const onLogOutDismiss = () => {
-    if (!loggingIn && !loggingOut) {
-      setLogOut(false);
-    }
+    setLogOut(false);
   };
   const onLogOutContinuePress = async () => {
     try {
@@ -1382,9 +1378,7 @@ const MainView = () => {
     setSupport(true);
   };
   const onSupportDismiss = () => {
-    if (!clearingCache && !clearingDatabase) {
-      setSupport(false);
-    }
+    setSupport(false);
   };
   const onAutoRefreshPress = () => {
     if (!autoRefresh) {
@@ -1857,7 +1851,7 @@ const MainView = () => {
             />
           )}
         </Animated.View>
-        <Modal isVisible={update} size="medium" onDismiss={onUpdateDismiss}>
+        <Modal isVisible={update} size="medium" allowDismiss onDismiss={onUpdateDismiss}>
           <Dialog icon="sparkles" text={t("update_notice")}>
             {Platform.OS === "ios" && (
               <Button
@@ -1885,7 +1879,7 @@ const MainView = () => {
             </Button>
           </Dialog>
         </Modal>
-        <Modal isVisible={logIn} size="medium" onDismiss={onLogInDismiss}>
+        <Modal isVisible={logIn} size="medium" allowDismiss={!loggingIn} onDismiss={onLogInDismiss}>
           <CustomDialog icon="circle-alert">
             <Text
               style={[
@@ -1938,7 +1932,12 @@ const MainView = () => {
             </DialogSection>
           </CustomDialog>
         </Modal>
-        <Modal isVisible={logOut} size="medium" onDismiss={onLogOutDismiss}>
+        <Modal
+          isVisible={logOut}
+          size="medium"
+          allowDismiss={!loggingIn && !loggingOut}
+          onDismiss={onLogOutDismiss}
+        >
           <CustomDialog icon="circle-alert">
             <DialogSection text={t("relog_in_notice")} style={ViewStyles.mb4}>
               <Button
@@ -1987,7 +1986,12 @@ const MainView = () => {
               </Button>
             </DialogSection>
           </CustomDialog>
-          <Modal isVisible={logInWithMudmouth} size="medium" onDismiss={onLogInWithMudmouthDismiss}>
+          <Modal
+            isVisible={logInWithMudmouth}
+            size="medium"
+            allowDismiss
+            onDismiss={onLogInWithMudmouthDismiss}
+          >
             <CustomDialog icon="globe-lock">
               <DialogSection text={t("mudmouth_notice")} style={ViewStyles.mb4}>
                 <Button
@@ -2017,7 +2021,12 @@ const MainView = () => {
             </CustomDialog>
           </Modal>
         </Modal>
-        <Modal isVisible={support} size="medium" onDismiss={onSupportDismiss}>
+        <Modal
+          isVisible={support}
+          size="medium"
+          allowDismiss={!clearingCache && !clearingDatabase}
+          onDismiss={onSupportDismiss}
+        >
           <CustomDialog icon="circle-help">
             <DialogSection text={t("preference_notice")} style={ViewStyles.mb4}>
               {sessionToken.length > 0 && (
@@ -2191,14 +2200,24 @@ const MainView = () => {
             </DialogSection>
           </CustomDialog>
         </Modal>
-        <Modal isVisible={notification} size="medium" onDismiss={onNotificationDismiss}>
+        <Modal
+          isVisible={notification}
+          size="medium"
+          allowDismiss
+          onDismiss={onNotificationDismiss}
+        >
           <Dialog icon="bell-dot" text={t("notification_notice")}>
             <Button style={ViewStyles.accent} onPress={onNotificationContinue}>
               <Marquee style={theme.reverseTextStyle}>{t("ok")}</Marquee>
             </Button>
           </Dialog>
         </Modal>
-        <Modal isVisible={acknowledgments} size="medium" onDismiss={onAcknowledgmentsDismiss}>
+        <Modal
+          isVisible={acknowledgments}
+          size="medium"
+          allowDismiss
+          onDismiss={onAcknowledgmentsDismiss}
+        >
           <VStack center style={ViewStyles.mb3}>
             <Marquee style={[TextStyles.h3, ViewStyles.mb2]}>{t("creators")}</Marquee>
             <HStack center>
@@ -2259,7 +2278,7 @@ const MainView = () => {
             </VStack>
           </VStack>
         </Modal>
-        <Modal isVisible={welcomeTip} size="medium" onDismiss={onWelcomeTipDismiss}>
+        <Modal isVisible={welcomeTip} size="medium" allowDismiss onDismiss={onWelcomeTipDismiss}>
           <Dialog icon="smile" text={t("welcome_tip")}>
             <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onReadConchBayWikiPress}>
               <Marquee style={theme.reverseTextStyle}>{t("read_conch_bay_wiki")}</Marquee>
@@ -2273,7 +2292,7 @@ const MainView = () => {
             </Button>
           </Dialog>
         </Modal>
-        <Modal isVisible={mudmouthTip} size="medium" onDismiss={oMudmouthTipDismiss}>
+        <Modal isVisible={mudmouthTip} size="medium" allowDismiss onDismiss={oMudmouthTipDismiss}>
           <Dialog icon="smile" text={t("mudmouth_tip")}>
             <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onReadConchBayWikiPress}>
               <Marquee style={theme.reverseTextStyle}>{t("read_conch_bay_wiki")}</Marquee>

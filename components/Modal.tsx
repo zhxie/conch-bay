@@ -19,12 +19,23 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { VStack } from "./Stack";
 import { ViewStyles, useTheme } from "./Styles";
 
-const Backdrop = (props: any) => {
+const CloseBackdrop = (props: any) => {
   return (
     <BottomSheetBackdrop
       appearsOnIndex={0}
       disappearsOnIndex={-1}
       pressBehavior="close"
+      {...props}
+    />
+  );
+};
+
+const IgnoreBackdrop = (props: any) => {
+  return (
+    <BottomSheetBackdrop
+      appearsOnIndex={0}
+      disappearsOnIndex={-1}
+      pressBehavior="none"
       {...props}
     />
   );
@@ -42,6 +53,7 @@ interface ModalProps {
   isVisible: boolean;
   size: "small" | "medium" | "large";
   noPadding?: boolean;
+  allowDismiss?: boolean;
   style?: StyleProp<ViewStyle>;
   onDismiss?: () => void;
   onLayout?: (event: LayoutChangeEvent) => void;
@@ -70,7 +82,7 @@ const Modal = (props: ModalProps) => {
       ref={ref}
       stackBehavior="push"
       detached={width > MAX_WIDTH}
-      enablePanDownToClose
+      enablePanDownToClose={props.allowDismiss ? true : false}
       enableDynamicSizing
       maxDynamicContentSize={Math.min(
         ModalSize[props.size],
@@ -85,7 +97,7 @@ const Modal = (props: ModalProps) => {
       ]}
       onDismiss={props.onDismiss}
       handleComponent={null}
-      backdropComponent={Backdrop}
+      backdropComponent={props.allowDismiss ? CloseBackdrop : IgnoreBackdrop}
     >
       <BottomSheetScrollView
         style={[
@@ -112,6 +124,7 @@ interface FlashModalProps<T> {
   isVisible: boolean;
   size: "small" | "medium" | "large";
   noPadding?: boolean;
+  allowDismiss?: boolean;
   style?: StyleProp<ViewStyle>;
   onDismiss?: () => void;
   onLayout?: (event: LayoutChangeEvent) => void;
@@ -156,7 +169,7 @@ const FlashModal = <T,>(props: FlashModalProps<T>) => {
           height - insets.top - (width > MAX_WIDTH ? Math.max(insets.bottom, 20) : 0),
         ),
       ]}
-      enablePanDownToClose
+      enablePanDownToClose={props.allowDismiss}
       bottomInset={width > MAX_WIDTH ? Math.max(insets.bottom, 20) : 0}
       containerStyle={width > MAX_WIDTH && { marginHorizontal: (width - MAX_WIDTH) / 2 }}
       backgroundStyle={[
@@ -166,7 +179,7 @@ const FlashModal = <T,>(props: FlashModalProps<T>) => {
       ]}
       onDismiss={props.onDismiss}
       handleComponent={null}
-      backdropComponent={Backdrop}
+      backdropComponent={props.allowDismiss ? CloseBackdrop : IgnoreBackdrop}
       enableDynamicSizing={false}
     >
       <BottomSheetFlashList
@@ -229,7 +242,7 @@ const FullscreenModal = (props: FullscreenModalProps) => {
       backgroundStyle={[theme.backgroundStyle, props.style]}
       onDismiss={props.onDismiss}
       handleComponent={null}
-      backdropComponent={Backdrop}
+      backdropComponent={IgnoreBackdrop}
     >
       <BottomSheetView style={[ViewStyles.f]}>{props.children}</BottomSheetView>
     </BottomSheetModal>
