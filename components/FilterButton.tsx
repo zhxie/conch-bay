@@ -52,9 +52,9 @@ const ColorFilterButton = (props: ColorFilterButtonProps) => {
         <Circle
           size={12}
           color={Color.MiddleTerritory}
-          style={!!props.color && { backgroundColor: props.color }}
+          style={[ViewStyles.mr1, !!props.color && { backgroundColor: props.color }]}
         />
-        <Text numberOfLines={1}>{` ${props.title}`}</Text>
+        <Text numberOfLines={1}>{props.title}</Text>
       </HStack>
     </Pressable>
   );
