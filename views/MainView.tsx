@@ -32,7 +32,6 @@ import {
   useWindowDimensions,
 } from "react-native";
 import { useMMKV } from "react-native-mmkv";
-import * as Progress from "react-native-progress";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { zip } from "react-native-zip-archive";
 import semver from "semver";
@@ -206,8 +205,6 @@ const MainView = () => {
   const [loggingOut, setLoggingOut] = useState(false);
   const [logInWithMudmouth, setLogInWithMudmouth] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [progressTotal, setProgressTotal] = useState(0);
   const [loadingMore, setLoadingMore] = useState(false);
   const [refreshingGears, setRefreshingGears] = useState(false);
   const [exporting, setExporting] = useState(false);
@@ -471,11 +468,6 @@ const MainView = () => {
       loadBriefs();
     }
   }, [filter]);
-  useEffect(() => {
-    if (!progressTotal) {
-      setProgress(0);
-    }
-  }, [progressTotal]);
   useEffect(() => {
     if (autoRefresh) {
       activateKeepAwakeAsync("refresh");
@@ -850,12 +842,8 @@ const MainView = () => {
           const newIds = uniqueIds.filter((_, i) => !existed[i]);
           if (n === -1) {
             n = newIds.length;
-            if (n !== 0) {
-              setProgressTotal(n + 50);
-            }
           } else {
             n += newIds.length;
-            setProgressTotal(n);
             if (n > 0) {
               showBanner(BannerLevel.Info, t("loading_n_results", { n }));
             }
@@ -865,10 +853,7 @@ const MainView = () => {
             newIds.map((id, i) =>
               sleep(i * 750)
                 .then(() => fetchVsHistoryDetail(webServiceToken, bulletToken, language, id))
-                .then((detail) => {
-                  setProgress((progress) => progress + 1);
-                  return Database.addBattle(detail);
-                })
+                .then((detail) => Database.addBattle(detail))
                 .catch((e) => {
                   if (!error) {
                     error = e;
@@ -898,15 +883,10 @@ const MainView = () => {
 
           const existed = await Promise.all(ids.map(Database.isExist));
           const newIds = ids.filter((_, i) => !existed[i]);
-          setProgressTotal((progressTotal) => progressTotal + newIds.length);
           if (n === -1) {
             n = newIds.length;
-            if (n !== 0) {
-              setProgressTotal(n + 250);
-            }
           } else {
             n += newIds.length;
-            setProgressTotal(n);
             if (n > 0) {
               showBanner(BannerLevel.Info, t("loading_n_results", { n }));
             }
@@ -916,10 +896,7 @@ const MainView = () => {
             newIds.map((id, i) =>
               sleep(i * 750)
                 .then(() => fetchCoopHistoryDetail(webServiceToken, bulletToken, language, id))
-                .then((detail) => {
-                  setProgress((progress) => progress + 1);
-                  return Database.addCoop(detail);
-                })
+                .then((detail) => Database.addCoop(detail))
                 .catch((e) => {
                   if (!error) {
                     error = e;
@@ -936,7 +913,6 @@ const MainView = () => {
           return 0;
         }),
     ]);
-    setProgressTotal(0);
 
     if (n > 0) {
       const fail = battleFail + coopFail;
@@ -1647,19 +1623,6 @@ const MainView = () => {
                         />
                       )}
                     </HStack>
-                    {progressTotal > 0 && progress < progressTotal && (
-                      <Progress.Bar
-                        animated
-                        progress={progress / progressTotal}
-                        color={Color.AccentColor}
-                        unfilledColor={theme.territoryColor}
-                        borderColor={Color.AccentColor}
-                        width={64}
-                        borderRadius={2}
-                        useNativeDriver
-                        style={{ position: "absolute", top: 50 }}
-                      />
-                    )}
                   </VStack>
                 )}
                 <ScheduleView schedules={schedules} style={ViewStyles.mb4}>
