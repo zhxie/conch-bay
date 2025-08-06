@@ -8,7 +8,6 @@ const ja = {
   ...locale,
   // API.
   lang: "ja-JP",
-  region: "JP",
   // UI.
   log_in: "ログイン",
   log_in_notice:
@@ -67,7 +66,7 @@ const ja = {
   release_notes: "リリースノート",
   disclaimer:
     "当アプリは、イカリング3の情報を利用した非公式アプリであり、任天堂株式会社とは一切関係はございません。",
-  support: "サポート",
+  support: "設定とサポート",
   preference_notice: "ホラガイベイを自分好みにカスタマイズできます。",
   enable: "有効",
   disable: "無効",
@@ -75,13 +74,8 @@ const ja = {
   background_refresh: "バックグラウンド更新 (%{enable})",
   salmon_run_friendly_mode: "サーモンランフレンドリーモード (%{enable})",
   language_notice:
-    "ホラガイベイが対応する地域と言語のフェス、リザルト、イカリング3をロードできるように、地域と言語を変更できます。",
+    "ホラガイベイが対応する言語のリザルトとイカリング3をロードできるように、言語を変更できます。",
   change_game_language: "ゲームの言語を変更 (%{language})",
-  change_splatfest_region: "フェス地域を変更 (%{region})",
-  japan: "日本",
-  the_americas_australia_new_zealand: "アメリカ大陸、オーストラリア、ニュージーランド",
-  europe: "ヨーロッパ",
-  hong_kong_south_korea: "香港、韓国",
   change_display_language: "表示言語を変更 (%{language})",
   relog_in_notice: "ホラガイベイがトークンを取得できない場合は、再ログインできます。",
   relog_in: "再ログイン",

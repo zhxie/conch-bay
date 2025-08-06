@@ -35,10 +35,7 @@ const XBox = (props: XBoxProps) => {
               {props.name}
             </Marquee>
           </HStack>
-          <HStack center>
-            <Circle size={10} color={Color.XBattle} style={ViewStyles.mr1} />
-            <Text numberOfLines={1}>{props.power}</Text>
-          </HStack>
+          <Text numberOfLines={1}>{props.power}</Text>
         </HStack>
       </VStack>
     </VStack>

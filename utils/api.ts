@@ -56,12 +56,13 @@ export const fetchShop = async () => {
   const json = await res.json();
   return (json as ShopQuery).data;
 };
-export const fetchSplatfests = async (region: string) => {
+export const fetchSplatfests = async () => {
   const res = await fetch("https://splatoon3.ink/data/festivals.json", {
     headers: { "User-Agent": USER_AGENT },
   });
   const json = await res.json();
-  return (json as FestivalsQuery)[region].data;
+  // HACK: only US region is supported by Splatoon3.ink now.
+  return (json as FestivalsQuery)["US"].data;
 };
 export const fetchXRankings = async (id: string) => {
   const res = await fetch(`https://splat.top/api/player/u-${id}`, {

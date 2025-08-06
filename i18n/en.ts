@@ -8,7 +8,6 @@ const en = {
   ...locale,
   // API.
   lang: "en-US",
-  region: "NA",
   // UI.
   log_in: "Log In",
   log_in_notice:
@@ -65,7 +64,7 @@ const en = {
   release_notes: "Release Notes",
   disclaimer:
     "This app is an unofficial app which uses the information of SplatNet 3, and is not related to Nintendo Co., Ltd.",
-  support: "Support",
+  support: "Settings & Support",
   preference_notice: "You can customize Conch Bay to your liking.",
   enable: "Enable",
   disable: "Disable",
@@ -73,13 +72,8 @@ const en = {
   background_refresh: "Background Refresh (%{enable})",
   salmon_run_friendly_mode: "Salmon Run Friendly Mode (%{enable})",
   language_notice:
-    "You can change your region and language so that Conch Bay can load Splatfest, results and SplatNet 3 in the corresponding region and language.",
+    "You can change your language so that Conch Bay can load results and SplatNet 3 in the corresponding language.",
   change_game_language: "Change Game Language (%{language})",
-  change_splatfest_region: "Change Splatfest Region (%{region})",
-  japan: "Japan",
-  the_americas_australia_new_zealand: "The Americas, Australia, New Zealand",
-  europe: "Europe",
-  hong_kong_south_korea: "Hong Kong, South Korea",
   change_display_language: "Change Display Language (%{language})",
   relog_in_notice: "If Conch Bay cannot acquire tokens, you can relog in.",
   relog_in: "Relog in",
@@ -113,7 +107,8 @@ const en = {
   export_configuration: "Export Configuration",
   export_database: "Export Database",
   privacy_policy: "Privacy Policy",
-  acknowledgments: "Acknowledgments",
+  // HACK: the word acknowledgments is too long to display with other 2 links.
+  acknowledgments: "Credits",
   creators: "Creators",
   license: "License",
   oss_licenses: "Open-Source Softwares Licenses",

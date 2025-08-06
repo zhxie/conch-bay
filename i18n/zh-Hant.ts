@@ -8,7 +8,6 @@ const zhHant = {
   ...locale,
   // API.
   lang: "zh-TW",
-  region: "AP",
   // UI.
   log_in: "登入",
   log_in_warning:
@@ -63,21 +62,15 @@ const zhHant = {
   go_to_google_play: "前往Google Play",
   release_notes: "發行說明",
   disclaimer: "本應用是使用魷魚圈3的資訊的非官方應用，與任天堂有限公司無關。",
-  support: "支援",
+  support: "設定與支援",
   preference_notice: "您可以根據自己的喜好自訂法螺灣。",
   enable: "啟用",
   disable: "停用",
   auto_refresh: "自動重新整理 (%{enable})",
   background_refresh: "背景重新整理 (%{enable})",
   salmon_run_friendly_mode: "鮭魚跑友好模式 (%{enable})",
-  language_notice:
-    "您可以修改您的地區與語言，以便於法螺灣加載對應地區與語言的祭典、記錄與魷魚圈3。",
+  language_notice: "您可以修改您的語言，以便於法螺灣加載對應語言的記錄與魷魚圈3。",
   change_game_language: "修改遊戲語言 (%{language})",
-  change_splatfest_region: "修改祭典地區 (%{region})",
-  japan: "日本",
-  the_americas_australia_new_zealand: "美洲大陸、澳洲、新西蘭",
-  europe: "歐洲",
-  hong_kong_south_korea: "香港、韓國",
   change_display_language: "修改顯示語言 (%{language})",
   relog_in_notice: "如果法螺灣無法取得令牌，您可以重新登入。",
   relog_in: "重新登入",

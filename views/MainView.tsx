@@ -176,13 +176,6 @@ enum TimeRange {
   AllResults = "all_results",
 }
 
-enum Region {
-  JP = "japan",
-  US = "the_americas_australia_new_zealand",
-  EU = "europe",
-  AP = "hong_kong_south_korea",
-}
-
 let autoRefreshTimeout: NodeJS.Timeout | undefined;
 
 const MainView = () => {
@@ -230,7 +223,6 @@ const MainView = () => {
     Key.Language,
     t("lang"),
   );
-  const [region, setRegion, clearRegion, regionReady] = useStringMmkv(Key.Region, t("region"));
 
   const [icon, setIcon, clearIcon] = useStringMmkv(Key.Icon);
   const [level, setLevel, clearLevel] = useStringMmkv(Key.Level);
@@ -300,7 +292,6 @@ const MainView = () => {
       webServiceTokenReady &&
       bulletTokenReady &&
       languageReady &&
-      regionReady &&
       mudmouthReady &&
       filterReady &&
       migratedReady
@@ -313,7 +304,6 @@ const MainView = () => {
             const [
               sessionToken,
               language,
-              region,
               playedTime,
               backgroundRefresh,
               salmonRunFriendlyMode,
@@ -321,7 +311,6 @@ const MainView = () => {
             ] = await AsyncStorage.multiGet([
               AsyncStorageKey.SessionToken,
               AsyncStorageKey.Language,
-              AsyncStorageKey.Region,
               AsyncStorageKey.PlayedTime,
               AsyncStorageKey.BackgroundRefresh,
               AsyncStorageKey.SalmonRunFriendlyMode,
@@ -332,9 +321,6 @@ const MainView = () => {
             }
             if (language[1]) {
               setLanguage(language[1]);
-            }
-            if (region[1]) {
-              setRegion(region[1]);
             }
             if (playedTime[1]) {
               setPlayedTime(parseInt(playedTime[1]));
@@ -356,11 +342,6 @@ const MainView = () => {
             newFilter.players = [];
             setFilter(newFilter);
           }
-          // Fix for legacy data: "NA" was incorrectly used for the `the_americas_australia_new_zealand` region
-          // The `region` should match the key in the response of `splatoon3.ink/data/festivals.json`
-          if (region === "NA") {
-            setRegion("US");
-          }
           const upgrade = await Database.open();
           if (upgrade) {
             setUpgrade(true);
@@ -379,7 +360,6 @@ const MainView = () => {
     webServiceTokenReady,
     bulletTokenReady,
     languageReady,
-    regionReady,
     mudmouthReady,
     filterReady,
     migratedReady,
@@ -650,7 +630,7 @@ const MainView = () => {
                   .catch((e) => {
                     showBanner(BannerLevel.Warn, t("failed_to_load_friends", { error: e }));
                   }),
-              fetchSplatfests(region)
+              fetchSplatfests()
                 .then(async (splatfests) => {
                   if (splatfests.festRecords.nodes[0]?.isVotable) {
                     await fetchDetailVotingStatus(
@@ -1398,13 +1378,6 @@ const MainView = () => {
       setLanguage(language);
     }
   };
-  const onSplatfestRegionSelected = (region: string) => {
-    if (language === t("region")) {
-      clearRegion();
-    } else {
-      setRegion(region);
-    }
-  };
   const onChangeDisplayLanguagePress = () => {
     RNLinking.openSettings();
   };
@@ -1456,7 +1429,7 @@ const MainView = () => {
   };
   const onCopyWebServiceTokenPress = async () => {
     if (webServiceToken) {
-      await Clipboard.setStringAsync(JSON.stringify(webServiceToken));
+      await Clipboard.setStringAsync(webServiceToken.accessToken);
       showBanner(BannerLevel.Info, t("copied_to_clipboard"));
     }
   };
@@ -2051,18 +2024,6 @@ const MainView = () => {
                   { key: "zh-TW", value: t("zh-TW") },
                 ]}
                 onSelected={onGameLanguageSelected}
-                style={ViewStyles.mb2}
-              />
-              <Picker
-                disabled={refreshing}
-                title={t("change_splatfest_region", { region: t(Region[region]) })}
-                items={[
-                  { key: "JP", value: t("japan") },
-                  { key: "US", value: t("the_americas_australia_new_zealand") },
-                  { key: "EU", value: t("europe") },
-                  { key: "AP", value: t("hong_kong_south_korea") },
-                ]}
-                onSelected={onSplatfestRegionSelected}
                 style={ViewStyles.mb2}
               />
               <Button
