@@ -87,7 +87,7 @@ export const getVsPower = (battle: VsHistoryDetailResult) => {
     return battle.vsHistoryDetail.bankaraMatch["weaponPower"] as number | null;
   }
   if (battle.vsHistoryDetail?.bankaraMatch?.["bankaraPower"]?.["power"]) {
-    return battle.vsHistoryDetail?.bankaraMatch["bankaraPower"]["power"] as number | null;
+    return battle.vsHistoryDetail.bankaraMatch["bankaraPower"]["power"] as number | null;
   }
   if (battle.vsHistoryDetail?.xMatch) {
     return battle.vsHistoryDetail!.xMatch!.lastXPower as number | null;

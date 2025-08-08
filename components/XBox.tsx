@@ -1,5 +1,4 @@
 import Marquee from "./Marquee";
-import { Circle } from "./Shape";
 import { HStack, VStack } from "./Stack";
 import { Color, TextStyles, useTheme, ViewStyles } from "./Styles";
 import Text from "./Text";
