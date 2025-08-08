@@ -16,8 +16,8 @@ import {
 } from "../components";
 import t from "../i18n";
 import unknownList from "../models/unknowns.json";
-import { Brief, canGroupBattle, canGroupCoop } from "../utils/stats";
-import { getCoopRuleColor, getImageCacheSource, getVsModeColor } from "../utils/ui";
+import { BattleBrief, Brief, canGroupBattle, canGroupCoop, CoopBrief } from "../utils/stats";
+import { getCoopRuleColor, getImageCacheSource, getVsModeColor, roundPower } from "../utils/ui";
 import { StatsModal } from "./StatsView";
 
 interface RotationViewProps {
@@ -31,6 +31,7 @@ const RotationsView = (props: RotationViewProps) => {
   const [group, setGroup] = useState<Brief[]>();
   const [displayGroup, setDisplayGroup] = useState(false);
   const [dimension, setDimension] = useState(0);
+  const [index, setIndex] = useState(0);
 
   const groups = useMemo(() => {
     const groups: Brief[][] = [];
@@ -85,8 +86,30 @@ const RotationsView = (props: RotationViewProps) => {
     }
     return `${startTime} – ${endTime}`;
   };
+  const formatPower = (briefs: BattleBrief[]) => {
+    const lastPower = briefs[0].power;
+    const maxPower = Math.max(
+      ...briefs
+        .map((brief) => brief.power)
+        .filter((power) => power)
+        .map((power) => power!),
+    );
+    if (lastPower) {
+      return `${roundPower(lastPower)} / ${roundPower(maxPower)}`;
+    }
+    return "";
+  };
+  const formatJobGrade = (briefs: CoopBrief[]) => {
+    if (briefs[0].grade) {
+      return `${t(briefs[0].grade.id)} ${briefs[0].grade.point}`;
+    }
+    return "";
+  };
   const onGroupDismiss = () => {
     setDisplayGroup(false);
+  };
+  const onIndexChange = (event: NativeSyntheticEvent<NativeSegmentedControlIOSChangeEvent>) => {
+    setIndex(event.nativeEvent.selectedSegmentIndex);
   };
   const onDimensionChange = (event: NativeSyntheticEvent<NativeSegmentedControlIOSChangeEvent>) => {
     setDimension(event.nativeEvent.selectedSegmentIndex);
@@ -114,10 +137,15 @@ const RotationsView = (props: RotationViewProps) => {
             first={result.index === 0}
             last={result.index === groups.length - 1}
             rule={t(result.item[0].battle.rule)}
-            time={formatGroupPeriod(
-              result.item[result.item.length - 1].battle!.time,
-              result.item[0].battle!.time,
-            )}
+            info={
+              index === 0
+                ? formatGroupPeriod(
+                    result.item[result.item.length - 1].battle!.time,
+                    result.item[0].battle!.time,
+                  )
+                : formatPower(result.item.map((item) => item.battle) as BattleBrief[])
+            }
+            subtle={index === 0}
             stages={[...stageMap.entries()]
               .sort((a, b) => b[1] - a[1])
               .map((stages) => t(stages[0]))
@@ -134,6 +162,16 @@ const RotationsView = (props: RotationViewProps) => {
       }
       stageMap.set(brief.coop!.stage, stageMap.get(brief.coop!.stage)! + 1);
     }
+    let maxGradeId = "",
+      maxGradePoint = 0;
+    for (const grade of result.item.map((item) => item.coop?.grade).filter((grade) => grade)) {
+      if (grade!.id > maxGradeId) {
+        maxGradeId = grade!.id;
+        maxGradePoint = grade!.point;
+      } else if (grade!.id === maxGradeId) {
+        maxGradePoint = Math.max(maxGradePoint, grade!.point);
+      }
+    }
     return (
       <VStack style={ViewStyles.px4}>
         <CoopRotationButton
@@ -142,10 +180,15 @@ const RotationsView = (props: RotationViewProps) => {
           first={result.index === 0}
           last={result.index === groups.length - 1}
           rule={t(result.item[0].coop!.rule)}
-          time={formatGroupPeriod(
-            result.item[result.item.length - 1].coop!.time,
-            result.item[0].coop!.time,
-          )}
+          info={
+            index === 0
+              ? formatGroupPeriod(
+                  result.item[result.item.length - 1].coop!.time,
+                  result.item[0].coop!.time,
+                )
+              : formatJobGrade(result.item.map((item) => item.coop) as CoopBrief[])
+          }
+          subtle={index === 0}
           stage={[...stageMap.entries()]
             .sort((a, b) => b[1] - a[1])
             .map((stages) => t(stages[0]))
@@ -186,24 +229,33 @@ const RotationsView = (props: RotationViewProps) => {
         renderItem={renderItem}
         estimatedItemSize={64}
         estimatedHeight={64 * groups.length}
+        extraData={index}
         ListHeaderComponent={
-          <StatsModal
-            briefs={group}
-            dimension={dimension}
-            hideEmpty
-            isVisible={displayGroup}
-            onDismiss={onGroupDismiss}
-          >
+          <VStack style={ViewStyles.px4}>
             <SegmentedControl
-              values={[t("self"), t("team")]}
-              selectedIndex={dimension}
-              onChange={onDimensionChange}
-              style={ViewStyles.mb1}
+              values={[t("played_time"), t("power")]}
+              selectedIndex={index}
+              onChange={onIndexChange}
+              style={ViewStyles.mb2}
             />
-          </StatsModal>
+          </VStack>
         }
         onDismiss={onRotationDismiss}
       />
+      <StatsModal
+        briefs={group}
+        dimension={dimension}
+        hideEmpty
+        isVisible={displayGroup}
+        onDismiss={onGroupDismiss}
+      >
+        <SegmentedControl
+          values={[t("self"), t("team")]}
+          selectedIndex={dimension}
+          onChange={onDimensionChange}
+          style={ViewStyles.mb1}
+        />
+      </StatsModal>
     </Center>
   );
 };

@@ -133,6 +133,7 @@ interface FlashModalProps<T> {
   renderItem: ListRenderItem<T>;
   estimatedItemSize: number;
   estimatedHeight: number;
+  extraData?: any;
   ListHeaderComponent?: React.ReactNode;
 }
 
@@ -188,6 +189,7 @@ const FlashModal = <T,>(props: FlashModalProps<T>) => {
         keyExtractor={props.keyExtractor}
         renderItem={props.renderItem}
         estimatedItemSize={props.estimatedItemSize}
+        extraData={props.extraData}
         ListHeaderComponent={
           <VStack>
             <View style={styles.inset} />

@@ -12,7 +12,8 @@ interface CoopRotationButtonProps<T> {
   first?: boolean;
   last?: boolean;
   rule: string;
-  time: string;
+  info: string;
+  subtle: boolean;
   stage: string;
   weapons: ImageSource[];
   style?: StyleProp<ViewStyle>;
@@ -38,8 +39,8 @@ const CoopRotationButton = <T,>(props: CoopRotationButtonProps<T>) => {
       title={props.rule}
       subtitle={props.stage}
       subChildren={
-        <Text numberOfLines={1} style={TextStyles.subtle}>
-          {props.time}
+        <Text numberOfLines={1} style={props.subtle && TextStyles.subtle}>
+          {props.info}
         </Text>
       }
       style={props.style}
@@ -48,7 +49,6 @@ const CoopRotationButton = <T,>(props: CoopRotationButtonProps<T>) => {
       <HStack
         center
         style={[
-          ViewStyles.mr1,
           ViewStyles.px1,
           {
             height: 20,

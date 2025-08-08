@@ -10,7 +10,8 @@ interface BattleRotationButtonProps<T> {
   first?: boolean;
   last?: boolean;
   rule: string;
-  time: string;
+  info: string;
+  subtle: boolean;
   stages: string;
   style?: StyleProp<ViewStyle>;
   onPress?: (group: T) => void;
@@ -31,8 +32,8 @@ const BattleRotationButton = <T,>(props: BattleRotationButtonProps<T>) => {
       title={props.rule}
       subtitle={props.stages}
       subChildren={
-        <Text numberOfLines={1} style={TextStyles.subtle}>
-          {props.time}
+        <Text numberOfLines={1} style={props.subtle && TextStyles.subtle}>
+          {props.info}
         </Text>
       }
       style={props.style}
