@@ -1929,7 +1929,7 @@ const MainView = () => {
             onDismiss={onLogInWithMudmouthDismiss}
           >
             <CustomDialog icon="globe-lock">
-              <DialogSection text={t("mudmouth_notice")} style={ViewStyles.mb4}>
+              <DialogSection text={t("mudmouth_notice")}>
                 <Button
                   style={[ViewStyles.mb2, ViewStyles.accent]}
                   textStyle={theme.reverseTextStyle}
