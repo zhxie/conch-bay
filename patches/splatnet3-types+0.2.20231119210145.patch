@@ -85,7 +85,7 @@ index 48dfaea..0243fc3 100644
                  vsRule: LinkedFieldType<VsSetting, 'vsRule', {
                      id: VsRule['id'];
 diff --git a/node_modules/splatnet3-types/dist/graphql.d.ts b/node_modules/splatnet3-types/dist/graphql.d.ts
-index d1b0171..0dfd8e6 100644
+index d1b0171..588c9ce 100644
 --- a/node_modules/splatnet3-types/dist/graphql.d.ts
 +++ b/node_modules/splatnet3-types/dist/graphql.d.ts
 @@ -38,9 +38,9 @@ export declare enum RequestId {
@@ -105,7 +105,7 @@ index d1b0171..0dfd8e6 100644
      HeroHistoryQuery = "71019ce4389463d9e2a71632e111eb453ca528f4f794aefd861dff23d9c18147",
      HeroHistoryRefetchQuery = "c6cb0b7cfd8721e90e3a85d3340d190c7f9c759b6b5e627900f5456fec61f6ff",
 -    HistoryRecordQuery = "0a62c0152f27c4218cf6c87523377521c2cff76a4ef0373f2da3300079bf0388",
-+    HistoryRecordQuery = "f09666535a18dfe2a0953018a8e7138204fb9d007cc32bd2c85f3e0f7c1cc6ba",
++    HistoryRecordQuery = "a654ecc80161a7ca5c38761c1d9e502d405eae764e2d343618b9c74b1dc0a80f",
      HistoryRecordRefetchQuery = "a5d80de05d1d4bfce67a1fb0801495d8bc6bba6fd780341cb90ddfeb1249c986",
      MyOutfitDetailQuery = "e2c9ea77f0469cb8109c54e93f3f35c930dfeb5b79cbf639397828a805ad9248",
      MyOutfitsQuery = "5b32bb88c47222522d2bc3643b92759644f890a70189a0884ea2d456a8989342",
@@ -119,7 +119,7 @@ index d1b0171..0dfd8e6 100644
  export declare enum UsagiRequestId {
      IfTournamentManagerIsAvailableQuery = "8892ce4157248506f51735e2c9eb300c6c980c67ff8c317b927b05e8d35852d9",
 diff --git a/node_modules/splatnet3-types/dist/graphql.js b/node_modules/splatnet3-types/dist/graphql.js
-index 810aa77..e485563 100644
+index 810aa77..ca49dd8 100644
 --- a/node_modules/splatnet3-types/dist/graphql.js
 +++ b/node_modules/splatnet3-types/dist/graphql.js
 @@ -34,9 +34,9 @@ export var RequestId;
@@ -139,7 +139,7 @@ index 810aa77..e485563 100644
      RequestId["HeroHistoryQuery"] = "71019ce4389463d9e2a71632e111eb453ca528f4f794aefd861dff23d9c18147";
      RequestId["HeroHistoryRefetchQuery"] = "c6cb0b7cfd8721e90e3a85d3340d190c7f9c759b6b5e627900f5456fec61f6ff";
 -    RequestId["HistoryRecordQuery"] = "0a62c0152f27c4218cf6c87523377521c2cff76a4ef0373f2da3300079bf0388";
-+    RequestId["HistoryRecordQuery"] = "f09666535a18dfe2a0953018a8e7138204fb9d007cc32bd2c85f3e0f7c1cc6ba";
++    RequestId["HistoryRecordQuery"] = "a654ecc80161a7ca5c38761c1d9e502d405eae764e2d343618b9c74b1dc0a80f";
      RequestId["HistoryRecordRefetchQuery"] = "a5d80de05d1d4bfce67a1fb0801495d8bc6bba6fd780341cb90ddfeb1249c986";
      RequestId["MyOutfitDetailQuery"] = "e2c9ea77f0469cb8109c54e93f3f35c930dfeb5b79cbf639397828a805ad9248";
      RequestId["MyOutfitsQuery"] = "5b32bb88c47222522d2bc3643b92759644f890a70189a0884ea2d456a8989342";
