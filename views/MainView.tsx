@@ -31,7 +31,7 @@ import {
   ScrollView,
   useWindowDimensions,
 } from "react-native";
-import { useMMKV } from "react-native-mmkv";
+import { MMKV } from "react-native-mmkv";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { zip } from "react-native-zip-archive";
 import semver from "semver";
@@ -135,25 +135,11 @@ const devMenuItems = [
     },
   },
   {
-    name: "Invalidate Bullet Token",
+    name: "Invalidate Tokens",
     callback: () => {
-      const storage = useMMKV();
-      const token = storage.getString(Key.SessionToken) ?? "";
-      storage.set(Key.SessionToken, token.split("").reverse().join(""));
-      // HACK: reload to refresh.
-      reloadAppAsync();
-    },
-  },
-  {
-    name: "Invalidate Web Service Token",
-    callback: () => {
-      const storage = useMMKV();
-      const text = storage.getString(Key.WebServiceToken) ?? "{}";
-      const token: WebServiceToken = JSON.parse(text);
-      if (token.accessToken) {
-        token.accessToken = token.accessToken.split("").reverse().join("");
-      }
-      storage.set(Key.SessionToken, JSON.stringify(token));
+      const storage = new MMKV();
+      storage.delete(Key.BulletToken);
+      storage.delete(Key.WebServiceToken);
       // HACK: reload to refresh.
       reloadAppAsync();
     },

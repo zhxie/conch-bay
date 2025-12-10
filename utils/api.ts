@@ -74,7 +74,7 @@ export const fetchXRankings = async (id: string) => {
 
 let SPLATNET_VERSION = versions.SPLATNET_VERSION;
 let NXAPI_ZNCA_API_NSO_VERSION: string | undefined;
-const NSO_CLIENT_VERSION = "3.0.2";
+const ZNCA_CLIENT_VERSION = "hio87-mJks_e9GNF";
 
 export interface WebServiceToken {
   accessToken: string;
@@ -152,7 +152,7 @@ const callNxapiZncaApiDecrypt = async (accessToken: string, data: Uint8Array) =>
             Authorization: `Bearer ${accessToken}`,
             "Content-Type": "application/json; charset=utf-8",
             "User-Agent": USER_AGENT,
-            "X-znca-Client-Version": NSO_CLIENT_VERSION,
+            "X-znca-Client-Version": ZNCA_CLIENT_VERSION,
             "X-znca-Platform": "Android",
             "X-znca-Version": NXAPI_ZNCA_API_NSO_VERSION,
           },
@@ -203,7 +203,7 @@ const callNxapiZncaApiF = async (
             Authorization: `Bearer ${accessToken}`,
             "Content-Type": "application/json; charset=utf-8",
             "User-Agent": USER_AGENT,
-            "X-znca-Client-Version": NSO_CLIENT_VERSION,
+            "X-znca-Client-Version": ZNCA_CLIENT_VERSION,
             "X-znca-Platform": "Android",
             "X-znca-Version": NXAPI_ZNCA_API_NSO_VERSION,
           },
@@ -363,7 +363,7 @@ export const getWebServiceToken = async (sessionToken: string) => {
     1,
     idToken,
     {
-      url: "https://api-lp1.znc.srv.nintendo.net/v3/Account/Login",
+      url: "https://api-lp1.znc.srv.nintendo.net/v4/Account/Login",
       parameter: {
         f: "",
         language: language,
@@ -382,7 +382,7 @@ export const getWebServiceToken = async (sessionToken: string) => {
   let idToken2: any, coralUserId: any;
   try {
     const res3 = await axios.post(
-      "https://api-lp1.znc.srv.nintendo.net/v3/Account/Login",
+      "https://api-lp1.znc.srv.nintendo.net/v4/Account/Login",
       encryptedTokenRequest,
       {
         headers: {
