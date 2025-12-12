@@ -30,6 +30,9 @@ const config = {
         ios: {
           deploymentTarget: "15.5",
         },
+        android: {
+          targetSdkVersion: 35,
+        },
       },
     ],
     "expo-sqlite",
