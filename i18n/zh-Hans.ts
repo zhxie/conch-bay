@@ -236,22 +236,6 @@ const zhHans = {
   // Import.
   import: "导入",
   importing: "导入中",
-  import_notice:
-    "法螺湾支持导入由法螺湾导出的记录，您也可以将其它第三方应用导出的记录转换至法螺湾支持的格式并导入。",
-  convert_s3s_outputs: "转换s3s导出的记录",
-  convert_stat_ink_salmon_run_json: "转换stat.ink鲑鱼跑JSON",
-  import_ikawidget3_ikax3: "导入ikawidget3 IKAX3",
-  import_salmdroidnw_backup: "导入salmdroidNW备份",
-  "import_salmonia3+_backup": "导入Salmonia3+备份",
-  import_ikawidget3_ikax3_notice:
-    "请在ikawidget3中导出并导入。请注意，由于IKAX3包含加密数据，部分信息可能不准确。",
-  import_salmdroidnw_backup_notice: "请在salmdroidNW中备份并导入。",
-  "import_salmonia3+_backup_notice":
-    "请在Salmonia3+中备份并导入。请注意，由于Salmonia3+备份并未包含记录的所有数据，部分信息可能缺失。",
-  random: "随机",
-  split_and_import_notice:
-    "法螺湾需要占用大量的内存以导入记录。如果法螺湾无法导入记录，您可以分割记录并导入。请注意，分割并导入需要数分钟到数十分钟的时间。",
-  split_and_import: "分割并导入",
   // Modes.
   battle: "对战",
   regular_battle: "一般比赛",

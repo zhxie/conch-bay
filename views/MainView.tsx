@@ -7,6 +7,7 @@ import { BlurView } from "expo-blur";
 import * as Clipboard from "expo-clipboard";
 import * as DevClient from "expo-dev-client";
 import { registerDevMenuItems } from "expo-dev-menu";
+import * as DocumentPicker from "expo-document-picker";
 // TODO: migrate to expo-file-system/next.
 import * as FileSystem from "expo-file-system";
 import { Image } from "expo-image";
@@ -32,7 +33,7 @@ import {
 } from "react-native";
 import { MMKV } from "react-native-mmkv";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
-import { zip } from "react-native-zip-archive";
+import { unzip, zip } from "react-native-zip-archive";
 import semver from "semver";
 import {
   AvatarButton,
@@ -114,7 +115,6 @@ import { getUserIconCacheSource } from "../utils/ui";
 import FilterView from "./FilterView";
 import FriendView from "./FriendView";
 import GearsView from "./GearsView";
-import ImportView from "./ImportView";
 import ResultView from "./ResultView";
 import RotationsView from "./RotationsView";
 import ScheduleView from "./ScheduleView";
@@ -123,6 +123,9 @@ import SplatNetView, { SplatNetViewRef } from "./SplatNetView";
 import StatsView from "./StatsView";
 import TrendsView from "./TrendsView";
 import XView from "./XView";
+
+// Assuming 64MB limitation and 256kB for each result.
+const IMPORT_BATCH_SIZE = 256;
 
 let enableDevelopmentBuildResultRefreshing = false;
 
@@ -183,6 +186,7 @@ const MainView = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [refreshingGears, setRefreshingGears] = useState(false);
+  const [importing, setImporting] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [support, setSupport] = useState(false);
   const [clearingCache, setClearingCache] = useState(false);
@@ -1125,16 +1129,6 @@ const MainView = () => {
     coops: CoopHistoryDetailResult[],
   ) => {
     const n = battles.length + coops.length;
-    // There is a bug introduced in 1.9.0 where all IDs imported from Salmonia3+ backup are suffixed with undefined.
-    const corruptedIds = new Set<string>();
-    for (let i = 0; i < coops.length; i++) {
-      if (
-        coops[i].coopHistoryDetail!.id.length > 124 &&
-        decode64String(coops[i].coopHistoryDetail!.id).endsWith("undefined")
-      ) {
-        corruptedIds.add(coops[i].coopHistoryDetail!.id);
-      }
-    }
     const battleExisted = await Promise.all(
       battles.map((battle: VsHistoryDetailResult) => Database.isExist(battle.vsHistoryDetail!.id)),
     );
@@ -1142,9 +1136,7 @@ const MainView = () => {
       coops.map((coop: CoopHistoryDetailResult) => Database.isExist(coop.coopHistoryDetail!.id)),
     );
     const newBattles = battles.filter((_, i: number) => !battleExisted[i]);
-    const newCoops = coops
-      .filter((_, i: number) => !coopExisted[i])
-      .filter((coop) => !corruptedIds.has(coop.coopHistoryDetail!.id));
+    const newCoops = coops.filter((_, i: number) => !coopExisted[i]);
     const skip = n - newBattles.length - newCoops.length;
     let error: Error | undefined;
     const battleResults = await Promise.all(
@@ -1190,6 +1182,101 @@ const MainView = () => {
     }
     deactivateKeepAwake("import");
     setRefreshing(false);
+  };
+  const onImportPress = async () => {
+    setImporting(true);
+    let uri = "";
+    let imported = 0;
+    const dir = FileSystem.cacheDirectory + "conch-bay-import";
+    try {
+      const doc = await DocumentPicker.getDocumentAsync({
+        type: "application/zip",
+        copyToCacheDirectory: true,
+      });
+      if (doc.canceled) {
+        setImporting(false);
+        return;
+      }
+      uri = doc.assets[0].uri;
+      onImportBegin();
+      await unzip(uri, dir);
+      const [battleUris, coopUris] = await Promise.all([
+        FileSystem.readDirectoryAsync(`${dir}/battles`),
+        FileSystem.readDirectoryAsync(`${dir}/coops`),
+      ]);
+      const n = battleUris.length + coopUris.length;
+      showBanner(BannerLevel.Info, t("loading_n_results", { n }));
+      let skip = 0,
+        fail = 0;
+      let error: Error | undefined;
+      let battles: VsHistoryDetailResult[] = [];
+      for (const filename of battleUris) {
+        const battle = JSON.parse(await FileSystem.readAsStringAsync(`${dir}/battles/${filename}`));
+        battles.push(battle);
+        if (battles.length >= IMPORT_BATCH_SIZE) {
+          const result = await onImportResults(battles, []);
+          skip += result.skip;
+          fail += result.fail;
+          if (!error) {
+            error = result.error;
+          }
+          battles = [];
+        }
+      }
+      if (battles.length > 0) {
+        const result = await onImportResults(battles, []);
+        skip += result.skip;
+        fail += result.fail;
+        if (!error) {
+          error = result.error;
+        }
+      }
+      let coops: CoopHistoryDetailResult[] = [];
+      for (const filename of coopUris) {
+        const coop = JSON.parse(await FileSystem.readAsStringAsync(`${dir}/coops/${filename}`));
+        coops.push(coop);
+        if (coops.length >= IMPORT_BATCH_SIZE) {
+          const result = await onImportResults([], coops);
+          skip += result.skip;
+          fail += result.fail;
+          if (!error) {
+            error = result.error;
+          }
+          coops = [];
+        }
+      }
+      if (coops.length > 0) {
+        const result = await onImportResults([], coops);
+        skip += result.skip;
+        fail += result.fail;
+        if (!error) {
+          error = result.error;
+        }
+      }
+      if (fail > 0 && skip > 0) {
+        showBanner(
+          BannerLevel.Warn,
+          t("loaded_n_results_skipped_failed", { n, skip, fail, error }),
+        );
+      } else if (fail > 0) {
+        showBanner(BannerLevel.Warn, t("loaded_n_results_failed", { n, fail, error }));
+      } else if (skip > 0) {
+        showBanner(BannerLevel.Success, t("loaded_n_results_skipped", { n, skip }));
+      } else {
+        showBanner(BannerLevel.Success, t("loaded_n_results", { n }));
+      }
+      imported = n - fail - skip;
+    } catch (e) {
+      imported = -1;
+      showBanner(BannerLevel.Error, e);
+    }
+
+    await Promise.all([
+      FileSystem.deleteAsync(uri, { idempotent: true }),
+      FileSystem.deleteAsync(dir, { idempotent: true }),
+    ]);
+    await onImportComplete(imported);
+    setImporting(false);
   };
   const onExportPress = async () => {
     setExporting(true);
@@ -1581,14 +1668,17 @@ const MainView = () => {
                         onGetWebServiceToken={onGetWebServiceToken}
                       />
                     )}
-                    <ImportView
-                      disabled={refreshingGears}
-                      onBegin={onImportBegin}
-                      onResults={onImportResults}
-                      onComplete={onImportComplete}
+                    <ToolButton
+                      disabled={loggingIn || refreshing || exporting}
+                      loading={importing}
+                      loadingText={t("importing")}
+                      icon="download"
+                      title={t("import")}
                       style={ViewStyles.mr2}
+                      onPress={onImportPress}
                     />
                     <ToolButton
+                      disabled={loggingIn || refreshing || importing}
                       loading={exporting}
                       loadingText={t("exporting")}
                       icon="upload"
@@ -1779,7 +1869,7 @@ const MainView = () => {
           <CustomDialog icon="circle-alert">
             <DialogSection text={t("relog_in_notice")} style={ViewStyles.mb4}>
               <Button
-                disabled={refreshing}
+                disabled={refreshing || importing || exporting}
                 loading={loggingIn}
                 loadingText={t("logging_in")}
                 style={[ViewStyles.mb2, ViewStyles.accent]}
@@ -1789,7 +1879,7 @@ const MainView = () => {
                 <Marquee style={theme.reverseTextStyle}>{t("relog_in")}</Marquee>
               </Button>
               <Button
-                disabled={refreshing}
+                disabled={refreshing || importing || exporting}
                 loading={loggingIn}
                 loadingText={t("logging_in")}
                 style={ViewStyles.accent}
@@ -1801,7 +1891,7 @@ const MainView = () => {
             </DialogSection>
             <DialogSection text={t("log_out_notice")}>
               <Button
-                disabled={loggingIn || refreshing || loadingMore || exporting}
+                disabled={loggingIn || refreshing || loadingMore}
                 loading={loggingOut}
                 loadingText={t("logging_out")}
                 style={ViewStyles.danger}
@@ -1922,7 +2012,7 @@ const MainView = () => {
             </DialogSection>
             <DialogSection text={t("database_notice")} style={ViewStyles.mb4}>
               <Button
-                disabled={refreshing || loadingMore || exporting}
+                disabled={refreshing || loadingMore || importing || exporting}
                 loading={clearingDatabase}
                 loadingText={t("clearing_database")}
                 style={ViewStyles.danger}

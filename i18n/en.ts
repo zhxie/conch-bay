@@ -248,22 +248,6 @@ const en = {
   // Import.
   import: "Import",
   importing: "Importing",
-  import_notice:
-    "Conch Bay supports importing results exported by Conch Bay, and you can also convert results exported by other 3rd party apps to formats supported by Conch Bay and import them.",
-  convert_s3s_outputs: "Convert s3s Outputs",
-  convert_stat_ink_salmon_run_json: "Convert stat.ink Salmon Run JSON",
-  import_ikawidget3_ikax3: "Import ikawidget3 IKAX3",
-  import_salmdroidnw_backup: "Import salmdroidNW Backup",
-  "import_salmonia3+_backup": "Import Salmonia3+ Backup",
-  import_ikawidget3_ikax3_notice:
-    "Please export in ikawidget3 and import it. Please note, some information may not be accurate since IKAX3 contains encrypted data.",
-  import_salmdroidnw_backup_notice: "Please backup in salmdroidNW and import it.",
-  "import_salmonia3+_backup_notice":
-    "Please backup in Salmonia3+ and import it. Please note, some information may be missing since the Salmonia3+ backup does not contain all the data of results.",
-  random: "Random",
-  split_and_import_notice:
-    "Conch Bay requires a lot of memory to import records. If Conch Bay cannot import records, you can split and import them. Please note, splitting and importing takes several minutes to tens of minutes.",
-  split_and_import: "Split and Import",
   // Modes.
   battle: "Battle",
   regular_battle: "Regular Battle",

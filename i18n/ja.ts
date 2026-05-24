@@ -247,22 +247,6 @@ const ja = {
   // Import.
   import: "インポート",
   importing: "インポート中",
-  import_notice:
-    "ホラガイベイはホラガイベイによってエクスポートされたリザルトのインポートをサポートしており、他のサードパーティアプリによってエクスポートされたリザルトをホラガイベイでサポートされている形式に変換してインポートすることもできます。",
-  convert_s3s_outputs: "s3sによってエクスポートされたリザルトを変換",
-  convert_stat_ink_salmon_run_json: "stat.inkサーモンランJSONを変換",
-  import_ikawidget3_ikax3: "ikawidget3 IKAX3をインポート",
-  import_salmdroidnw_backup: "salmdroidNWバックアップをインポート",
-  "import_salmonia3+_backup": "Salmonia3+バックアップをインポート",
-  import_ikawidget3_ikax3_notice:
-    "ikawidget3に書き出してインポートしてください。IKAX3には暗号化されたデータが含まれているため、一部の情報が正確ではない可能性があることに注意してください。",
-  import_salmdroidnw_backup_notice: "salmdroidNWにバックアップしてインポートしてください。",
-  "import_salmonia3+_backup_notice":
-    "Salmonia3+にバックアップしてインポートしてください。Salmonia3+のバックアップにはリザルトのすべてのデータが含まれていないため、一部の情報が欠落している可能性があることに注意してください。",
-  random: "ランダム",
-  split_and_import_notice:
-    "ホラガイベイはリザルトをインポートするために大量のメモリを必要とします。ホラガイベイがリザルトをインポートできない場合は、リザルトを分割してインポートできます。分割してインポートするには数分から数十分かかりますのでご注意ください。",
-  split_and_import: "分割してインポート",
   // Modes.
   battle: "バトル",
   regular_battle: "レギュラーマッチ",

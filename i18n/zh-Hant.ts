@@ -236,22 +236,6 @@ const zhHant = {
   // Import.
   import: "匯入",
   importing: "匯入中",
-  import_notice:
-    "法螺灣支持匯入由法螺灣匯出的記錄，您也可以將其它第三方應用匯出的記錄轉換至法螺灣支援的格式並匯入。",
-  convert_s3s_outputs: "轉換s3s匯出的記錄",
-  convert_stat_ink_salmon_run_json: "轉換stat.ink鮭魚跑JSON",
-  import_ikawidget3_ikax3: "匯入ikawidget3 IKAX3",
-  import_salmdroidnw_backup: "匯入salmdroidNW備份",
-  "import_salmonia3+_backup": "匯入Salmonia3+备份",
-  import_ikawidget3_ikax3_notice:
-    "請在ikawidget3中匯出並匯入。請注意，由於IKAX3包含加密數據，部分資訊可能不準確。",
-  import_salmdroidnw_backup_notice: "請在salmdroidNW中備份並匯入。",
-  "import_salmonia3+_backup_notice":
-    "請在Salmonia3+中備份並匯入。請注意，由於Salmonia3+備份並未包含記錄的所有數據，部分資訊可能缺失。",
-  random: "隨機",
-  split_and_import_notice:
-    "法螺灣需要佔用大量的記憶體以匯入記錄。如果法螺灣無法匯入記錄，您可以分割記錄並匯入。請注意，分割並匯入需要數分鐘到數十分鐘的時間。",
-  split_and_import: "分割並匯入",
   // Modes.
   battle: "對戰",
   regular_battle: "一般比賽",
