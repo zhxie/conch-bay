@@ -26,7 +26,6 @@ export enum Key {
   ClamBlitzXPower = "clamBlitzXPower",
   Grade = "grade",
   PlayedTime = "playedTime",
-  Mudmouth = "mudmouth",
   Filter = "filter",
   BackgroundRefresh = "backgroundRefresh",
   SalmonRunFriendlyMode = "salmonRunFriendlyMode",
@@ -37,7 +36,6 @@ export enum Key {
 
 export enum Tip {
   Welcome = "welcome",
-  Mudmouth = "mudmouth",
 }
 
 const storage = new MMKV();

@@ -26,7 +26,6 @@ const ja = {
   logging_out: "ログアウト中",
   upgrading_database: "データベースをアップグレード中",
   reacquiring_tokens: "トークン再取得中",
-  reacquiring_tokens_with_mudmouth: "Mudmouthを通じてトークン再取得中",
   failed_to_acquire_web_service_token: "Webサービストークンを取得できません (%{error})",
   failed_to_acquire_bullet_token: "ブレットトークンを取得できません (%{error})",
   failed_to_update_schedules: "スケジュールを更新できません (%{error})",
@@ -80,12 +79,6 @@ const ja = {
   relog_in_notice: "ホラガイベイがトークンを取得できない場合は、再ログインできます。",
   relog_in: "再ログイン",
   relog_in_with_session_token: "セッショントークンで再ログイン",
-  relog_in_with_mudmouth: "Mudmouthで再ログイン",
-  mudmouth_notice:
-    "Mudmouthはネットワーク診断ツールです。ホラガイベイはMudmouthを通じてNintendo Switch Onlineからトークンを取得できます。Mudmouthを有効にするには、Mudmouthアプリ内の手順を参照してください。",
-  install_mudmouth: "Mudmouthをインストール",
-  add_mudmouth_profile: "Mudmouthのプロファイルを追加",
-  log_in_with_mudmouth: "Mudmouthでログイン (%{enable})",
   resource_notice: "ホラガイベイが画像を読み込めない場合は、キャッシュを消去するができます。",
   clear_cache: "キャッシュを消去",
   clearing_cache: "キャッシュを消去中",
@@ -116,8 +109,6 @@ const ja = {
   source_code_repository: "ソースコードリポジトリ",
   welcome_tip:
     "ホラガイベイへようこそ。ホラガイベイの使用中にエラーが発生した場合、またはアドバイスがある場合は、お気軽にフィードバックをお寄せください。ホームページ下のサポートにあるGitHub Issue、メール、またはDiscordサーバーを通じて、いつでもご連絡いただけます。",
-  mudmouth_tip:
-    "ホラガイベイへようこそ。ホラガイベイはMudmouthを通じてトークンの取得をサポートしています。アバターを押すと、Mudmouthを有効にできます。詳しくは、ホラガイベイ百科を参照してください。",
   auto_refresh_enabled: "自動更新が有効になりました",
   auto_refresh_disabled: "自動更新が無効になりました",
   notification_notice:

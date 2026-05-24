@@ -12,7 +12,6 @@ import * as FileSystem from "expo-file-system";
 import { Image } from "expo-image";
 import * as IntentLauncher from "expo-intent-launcher";
 import { activateKeepAwakeAsync, deactivateKeepAwake } from "expo-keep-awake";
-import * as Linking from "expo-linking";
 import * as MailComposer from "expo-mail-composer";
 import * as ModulesCore from "expo-modules-core";
 import * as Notifications from "expo-notifications";
@@ -98,7 +97,7 @@ import {
   registerBackgroundTask,
   unregisterBackgroundTask,
 } from "../utils/background";
-import { decode64String, decode64Url, deepCopy, encode64String } from "../utils/codec";
+import { decode64String, deepCopy, encode64String } from "../utils/codec";
 import * as Database from "../utils/database";
 import {
   AsyncStorageKey,
@@ -166,7 +165,6 @@ let autoRefreshTimeout: NodeJS.Timeout | undefined;
 
 const MainView = () => {
   const appState = useAppState();
-  const url = Linking.useURL();
 
   const theme = useTheme();
 
@@ -182,7 +180,6 @@ const MainView = () => {
   const [loggingIn, setLoggingIn] = useState(false);
   const [logOut, setLogOut] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
-  const [logInWithMudmouth, setLogInWithMudmouth] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [refreshingGears, setRefreshingGears] = useState(false);
@@ -194,7 +191,6 @@ const MainView = () => {
   const [notification, setNotification] = useState(false);
   const [acknowledgments, setAcknowledgments] = useState(false);
   const [welcomeTip, setWelcomeTip] = useState(false);
-  const [mudmouthTip, setMudmouthTip] = useState(false);
   const [fault, setFault] = useState<Error>();
 
   const [sessionToken, setSessionToken, clearSessionToken, sessionTokenReady] = useStringMmkv(
@@ -227,8 +223,6 @@ const MainView = () => {
   );
   const [grade, setGrade, clearGrade] = useStringMmkv(Key.Grade);
   const [playedTime, setPlayedTime, clearPlayedTime] = useNumberMmkv(Key.PlayedTime);
-
-  const [mudmouth, setMudmouth, clearMudmouth, mudmouthReady] = useBooleanMmkv(Key.Mudmouth, false);
 
   const [filter, setFilter, clearFilter, filterReady] = useMmkv<Database.FilterProps>(Key.Filter);
   const filterRef = useRef(filter);
@@ -278,7 +272,6 @@ const MainView = () => {
       webServiceTokenReady &&
       bulletTokenReady &&
       languageReady &&
-      mudmouthReady &&
       filterReady &&
       migratedReady
     ) {
@@ -346,42 +339,9 @@ const MainView = () => {
     webServiceTokenReady,
     bulletTokenReady,
     languageReady,
-    mudmouthReady,
     filterReady,
     migratedReady,
   ]);
-  useEffect(() => {
-    if (
-      ready &&
-      url &&
-      url.startsWith(`conchbay${DevClient.isDevelopmentBuild() ? "dev" : ""}://refresh?`)
-    ) {
-      try {
-        const encoded = new URL(url).searchParams.get("requestHeaders")!;
-        const headers = decode64String(decode64Url(encoded)).split("\r\n");
-        const headerMap = new Map<string, string>();
-        for (const header of headers) {
-          const components = header.split(":");
-          headerMap.set(components[0], components.slice(1).join(":").trim());
-        }
-        const cookieMap = new Map<string, string>();
-        const cookies = headerMap.get("Cookie")?.split(";") ?? [];
-        for (const cookie of cookies) {
-          const components = cookie.trim().split("=");
-          cookieMap.set(components[0], components.slice(1).join("="));
-        }
-        const referer = headerMap.get("Referer") ?? "";
-        const refererUrl = new URL(referer);
-        setWebServiceToken({
-          accessToken: cookieMap.get("_gtoken") ?? "",
-          country: refererUrl.searchParams.get("na_country")!,
-          language: refererUrl.searchParams.get("na_lang")!,
-        });
-      } catch (e) {
-        showBanner(BannerLevel.Error, t("failed_to_acquire_web_service_token", { error: e }));
-      }
-    }
-  }, [ready, url]);
   useEffect(() => {
     if (ready) {
       Animated.timing(fade, {
@@ -410,13 +370,6 @@ const MainView = () => {
         setWelcomeTip(true);
         const newTips = tips ?? [];
         newTips.push(Tip.Welcome);
-        setTips(newTips);
-        return;
-      }
-      if (!tips.includes(Tip.Mudmouth) && Platform.OS === "ios" && sessionToken) {
-        setMudmouthTip(true);
-        const newTips = tips;
-        newTips.push(Tip.Mudmouth);
         setTips(newTips);
         return;
       }
@@ -541,14 +494,6 @@ const MainView = () => {
         setBulletToken(newBulletToken);
         return { webServiceToken, bulletToken: newBulletToken };
       }
-    }
-
-    // If Mudmouth is enabled, acquire web service token from Mudmouth.
-    if (mudmouth) {
-      RNLinking.openURL(
-        `mudmouth://capture?name=Conch%20Bay${DevClient.isDevelopmentBuild() ? "%20%28Dev%29" : ""}`,
-      );
-      throw new Error(t("reacquiring_tokens_with_mudmouth"));
     }
 
     // Acquire both web service token and bullet token.
@@ -1066,7 +1011,6 @@ const MainView = () => {
         clearWebServiceToken(),
         clearBulletToken(),
         clearAutoRefresh(),
-        clearMudmouth(),
         clearIcon(),
         clearLevel(),
         clearRank(),
@@ -1091,31 +1035,6 @@ const MainView = () => {
     } catch (e) {
       showBanner(BannerLevel.Error, e);
       setLoggingOut(false);
-    }
-  };
-  const onLogInWithMudmouthPress = () => {
-    setLogInWithMudmouth(true);
-  };
-  const onLogInWithMudmouthDismiss = () => {
-    setLogInWithMudmouth(false);
-  };
-  const onInstallMudmouthPress = () => {
-    WebBrowser.openBrowserAsync("https://github.com/zhxie/Mudmouth/wiki/Join-the-Beta-Version");
-  };
-  const onAddMudmouthProfilePress = () => {
-    RNLinking.openURL(
-      `mudmouth://add?name=Conch%20Bay${
-        DevClient.isDevelopmentBuild() ? "%20%28Dev%29" : ""
-      }&url=https%3A%2F%2Fapi.lp1.av5ja.srv.nintendo.net%2Fapi%2Fbullet_tokens&preAction=1&preActionUrlScheme=com.nintendo.znca%3A%2F%2Fznca%2Fgame%2F4834290508791808&postAction=1&postActionUrlScheme=conchbay${
-        DevClient.isDevelopmentBuild() ? "dev" : ""
-      }%3A%2F%2Frefresh`,
-    );
-  };
-  const onLogInWithMudmouthContinuePress = () => {
-    if (!mudmouth) {
-      setMudmouth(true);
-    } else {
-      setMudmouth(false);
     }
   };
   const onSplatNetPress = () => {
@@ -1484,9 +1403,6 @@ const MainView = () => {
   };
   const onWelcomeTipDismiss = () => {
     setWelcomeTip(false);
-  };
-  const oMudmouthTipDismiss = () => {
-    setMudmouthTip(false);
   };
 
   return (
@@ -1876,24 +1792,12 @@ const MainView = () => {
                 disabled={refreshing}
                 loading={loggingIn}
                 loadingText={t("logging_in")}
-                style={[Platform.OS === "ios" && ViewStyles.mb2, ViewStyles.accent]}
+                style={ViewStyles.accent}
                 textStyle={theme.reverseTextStyle}
                 onPress={onAlternativeLogInPress}
               >
                 <Marquee style={theme.reverseTextStyle}>{t("relog_in_with_session_token")}</Marquee>
               </Button>
-              {Platform.OS === "ios" && (
-                <Button
-                  disabled={refreshing}
-                  loading={loggingIn}
-                  loadingText={t("logging_in")}
-                  style={ViewStyles.accent}
-                  textStyle={theme.reverseTextStyle}
-                  onPress={onLogInWithMudmouthPress}
-                >
-                  <Marquee style={theme.reverseTextStyle}>{t("relog_in_with_mudmouth")}</Marquee>
-                </Button>
-              )}
             </DialogSection>
             <DialogSection text={t("log_out_notice")}>
               <Button
@@ -1908,40 +1812,6 @@ const MainView = () => {
               </Button>
             </DialogSection>
           </CustomDialog>
-          <Modal
-            isVisible={logInWithMudmouth}
-            size="medium"
-            allowDismiss
-            onDismiss={onLogInWithMudmouthDismiss}
-          >
-            <CustomDialog icon="globe-lock">
-              <DialogSection text={t("mudmouth_notice")}>
-                <Button
-                  style={[ViewStyles.mb2, ViewStyles.accent]}
-                  textStyle={theme.reverseTextStyle}
-                  onPress={onInstallMudmouthPress}
-                >
-                  <Marquee style={theme.reverseTextStyle}>{t("install_mudmouth")}</Marquee>
-                </Button>
-                <Button
-                  style={[ViewStyles.mb2, ViewStyles.accent]}
-                  textStyle={theme.reverseTextStyle}
-                  onPress={onAddMudmouthProfilePress}
-                >
-                  <Marquee style={theme.reverseTextStyle}>{t("add_mudmouth_profile")}</Marquee>
-                </Button>
-                <Button
-                  style={ViewStyles.accent}
-                  textStyle={theme.reverseTextStyle}
-                  onPress={onLogInWithMudmouthContinuePress}
-                >
-                  <Marquee style={theme.reverseTextStyle}>
-                    {t("log_in_with_mudmouth", { enable: mudmouth ? t("enable") : t("disable") })}
-                  </Marquee>
-                </Button>
-              </DialogSection>
-            </CustomDialog>
-          </Modal>
         </Modal>
         <Modal
           isVisible={support}
@@ -2190,20 +2060,6 @@ const MainView = () => {
         </Modal>
         <Modal isVisible={welcomeTip} size="medium" allowDismiss onDismiss={onWelcomeTipDismiss}>
           <Dialog icon="smile" text={t("welcome_tip")}>
-            <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onReadConchBayWikiPress}>
-              <Marquee style={theme.reverseTextStyle}>{t("read_conch_bay_wiki")}</Marquee>
-            </Button>
-            <Button
-              style={ViewStyles.accent}
-              textStyle={theme.reverseTextStyle}
-              onPress={onJoinDiscordServerPress}
-            >
-              <Marquee style={theme.reverseTextStyle}>{t("join_discord_server")}</Marquee>
-            </Button>
-          </Dialog>
-        </Modal>
-        <Modal isVisible={mudmouthTip} size="medium" allowDismiss onDismiss={oMudmouthTipDismiss}>
-          <Dialog icon="smile" text={t("mudmouth_tip")}>
             <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onReadConchBayWikiPress}>
               <Marquee style={theme.reverseTextStyle}>{t("read_conch_bay_wiki")}</Marquee>
             </Button>

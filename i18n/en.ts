@@ -26,7 +26,6 @@ const en = {
   logging_out: "Logging out",
   upgrading_database: "Upgrading database",
   reacquiring_tokens: "Reacquiring tokens",
-  reacquiring_tokens_with_mudmouth: "Reacquiring tokens from Mudmouth",
   failed_to_acquire_web_service_token: "Failed to acquire web service token (%{error})",
   failed_to_acquire_bullet_token: "Failed to acquire bullet token (%{error})",
   failed_to_update_schedules: "Failed to update schedules (%{error})",
@@ -78,12 +77,6 @@ const en = {
   relog_in_notice: "If Conch Bay cannot acquire tokens, you can relog in.",
   relog_in: "Relog in",
   relog_in_with_session_token: "Relog in with Session Token",
-  relog_in_with_mudmouth: "Relog in with Mudmouth",
-  mudmouth_notice:
-    "Mudmouth is a network diagnostic tool. Conch Bay can use Mudmouth to acquire tokens from Nintendo Switch Online. Please follow the instructions in the Mudmouth App to enable Mudmouth.",
-  install_mudmouth: "Install Mudmouth",
-  add_mudmouth_profile: "Add Mudmouth Profile",
-  log_in_with_mudmouth: "Log In with Mudmouth (%{enable})",
   resource_notice: "If Conch Bay cannot load images, you can clear cache.",
   clear_cache: "Clear Cache",
   clearing_cache: "Clearing Cache",
@@ -115,8 +108,6 @@ const en = {
   source_code_repository: "Source Code Repository",
   welcome_tip:
     "Welcome to Conch Bay. If you encounter any problems using Conch Bay or have any advice, feel free to share your feedback. You can always reach us through GitHub Issues, mails, or Discord Server in Support below the homepage.",
-  mudmouth_tip:
-    "Welcome to Conch Bay. Conch Bay supports acquiring tokens with Mudmouth. You can enable Mudmouth by pressing on your avatar. Please see Conch Bay Wiki for more information.",
   auto_refresh_enabled: "Auto refresh enabled",
   auto_refresh_disabled: "Auto refresh disabled",
   notification_notice:

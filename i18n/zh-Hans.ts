@@ -26,7 +26,6 @@ const zhHans = {
   logging_out: "登出中",
   upgrading_database: "升级数据库中",
   reacquiring_tokens: "重新获取令牌中",
-  reacquiring_tokens_with_mudmouth: "通过Mudmouth重新获取令牌中",
   failed_to_acquire_web_service_token: "未能获取Web服务令牌 (%{error})",
   failed_to_acquire_bullet_token: "未能获取Bullet令牌 (%{error})",
   failed_to_update_schedules: "未能更新日程 (%{error})",
@@ -75,12 +74,6 @@ const zhHans = {
   relog_in_notice: "如果法螺湾无法获取令牌，您可以重新登录。",
   relog_in: "重新登录",
   relog_in_with_session_token: "通过会话令牌重新登录",
-  relog_in_with_mudmouth: "通过Mudmouth重新登录",
-  mudmouth_notice:
-    "Mudmouth是一款网络诊断工具。法螺湾可以通过Mudmouth从Nintendo Switch Online获取令牌。请参考Mudmouth App内的说明启用Mudmouth。",
-  install_mudmouth: "安装Mudmouth",
-  add_mudmouth_profile: "添加Mudmouth配置",
-  log_in_with_mudmouth: "通过Mudmouth登录 (%{enable})",
   resource_notice: "如果法螺湾无法加载图像，您可以清除缓存。",
   clear_cache: "清除缓存",
   clearing_cache: "清除缓存中",
@@ -109,8 +102,6 @@ const zhHans = {
   source_code_repository: "源代码库",
   welcome_tip:
     "欢迎使用法螺湾。如果您在使用法螺湾时遇到任何问题或有任何建议，请随时分享您的反馈。您可以通过主页下方支持中的GitHub Issue、邮件或Discord服务器与我们联系。",
-  mudmouth_tip:
-    "欢迎使用法螺湾。法螺湾已支持通过Mudmouth获取令牌。您可以通过点击头像启用Mudmouth。请参阅法螺湾百科以获取更多信息。",
   auto_refresh_enabled: "已启用自动刷新",
   auto_refresh_disabled: "已停用自动刷新",
   notification_notice:
