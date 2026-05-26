@@ -4,6 +4,7 @@
     "module": "ESNext",
     "strict": true,
     "noImplicitAny": false,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "resolvePackageJsonExports": false
   }
 }

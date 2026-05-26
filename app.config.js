@@ -9,6 +9,7 @@ const config = {
   version: "2.2.1",
   orientation: "portrait",
   userInterfaceStyle: "automatic",
+  newArchEnabled: false,
   icon: IS_DEV ? "./assets/icon-dev.png" : "./assets/icon.png",
   updates: {
     fallbackToCacheTimeout: 0,
@@ -35,7 +36,9 @@ const config = {
         },
       },
     ],
+    "expo-mail-composer",
     "expo-sqlite",
+    "expo-web-browser",
   ],
   splash: {
     image: "./assets/splash.png",

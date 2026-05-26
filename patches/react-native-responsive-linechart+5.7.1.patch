@@ -1,4 +1,4 @@
-# Fix definitions and fix xanderdeseyn/react-native-responsive-linechart#147.
+# Fix definitions and fix xanderdeseyn/react-native-responsive-linechart#147, #187.
 diff --git a/node_modules/react-native-responsive-linechart/lib/Chart.d.ts b/node_modules/react-native-responsive-linechart/lib/Chart.d.ts
 index abf6932..09998af 100644
 --- a/node_modules/react-native-responsive-linechart/lib/Chart.d.ts
@@ -23,11 +23,41 @@ index abf6932..09998af 100644
  };
  export declare type ChartHandle = {
      setViewportOrigin: (origin: XYValue) => void;
+diff --git a/node_modules/react-native-responsive-linechart/lib/Chart.js b/node_modules/react-native-responsive-linechart/lib/Chart.js
+index 9b08b87..152b8ce 100644
+--- a/node_modules/react-native-responsive-linechart/lib/Chart.js
++++ b/node_modules/react-native-responsive-linechart/lib/Chart.js
+@@ -38,7 +38,10 @@ var ChartContext_1 = require("./ChartContext");
+ var Chart_utils_1 = require("./Chart.utils");
+ var utils_1 = require("./utils");
+ var Chart = React.memo(React.forwardRef(function (props, ref) {
+-    var _a = deepmerge_1.default(computeDefaultProps(props), props), style = _a.style, children = _a.children, _b = _a.data, data = _b === void 0 ? [] : _b, padding = _a.padding, xDomain = _a.xDomain, yDomain = _a.yDomain, viewport = _a.viewport, disableGestures = _a.disableGestures, disableTouch = _a.disableTouch;
++    var children = props.children;
++    var propsWithoutChildren = Object.assign({}, props);
++    delete propsWithoutChildren.children;
++    var _a = deepmerge_1.default(computeDefaultProps(propsWithoutChildren), propsWithoutChildren), style = _a.style, _b = _a.data, data = _b === void 0 ? [] : _b, padding = _a.padding, xDomain = _a.xDomain, yDomain = _a.yDomain, viewport = _a.viewport, disableGestures = _a.disableGestures, disableTouch = _a.disableTouch;
+     var _c = useComponentDimensions_1.useComponentDimensions(), dimensions = _c.dimensions, onLayout = _c.onLayout;
+     var dataDimensions = Chart_utils_1.calculateDataDimensions(dimensions, padding);
+     var tapGesture = React.createRef(); // declared within constructor
 diff --git a/node_modules/react-native-responsive-linechart/lib/Line.js b/node_modules/react-native-responsive-linechart/lib/Line.js
-index 60483ec..0f10a15 100644
+index 60483ec..3bcf145 100644
 --- a/node_modules/react-native-responsive-linechart/lib/Line.js
 +++ b/node_modules/react-native-responsive-linechart/lib/Line.js
-@@ -101,7 +101,7 @@ var Line = React.forwardRef(function Line(props, ref) {
+@@ -30,9 +30,12 @@ var ChartContext_1 = __importDefault(require("./ChartContext"));
+ var Line_utils_1 = require("./Line.utils");
+ var utils_1 = require("./utils");
+ var Line = React.forwardRef(function Line(props, ref) {
++    var tooltipComponent = props.tooltipComponent;
++    var propsWithoutTooltip = Object.assign({}, props);
++    delete propsWithoutTooltip.tooltipComponent;
+     var _a = React.useContext(ChartContext_1.default), contextData = _a.data, dimensions = _a.dimensions, viewportDomain = _a.viewportDomain, viewportOrigin = _a.viewportOrigin, lastTouch = _a.lastTouch;
+     var _b = React.useState(props.initialTooltipIndex), tooltipIndex = _b[0], setTooltipIndex = _b[1];
+-    var _c = deepmerge_1.default(defaultProps, props), _d = _c.theme, stroke = _d.stroke, scatter = _d.scatter, tooltipComponent = _c.tooltipComponent, _e = _c.data, data = _e === void 0 ? contextData : _e, tension = _c.tension, smoothing = _c.smoothing, onTooltipSelect = _c.onTooltipSelect, hideTooltipOnDragEnd = _c.hideTooltipOnDragEnd, hideTooltipAfter = _c.hideTooltipAfter, _f = _c.onTooltipSelectEnd, onTooltipSelectEnd = _f === void 0 ? function () { } : _f;
++    var _c = deepmerge_1.default(defaultProps, propsWithoutTooltip), _d = _c.theme, stroke = _d.stroke, scatter = _d.scatter, _e = _c.data, data = _e === void 0 ? contextData : _e, tension = _c.tension, smoothing = _c.smoothing, onTooltipSelect = _c.onTooltipSelect, hideTooltipOnDragEnd = _c.hideTooltipOnDragEnd, hideTooltipAfter = _c.hideTooltipAfter, _f = _c.onTooltipSelectEnd, onTooltipSelectEnd = _f === void 0 ? function () { } : _f;
+     if (!dimensions) {
+         return null;
+     }
+@@ -101,7 +104,7 @@ var Line = React.forwardRef(function Line(props, ref) {
                  if (shape.width === 0 || shape.height === 0) {
                      return null;
                  }
@@ -36,7 +66,7 @@ index 60483ec..0f10a15 100644
              })),
          tooltipIndex !== undefined &&
              tooltipComponent &&
-@@ -124,6 +124,12 @@ var defaultProps = {
+@@ -124,6 +127,12 @@ var defaultProps = {
                  dy: 0,
                  rx: 0,
                  color: 'black',

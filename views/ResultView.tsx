@@ -144,7 +144,7 @@ const ResultView = (props: ResultViewProps) => {
   const [displayCoop, setDisplayCoop] = useState(false);
   const [coopPlayer, setCoopPlayer] = useState<CoopPlayerResult>();
   const [displayCoopPlayer, setDisplayCoopPlayer] = useState(false);
-  const willDisplayNext = useRef<Result>();
+  const willDisplayNext = useRef<Result | undefined>(undefined);
   const [hidePlayerNames, setHidePlayerNames] = useState(false);
   const [group, setGroup] = useState<Brief[]>();
   const [displayGroup, setDisplayGroup] = useState(false);
@@ -536,6 +536,9 @@ const ResultView = (props: ResultViewProps) => {
       }
       const target = briefsAndGroups![currentResultIndex - offset];
       const result = props.onQuery(target.battle?.id ?? target.coop!.id);
+      if (result === undefined) {
+        return;
+      }
       if (
         (displayBattle && target.battle) ||
         (displayCoop && briefsAndGroups![currentResultIndex - offset].coop)
@@ -556,6 +559,9 @@ const ResultView = (props: ResultViewProps) => {
       }
       const target = briefsAndGroups![currentResultIndex + offset];
       const result = props.onQuery(target.battle?.id ?? target.coop!.id);
+      if (result === undefined) {
+        return;
+      }
       if (
         (displayBattle && briefsAndGroups![currentResultIndex + offset].battle) ||
         (displayCoop && briefsAndGroups![currentResultIndex + offset].coop)

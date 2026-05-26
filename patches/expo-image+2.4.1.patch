@@ -1,6 +1,6 @@
 # Prefetch with certain cache keys after the hashtag of each URLs.
 diff --git a/node_modules/expo-image/android/src/main/java/expo/modules/image/ExpoImageModule.kt b/node_modules/expo-image/android/src/main/java/expo/modules/image/ExpoImageModule.kt
-index 73641a0..27c27cd 100644
+index 0170d9b..87f211f 100644
 --- a/node_modules/expo-image/android/src/main/java/expo/modules/image/ExpoImageModule.kt
 +++ b/node_modules/expo-image/android/src/main/java/expo/modules/image/ExpoImageModule.kt
 @@ -21,6 +21,7 @@ import com.github.penfeizhou.animation.gif.GifDrawable
@@ -28,10 +28,10 @@ index 73641a0..27c27cd 100644
            .encodeQuality(100)
            .downsample(NoopDownsampleStrategy)
 diff --git a/node_modules/expo-image/ios/ImageModule.swift b/node_modules/expo-image/ios/ImageModule.swift
-index 4bab386..478a826 100644
+index 1451696..b08fe54 100644
 --- a/node_modules/expo-image/ios/ImageModule.swift
 +++ b/node_modules/expo-image/ios/ImageModule.swift
-@@ -127,6 +127,13 @@ public final class ImageModule: Module {
+@@ -147,6 +147,13 @@ public final class ImageModule: Module {
        context[.storeCacheType] = SDImageCacheType.none.rawValue
        context[.originalQueryCacheType] = sdCacheType
        context[.originalStoreCacheType] = sdCacheType
