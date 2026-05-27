@@ -1,12 +1,13 @@
 import {
   BottomSheetBackdrop,
-  BottomSheetFlashList,
   BottomSheetModal,
   BottomSheetScrollView,
   BottomSheetView,
+  type BottomSheetBackdropProps,
+  useBottomSheetScrollableCreator,
 } from "@gorhom/bottom-sheet";
-import { ListRenderItem } from "@shopify/flash-list";
-import { useEffect, useRef } from "react";
+import { FlashList, ListRenderItem } from "@shopify/flash-list";
+import { useCallback, useEffect, useRef } from "react";
 import {
   LayoutChangeEvent,
   StyleProp,
@@ -19,7 +20,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { VStack } from "./Stack";
 import { ViewStyles, useTheme } from "./Styles";
 
-const CloseBackdrop = (props: any) => {
+const CloseBackdrop = (props: BottomSheetBackdropProps) => {
   return (
     <BottomSheetBackdrop
       appearsOnIndex={0}
@@ -30,7 +31,7 @@ const CloseBackdrop = (props: any) => {
   );
 };
 
-const IgnoreBackdrop = (props: any) => {
+const IgnoreBackdrop = (props: BottomSheetBackdropProps) => {
   return (
     <BottomSheetBackdrop
       appearsOnIndex={0}
@@ -47,6 +48,28 @@ const ModalSize = {
   small: 384,
   medium: 576,
   large: 672,
+};
+
+const useControlledBottomSheetModal = (isVisible: boolean, onDismiss?: () => void) => {
+  const ref = useRef<BottomSheetModal>(null);
+  const presentedRef = useRef(false);
+
+  useEffect(() => {
+    if (isVisible) {
+      presentedRef.current = true;
+      ref.current?.present();
+    } else if (presentedRef.current) {
+      presentedRef.current = false;
+      ref.current?.dismiss();
+    }
+  }, [isVisible]);
+
+  const handleDismiss = useCallback(() => {
+    presentedRef.current = false;
+    onDismiss?.();
+  }, [onDismiss]);
+
+  return { ref, handleDismiss };
 };
 
 interface ModalProps {
@@ -67,15 +90,7 @@ const Modal = (props: ModalProps) => {
 
   const { width, height } = useWindowDimensions();
 
-  useEffect(() => {
-    if (props.isVisible) {
-      ref.current?.present();
-    } else {
-      ref.current?.dismiss();
-    }
-  }, [props.isVisible]);
-
-  const ref = useRef<BottomSheetModal>(null);
+  const { ref, handleDismiss } = useControlledBottomSheetModal(props.isVisible, props.onDismiss);
 
   return (
     <BottomSheetModal
@@ -95,7 +110,7 @@ const Modal = (props: ModalProps) => {
         width > MAX_WIDTH ? styles.detachedPanel : styles.panel,
         props.style,
       ]}
-      onDismiss={props.onDismiss}
+      onDismiss={handleDismiss}
       handleComponent={null}
       backdropComponent={props.allowDismiss ? CloseBackdrop : IgnoreBackdrop}
     >
@@ -133,7 +148,7 @@ interface FlashModalProps<T> {
   renderItem: ListRenderItem<T>;
   estimatedItemSize: number;
   estimatedHeight: number;
-  extraData?: any;
+  extraData?: unknown;
   ListHeaderComponent?: React.ReactNode;
 }
 
@@ -144,15 +159,9 @@ const FlashModal = <T,>(props: FlashModalProps<T>) => {
 
   const { width, height } = useWindowDimensions();
 
-  useEffect(() => {
-    if (props.isVisible) {
-      ref.current?.present();
-    } else {
-      ref.current?.dismiss();
-    }
-  }, [props.isVisible]);
+  const { ref, handleDismiss } = useControlledBottomSheetModal(props.isVisible, props.onDismiss);
 
-  const ref = useRef<BottomSheetModal>(null);
+  const renderScrollComponent = useBottomSheetScrollableCreator();
 
   return (
     <BottomSheetModal
@@ -178,16 +187,17 @@ const FlashModal = <T,>(props: FlashModalProps<T>) => {
         width > MAX_WIDTH ? styles.detachedPanel : styles.panel,
         props.style,
       ]}
-      onDismiss={props.onDismiss}
+      onDismiss={handleDismiss}
       handleComponent={null}
       backdropComponent={props.allowDismiss ? CloseBackdrop : IgnoreBackdrop}
       enableDynamicSizing={false}
     >
-      <BottomSheetFlashList
+      <FlashList
         showsHorizontalScrollIndicator={false}
         data={props.data}
         keyExtractor={props.keyExtractor}
         renderItem={props.renderItem}
+        renderScrollComponent={renderScrollComponent}
         estimatedItemSize={props.estimatedItemSize}
         extraData={props.extraData}
         ListHeaderComponent={
@@ -206,8 +216,7 @@ const FlashModal = <T,>(props: FlashModalProps<T>) => {
             }}
           />
         }
-        // HACK: forcly cast.
-        contentContainerStyle={!props.noPadding && (styles.padding as any)}
+        contentContainerStyle={props.noPadding ? undefined : styles.padding}
       />
     </BottomSheetModal>
   );
@@ -223,15 +232,9 @@ interface FullscreenModalProps {
 const FullscreenModal = (props: FullscreenModalProps) => {
   const theme = useTheme();
 
-  useEffect(() => {
-    if (props.isVisible) {
-      ref.current?.present();
-    } else {
-      ref.current?.dismiss();
-    }
-  }, [props.isVisible]);
+  const { height } = useWindowDimensions();
 
-  const ref = useRef<BottomSheetModal>(null);
+  const { ref, handleDismiss } = useControlledBottomSheetModal(props.isVisible, props.onDismiss);
 
   return (
     <BottomSheetModal
@@ -240,13 +243,14 @@ const FullscreenModal = (props: FullscreenModalProps) => {
       detached={false}
       enableOverDrag={false}
       enablePanDownToClose={false}
-      snapPoints={["100%"]}
+      enableDynamicSizing={false}
+      snapPoints={[height]}
       backgroundStyle={[theme.backgroundStyle, props.style]}
-      onDismiss={props.onDismiss}
+      onDismiss={handleDismiss}
       handleComponent={null}
       backdropComponent={IgnoreBackdrop}
     >
-      <BottomSheetView style={[ViewStyles.f]}>{props.children}</BottomSheetView>
+      <BottomSheetView style={[ViewStyles.f, { height }]}>{props.children}</BottomSheetView>
     </BottomSheetModal>
   );
 };

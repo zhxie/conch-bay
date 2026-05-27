@@ -32,7 +32,7 @@ const config = {
           deploymentTarget: "15.5",
         },
         android: {
-          targetSdkVersion: 35,
+          targetSdkVersion: 36,
         },
       },
     ],

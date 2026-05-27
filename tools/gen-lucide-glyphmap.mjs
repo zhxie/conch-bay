@@ -11,7 +11,7 @@ const type = createWriteStream("assets/fonts/Lucide.ts", "utf-8");
 let map = {};
 
 const rl = createInterface(css);
-const regex = /\.icon-(.+):before { content: "\\(.+)"; }/;
+const regex = /\.icon-(.+)::before { content: "\\(.+)"; }/;
 rl.on("line", (line) => {
   const match = regex.exec(line);
   if (match) {
