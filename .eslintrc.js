@@ -5,6 +5,26 @@ module.exports = {
     project: `./tsconfig.json`,
   },
   plugins: ["@typescript-eslint"],
+  overrides: [
+    {
+      files: ["*.js", "*.mjs"],
+      env: {
+        node: true,
+      },
+      globals: {
+        fetch: "readonly",
+      },
+      parserOptions: {
+        project: null,
+      },
+      rules: {
+        "@typescript-eslint/await-thenable": "off",
+        "@typescript-eslint/no-unnecessary-condition": "off",
+        "@typescript-eslint/require-await": "off",
+        "@typescript-eslint/switch-exhaustiveness-check": "off",
+      },
+    },
+  ],
   rules: {
     "@typescript-eslint/await-thenable": "error",
     "@typescript-eslint/dot-notation": "off",

@@ -1,6 +1,5 @@
 import * as Application from "expo-application";
-// TODO: migrate to expo-file-system/next.
-import * as FileSystem from "expo-file-system";
+import { Directory, File, Paths } from "expo-file-system";
 import * as MailComposer from "expo-mail-composer";
 import * as Sharing from "expo-sharing";
 import * as WebBrowser from "expo-web-browser";
@@ -57,13 +56,12 @@ const ErrorView = (props: ErrorViewProps) => {
   const onExportResultsPress = async () => {
     setExporting(true);
     // TODO: reuse export codes.
-    const dir = FileSystem.cacheDirectory + "conch-bay-export";
-    const uri = FileSystem.cacheDirectory + "conch-bay-export.zip";
-    await FileSystem.makeDirectoryAsync(dir, { intermediates: true });
-    await Promise.all([
-      FileSystem.makeDirectoryAsync(`${dir}/battles`, { intermediates: true }),
-      FileSystem.makeDirectoryAsync(`${dir}/coops`, { intermediates: true }),
-    ]);
+    const dir = new Directory(Paths.cache, "conch-bay-export");
+    const archive = new File(Paths.cache, "conch-bay-export.zip");
+    const battlesDir = new Directory(dir, "battles");
+    const coopsDir = new Directory(dir, "coops");
+    battlesDir.create({ intermediates: true, idempotent: true });
+    coopsDir.create({ intermediates: true, idempotent: true });
     const battleDuplicate = new Map<number, number>();
     const coopDuplicate = new Map<number, number>();
     for await (const row of Database.queryDetailEach()) {
@@ -71,33 +69,33 @@ const ErrorView = (props: ErrorViewProps) => {
       if (row.mode === "salmon_run") {
         const sequence = (coopDuplicate.get(time) ?? 0) + 1;
         coopDuplicate.set(time, sequence);
-        await FileSystem.writeAsStringAsync(
-          `${dir}/coops/${time}${sequence ? `-${sequence}` : ""}.json`,
-          row.detail,
-        );
+        const file = new File(coopsDir, `${time}${sequence ? `-${sequence}` : ""}.json`);
+        file.create({ intermediates: true, overwrite: true });
+        file.write(row.detail);
       } else {
         const sequence = (battleDuplicate.get(time) ?? 0) + 1;
         battleDuplicate.set(time, sequence);
-        await FileSystem.writeAsStringAsync(
-          `${dir}/battles/${time}${sequence > 1 ? `-${sequence}` : ""}.json`,
-          row.detail,
-        );
+        const file = new File(battlesDir, `${time}${sequence > 1 ? `-${sequence}` : ""}.json`);
+        file.create({ intermediates: true, overwrite: true });
+        file.write(row.detail);
       }
     }
-    await zip(dir, uri);
+    await zip(dir.uri, archive.uri);
 
-    await Sharing.shareAsync(uri, { UTI: "public.zip-archive" });
+    await Sharing.shareAsync(archive.uri, { UTI: "public.zip-archive" });
 
     // Clean up.
-    await Promise.all([
-      FileSystem.deleteAsync(uri, { idempotent: true }),
-      FileSystem.deleteAsync(dir, { idempotent: true }),
-    ]);
+    if (archive.exists) {
+      archive.delete();
+    }
+    if (dir.exists) {
+      dir.delete();
+    }
     setExporting(false);
   };
   const onExportDatabasePress = async () => {
-    const uri = FileSystem.documentDirectory + "SQLite/conch-bay.db";
-    await Sharing.shareAsync(uri, { UTI: "public.database" });
+    const database = new File(Paths.document, "SQLite", "conch-bay.db");
+    await Sharing.shareAsync(database.uri, { UTI: "public.database" });
   };
 
   return (

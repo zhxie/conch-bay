@@ -1,25 +1,27 @@
 # Prefetch with certain cache keys after the hashtag of each URLs.
 diff --git a/node_modules/expo-image/android/src/main/java/expo/modules/image/ExpoImageModule.kt b/node_modules/expo-image/android/src/main/java/expo/modules/image/ExpoImageModule.kt
-index 0170d9b..87f211f 100644
+index f08807d..83b6709 100644
 --- a/node_modules/expo-image/android/src/main/java/expo/modules/image/ExpoImageModule.kt
 +++ b/node_modules/expo-image/android/src/main/java/expo/modules/image/ExpoImageModule.kt
-@@ -21,6 +21,7 @@ import com.github.penfeizhou.animation.gif.GifDrawable
- import com.github.penfeizhou.animation.webp.WebPDrawable
+@@ -24,6 +24,7 @@ import com.github.penfeizhou.animation.webp.WebPDrawable
+ import expo.modules.image.blurhash.BlurhashEncoder
  import expo.modules.image.enums.ContentFit
  import expo.modules.image.enums.Priority
 +import expo.modules.image.okhttp.GlideUrlWithCustomCacheKey
  import expo.modules.image.records.CachePolicy
  import expo.modules.image.records.ContentPosition
  import expo.modules.image.records.DecodeFormat
-@@ -66,9 +67,14 @@ class ExpoImageModule : Module() {
+@@ -74,9 +75,16 @@ class ExpoImageModule : Module() {
        } ?: Headers.DEFAULT
  
        urls.forEach {
-+        var url = GlideUrl(it, headers)
-+        var separated = it.split("#")
-+        if (separated.size > 1) {
-+          url = GlideUrlWithCustomCacheKey(it, headers, it.split("#")[1])
++        val separated = it.split("#")
++        val url = if (separated.size > 1) {
++          GlideUrlWithCustomCacheKey(it, headers, separated[1])
++        } else {
++          GlideUrl(it, headers)
 +        }
++
          Glide
            .with(context)
 -          .load(GlideUrl(it, headers)) //  Use `load` instead of `download` to store the asset in the memory cache
@@ -28,7 +30,7 @@ index 0170d9b..87f211f 100644
            .encodeQuality(100)
            .downsample(NoopDownsampleStrategy)
 diff --git a/node_modules/expo-image/ios/ImageModule.swift b/node_modules/expo-image/ios/ImageModule.swift
-index 1451696..b08fe54 100644
+index b44f431..3251102 100644
 --- a/node_modules/expo-image/ios/ImageModule.swift
 +++ b/node_modules/expo-image/ios/ImageModule.swift
 @@ -147,6 +147,13 @@ public final class ImageModule: Module {
@@ -36,11 +38,11 @@ index 1451696..b08fe54 100644
        context[.originalQueryCacheType] = sdCacheType
        context[.originalStoreCacheType] = sdCacheType
 +      context[.cacheKeyFilter] = SDWebImageCacheKeyFilter { url in
-+        var components = url.absoluteString.components(separatedBy: "#")
++        let components = url.absoluteString.components(separatedBy: "#")
 +        guard components.count > 1 else {
-+            return url.absoluteString
++          return url.absoluteString
 +        }
-+        return url.absoluteString.components(separatedBy: "#")[1]
++        return components[1]
 +      }
  
        var imagesLoaded = 0

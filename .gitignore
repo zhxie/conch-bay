@@ -11,8 +11,12 @@ web-build/
 .vscode
 .DS_Store
 __pycache__/
+*.ipa
+*.aab
+*.apk
 
 assets/fonts/
+assets/placeholders/
 models/*.json
 !models/unknowns.json
 models/placeholders.ts

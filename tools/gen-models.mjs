@@ -1,11 +1,23 @@
 import { Buffer } from "buffer";
 import { createHash } from "crypto";
-import { createWriteStream } from "fs";
+import { copyFileSync, createWriteStream, mkdirSync } from "fs";
+import { dirname, join } from "path";
 
 const writeOut = (path, obj) => {
   const file = createWriteStream(path, "utf-8");
   file.write(JSON.stringify(obj, undefined, 2) + "\n");
 };
+
+const copyPlaceholderAsset = (sourceRelativePath, cacheKey) => {
+  const sourcePath = join("node_modules/@hacceuee/s3-pixel-icons", sourceRelativePath);
+  const targetPath = join("assets/placeholders", cacheKey);
+
+  mkdirSync(dirname(targetPath), { recursive: true });
+  copyFileSync(sourcePath, targetPath);
+
+  return `require("../${targetPath}")`;
+};
+
 const buildTrie = (array) => {
   const trie = {};
   for (const obj of array) {
@@ -561,34 +573,37 @@ const getPlaceholderMap = async (version) => {
     if (weapon["Type"] === "Versus" || (weapon["Type"] === "Coop" && weapon["IsCoopRare"])) {
       const name = weaponMap[weapon["Id"]];
       const image = createHash("sha256").update(weapon["__RowId"]).digest("hex");
-      result[`/weapon_illust/${image}_0.png`] =
-        `require("@hacceuee/s3-pixel-icons/Weapons/${name}.png")`;
+      const cacheKey = `/weapon_illust/${image}_0.png`;
+      result[cacheKey] = copyPlaceholderAsset(`Weapons/${name}.png`, cacheKey);
     }
   }
   for (const subWeapon of jsons[1]) {
     if (subWeapon["Type"] === "Versus") {
       const name = subWeaponMap[subWeapon["Id"]];
       const image = createHash("sha256").update(subWeapon["__RowId"]).digest("hex");
-      result[`/sub_img/blue/${image}_0.png`] =
-        `require("@hacceuee/s3-pixel-icons/Subs & Specials/Sub - ${name}.png")`;
+      const cacheKey = `/sub_img/blue/${image}_0.png`;
+      result[cacheKey] = copyPlaceholderAsset(`Subs & Specials/Sub - ${name}.png`, cacheKey);
     }
   }
   for (const specialWeapon of jsons[2]) {
     if (specialWeapon["Type"] === "Versus" && specialWeapon["Id"] < 20) {
       const name = specialWeaponMap[specialWeapon["Id"]];
       const image = createHash("sha256").update(specialWeapon["__RowId"]).digest("hex");
-      result[`/special_img/blue/${image}_0.png`] =
-        `require("@hacceuee/s3-pixel-icons/Subs & Specials/Special - ${name}.png")`;
+      const cacheKey = `/special_img/blue/${image}_0.png`;
+      result[cacheKey] = copyPlaceholderAsset(`Subs & Specials/Special - ${name}.png`, cacheKey);
     }
   }
   for (const ability in abilityMap) {
     const image = createHash("sha256").update(ability).digest("hex");
-    result[`/skill_img/${image}_0.png`] =
-      `require("@hacceuee/s3-pixel-icons/Chunks Icons/No Frames/Chunk - ${abilityMap[ability]}.png")`;
+    const cacheKey = `/skill_img/${image}_0.png`;
+    result[cacheKey] = copyPlaceholderAsset(
+      `Chunks Icons/No Frames/Chunk - ${abilityMap[ability]}.png`,
+      cacheKey,
+    );
   }
   for (const unknown in unknownMap) {
-    result[`/ui_img/${unknown}_0.png`] =
-      `require("@hacceuee/s3-pixel-icons/${unknownMap[unknown]}.png")`;
+    const cacheKey = `/ui_img/${unknown}_0.png`;
+    result[cacheKey] = copyPlaceholderAsset(`${unknownMap[unknown]}.png`, cacheKey);
   }
   return result;
 };

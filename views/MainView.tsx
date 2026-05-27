@@ -5,11 +5,9 @@ import { reloadAppAsync } from "expo";
 import * as Application from "expo-application";
 import { BlurView } from "expo-blur";
 import * as Clipboard from "expo-clipboard";
-import * as DevClient from "expo-dev-client";
 import { registerDevMenuItems } from "expo-dev-menu";
 import * as DocumentPicker from "expo-document-picker";
-// TODO: migrate to expo-file-system/next.
-import * as FileSystem from "expo-file-system";
+import { Directory, File, Paths } from "expo-file-system";
 import { Image } from "expo-image";
 import * as IntentLauncher from "expo-intent-launcher";
 import { activateKeepAwakeAsync, deactivateKeepAwake } from "expo-keep-awake";
@@ -164,7 +162,7 @@ enum TimeRange {
   AllResults = "all_results",
 }
 
-let autoRefreshTimeout: NodeJS.Timeout | undefined;
+let autoRefreshTimeout: ReturnType<typeof setTimeout> | undefined;
 
 const MainView = () => {
   const appState = useAppState();
@@ -529,7 +527,7 @@ const MainView = () => {
           }),
         (async () => {
           // Avoid refresh in development build by default.
-          if (!enableDevelopmentBuildResultRefreshing && DevClient.isDevelopmentBuild()) {
+          if (!enableDevelopmentBuildResultRefreshing && __DEV__) {
             return;
           }
           if (sessionToken) {
@@ -589,11 +587,13 @@ const MainView = () => {
                   showBanner(BannerLevel.Warn, t("failed_to_check_splatfest", { error: e }));
                 }),
               fetchSummary(newWebServiceToken!, newBulletToken, language)
-                .then(async (summary) => {
+                .then((summary) => {
                   const icon = summary.currentPlayer.userIcon.url;
                   const level = String(summary.playHistory.rank);
                   const rank = summary.playHistory.udemae;
-                  await Promise.all([setIcon(icon), setRank(rank), setLevel(level)]);
+                  setIcon(icon);
+                  setRank(rank);
+                  setLevel(level);
                 })
                 .catch((e) => {
                   showBanner(BannerLevel.Warn, t("failed_to_load_summary", { error: e }));
@@ -1010,19 +1010,19 @@ const MainView = () => {
       setLoggingOut(true);
       setFriends(undefined);
       setVoting(undefined);
+      clearSessionToken();
+      clearWebServiceToken();
+      clearBulletToken();
+      clearAutoRefresh();
+      clearIcon();
+      clearLevel();
+      clearRank();
+      clearSplatZonesXPower();
+      clearTowerControlXPower();
+      clearRainmakerXPower();
+      clearClamBlitzXPower();
+      clearGrade();
       await Promise.all([
-        clearSessionToken(),
-        clearWebServiceToken(),
-        clearBulletToken(),
-        clearAutoRefresh(),
-        clearIcon(),
-        clearLevel(),
-        clearRank(),
-        clearSplatZonesXPower(),
-        clearTowerControlXPower(),
-        clearRainmakerXPower(),
-        clearClamBlitzXPower(),
-        clearGrade(),
         Notifications.getPermissionsAsync().then(async (res) => {
           if (res.granted) {
             await Notifications.setBadgeCountAsync(0);
@@ -1185,9 +1185,11 @@ const MainView = () => {
   };
   const onImportPress = async () => {
     setImporting(true);
-    let uri = "";
+    let documentFile: File | undefined;
     let imported = 0;
-    const dir = FileSystem.cacheDirectory + "conch-bay-import";
+    const dir = new Directory(Paths.cache, "conch-bay-import");
+    const battlesDir = new Directory(dir, "battles");
+    const coopsDir = new Directory(dir, "coops");
     try {
       const doc = await DocumentPicker.getDocumentAsync({
         type: "application/zip",
@@ -1197,21 +1199,25 @@ const MainView = () => {
         setImporting(false);
         return;
       }
-      uri = doc.assets[0].uri;
+      documentFile = new File(doc.assets[0].uri);
       onImportBegin();
-      await unzip(uri, dir);
-      const [battleUris, coopUris] = await Promise.all([
-        FileSystem.readDirectoryAsync(`${dir}/battles`),
-        FileSystem.readDirectoryAsync(`${dir}/coops`),
-      ]);
-      const n = battleUris.length + coopUris.length;
+      if (dir.exists) {
+        dir.delete();
+      }
+      dir.create({ intermediates: true, idempotent: true });
+      await unzip(documentFile.uri, dir.uri);
+      const [battleFilenames, coopFilenames] = [
+        battlesDir.list().map((entry) => entry.name),
+        coopsDir.list().map((entry) => entry.name),
+      ];
+      const n = battleFilenames.length + coopFilenames.length;
       showBanner(BannerLevel.Info, t("loading_n_results", { n }));
       let skip = 0,
         fail = 0;
       let error: Error | undefined;
       let battles: VsHistoryDetailResult[] = [];
-      for (const filename of battleUris) {
-        const battle = JSON.parse(await FileSystem.readAsStringAsync(`${dir}/battles/${filename}`));
+      for (const filename of battleFilenames) {
+        const battle = JSON.parse(await new File(battlesDir, filename).text());
         battles.push(battle);
         if (battles.length >= IMPORT_BATCH_SIZE) {
           const result = await onImportResults(battles, []);
@@ -1232,8 +1238,8 @@ const MainView = () => {
         }
       }
       let coops: CoopHistoryDetailResult[] = [];
-      for (const filename of coopUris) {
-        const coop = JSON.parse(await FileSystem.readAsStringAsync(`${dir}/coops/${filename}`));
+      for (const filename of coopFilenames) {
+        const coop = JSON.parse(await new File(coopsDir, filename).text());
         coops.push(coop);
         if (coops.length >= IMPORT_BATCH_SIZE) {
           const result = await onImportResults([], coops);
@@ -1271,23 +1277,26 @@ const MainView = () => {
       showBanner(BannerLevel.Error, e);
     }
 
-    await Promise.all([
-      FileSystem.deleteAsync(uri, { idempotent: true }),
-      FileSystem.deleteAsync(dir, { idempotent: true }),
-    ]);
+    if (documentFile) {
+      if (documentFile.exists) {
+        documentFile.delete();
+      }
+    }
+    if (dir.exists) {
+      dir.delete();
+    }
     await onImportComplete(imported);
     setImporting(false);
   };
   const onExportPress = async () => {
     setExporting(true);
-    const dir = FileSystem.cacheDirectory + "conch-bay-export";
-    const uri = FileSystem.cacheDirectory + "conch-bay-export.zip";
+    const dir = new Directory(Paths.cache, "conch-bay-export");
+    const archive = new File(Paths.cache, "conch-bay-export.zip");
+    const battlesDir = new Directory(dir, "battles");
+    const coopsDir = new Directory(dir, "coops");
     try {
-      await FileSystem.makeDirectoryAsync(dir, { intermediates: true });
-      await Promise.all([
-        FileSystem.makeDirectoryAsync(`${dir}/battles`, { intermediates: true }),
-        FileSystem.makeDirectoryAsync(`${dir}/coops`, { intermediates: true }),
-      ]);
+      battlesDir.create({ intermediates: true, idempotent: true });
+      coopsDir.create({ intermediates: true, idempotent: true });
       const battleDuplicate = new Map<number, number>();
       const coopDuplicate = new Map<number, number>();
       for await (const row of Database.queryDetailEach()) {
@@ -1295,31 +1304,31 @@ const MainView = () => {
         if (row.mode === "salmon_run") {
           const sequence = (coopDuplicate.get(time) ?? 0) + 1;
           coopDuplicate.set(time, sequence);
-          await FileSystem.writeAsStringAsync(
-            `${dir}/coops/${time}${sequence ? `-${sequence}` : ""}.json`,
-            row.detail,
-          );
+          const file = new File(coopsDir, `${time}${sequence ? `-${sequence}` : ""}.json`);
+          file.create({ intermediates: true, overwrite: true });
+          file.write(row.detail);
         } else {
           const sequence = (battleDuplicate.get(time) ?? 0) + 1;
           battleDuplicate.set(time, sequence);
-          await FileSystem.writeAsStringAsync(
-            `${dir}/battles/${time}${sequence > 1 ? `-${sequence}` : ""}.json`,
-            row.detail,
-          );
+          const file = new File(battlesDir, `${time}${sequence > 1 ? `-${sequence}` : ""}.json`);
+          file.create({ intermediates: true, overwrite: true });
+          file.write(row.detail);
         }
       }
-      await zip(dir, uri);
+      await zip(dir.uri, archive.uri);
 
-      await Sharing.shareAsync(uri, { UTI: "public.zip-archive" });
+      await Sharing.shareAsync(archive.uri, { UTI: "public.zip-archive" });
     } catch (e) {
       showBanner(BannerLevel.Error, e);
     }
 
     // Clean up.
-    await Promise.all([
-      FileSystem.deleteAsync(uri, { idempotent: true }),
-      FileSystem.deleteAsync(dir, { idempotent: true }),
-    ]);
+    if (archive.exists) {
+      archive.delete();
+    }
+    if (dir.exists) {
+      dir.delete();
+    }
     setExporting(false);
   };
   const onSupportPress = () => {
@@ -1432,17 +1441,17 @@ const MainView = () => {
     }
   };
   const onExportConfiguration = async () => {
-    const uri = FileSystem.documentDirectory + "mmkv/mmkv.default";
+    const configuration = new File(Paths.document, "mmkv", "mmkv.default");
     try {
-      await Sharing.shareAsync(uri, { UTI: "public.database" });
+      await Sharing.shareAsync(configuration.uri, { UTI: "public.database" });
     } catch (e) {
       showBanner(BannerLevel.Error, e);
     }
   };
   const onExportDatabasePress = async () => {
-    const uri = FileSystem.documentDirectory + "SQLite/conch-bay.db";
+    const database = new File(Paths.document, "SQLite", "conch-bay.db");
     try {
-      await Sharing.shareAsync(uri, { UTI: "public.database" });
+      await Sharing.shareAsync(database.uri, { UTI: "public.database" });
     } catch (e) {
       showBanner(BannerLevel.Error, e);
     }
