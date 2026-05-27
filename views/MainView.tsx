@@ -63,7 +63,6 @@ import {
   DetailVotingStatusResult,
   FriendListResult,
   Schedules,
-  Shop,
   VsHistoryDetailResult,
 } from "../models/types";
 import {
@@ -78,7 +77,6 @@ import {
   fetchPrivateBattleHistories,
   fetchRegularBattleHistories,
   fetchReleaseVersion,
-  fetchShop,
   fetchSchedules,
   fetchSplatfests,
   fetchSummary,
@@ -116,7 +114,6 @@ import GearsView from "./GearsView";
 import ResultView from "./ResultView";
 import RotationsView from "./RotationsView";
 import ScheduleView from "./ScheduleView";
-import ShopView from "./ShopView";
 import SplatNetView, { SplatNetViewRef } from "./SplatNetView";
 import StatsView from "./StatsView";
 import TrendsView from "./TrendsView";
@@ -239,7 +236,6 @@ const MainView = () => {
 
   const [apiUpdated, setApiUpdated] = useState(false);
   const [schedules, setSchedules] = useState<Schedules>();
-  const [shop, setShop] = useState<Shop>();
   const [friends, setFriends] = useState<FriendListResult>();
   const [voting, setVoting] = useState<DetailVotingStatusResult>();
   const [briefs, setBriefs] = useState<Brief[]>();
@@ -514,16 +510,11 @@ const MainView = () => {
     setRefreshing(true);
     try {
       await Promise.all([
-        // Fetch schedules and shop.
+        // Fetch schedules.
         fetchSchedules()
           .then((schedules) => setSchedules(schedules))
           .catch((e) => {
             showBanner(BannerLevel.Warn, t("failed_to_update_schedules", { error: e }));
-          }),
-        fetchShop()
-          .then((shop) => setShop(shop))
-          .catch((e) => {
-            showBanner(BannerLevel.Warn, t("failed_to_update_splatnet_shop", { error: e }));
           }),
         (async () => {
           // Avoid refresh in development build by default.
@@ -1596,9 +1587,7 @@ const MainView = () => {
                     </HStack>
                   </VStack>
                 )}
-                <ScheduleView schedules={schedules} style={ViewStyles.mb4}>
-                  {shop && <ShopView shop={shop} />}
-                </ScheduleView>
+                <ScheduleView schedules={schedules} style={ViewStyles.mb4} />
                 {sessionToken.length > 0 &&
                   (friends === undefined || friends.friends.nodes.length > 0) && (
                     <FriendView friends={friends} voting={voting} style={ViewStyles.mb4} />

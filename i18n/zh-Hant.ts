@@ -13,7 +13,7 @@ const zhHant = {
   log_in_warning:
     "法螺灣並不會盜用您的帳號或導致您的個人資料外洩。但介於任天堂持續對第三方應用的負面態度，您需要自負使用法螺灣的風險。",
   log_in_notice:
-    "您可以在不登入的情況下使用法螺灣查看時間表與魷魚須商城，匯入記錄並透過統計與趨勢分析。登入將允許您載入記錄與好友，查看裝備以及造訪魷魚圈3。登入需要向任天堂以外的nxapi發送非識別訊息，這些資訊不會被記錄或存儲，請參閱私隱政策以取得更多資訊。",
+    "您可以在不登入的情況下使用法螺灣查看時間表，匯入記錄並透過統計與趨勢分析。登入將允許您載入記錄與好友，查看裝備以及造訪魷魚圈3。登入需要向任天堂以外的nxapi發送非識別訊息，這些資訊不會被記錄或存儲，請參閱私隱政策以取得更多資訊。",
   log_in_continue: "我已閱讀並瞭解",
   alternative_log_in_notice:
     "如果您擁有會話令牌並希望跳過由法螺灣取得會話令牌，您可以複製會話令牌並透過會話令牌登入。",
@@ -29,7 +29,6 @@ const zhHant = {
   failed_to_acquire_web_service_token: "未能取得Web服務令牌 (%{error})",
   failed_to_acquire_bullet_token: "未能取得Bullet令牌 (%{error})",
   failed_to_update_schedules: "未能更新時間表 (%{error})",
-  failed_to_update_splatnet_shop: "未能更新魷魚鬚商城 (%{error})",
   failed_to_check_api_update: "未能檢查API更新 (%{error})",
   failed_to_load_friends: "未能載入朋友 (%{error})",
   failed_to_load_friends_splatfest_voting: "未能載入朋友的祭典投票狀況 (%{error})",
@@ -118,9 +117,6 @@ const zhHant = {
   version: "版本",
   error_information: "錯誤資訊",
   export_results: "匯出記錄",
-  // Shop.
-  gesotown: "魷魚鬚商城",
-  shop_notice: "您可以透過主頁下方的魷魚圈3預訂裝備。",
   // Friend.
   playing: "比賽中",
   working: "打工中",

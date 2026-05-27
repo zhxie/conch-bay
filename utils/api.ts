@@ -20,7 +20,6 @@ import {
   RegularBattleHistoriesResult,
   RequestId,
   SchedulesQuery,
-  ShopQuery,
   VsHistoryDetailResult,
   VsHistoryDetailVariables,
   XBattleHistoriesResult,
@@ -48,13 +47,6 @@ export const fetchSchedules = async () => {
   });
   const json = await res.json();
   return (json as SchedulesQuery).data;
-};
-export const fetchShop = async () => {
-  const res = await fetch("https://splatoon3.ink/data/gear.json", {
-    headers: { "User-Agent": USER_AGENT },
-  });
-  const json = await res.json();
-  return (json as ShopQuery).data;
 };
 export const fetchSplatfests = async () => {
   const res = await fetch("https://splatoon3.ink/data/festivals.json", {

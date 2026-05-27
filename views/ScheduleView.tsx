@@ -39,7 +39,6 @@ import { getImageCacheSource, getImageHash } from "../utils/ui";
 interface ScheduleViewProps {
   schedules?: Schedules;
   style?: StyleProp<ViewStyle>;
-  children?: React.ReactNode;
 }
 interface TricolorSchedule {
   startTime: string;
@@ -402,7 +401,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
                 disabled
                 rule=""
                 stages={[]}
-                style={props.children || i !== 9 ? ViewStyles.mr2 : undefined}
+                style={i !== placeholder - 1 ? ViewStyles.mr2 : undefined}
               />
             ))}
         <SalmonRunSwitcher>
@@ -526,12 +525,10 @@ const ScheduleView = (props: ScheduleViewProps) => {
                   td(regularShifts[0].setting!.boss),
                 ]}
                 onPress={onRegularShiftPress}
-                style={!!props.children && ViewStyles.mr2}
               />
             )}
           </>
         </SalmonRunSwitcher>
-        {props.children}
       </HStack>
       <Modal isVisible={schedules} size="medium" allowDismiss onDismiss={onSchedulesDismiss}>
         <TitledList color={scheduleList?.color} title={scheduleList?.title}>

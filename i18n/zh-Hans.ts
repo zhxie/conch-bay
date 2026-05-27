@@ -13,7 +13,7 @@ const zhHans = {
   log_in_warning:
     "法螺湾并不会盗用您的账号或导致您的个人信息泄漏。但介于任天堂持续对第三方应用的消极态度，您需要自负使用法螺湾的风险。",
   log_in_notice:
-    "您可以在不登录的情况下使用法螺湾查看日程与鱿鱼须商城，导入记录并通过统计与趋势分析。登录将允许您加载记录与好友，查看装备以及访问鱿鱼圈3。登录需要向任天堂以外的nxapi发送非识别信息，这些信息不会被记录或存储，请参阅隐私政策以获取更多信息。",
+    "您可以在不登录的情况下使用法螺湾查看日程，导入记录并通过统计与趋势分析。登录将允许您加载记录与好友，查看装备以及访问鱿鱼圈3。登录需要向任天堂以外的nxapi发送非识别信息，这些信息不会被记录或存储，请参阅隐私政策以获取更多信息。",
   log_in_continue: "我已阅读并理解",
   alternative_log_in_notice:
     "如果您拥有会话令牌并希望跳过由法螺湾获取会话令牌，您可以复制会话令牌并通过会话令牌登录。",
@@ -29,7 +29,6 @@ const zhHans = {
   failed_to_acquire_web_service_token: "未能获取Web服务令牌 (%{error})",
   failed_to_acquire_bullet_token: "未能获取Bullet令牌 (%{error})",
   failed_to_update_schedules: "未能更新日程 (%{error})",
-  failed_to_update_splatnet_shop: "未能更新鱿鱼须商城 (%{error})",
   failed_to_check_api_update: "未能检查API更新 (%{error})",
   failed_to_load_friends: "未能加载好友 (%{error})",
   failed_to_load_friends_splatfest_voting: "未能加载好友的祭典投票情况 (%{error})",
@@ -118,9 +117,6 @@ const zhHans = {
   version: "版本",
   error_information: "错误信息",
   export_results: "导出记录",
-  // Shop.
-  gesotown: "鱿鱼须商城",
-  shop_notice: "您可以通过主页下方的鱿鱼圈3预订装备。",
   // Friend.
   playing: "比赛中",
   working: "打工中",

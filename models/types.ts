@@ -12,7 +12,7 @@ import {
   Friend_friendList,
   MyOutfitCommonDataEquipmentsResult,
 } from "splatnet3-types/dist/splatnet3";
-import { Gear as ShopQuery, Schedules as SchedulesQuery } from "splatnet3-types/dist/splatoon3ink";
+import { Schedules as SchedulesQuery } from "splatnet3-types/dist/splatoon3ink";
 
 export {
   AwardRank,
@@ -43,7 +43,6 @@ export {
 } from "splatnet3-types/dist/splatnet3";
 export {
   Festivals as FestivalsQuery,
-  Gear as ShopQuery,
   Schedules as SchedulesQuery,
 } from "splatnet3-types/dist/splatoon3ink";
 
@@ -63,15 +62,10 @@ export type CurrentFest = NotNullable<SchedulesQuery["data"]["currentFest"]>;
 export type FestMatchSetting = NotNullable<
   SchedulesQuery["data"]["festSchedules"]["nodes"][0]["festMatchSettings"]
 >[0];
-export type PickupBrand = ShopQuery["data"]["gesotown"]["pickupBrand"];
 export type RegularMatchSetting = NotNullable<
   SchedulesQuery["data"]["regularSchedules"]["nodes"][0]["regularMatchSetting"]
 >;
-export type SaleGear =
-  | PickupBrand["brandGears"][0]
-  | ShopQuery["data"]["gesotown"]["limitedGears"][0];
 export type Schedules = SchedulesQuery["data"];
-export type Shop = ShopQuery["data"];
 export type XMatchSetting = NotNullable<
   SchedulesQuery["data"]["xSchedules"]["nodes"][0]["xMatchSetting"]
 >;
@@ -105,12 +99,7 @@ export type CoopWaveResult = NotNullable<
   CoopHistoryDetailResult["coopHistoryDetail"]
 >["waveResults"][0];
 export type Friend = Friend_friendList;
-export type Gear =
-  | VsPlayer["headGear"]
-  | VsPlayer["clothingGear"]
-  | VsPlayer["shoesGear"]
-  | SaleGear["gear"]
-  | MyGear;
+export type Gear = VsPlayer["headGear"] | VsPlayer["clothingGear"] | VsPlayer["shoesGear"] | MyGear;
 export type MyGear =
   | MyOutfitCommonDataEquipmentsResult["headGears"]["nodes"][0]
   | MyOutfitCommonDataEquipmentsResult["clothingGears"]["nodes"][0]
