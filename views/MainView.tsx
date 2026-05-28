@@ -171,6 +171,8 @@ const MainView = () => {
 
   const showBanner = useBanner();
 
+  const language = t("lang");
+
   const [ready, setReady] = useState(false);
   const [upgrade, setUpgrade] = useState(false);
   const [update, setUpdate] = useState(false);
@@ -199,10 +201,6 @@ const MainView = () => {
     useMmkv<WebServiceToken>(Key.WebServiceToken);
   const [bulletToken, setBulletToken, clearBulletToken, bulletTokenReady] = useStringMmkv(
     Key.BulletToken,
-  );
-  const [language, setLanguage, clearLanguage, languageReady] = useStringMmkv(
-    Key.Language,
-    t("lang"),
   );
 
   const [icon, setIcon, clearIcon] = useStringMmkv(Key.Icon);
@@ -269,7 +267,6 @@ const MainView = () => {
       sessionTokenReady &&
       webServiceTokenReady &&
       bulletTokenReady &&
-      languageReady &&
       filterReady &&
       migratedReady
     ) {
@@ -280,14 +277,12 @@ const MainView = () => {
             // HACK: not all fields are migrated for convenience and clear installation.
             const [
               sessionToken,
-              language,
               playedTime,
               backgroundRefresh,
               salmonRunFriendlyMode,
               autoRefresh,
             ] = await AsyncStorage.multiGet([
               AsyncStorageKey.SessionToken,
-              AsyncStorageKey.Language,
               AsyncStorageKey.PlayedTime,
               AsyncStorageKey.BackgroundRefresh,
               AsyncStorageKey.SalmonRunFriendlyMode,
@@ -295,9 +290,6 @@ const MainView = () => {
             ]);
             if (sessionToken[1]) {
               setSessionToken(sessionToken[1]);
-            }
-            if (language[1]) {
-              setLanguage(language[1]);
             }
             if (playedTime[1]) {
               setPlayedTime(parseInt(playedTime[1]));
@@ -332,14 +324,7 @@ const MainView = () => {
         }
       })();
     }
-  }, [
-    sessionTokenReady,
-    webServiceTokenReady,
-    bulletTokenReady,
-    languageReady,
-    filterReady,
-    migratedReady,
-  ]);
+  }, [sessionTokenReady, webServiceTokenReady, bulletTokenReady, filterReady, migratedReady]);
   useEffect(() => {
     if (ready) {
       Animated.timing(fade, {
@@ -411,7 +396,7 @@ const MainView = () => {
         }, 10000);
       }
     }
-  }, [refreshing, bulletToken, autoRefresh, language]);
+  }, [refreshing, bulletToken, autoRefresh]);
   useEffect(() => {
     (async () => {
       if (appState === "active") {
@@ -1363,13 +1348,6 @@ const MainView = () => {
       setSalmonRunFriendlyMode(true);
     }
   };
-  const onGameLanguageSelected = (language: string) => {
-    if (language === t("lang")) {
-      clearLanguage();
-    } else {
-      setLanguage(language);
-    }
-  };
   const onChangeDisplayLanguagePress = () => {
     RNLinking.openSettings();
   };
@@ -1936,7 +1914,7 @@ const MainView = () => {
                 </Button>
               )}
               <Button
-                style={ViewStyles.accent}
+                style={[ViewStyles.mb2, ViewStyles.accent]}
                 textStyle={theme.reverseTextStyle}
                 onPress={onSalmonRunFriendlyModePress}
               >
@@ -1946,30 +1924,6 @@ const MainView = () => {
                   })}
                 </Marquee>
               </Button>
-            </DialogSection>
-            <DialogSection text={t("language_notice")} style={ViewStyles.mb4}>
-              <Picker
-                disabled={refreshing}
-                title={t("change_game_language", { language: t(language) })}
-                items={[
-                  { key: "de-DE", value: t("de-DE") },
-                  { key: "en-GB", value: t("en-GB") },
-                  { key: "en-US", value: t("en-US") },
-                  { key: "es-ES", value: t("es-ES") },
-                  { key: "es-MX", value: t("es-MX") },
-                  { key: "fr-CA", value: t("fr-CA") },
-                  { key: "fr-FR", value: t("fr-FR") },
-                  { key: "it-IT", value: t("it-IT") },
-                  { key: "ja-JP", value: t("ja-JP") },
-                  { key: "ko-KR", value: t("ko-KR") },
-                  { key: "nl-NL", value: t("nl-NL") },
-                  { key: "ru-RU", value: t("ru-RU") },
-                  { key: "zh-CN", value: t("zh-CN") },
-                  { key: "zh-TW", value: t("zh-TW") },
-                ]}
-                onSelected={onGameLanguageSelected}
-                style={ViewStyles.mb2}
-              />
               <Button
                 style={ViewStyles.accent}
                 textStyle={theme.reverseTextStyle}

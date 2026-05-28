@@ -67,8 +67,6 @@ const zhHant = {
   auto_refresh: "自動重新整理 (%{enable})",
   background_refresh: "背景重新整理 (%{enable})",
   salmon_run_friendly_mode: "鮭魚跑友好模式 (%{enable})",
-  language_notice: "您可以修改您的語言，以便於法螺灣加載對應語言的記錄與魷魚圈3。",
-  change_game_language: "修改遊戲語言 (%{language})",
   change_display_language: "修改顯示語言 (%{language})",
   relog_in_notice: "如果法螺灣無法取得令牌，您可以重新登入。",
   relog_in: "重新登入",

@@ -67,8 +67,6 @@ const zhHans = {
   auto_refresh: "自动刷新 (%{enable})",
   background_refresh: "后台刷新 (%{enable})",
   salmon_run_friendly_mode: "鲑鱼跑友好模式 (%{enable})",
-  language_notice: "您可以修改您的语言，以便于法螺湾加载对应语言的记录与鱿鱼圈3。",
-  change_game_language: "修改游戏语言 (%{language})",
   change_display_language: "修改显示语言 (%{language})",
   relog_in_notice: "如果法螺湾无法获取令牌，您可以重新登录。",
   relog_in: "重新登录",

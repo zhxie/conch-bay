@@ -29,7 +29,7 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
 
     // Always generate new bullet token.
     const storage = new MMKV();
-    const language = storage.getString(Key.Language) || t("lang");
+    const language = t("lang");
     const sessionToken = storage.getString(Key.SessionToken);
     if (!sessionToken || sessionToken.length === 0) {
       throw new Error("no session token");

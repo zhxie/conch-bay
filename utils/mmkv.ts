@@ -3,7 +3,6 @@ import { MMKV } from "react-native-mmkv";
 
 export enum AsyncStorageKey {
   SessionToken = "sessionToken2",
-  Language = "language",
   Region = "region",
   PlayedTime = "playedTime",
   BackgroundRefresh = "backgroundRefresh",
@@ -15,7 +14,6 @@ export enum Key {
   SessionToken = "sessionToken",
   WebServiceToken = "webServiceToken",
   BulletToken = "bulletToken",
-  Language = "language",
   Region = "region",
   Icon = "icon",
   Level = "level",

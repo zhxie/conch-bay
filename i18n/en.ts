@@ -69,9 +69,6 @@ const en = {
   auto_refresh: "Auto Refresh (%{enable})",
   background_refresh: "Background Refresh (%{enable})",
   salmon_run_friendly_mode: "Salmon Run Friendly Mode (%{enable})",
-  language_notice:
-    "You can change your language so that Conch Bay can load results and SplatNet 3 in the corresponding language.",
-  change_game_language: "Change Game Language (%{language})",
   change_display_language: "Change Display Language (%{language})",
   relog_in_notice: "If Conch Bay cannot acquire tokens, you can relog in.",
   relog_in: "Relog in",

@@ -71,9 +71,6 @@ const ja = {
   auto_refresh: "自動更新 (%{enable})",
   background_refresh: "バックグラウンド更新 (%{enable})",
   salmon_run_friendly_mode: "サーモンランフレンドリーモード (%{enable})",
-  language_notice:
-    "ホラガイベイが対応する言語のリザルトとイカリング3をロードできるように、言語を変更できます。",
-  change_game_language: "ゲームの言語を変更 (%{language})",
   change_display_language: "表示言語を変更 (%{language})",
   relog_in_notice: "ホラガイベイがトークンを取得できない場合は、再ログインできます。",
   relog_in: "再ログイン",
