@@ -413,7 +413,7 @@ const StatsModal = (props: StatsModalProps) => {
   };
 
   return (
-    <Modal isVisible={props.isVisible} size="medium" allowDismiss onDismiss={props.onDismiss}>
+    <Modal isVisible={props.isVisible} size="large" allowDismiss onDismiss={props.onDismiss}>
       {props.children}
       <SegmentedControl
         values={[t("default"), t("appearance"), t("win_rate")]}

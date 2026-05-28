@@ -152,7 +152,7 @@ const GearsView = (props: GearsViewProps) => {
       />
       <FlashModal
         isVisible={display}
-        size="medium"
+        size="large"
         noPadding
         allowDismiss
         data={gears}

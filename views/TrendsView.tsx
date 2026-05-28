@@ -376,7 +376,7 @@ const TrendsView = (props: TrendViewProps) => {
       />
       <Modal
         isVisible={trends}
-        size="medium"
+        size="large"
         allowDismiss
         onDismiss={onTrendsDismiss}
         onLayout={onLayout}

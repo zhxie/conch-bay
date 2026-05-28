@@ -1881,7 +1881,7 @@ const MainView = () => {
         </Modal>
         <Modal
           isVisible={support}
-          size="medium"
+          size="large"
           allowDismiss={!clearingCache && !clearingDatabase}
           onDismiss={onSupportDismiss}
         >

@@ -208,7 +208,7 @@ const FilterView = (props: FilterViewProps) => {
       </HStack>
       <Modal
         isVisible={filter}
-        size="medium"
+        size="large"
         allowDismiss
         onDismiss={onFilterDismiss}
         style={[ViewStyles.pl4, ViewStyles.pr2]}

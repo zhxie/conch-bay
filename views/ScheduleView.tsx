@@ -530,7 +530,7 @@ const ScheduleView = (props: ScheduleViewProps) => {
           </>
         </SalmonRunSwitcher>
       </HStack>
-      <Modal isVisible={schedules} size="medium" allowDismiss onDismiss={onSchedulesDismiss}>
+      <Modal isVisible={schedules} size="large" allowDismiss onDismiss={onSchedulesDismiss}>
         <TitledList color={scheduleList?.color} title={scheduleList?.title}>
           {scheduleList?.schedules &&
             scheduleList.schedules

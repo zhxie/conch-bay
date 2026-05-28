@@ -219,7 +219,7 @@ const RotationsView = (props: RotationViewProps) => {
       />
       <FlashModal
         isVisible={rotations}
-        size="medium"
+        size="large"
         noPadding
         allowDismiss
         data={groups}
