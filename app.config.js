@@ -1,5 +1,4 @@
 import withAndroidLargeHeap from "./plugins/withAndroidLargeHeap";
-import withAndroidLocalizedName from "./plugins/withAndroidLocalizedName";
 
 const IS_DEV = process.env.APP_VARIANT === "development";
 
@@ -23,7 +22,6 @@ const config = {
   assetBundlePatterns: ["**/*"],
   plugins: [
     withAndroidLargeHeap,
-    withAndroidLocalizedName,
     "expo-localization",
     [
       "expo-build-properties",

@@ -24,7 +24,7 @@
     "@react-native-community/hooks": "^100.1.0",
     "@react-native-cookies/cookies": "^6.2.1",
     "@react-native-segmented-control/segmented-control": "2.5.7",
-    "@shopify/flash-list": "1.7.6",
+    "@shopify/flash-list": "1.8.3",
     "axios": "^1.16.1",
     "base64-js": "^1.5.1",
     "dayjs": "^1.11.21",
