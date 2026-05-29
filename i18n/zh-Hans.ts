@@ -1,11 +1,10 @@
-import base from "./base";
 import locale from "./locales/zh-Hans.json";
 import generated from "./zh-Hans.json";
 
 const zhHans = {
-  ...base,
   ...generated,
-  ...locale,
+  ...locale.ios,
+  ...locale.android,
   // API.
   lang: "zh-CN",
   // UI.

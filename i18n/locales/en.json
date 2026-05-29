@@ -1,4 +1,8 @@
 {
-  "CFBundleDisplayName": "Conch Bay",
-  "app_name": "Conch Bay"
+  "ios": {
+    "CFBundleDisplayName": "Conch Bay"
+  },
+  "android": {
+    "app_name": "Conch Bay"
+  }
 }

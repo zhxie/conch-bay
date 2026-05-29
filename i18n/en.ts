@@ -1,11 +1,10 @@
-import base from "./base";
 import generated from "./en.json";
 import locale from "./locales/en.json";
 
 const en = {
-  ...base,
   ...generated,
-  ...locale,
+  ...locale.ios,
+  ...locale.android,
   // API.
   lang: "en-US",
   // UI.

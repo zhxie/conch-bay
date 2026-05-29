@@ -1,4 +1,8 @@
 {
-  "CFBundleDisplayName": "法螺灣",
-  "app_name": "法螺灣"
+  "ios": {
+    "CFBundleDisplayName": "法螺灣"
+  },
+  "android": {
+    "app_name": "法螺灣"
+  }
 }

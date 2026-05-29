@@ -1,4 +1,8 @@
 {
-  "CFBundleDisplayName": "ホラガイベイ",
-  "app_name": "ホラガイベイ"
+  "ios": {
+    "CFBundleDisplayName": "ホラガイベイ"
+  },
+  "android": {
+    "app_name": "ホラガイベイ"
+  }
 }
