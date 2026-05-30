@@ -28,7 +28,7 @@ const ErrorView = (props: ErrorViewProps) => {
 
   const [exporting, setExporting] = useState(false);
 
-  const onSendAMailPress = async () => {
+  const onSendAnEmailPress = async () => {
     if (await MailComposer.isAvailableAsync()) {
       MailComposer.composeAsync({
         recipients: ["conch-bay@outlook.com"],
@@ -104,8 +104,8 @@ const ErrorView = (props: ErrorViewProps) => {
         <Text style={[TextStyles.h0, ViewStyles.mb2]}>{t("sorry")}</Text>
         <Text style={[TextStyles.h15, ViewStyles.mb2]}>{t("sorry_notice")}</Text>
         <Text style={ViewStyles.mb4}>{props.error.message}</Text>
-        <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onSendAMailPress}>
-          <Marquee style={theme.reverseTextStyle}>{t("send_a_mail")}</Marquee>
+        <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onSendAnEmailPress}>
+          <Marquee style={theme.reverseTextStyle}>{t("send_an_email")}</Marquee>
         </Button>
         <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onJoinDiscordServerPress}>
           <Marquee style={theme.reverseTextStyle}>{t("join_discord_server")}</Marquee>

@@ -1359,7 +1359,7 @@ const MainView = () => {
   const onReadConchBayWikiPress = () => {
     WebBrowser.openBrowserAsync("https://github.com/zhxie/conch-bay/wiki");
   };
-  const onSendAMailPress = async () => {
+  const onSendAnEmailPress = async () => {
     if (await MailComposer.isAvailableAsync()) {
       MailComposer.composeAsync({
         recipients: ["conch-bay@outlook.com"],
@@ -1929,9 +1929,7 @@ const MainView = () => {
                 textStyle={theme.reverseTextStyle}
                 onPress={onChangeDisplayLanguagePress}
               >
-                <Marquee style={theme.reverseTextStyle}>
-                  {t("change_display_language", { language: t(t("lang")) })}
-                </Marquee>
+                <Marquee style={theme.reverseTextStyle}>{t("change_display_language")}</Marquee>
               </Button>
             </DialogSection>
             <DialogSection text={t("resource_notice")} style={ViewStyles.mb4}>
@@ -1949,8 +1947,8 @@ const MainView = () => {
               <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onReadConchBayWikiPress}>
                 <Marquee style={theme.reverseTextStyle}>{t("read_conch_bay_wiki")}</Marquee>
               </Button>
-              <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onSendAMailPress}>
-                <Marquee style={theme.reverseTextStyle}>{t("send_a_mail")}</Marquee>
+              <Button style={[ViewStyles.mb2, ViewStyles.accent]} onPress={onSendAnEmailPress}>
+                <Marquee style={theme.reverseTextStyle}>{t("send_an_email")}</Marquee>
               </Button>
               <Button
                 style={[ViewStyles.mb2, ViewStyles.accent]}
