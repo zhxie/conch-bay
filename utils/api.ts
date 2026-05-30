@@ -170,13 +170,17 @@ const callNxapiZncaApiF = async (
   coralUserId?: string,
 ) => {
   if (!NXAPI_ZNCA_API_NSO_VERSION) {
-    const res = await axios.get("https://nxapi-znca-api.fancy.org.uk/api/znca/config", {
-      headers: {
-        "User-Agent": USER_AGENT,
-      },
-      timeout: AXIOS_TIMEOUT,
-    });
-    NXAPI_ZNCA_API_NSO_VERSION = res.data["nso_version"];
+    try {
+      const res = await axios.get("https://nxapi-znca-api.fancy.org.uk/api/znca/config", {
+        headers: {
+          "User-Agent": USER_AGENT,
+        },
+        timeout: AXIOS_TIMEOUT,
+      });
+      NXAPI_ZNCA_API_NSO_VERSION = res.data["nso_version"];
+    } catch (e) {
+      throw new Error(`/f/config: ${(e as Error).message}`);
+    }
   }
   const body = {
     hash_method: step,
