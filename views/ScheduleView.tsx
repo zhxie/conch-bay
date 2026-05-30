@@ -538,10 +538,11 @@ const ScheduleView = (props: ScheduleViewProps) => {
               .map((schedule, i, schedules) => (
                 <ScheduleBox
                   key={i}
+                  first={i === 0}
+                  last={i === schedules.length - 1}
                   rule={td(getMatchSetting(schedule, scheduleList.mode)!.vsRule)}
                   time={formatScheduleTimeRange(schedule, false)}
                   stages={getMatchSetting(schedule, scheduleList.mode)!.vsStages.map(formatStage)}
-                  style={i !== schedules.length - 1 ? ViewStyles.mb2 : undefined}
                 />
               ))}
           {scheduleList?.challenges &&
@@ -561,10 +562,11 @@ const ScheduleView = (props: ScheduleViewProps) => {
                   .map((timePeriod, j, timePeriods) => (
                     <ScheduleBox
                       key={j}
+                      first={j === 0}
+                      last={j === timePeriods.length - 1}
                       rule={td(challenge.leagueMatchSetting.vsRule)}
                       time={formatScheduleTimeRange(timePeriod, false)}
                       stages={challenge.leagueMatchSetting.vsStages.map(formatStage)}
-                      style={j !== timePeriods.length - 1 ? ViewStyles.mb2 : undefined}
                     />
                   ))}
               </VStack>
@@ -573,10 +575,11 @@ const ScheduleView = (props: ScheduleViewProps) => {
             scheduleList.tricolorSchedules.map((schedule, i, schedules) => (
               <ScheduleBox
                 key={i}
+                first={i === 0}
+                last={i === schedules.length - 1}
                 rule={t("VnNSdWxlLTU=")}
                 time={formatScheduleTimeRange(schedule, false)}
                 stages={schedule.stages.map(formatStage)}
-                style={i !== schedules.length - 1 ? ViewStyles.mb2 : undefined}
               />
             ))}
           {scheduleList?.shifts &&
@@ -585,12 +588,13 @@ const ScheduleView = (props: ScheduleViewProps) => {
               .map((shift, i, shifts) => (
                 <ShiftBox
                   key={i}
+                  first={i === 0}
+                  last={i === shifts.length - 1}
                   rule={scheduleList.title}
                   time={formatScheduleTimeRange(shift, true)}
                   stage={formatStage(shift.setting!.coopStage)}
                   boss={shift.setting!.boss ? td(shift.setting!.boss) : ""}
                   weapons={shift.setting!.weapons.map(formatWeapon)}
-                  style={i !== shifts.length - 1 ? ViewStyles.mb2 : undefined}
                 />
               ))}
         </TitledList>
