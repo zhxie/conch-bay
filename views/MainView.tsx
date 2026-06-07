@@ -28,6 +28,7 @@ import {
   RefreshControl,
   ScrollView,
   useWindowDimensions,
+  View,
 } from "react-native";
 import { MMKV } from "react-native-mmkv";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
@@ -88,6 +89,7 @@ import {
   getWebServiceToken,
   updateSplatnetVersion,
   WebServiceToken,
+  WebServiceTokenStepCount,
 } from "../utils/api";
 import {
   isBackgroundTaskRegistered,
@@ -160,6 +162,11 @@ enum TimeRange {
 }
 
 let autoRefreshTimeout: ReturnType<typeof setTimeout> | undefined;
+
+type RefreshProgress = {
+  value: number;
+  text: string;
+};
 
 const MainView = () => {
   const appState = useAppState();
@@ -242,12 +249,17 @@ const MainView = () => {
   const [total, setTotal] = useState(0);
   const [players, setPlayers] = useState<Record<string, string>>();
   const [filterOptions, setFilterOptions] = useState<Database.FilterProps>();
+  const [refreshProgress, setRefreshProgress] = useState<RefreshProgress>({
+    value: 0,
+    text: "",
+  });
 
   const showedBriefs = useMemo(() => briefs?.slice(0, count), [briefs, count]);
 
   const allResultsShown = count >= filtered;
 
   const fade = useRef(new Animated.Value(0)).current;
+
   const blurOnTopFade = useRef(new Animated.Value(0)).current;
   const [headerHeight, setHeaderHeight] = useState(0);
   const [filterHeight, setFilterHeight] = useState(0);
@@ -258,6 +270,19 @@ const MainView = () => {
   const topFilterFade = blurOnTopFade.interpolate({
     inputRange: [1, 2],
     outputRange: [0, 1],
+  });
+
+  const refreshProgressFade = useRef(new Animated.Value(0)).current;
+  const refreshProgressValue = useRef(new Animated.Value(0)).current;
+  const refreshProgressHideTimeout = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const [refreshProgressHeight, setRefreshProgressHeight] = useState(0);
+  const refreshProgressTranslateY = refreshProgressFade.interpolate({
+    inputRange: [0, 1],
+    outputRange: [refreshProgressHeight || 96, 0],
+  });
+  const refreshProgressWidth = refreshProgressValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: ["0%", "100%"],
   });
 
   const splatNetViewRef = useRef<SplatNetViewRef>(null);
@@ -391,6 +416,7 @@ const MainView = () => {
             }
           } catch {
             await refresh();
+            return;
           }
           setRefreshing(false);
         }, 10000);
@@ -417,6 +443,22 @@ const MainView = () => {
       throw fault;
     }
   }, [fault]);
+  useEffect(() => {
+    if (refreshProgress.value !== 0) {
+      Animated.timing(refreshProgressFade, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [refreshProgress.value]);
+  useEffect(() => {
+    Animated.timing(refreshProgressValue, {
+      toValue: refreshProgress.value,
+      duration: 300,
+      useNativeDriver: false,
+    }).start();
+  }, [refreshProgress.value]);
 
   const loadBriefs = async () => {
     setLoadingMore(true);
@@ -480,10 +522,28 @@ const MainView = () => {
     }
 
     // Acquire both web service token and bullet token.
-    const newWebServiceToken = await getWebServiceToken(sessionToken).catch((e) => {
+    const newWebServiceToken = await getWebServiceToken(sessionToken, (step) => {
+      const stepCount = WebServiceTokenStepCount[step];
+      setRefreshProgress({
+        value: stepCount * 0.05,
+        text: t("refresh_progress_requiring_tokens_n_total_step", {
+          n: stepCount,
+          total: WebServiceTokenStepCount["/api/bullet_tokens"],
+          step,
+        }),
+      });
+    }).catch((e) => {
       throw new Error(t("failed_to_acquire_web_service_token", { error: e }));
     });
     setWebServiceToken(newWebServiceToken);
+    setRefreshProgress({
+      value: 0.4,
+      text: t("refresh_progress_requiring_tokens_n_total_step", {
+        n: WebServiceTokenStepCount["/api/bullet_tokens"],
+        total: WebServiceTokenStepCount["/api/bullet_tokens"],
+        step: "/api/bullet_tokens",
+      }),
+    });
     const newBulletToken = await getBulletToken(newWebServiceToken, language).catch((e) => {
       throw new Error(t("failed_to_acquire_bullet_token", { error: e }));
     });
@@ -492,7 +552,14 @@ const MainView = () => {
     return { webServiceToken: newWebServiceToken, bulletToken: newBulletToken };
   };
   const refresh = async () => {
+    // Clean up.
+    clearTimeout(refreshProgressHideTimeout.current);
+
     setRefreshing(true);
+    setRefreshProgress({
+      value: 0,
+      text: t("refresh_progress_requiring_tokens"),
+    });
     try {
       await Promise.all([
         // Fetch schedules.
@@ -529,7 +596,11 @@ const MainView = () => {
               newBulletToken = res.bulletToken;
             }
 
-            // Fetch friends, voting, summary and results.
+            // Fetch friends, voting and summary.
+            setRefreshProgress({
+              value: 0.4,
+              text: t("refresh_progress_loading_results"),
+            });
             await Promise.all([
               friendsAttempt ||
                 fetchFriends(newWebServiceToken!, newBulletToken, language)
@@ -574,15 +645,22 @@ const MainView = () => {
                 .catch((e) => {
                   showBanner(BannerLevel.Warn, t("failed_to_load_summary", { error: e }));
                 }),
-              ok(refreshResults(newWebServiceToken!, newBulletToken, false)),
             ]);
+
+            // Fetch results.
+            setRefreshProgress({
+              value: 0.6,
+              text: t("refresh_progress_loading_results"),
+            });
+            await ok(refreshResults(newWebServiceToken!, newBulletToken, false));
           }
         })(),
       ]);
     } catch (e) {
       showBanner(BannerLevel.Error, e);
+    } finally {
+      finishRefreshing();
     }
-    setRefreshing(false);
   };
   const refreshResults = async (
     webServiceToken: WebServiceToken,
@@ -590,10 +668,59 @@ const MainView = () => {
     latestOnly: boolean,
   ) => {
     // Fetch results.
-    let n = -1;
+    let n = 0;
+    let completed = 0;
+    let fail = 0;
     let throwable = 0;
     let error: Error | undefined;
-    const [battleFail, coopFail] = await Promise.all([
+    const detailTasks: Promise<void>[] = [];
+    const updateLoadingResultsProgress = () => {
+      if (n > 0) {
+        setRefreshProgress({
+          value: 0.6 + (completed / n) * 0.4,
+          text: t("refresh_progress_loading_results_n_total", { n: completed, total: n }),
+        });
+      }
+    };
+    const addBattleDetailTasks = (ids: string[]) => {
+      detailTasks.push(
+        ...ids.map((id, i) =>
+          sleep(i * 750)
+            .then(() => fetchVsHistoryDetail(webServiceToken, bulletToken, language, id))
+            .then((detail) => Database.addBattle(detail))
+            .catch((e) => {
+              if (!error) {
+                error = e;
+              }
+              fail += 1;
+            })
+            .then(() => {
+              completed += 1;
+              updateLoadingResultsProgress();
+            }),
+        ),
+      );
+    };
+    const addCoopDetailTasks = (ids: string[]) => {
+      detailTasks.push(
+        ...ids.map((id, i) =>
+          sleep(i * 750)
+            .then(() => fetchCoopHistoryDetail(webServiceToken, bulletToken, language, id))
+            .then((detail) => Database.addCoop(detail))
+            .catch((e) => {
+              if (!error) {
+                error = e;
+              }
+              fail += 1;
+            })
+            .then(() => {
+              completed += 1;
+              updateLoadingResultsProgress();
+            }),
+        ),
+      );
+    };
+    const [battleCount, coopCount] = await Promise.all([
       Promise.all([
         latestOnly ? fetchLatestBattleHistories(webServiceToken, bulletToken, language) : undefined,
       ])
@@ -731,29 +858,8 @@ const MainView = () => {
           const uniqueIds = ids.filter((id, i, ids) => ids.indexOf(id) === i);
           const existed = await Promise.all(uniqueIds.map(Database.isExist));
           const newIds = uniqueIds.filter((_, i) => !existed[i]);
-          if (n === -1) {
-            n = newIds.length;
-          } else {
-            n += newIds.length;
-            if (n > 0) {
-              showBanner(BannerLevel.Info, t("loading_n_results", { n }));
-            }
-          }
-          let results = 0;
-          await Promise.all(
-            newIds.map((id, i) =>
-              sleep(i * 750)
-                .then(() => fetchVsHistoryDetail(webServiceToken, bulletToken, language, id))
-                .then((detail) => Database.addBattle(detail))
-                .catch((e) => {
-                  if (!error) {
-                    error = e;
-                  }
-                  results += 1;
-                }),
-            ),
-          );
-          return results;
+          addBattleDetailTasks(newIds);
+          return newIds.length;
         })
         .catch((e) => {
           throwable += 1;
@@ -774,29 +880,8 @@ const MainView = () => {
 
           const existed = await Promise.all(ids.map(Database.isExist));
           const newIds = ids.filter((_, i) => !existed[i]);
-          if (n === -1) {
-            n = newIds.length;
-          } else {
-            n += newIds.length;
-            if (n > 0) {
-              showBanner(BannerLevel.Info, t("loading_n_results", { n }));
-            }
-          }
-          let results = 0;
-          await Promise.all(
-            newIds.map((id, i) =>
-              sleep(i * 750)
-                .then(() => fetchCoopHistoryDetail(webServiceToken, bulletToken, language, id))
-                .then((detail) => Database.addCoop(detail))
-                .catch((e) => {
-                  if (!error) {
-                    error = e;
-                  }
-                  results += 1;
-                }),
-            ),
-          );
-          return results;
+          addCoopDetailTasks(newIds);
+          return newIds.length;
         })
         .catch((e) => {
           throwable += 1;
@@ -805,8 +890,14 @@ const MainView = () => {
         }),
     ]);
 
+    n = battleCount + coopCount;
     if (n > 0) {
-      const fail = battleFail + coopFail;
+      showBanner(BannerLevel.Info, t("loading_n_results", { n }));
+    }
+    updateLoadingResultsProgress();
+    await Promise.all(detailTasks);
+
+    if (n > 0) {
       if (fail > 0) {
         showBanner(BannerLevel.Warn, t("loaded_n_results_failed", { n, fail, error }));
       } else {
@@ -820,6 +911,25 @@ const MainView = () => {
     if (throwable > 1) {
       throw new Error();
     }
+  };
+  const finishRefreshing = () => {
+    // Clean up.
+    clearTimeout(refreshProgressHideTimeout.current);
+
+    setRefreshProgress((progress) => ({ ...progress, value: 1 }));
+    refreshProgressHideTimeout.current = setTimeout(() => {
+      setRefreshing(false);
+      Animated.timing(refreshProgressFade, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }).start(({ finished }) => {
+        if (finished) {
+          setRefreshProgress({ value: 0, text: "" });
+          refreshProgressValue.setValue(0);
+        }
+      });
+    }, 1000);
   };
 
   const onHeaderLayout = (event: LayoutChangeEvent) => {
@@ -1753,6 +1863,67 @@ const MainView = () => {
               spin={autoRefresh}
               onPress={onAutoRefreshPress}
             />
+          )}
+          {refreshProgress.value !== 0 && (
+            <Animated.View
+              pointerEvents="none"
+              onLayout={(e: LayoutChangeEvent) =>
+                setRefreshProgressHeight(e.nativeEvent.layout.height)
+              }
+              style={[
+                ViewStyles.wf,
+                {
+                  position: "absolute",
+                  bottom: 0,
+                  opacity: refreshProgressFade,
+                  transform: [
+                    {
+                      translateY: refreshProgressTranslateY,
+                    },
+                  ],
+                },
+              ]}
+            >
+              <BlurView
+                intensity={100}
+                tint={theme.colorScheme ?? "default"}
+                style={[
+                  ViewStyles.pt3,
+                  ViewStyles.px4,
+                  {
+                    paddingBottom: insets.bottom + ViewStyles.pb2.paddingBottom,
+                  },
+                ]}
+              >
+                <VStack center>
+                  <View
+                    style={[
+                      ViewStyles.wf,
+                      ViewStyles.r0_5,
+                      ViewStyles.mb2,
+                      {
+                        height: 4,
+                        overflow: "hidden",
+                        backgroundColor: `${Color.MiddleTerritory}55`,
+                      },
+                    ]}
+                  >
+                    <Animated.View
+                      style={[
+                        ViewStyles.ff,
+                        {
+                          width: refreshProgressWidth,
+                          backgroundColor: Color.AccentColor,
+                        },
+                      ]}
+                    />
+                  </View>
+                  <Text center style={TextStyles.h6}>
+                    {refreshProgress.text}
+                  </Text>
+                </VStack>
+              </BlurView>
+            </Animated.View>
           )}
         </Animated.View>
         <Modal isVisible={update} size="medium" allowDismiss onDismiss={onUpdateDismiss}>

@@ -74,6 +74,25 @@ export interface WebServiceToken {
   language: string;
 }
 
+export type WebServiceTokenStep =
+  | "/token"
+  | "/users/me"
+  | "/f/token"
+  | "/f/1"
+  | "/Account/Login"
+  | "/f/2"
+  | "/Game/GetWebServiceToken";
+export const WebServiceTokenStepCount = {
+  "/token": 1,
+  "/users/me": 2,
+  "/f/token": 3,
+  "/f/1": 4,
+  "/Account/Login": 5,
+  "/f/2": 6,
+  "/Game/GetWebServiceToken": 7,
+  "/api/bullet_tokens": 8,
+};
+
 export const updateSplatnetVersion = async () => {
   // HACK: use jsDelivr to avoid any network issue in China Mainland.
   const res = await axios.get(
@@ -289,8 +308,12 @@ export const getSessionToken = async (url: string, cv: string) => {
     throw new Error(`/api/session_token: ${(e as Error).message}`);
   }
 };
-export const getWebServiceToken = async (sessionToken: string) => {
+export const getWebServiceToken = async (
+  sessionToken: string,
+  onProgress?: (step: WebServiceTokenStep) => void,
+) => {
   // Get tokens.
+  onProgress?.("/token");
   const body = {
     client_id: "71b963c1b7b6d119",
     session_token: sessionToken,
@@ -322,6 +345,7 @@ export const getWebServiceToken = async (sessionToken: string) => {
   }
 
   // Get user info.
+  onProgress?.("/users/me");
   let birthday: any, language: any, country: any, id: any;
   try {
     const res2 = await axios.get("https://api.accounts.nintendo.com/2.0.0/users/me", {
@@ -351,9 +375,11 @@ export const getWebServiceToken = async (sessionToken: string) => {
   }
 
   // Authenticate nxapi-znca-api.
+  onProgress?.("/f/token");
   const nxapiZncaApiAccessToken = await callNxapiZncaApiAuthenticate();
 
   // Generate login f.
+  onProgress?.("/f/1");
   const json = await callNxapiZncaApiF(
     nxapiZncaApiAccessToken,
     1,
@@ -375,6 +401,7 @@ export const getWebServiceToken = async (sessionToken: string) => {
   const { version, encryptedTokenRequest } = json;
 
   // Get access token.
+  onProgress?.("/Account/Login");
   let idToken2: any, coralUserId: any;
   try {
     const res3 = await axios.post(
@@ -406,6 +433,7 @@ export const getWebServiceToken = async (sessionToken: string) => {
   }
 
   // Generate web service f.
+  onProgress?.("/f/2");
   const json2 = await callNxapiZncaApiF(
     nxapiZncaApiAccessToken,
     2,
@@ -426,6 +454,7 @@ export const getWebServiceToken = async (sessionToken: string) => {
   const { encryptedTokenRequest: encryptedTokenRequest2 } = json2;
 
   // Get web service token.
+  onProgress?.("/Game/GetWebServiceToken");
   try {
     const res4 = await axios.post(
       "https://api-lp1.znc.srv.nintendo.net/v4/Game/GetWebServiceToken",
