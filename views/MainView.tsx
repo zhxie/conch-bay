@@ -161,8 +161,6 @@ enum TimeRange {
   AllResults = "all_results",
 }
 
-let autoRefreshTimeout: ReturnType<typeof setTimeout> | undefined;
-
 type RefreshProgress = {
   value: number;
   text: string;
@@ -355,12 +353,11 @@ const MainView = () => {
   }, [sessionTokenReady, webServiceTokenReady, bulletTokenReady, filterReady, migratedReady]);
   // Register database events.
   useEffect(() => {
-    if (!ready) {
-      return;
+    if (ready) {
+      return Database.subscribe(() => {
+        loadBriefs();
+      });
     }
-    return Database.subscribe(() => {
-      loadBriefs();
-    });
   }, [ready]);
   useEffect(() => {
     if (ready) {
@@ -417,26 +414,31 @@ const MainView = () => {
   }, [autoRefresh]);
   // Set auto refresh timeout.
   useEffect(() => {
-    if (ready) {
-      clearTimeout(autoRefreshTimeout);
-      if (autoRefresh && !refreshing) {
-        autoRefreshTimeout = setTimeout(async () => {
-          setRefreshing(true);
-          try {
-            if (webServiceToken) {
-              await refreshResults(webServiceToken, bulletToken, true);
-            } else {
-              throw new Error("empty web service token");
-            }
-          } catch {
-            await refresh();
-            return;
-          }
-          setRefreshing(false);
-        }, 10000);
+    if (ready && autoRefresh) {
+      if (refreshing) {
+        return;
       }
+
+      const timeout = setTimeout(async () => {
+        setRefreshing(true);
+        try {
+          if (webServiceToken) {
+            await refreshResults(webServiceToken, bulletToken, true);
+          } else {
+            throw new Error("empty web service token");
+          }
+        } catch {
+          await refresh();
+          return;
+        }
+        setRefreshing(false);
+      }, 10000);
+
+      return () => {
+        clearTimeout(timeout);
+      };
     }
-  }, [refreshing, bulletToken, autoRefresh]);
+  }, [ready, refreshing, autoRefresh, webServiceToken, bulletToken]);
   // Load database on background refresh.
   useEffect(() => {
     (async () => {
