@@ -41,14 +41,12 @@ const storage = new MMKV();
 type UseMmkv<T> = [T, (value: T) => void, () => void, boolean];
 
 export const useStringMmkv = (key: Key, initialValue?: string): UseMmkv<string> => {
-  const [data, setData] = useState(initialValue || "");
+  const [data, setData] = useState(initialValue ?? "");
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
     const value = storage.getString(key);
-    if (value !== undefined) {
-      setData(value || initialValue || "");
-    }
+    setData(value ?? initialValue ?? "");
     setReady(true);
   }, [key, initialValue]);
 
@@ -59,20 +57,18 @@ export const useStringMmkv = (key: Key, initialValue?: string): UseMmkv<string> 
 
   const clearData = () => {
     storage.delete(key);
-    setData(initialValue || "");
+    setData(initialValue ?? "");
   };
 
   return [data, setNewData, clearData, ready];
 };
 export const useNumberMmkv = (key: Key, initialValue?: number): UseMmkv<number> => {
-  const [data, setData] = useState(initialValue || 0);
+  const [data, setData] = useState(initialValue ?? 0);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
     const value = storage.getNumber(key);
-    if (value !== undefined) {
-      setData(value || initialValue || 0);
-    }
+    setData(value ?? initialValue ?? 0);
     setReady(true);
   }, [key, initialValue]);
 
@@ -83,20 +79,18 @@ export const useNumberMmkv = (key: Key, initialValue?: number): UseMmkv<number> 
 
   const clearData = () => {
     storage.delete(key);
-    setData(initialValue || 0);
+    setData(initialValue ?? 0);
   };
 
   return [data, setNewData, clearData, ready];
 };
 export const useBooleanMmkv = (key: Key, initialValue?: boolean): UseMmkv<boolean> => {
-  const [data, setData] = useState(initialValue || false);
+  const [data, setData] = useState(initialValue ?? false);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
     const value = storage.getBoolean(key);
-    if (value !== undefined) {
-      setData(value || initialValue || false);
-    }
+    setData(value ?? initialValue ?? false);
     setReady(true);
   }, [key, initialValue]);
 
@@ -107,7 +101,7 @@ export const useBooleanMmkv = (key: Key, initialValue?: boolean): UseMmkv<boolea
 
   const clearData = () => {
     storage.delete(key);
-    setData(initialValue || false);
+    setData(initialValue ?? false);
   };
 
   return [data, setNewData, clearData, ready];

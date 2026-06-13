@@ -1502,6 +1502,10 @@ const MainView = () => {
     setClearingDatabase(true);
     await Database.clear();
     clearPlayedTime();
+    clearFilter();
+    filterRef.current = undefined;
+    setPlayers(undefined);
+    setFilterOptions(undefined);
     setClearingDatabase(false);
     setSupport(false);
   };

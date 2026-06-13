@@ -39,7 +39,7 @@ const App = () => {
     ).then((res) => {
       setSplatfont(res);
     });
-  });
+  }, []);
 
   return (
     <SafeAreaProvider style={theme.backgroundStyle}>
