@@ -317,7 +317,6 @@ export const isFilterEqual = (a?: FilterProps, b?: FilterProps) => {
   }
   return true;
 };
-
 export const isFilterInclude = (parent?: FilterProps, child?: FilterProps) => {
   if (!parent && !child) {
     return true;
@@ -337,7 +336,6 @@ export const isFilterInclude = (parent?: FilterProps, child?: FilterProps) => {
   }
   return true;
 };
-
 const convertFilter = (filter?: FilterProps, from?: number) => {
   const filters: string[] = [];
   if (filter) {
@@ -433,6 +431,7 @@ let filterOptions:
       weapons: Set<string>;
     }
   | undefined = undefined;
+// Get all played modes, rules, stages and weapons and sort into filter options.
 export const queryFilterOptions = async () => {
   if (!filterOptions) {
     filterOptions = {
@@ -606,6 +605,7 @@ export const add = async (
     brief,
   );
   await db!.runAsync("INSERT INTO detail VALUES (?, ?, ?, ?)", id, time, mode, detail);
+  notifyChange();
 };
 export const addBattle = async (battle: VsHistoryDetailResult) => {
   return await add(
@@ -674,14 +674,60 @@ export const addCoop = async (coop: CoopHistoryDetailResult) => {
 export const remove = async (id: string) => {
   await db!.runAsync("DELETE FROM brief WHERE id = ?", id);
   await db!.runAsync("DELETE FROM detail WHERE id = ?", id);
+  filterOptions = undefined;
+  notifyChange();
 };
 export const clear = async () => {
   await db!.execAsync("DELETE FROM brief");
   await db!.execAsync("DELETE FROM detail");
   await db!.execAsync("VACUUM");
+  filterOptions = undefined;
+  notifyChange();
 };
 export const drop = async () => {
   await db!.execAsync("PRAGMA user_version=0");
   await db!.execAsync("DROP TABLE brief");
   await db!.execAsync("DROP TABLE detail");
+};
+
+const EMIT_CHANGE_INTERVAL = 2000;
+type Listener = () => void;
+
+const listeners = new Set<Listener>();
+let pendingChange = false;
+let lastEmittedAt = 0;
+let emitChangeTimeout: ReturnType<typeof setTimeout> | undefined = undefined;
+
+// Subscribe to observe database change events on adding, clearing and dropping.
+export const subscribe = (listener: Listener) => {
+  listeners.add(listener);
+  return () => {
+    listeners.delete(listener);
+  };
+};
+
+const notifyChange = () => {
+  pendingChange = true;
+  flushChange();
+};
+const flushChange = () => {
+  if (!pendingChange) {
+    return;
+  }
+  const elapsed = Date.now() - lastEmittedAt;
+  if (elapsed >= EMIT_CHANGE_INTERVAL) {
+    emitChange();
+    return;
+  }
+  if (!emitChangeTimeout) {
+    emitChangeTimeout = setTimeout(flushChange, EMIT_CHANGE_INTERVAL - elapsed);
+  }
+};
+const emitChange = () => {
+  pendingChange = false;
+  lastEmittedAt = Date.now();
+  emitChangeTimeout = undefined;
+  for (const listener of listeners) {
+    listener();
+  }
 };

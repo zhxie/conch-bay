@@ -64,7 +64,6 @@ export const useStringMmkv = (key: Key, initialValue?: string): UseMmkv<string> 
 
   return [data, setNewData, clearData, ready];
 };
-
 export const useNumberMmkv = (key: Key, initialValue?: number): UseMmkv<number> => {
   const [data, setData] = useState(initialValue || 0);
   const [ready, setReady] = useState(false);
@@ -89,7 +88,6 @@ export const useNumberMmkv = (key: Key, initialValue?: number): UseMmkv<number> 
 
   return [data, setNewData, clearData, ready];
 };
-
 export const useBooleanMmkv = (key: Key, initialValue?: boolean): UseMmkv<boolean> => {
   const [data, setData] = useState(initialValue || false);
   const [ready, setReady] = useState(false);

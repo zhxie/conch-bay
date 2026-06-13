@@ -35,16 +35,19 @@ export const encode64String = (s: string) => {
   return encode64(data);
 };
 
+// Decode keys in the format of <TYPE>-<INDEX> and get the index.
 export const decode64Index = (base64: string) => {
   const data = decode64(base64);
   const s = Buffer.from(data).toString();
   return parseInt(s.split("-")[1]);
 };
+// Decode player keys in the format of VsPlayer-u-<SELF_PLAYER_ID>:<MODE>:<TS>_<UUID>:u-<PLAYER_ID> and get the player ID.
 export const decode64BattlePlayerId = (base64: string) => {
   const data = decode64(base64);
   const s = Buffer.from(data).toString();
   return s.split(":")[3].split("-")[1];
 };
+// Decode player keys in the format of CoopPlayer-u-<SELF_PLAYER_ID>:<TS>_<UUID>:u-<PLAYER_ID> and get the player ID.
 export const decode64CoopPlayerId = (base64: string) => {
   const data = decode64(base64);
   const s = Buffer.from(data).toString();

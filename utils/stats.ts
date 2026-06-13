@@ -143,6 +143,7 @@ const addBattlePlayerStats = (
     special: stats.special + (player.special ?? 0),
   };
 };
+// Get the battle brief of a battle.
 export const getBattleBrief = (battle: VsHistoryDetailResult): BattleBrief => {
   const power = getVsPower(battle);
 
@@ -163,9 +164,11 @@ export const getBattleBrief = (battle: VsHistoryDetailResult): BattleBrief => {
     ),
   };
 };
+// Get the self player battle brief of a battle.
 export const getSelfBattlePlayerBrief = (battle: BattleBrief) => {
   return battle.myTeam.find((player) => player.self)!;
 };
+// Get the stats of a series of battles.
 export const getBattleStats = (...battles: BattleBrief[]): BattleStats => {
   let count = 0,
     win = 0,
@@ -472,6 +475,7 @@ const addCoopPlayerStats = (stats: CoopPlayerStats, player: CoopPlayerBrief): Co
     rescued: stats.rescued + player.rescued,
   };
 };
+// Get the coop brief of a coop.
 export const getCoopBrief = (coop: CoopHistoryDetailResult): CoopBrief => {
   const waveMap = new Map<string, Map<number, { appear: number; clear: number }>>();
   for (let i = 0; i < coop.coopHistoryDetail!.waveResults.length; i++) {
@@ -627,6 +631,7 @@ export const getCoopBrief = (coop: CoopHistoryDetailResult): CoopBrief => {
       : undefined,
   };
 };
+// Get the stats of a series of coops.
 export const getCoopStats = (...coops: CoopBrief[]): CoopStats => {
   let count = 0,
     exempt = 0,
@@ -842,6 +847,7 @@ export interface Stats {
   coop?: CoopStats;
 }
 
+// Check if a battle can be grouped into the battle group.
 export const canGroupBattle = (battle: BattleBrief, group: Brief[]) => {
   // Battles with the same mode and in the 2 hours (24 hours for tricolors and unlimited for
   // privates) period will be regarded in the same group. There is also a 2 minutes grace period
@@ -894,6 +900,7 @@ export const canGroupBattle = (battle: BattleBrief, group: Brief[]) => {
   }
   return false;
 };
+// Check if a coop can be grouped into the coop group.
 export const canGroupCoop = (coop: CoopBrief, group: Brief[]) => {
   // Coops with the same rule, stage (no restriction for Big Run, since there are random stages)
   // and supplied weapons in the 80 hours (2 hours period) will be regarded in the same group.

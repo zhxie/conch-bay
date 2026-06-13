@@ -258,8 +258,10 @@ const MainView = () => {
 
   const allResultsShown = count >= filtered;
 
+  // Fade in animation.
   const fade = useRef(new Animated.Value(0)).current;
 
+  // Top filter animation.
   const blurOnTopFade = useRef(new Animated.Value(0)).current;
   const [headerHeight, setHeaderHeight] = useState(0);
   const [filterHeight, setFilterHeight] = useState(0);
@@ -272,6 +274,7 @@ const MainView = () => {
     outputRange: [0, 1],
   });
 
+  // Progress animation.
   const refreshProgressFade = useRef(new Animated.Value(0)).current;
   const refreshProgressValue = useRef(new Animated.Value(0)).current;
   const refreshProgressHideTimeout = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -350,6 +353,15 @@ const MainView = () => {
       })();
     }
   }, [sessionTokenReady, webServiceTokenReady, bulletTokenReady, filterReady, migratedReady]);
+  // Register database events.
+  useEffect(() => {
+    if (!ready) {
+      return;
+    }
+    return Database.subscribe(() => {
+      loadBriefs();
+    });
+  }, [ready]);
   useEffect(() => {
     if (ready) {
       Animated.timing(fade, {
@@ -389,6 +401,7 @@ const MainView = () => {
       setTimeout(refresh, 100);
     }
   }, [sessionToken]);
+  // Load database on filter changed.
   useEffect(() => {
     filterRef.current = filter;
     if (ready) {
@@ -402,6 +415,7 @@ const MainView = () => {
       deactivateKeepAwake("refresh");
     }
   }, [autoRefresh]);
+  // Set auto refresh timeout.
   useEffect(() => {
     if (ready) {
       clearTimeout(autoRefreshTimeout);
@@ -423,6 +437,7 @@ const MainView = () => {
       }
     }
   }, [refreshing, bulletToken, autoRefresh]);
+  // Load database on background refresh.
   useEffect(() => {
     (async () => {
       if (appState === "active") {
@@ -443,6 +458,7 @@ const MainView = () => {
       throw fault;
     }
   }, [fault]);
+  // Animations for progress.
   useEffect(() => {
     if (refreshProgress.value !== 0) {
       Animated.timing(refreshProgressFade, {
@@ -904,8 +920,7 @@ const MainView = () => {
         showBanner(BannerLevel.Success, t("loaded_n_results", { n }));
       }
     }
-    const updated = await updatePlayedTime();
-    if (n > 0 || updated) {
+    if (await updatePlayedTime()) {
       await loadBriefs();
     }
     if (throwable > 1) {
@@ -1261,18 +1276,13 @@ const MainView = () => {
       error,
     };
   };
-  const onImportComplete = async (n: number) => {
-    // Query stored latest results if updated.
-    if (n > 0) {
-      await loadBriefs();
-    }
+  const onImportComplete = () => {
     deactivateKeepAwake("import");
     setRefreshing(false);
   };
   const onImportPress = async () => {
     setImporting(true);
     let documentFile: File | undefined;
-    let imported = 0;
     const dir = new Directory(Paths.cache, "conch-bay-import");
     const battlesDir = new Directory(dir, "battles");
     const coopsDir = new Directory(dir, "coops");
@@ -1357,9 +1367,7 @@ const MainView = () => {
       } else {
         showBanner(BannerLevel.Success, t("loaded_n_results", { n }));
       }
-      imported = n - fail - skip;
     } catch (e) {
-      imported = -1;
       showBanner(BannerLevel.Error, e);
     }
 
@@ -1371,7 +1379,7 @@ const MainView = () => {
     if (dir.exists) {
       dir.delete();
     }
-    await onImportComplete(imported);
+    onImportComplete();
     setImporting(false);
   };
   const onExportPress = async () => {
@@ -1494,7 +1502,6 @@ const MainView = () => {
     setClearingDatabase(true);
     await Database.clear();
     clearPlayedTime();
-    await loadBriefs();
     setClearingDatabase(false);
     setSupport(false);
   };

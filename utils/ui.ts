@@ -2,6 +2,7 @@ import * as Convert from "color-convert";
 import { Color } from "../components";
 import { VsHistoryDetailResult, CoopRule, Gear } from "../models/types";
 
+// Get the image cache key in the format like stage_img/icon/high_resolution/<HASH>_0.png of a image.
 export const getImageCacheKey = (image: string) => {
   const url = new URL(image);
   const path = `${url.protocol}://${url.host}${url.pathname}`;
@@ -9,6 +10,7 @@ export const getImageCacheKey = (image: string) => {
   const splitted = path.split(/prod|splatnet|v\d*/g);
   return splitted[splitted.length - 1];
 };
+// Get the image hash of a image.
 export const getImageHash = (image: string) => {
   const url = new URL(image);
   const path = `${url.protocol}://${url.host}${url.pathname}`;
@@ -22,26 +24,31 @@ export const getImageCacheSource = (image: string) => {
   };
 };
 export const getUserIconCacheSource = (userIcon: string) => {
+  // User icons do not have credential queries and can be cached forever.
   return {
     uri: userIcon,
     cacheKey: userIcon,
   };
 };
 
+// Get the RGBA color from RGBA numbers.
 export const getColor = (color: { a: number; b: number; g: number; r: number }) => {
   return `rgba(${Math.round(color.r * 255)}, ${Math.round(color.g * 255)}, ${Math.round(
     color.b * 255,
   )}, ${Math.round(color.a * 255)})`;
 };
+// Get the solid RGB color from RGBA numbers.
 export const getSolidColor = (color: { a: number; b: number; g: number; r: number }) => {
   const hex = Convert.rgb.hex(color.r * 255, color.g * 255, color.b * 255);
   return `#${hex}`;
 };
+// Get the color with 70% brightness.
 export const burnColor = (color: string) => {
   const hsl = Convert.hex.hsl(color.replace("#", ""));
   const hex = Convert.hsl.hex([hsl[0], hsl[1], hsl[2] * 0.7]);
   return `#${hex}`;
 };
+// Get the color with 130% brightness.
 export const dodgeColor = (color: string) => {
   const hsl = Convert.hex.hsl(color.replace("#", ""));
   const hex = Convert.hsl.hex([hsl[0], hsl[1], Math.min(hsl[2] * 1.3, 100)]);
