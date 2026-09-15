@@ -116,6 +116,8 @@ const zhHant = {
   error_report: "錯誤報告",
   error_description: "您可以描述一下遇到問題前正在做什麼嗎？",
   version: "版本",
+  runtime_version: "執行環境版本",
+  update_id: "更新ID",
   error_information: "錯誤資訊",
   export_results: "匯出記錄",
   // Friend.

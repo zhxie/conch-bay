@@ -2403,6 +2403,11 @@ anymatch@^3.0.3:
     normalize-path "^3.0.0"
     picomatch "^2.0.4"
 
+arg@4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/arg/-/arg-4.1.0.tgz#583c518199419e0037abb74062c37f8519e575f0"
+  integrity sha512-ZWc51jO3qegGkVh8Hwpv636EkbesNV5ZNQPCtRa+0qytRYPEs9IYT9qITY9buezqUH5uqyzlWLcufrzU2rffdg==
+
 arg@^5.0.2:
   version "5.0.2"
   resolved "https://registry.yarnpkg.com/arg/-/arg-5.0.2.tgz#c81433cc427c92c4dcf4865142dbca6f15acd59c"
@@ -3537,6 +3542,11 @@ expo-document-picker@~14.0.8:
   resolved "https://registry.yarnpkg.com/expo-document-picker/-/expo-document-picker-14.0.8.tgz#ca1d99cc432c48e69a6390eb035f3301557e3699"
   integrity sha512-3tyQKpPqWWFlI8p9RiMX1+T1Zge5mEKeBuXWp1h8PEItFMUDSiOJbQ112sfdC6Hxt8wSxreV9bCRl/NgBdt+fA==
 
+expo-eas-client@~1.0.8:
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/expo-eas-client/-/expo-eas-client-1.0.8.tgz#f1fa7cbc6b6000046119466c6ded8a77e5a4b1f8"
+  integrity sha512-5or11NJhSeDoHHI6zyvQDW2cz/yFyE+1Cz8NTs5NK8JzC7J0JrkUgptWtxyfB6Xs/21YRNifd3qgbBN3hfKVgA==
+
 expo-file-system@~19.0.24:
   version "19.0.24"
   resolved "https://registry.yarnpkg.com/expo-file-system/-/expo-file-system-19.0.24.tgz#71e6872e1b7a41890f8631842e9f1e631846b5ae"
@@ -3644,6 +3654,11 @@ expo-status-bar@~3.0.9:
   dependencies:
     react-native-is-edge-to-edge "^1.2.1"
 
+expo-structured-headers@~5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/expo-structured-headers/-/expo-structured-headers-5.0.0.tgz#b3cc223a7a58964652093f088a8988316db9ed9d"
+  integrity sha512-RmrBtnSphk5REmZGV+lcdgdpxyzio5rJw8CXviHE6qH5pKQQ83fhMEcigvrkBdsn2Efw2EODp4Yxl1/fqMvOZw==
+
 expo-system-ui@~6.0.9:
   version "6.0.9"
   resolved "https://registry.yarnpkg.com/expo-system-ui/-/expo-system-ui-6.0.9.tgz#09b4a4301ab25ec594ae39beb7d24197c231a30c"
@@ -3663,6 +3678,26 @@ expo-updates-interface@~2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/expo-updates-interface/-/expo-updates-interface-2.0.0.tgz#7721cb64c37bcb46b23827b2717ef451a9378749"
   integrity sha512-pTzAIufEZdVPKql6iMi5ylVSPqV1qbEopz9G6TSECQmnNde2nwq42PxdFBaUEd8IZJ/fdJLQnOT3m6+XJ5s7jg==
+
+expo-updates@~29.0.18:
+  version "29.0.20"
+  resolved "https://registry.yarnpkg.com/expo-updates/-/expo-updates-29.0.20.tgz#59484b8def39e66773cabd94320dfefd3b5a9b0b"
+  integrity sha512-9ChWpBaQ1oIIwRRuhFSpwNOJvXeWyTYawcfDLFV0UZBgOwtxgTGdCYbFm4qHAjptmKAPFHHL9bIDgokgkOW9Sg==
+  dependencies:
+    "@expo/code-signing-certificates" "^0.0.6"
+    "@expo/plist" "^0.4.9"
+    "@expo/spawn-async" "^1.7.2"
+    arg "4.1.0"
+    chalk "^4.1.2"
+    debug "^4.3.4"
+    expo-eas-client "~1.0.8"
+    expo-manifests "~1.0.11"
+    expo-structured-headers "~5.0.0"
+    expo-updates-interface "~2.0.0"
+    getenv "^2.0.0"
+    glob "^13.0.0"
+    ignore "^5.3.1"
+    resolve-from "^5.0.0"
 
 expo-web-browser@~15.0.11:
   version "15.0.11"

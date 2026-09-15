@@ -1,17 +1,21 @@
 import withAndroidLargeHeap from "./plugins/withAndroidLargeHeap";
 
 const IS_DEV = process.env.APP_VARIANT === "development";
+const EAS_PROJECT_ID = "6dc18d15-fec6-4bb7-a5c3-b91f9137d933";
 
 const config = {
   name: "Conch Bay",
   slug: "conch-bay",
+  runtimeVersion: {
+    policy: "fingerprint",
+  },
   version: "2.3.1",
   orientation: "portrait",
   userInterfaceStyle: "automatic",
   newArchEnabled: false,
   icon: IS_DEV ? "./assets/icon-dev.png" : "./assets/icon.png",
   updates: {
-    fallbackToCacheTimeout: 0,
+    url: `https://u.expo.dev/${EAS_PROJECT_ID}`,
   },
   locales: {
     en: "./i18n/locales/en.json",
@@ -109,7 +113,7 @@ const config = {
   scheme: "conchbay",
   extra: {
     eas: {
-      projectId: "6dc18d15-fec6-4bb7-a5c3-b91f9137d933",
+      projectId: EAS_PROJECT_ID,
     },
   },
 };

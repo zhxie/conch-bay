@@ -121,6 +121,8 @@ const ja = {
   error_report: "エラーレポート",
   error_description: "この問題が発生する前に何をしていたか説明していただけますか？",
   version: "バージョン",
+  runtime_version: "ランタイムバージョン",
+  update_id: "アップデートID",
   error_information: "エラー情報",
   export_results: "リザルトをエクスポート",
   // Friend.

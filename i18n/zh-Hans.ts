@@ -116,6 +116,8 @@ const zhHans = {
   error_report: "错误报告",
   error_description: "您可以描述一下遇到问题前正在做什么吗？",
   version: "版本",
+  runtime_version: "运行时版本",
+  update_id: "更新ID",
   error_information: "错误信息",
   export_results: "导出记录",
   // Friend.

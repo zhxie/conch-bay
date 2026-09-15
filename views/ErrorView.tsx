@@ -2,6 +2,7 @@ import * as Application from "expo-application";
 import { Directory, File, Paths } from "expo-file-system";
 import * as MailComposer from "expo-mail-composer";
 import * as Sharing from "expo-sharing";
+import * as Updates from "expo-updates";
 import * as WebBrowser from "expo-web-browser";
 import { useState } from "react";
 import { Linking, Platform } from "react-native";
@@ -38,6 +39,12 @@ const ErrorView = (props: ErrorViewProps) => {
 
         > ${t("version")}
         ${Application.nativeApplicationVersion} (${Application.nativeBuildVersion})
+
+        > ${t("runtime_version")}
+        ${Updates.runtimeVersion}
+
+        > ${t("update_id")}
+        ${Updates.updateId} (${Updates.createdAt})
 
         > ${t("error_information")}
         ${props.error.stack}

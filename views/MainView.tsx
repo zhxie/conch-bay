@@ -15,6 +15,7 @@ import * as MailComposer from "expo-mail-composer";
 import * as ModulesCore from "expo-modules-core";
 import * as Notifications from "expo-notifications";
 import * as Sharing from "expo-sharing";
+import * as Updates from "expo-updates";
 import * as WebBrowser from "expo-web-browser";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -1488,6 +1489,12 @@ const MainView = () => {
 
         > ${t("version")}
         ${Application.nativeApplicationVersion} (${Application.nativeBuildVersion})
+
+        > ${t("runtime_version")}
+        ${Updates.runtimeVersion}
+
+        > ${t("update_id")}
+        ${Updates.updateId} (${Updates.createdAt})
         `,
       });
     } else {

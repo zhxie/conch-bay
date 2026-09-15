@@ -21,3 +21,4 @@ models/*.json
 !models/unknowns.json
 models/placeholders.ts
 i18n/*.json
+dist/

@@ -122,6 +122,8 @@ const en = {
   error_report: "Error report",
   error_description: "Can you describe what you were doing before you encountered the problem?",
   version: "Version",
+  runtime_version: "Runtime version",
+  update_id: "Update ID",
   error_information: "Error information",
   export_results: "Export Results",
   // Friend.
