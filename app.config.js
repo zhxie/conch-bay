@@ -5,7 +5,7 @@ const IS_DEV = process.env.APP_VARIANT === "development";
 const config = {
   name: "Conch Bay",
   slug: "conch-bay",
-  version: "2.3.0",
+  version: "2.3.1",
   orientation: "portrait",
   userInterfaceStyle: "automatic",
   newArchEnabled: false,
@@ -44,7 +44,7 @@ const config = {
   },
   ios: {
     bundleIdentifier: IS_DEV ? "name.sketch.ConchBay.dev" : "name.sketch.ConchBay",
-    buildNumber: "184",
+    buildNumber: "185",
     config: {
       usesNonExemptEncryption: false,
     },
@@ -84,7 +84,7 @@ const config = {
   },
   android: {
     package: IS_DEV ? "name.sketch.conch_bay.dev" : "name.sketch.conch_bay",
-    versionCode: 184,
+    versionCode: 185,
     adaptiveIcon: {
       foregroundImage: "./assets/adaptive-icon.png",
       backgroundColor: IS_DEV ? "#FFFFFF" : "#6B84F5",
