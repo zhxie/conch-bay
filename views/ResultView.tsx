@@ -686,20 +686,26 @@ const ResultView = (props: ResultViewProps) => {
     setDimension(event.nativeEvent.selectedSegmentIndex);
   };
 
-  const onBattlePress = useCallback((id: string) => {
-    const result = props.onQuery(id);
-    if (result?.battle) {
-      setResult({ battle: result.battle });
-      setDisplayBattle(true);
-    }
-  }, [props.onQuery]);
-  const onCoopPress = useCallback((id: string) => {
-    const result = props.onQuery(id);
-    if (result?.coop) {
-      setResult({ coop: result.coop });
-      setDisplayCoop(true);
-    }
-  }, [props.onQuery]);
+  const onBattlePress = useCallback(
+    (id: string) => {
+      const result = props.onQuery(id);
+      if (result?.battle) {
+        setResult({ battle: result.battle });
+        setDisplayBattle(true);
+      }
+    },
+    [props.onQuery],
+  );
+  const onCoopPress = useCallback(
+    (id: string) => {
+      const result = props.onQuery(id);
+      if (result?.coop) {
+        setResult({ coop: result.coop });
+        setDisplayCoop(true);
+      }
+    },
+    [props.onQuery],
+  );
   const onGroupPress = useCallback((group: Brief[]) => {
     setGroup(group);
     setDisplayGroup(true);
