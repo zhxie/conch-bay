@@ -66,7 +66,7 @@ export const fetchXRankings = async (id: string) => {
 
 let SPLATNET_VERSION = versions.SPLATNET_VERSION;
 let NXAPI_ZNCA_API_NSO_VERSION: string | undefined;
-const ZNCA_CLIENT_VERSION = "hio87-mJks_e9GNF";
+const ZNCA_CLIENT_VERSION = "d8fAZDPzwimzQ7c6";
 
 export interface WebServiceToken {
   accessToken: string;
@@ -346,7 +346,7 @@ export const getWebServiceToken = async (
 
   // Get user info.
   onProgress?.("/users/me");
-  let birthday: any, language: any, country: any, id: any;
+  let language: any, country: any, id: any;
   try {
     const res2 = await axios.get("https://api.accounts.nintendo.com/2.0.0/users/me", {
       headers: {
@@ -362,11 +362,10 @@ export const getWebServiceToken = async (
       timeout: AXIOS_TOKEN_TIMEOUT,
       validateStatus: validateAllStatus,
     });
-    birthday = res2.data["birthday"];
     language = res2.data["language"];
     country = res2.data["country"];
     id = res2.data["id"];
-    if (!birthday || !language || !country || !id) {
+    if (!language || !country || !id) {
       // { type: string; detail: string; instance: string; title: string; errorCode: string; status: number; }
       throw new Error(`${res2.status}: ${JSON.stringify(res2.data)}`);
     }
@@ -389,8 +388,6 @@ export const getWebServiceToken = async (
       parameter: {
         f: "",
         language: language,
-        naBirthday: birthday,
-        naCountry: country,
         naIdToken: idToken,
         requestId: "",
         timestamp: 0,
