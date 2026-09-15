@@ -318,6 +318,7 @@ const getPlaceholderMap = async (version) => {
     45: "Shooters/Hero Shot Replica",
     46: "Shooters/Octo Shot Replica",
     47: "Shooters/Order Shooter Replica",
+    48: "Shooters/Plastic-Bottle Shot Replica",
     50: "Shooters/52 Gal",
     51: "Shooters/52 Gal Deco",
     60: "Shooters/N-ZAP 85",
