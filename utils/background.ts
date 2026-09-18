@@ -1,7 +1,7 @@
 import * as BackgroundFetch from "expo-background-fetch";
 import * as Notifications from "expo-notifications";
 import * as TaskManager from "expo-task-manager";
-import { MMKV } from "react-native-mmkv";
+import { createMMKV } from "react-native-mmkv";
 import t from "../i18n";
 import {
   fetchCoopHistoryDetail,
@@ -28,7 +28,7 @@ TaskManager.defineTask(BACKGROUND_REFRESH_RESULTS_TASK, async ({ error }) => {
     await ok(updateSplatnetVersion());
 
     // Always generate new bullet token.
-    const storage = new MMKV();
+    const storage = createMMKV();
     const language = t("lang");
     const sessionToken = storage.getString(Key.SessionToken);
     if (!sessionToken || sessionToken.length === 0) {

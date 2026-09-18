@@ -30,7 +30,7 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
-import { MMKV } from "react-native-mmkv";
+import { createMMKV } from "react-native-mmkv";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { unzip, zip } from "react-native-zip-archive";
 import semver from "semver";
@@ -136,9 +136,9 @@ const devMenuItems = [
   {
     name: "Invalidate Tokens",
     callback: () => {
-      const storage = new MMKV();
-      storage.delete(Key.BulletToken);
-      storage.delete(Key.WebServiceToken);
+      const storage = createMMKV();
+      storage.remove(Key.BulletToken);
+      storage.remove(Key.WebServiceToken);
       // HACK: reload to refresh.
       reloadAppAsync();
     },

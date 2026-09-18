@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { MMKV } from "react-native-mmkv";
+import { createMMKV } from "react-native-mmkv";
 
 export enum AsyncStorageKey {
   SessionToken = "sessionToken2",
@@ -36,7 +36,7 @@ export enum Tip {
   Welcome = "welcome",
 }
 
-const storage = new MMKV();
+const storage = createMMKV();
 
 type UseMmkv<T> = [T, (value: T) => void, () => void, boolean];
 
@@ -56,7 +56,7 @@ export const useStringMmkv = (key: Key, initialValue?: string): UseMmkv<string> 
   };
 
   const clearData = () => {
-    storage.delete(key);
+    storage.remove(key);
     setData(initialValue ?? "");
   };
 
@@ -78,7 +78,7 @@ export const useNumberMmkv = (key: Key, initialValue?: number): UseMmkv<number> 
   };
 
   const clearData = () => {
-    storage.delete(key);
+    storage.remove(key);
     setData(initialValue ?? 0);
   };
 
@@ -100,7 +100,7 @@ export const useBooleanMmkv = (key: Key, initialValue?: boolean): UseMmkv<boolea
   };
 
   const clearData = () => {
-    storage.delete(key);
+    storage.remove(key);
     setData(initialValue ?? false);
   };
 
@@ -127,7 +127,7 @@ export const useMmkv = <T>(key: Key, initialValue?: T): UseNullableMmkv<T> => {
   };
 
   const clearData = () => {
-    storage.delete(key);
+    storage.remove(key);
     setData(initialValue);
   };
 
