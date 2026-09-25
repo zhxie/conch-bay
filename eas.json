@@ -17,6 +17,17 @@
       "distribution": "internal",
       "environment": "preview"
     },
+    "preview": {
+      "channel": "production",
+      "distribution": "internal",
+      "environment": "production",
+      "ios": {
+        "simulator": true
+      },
+      "android": {
+        "buildType": "apk"
+      }
+    },
     "production": {
       "channel": "production",
       "distribution": "store",
