@@ -9,7 +9,7 @@ const config = {
   runtimeVersion: {
     policy: "fingerprint",
   },
-  version: "2.3.1",
+  version: "2.4.0",
   orientation: "portrait",
   userInterfaceStyle: "automatic",
   newArchEnabled: false,
@@ -48,7 +48,7 @@ const config = {
   },
   ios: {
     bundleIdentifier: IS_DEV ? "name.sketch.ConchBay.dev" : "name.sketch.ConchBay",
-    buildNumber: "185",
+    buildNumber: "186",
     config: {
       usesNonExemptEncryption: false,
     },
@@ -88,7 +88,7 @@ const config = {
   },
   android: {
     package: IS_DEV ? "name.sketch.conch_bay.dev" : "name.sketch.conch_bay",
-    versionCode: 185,
+    versionCode: 186,
     adaptiveIcon: {
       foregroundImage: "./assets/adaptive-icon.png",
       backgroundColor: IS_DEV ? "#FFFFFF" : "#6B84F5",
